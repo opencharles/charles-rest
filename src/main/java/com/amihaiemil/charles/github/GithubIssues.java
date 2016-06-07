@@ -53,7 +53,6 @@ public class GithubIssues {
 	private Github github;
 
 	public GithubIssues() {
-		System.out.println(System.getProperty("charles.github.ejb.token"));
 		this.github = new RtGithub(
 					      System.getProperty("charles.github.ejb.token")
 					  );
