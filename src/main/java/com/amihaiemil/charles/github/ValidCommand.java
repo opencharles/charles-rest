@@ -22,59 +22,68 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+import javax.json.JsonObject;
+import org.apache.commons.lang3.StringUtils;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Issue;
 
 /**
- * Encapsulates a github issue.
+ * Valid command for the Github agent.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class GithubIssue {
+public class ValidCommand implements Comment {
+	private JsonObject comment;
 	
 	/**
-	 * Repo's full name.
-	 */
-    private String repo;
-    /**
-     * Issue's number.
-     */
-    private int number;
-    /**
-     * Other informations about the issue.
-     */
-    private Issue self;
-    
-    /**
-     * Latest comment on the issue.
-     */
-    private Comment latestComment;
-    
-    /**
 	 * Constructor.
+	 * @param Given Comment.
+	 * @throws IllegalArgumentException if the comment (command) is not valid..
+	 * @throws IOException
 	 */
-	public GithubIssue(String repo, int number, int latestCommentNumber, Issue self) {
-		this.repo = repo;
-		this.number = number;
-		this.self = self;
-		this.latestComment = self.comments().get(latestCommentNumber);
-	}
-
-	public String getRepo() {
-		return repo;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public Issue getSelf() {
-		return self;
+	public ValidCommand(Comment com) throws IllegalArgumentException, IOException {
+		JsonObject commentJson = com.json();
+		String body = commentJson.getString("body");
+		if(StringUtils.isEmpty(body) || body.contains("//nobots")
+			|| commentJson.getInt("id", -1) == -1) {
+			throw new IllegalArgumentException("Invalid command!");
+		}
+		this.comment = commentJson;
 	}
 	
-	public Comment getLatestComment() {
-		return this.latestComment;
+	@Override
+	public int compareTo(Comment o) {
+		throw new UnsupportedOperationException("#compareTo(Comment)");
 	}
+
+	@Override
+	public JsonObject json() throws IOException {
+		return this.comment;
+	}
+
+	@Override
+	public void patch(JsonObject json) throws IOException {
+		throw new UnsupportedOperationException("#path(JsonObject)");
+		
+	}
+
+	@Override
+	public Issue issue() {
+		throw new UnsupportedOperationException("#issue()");
+	}
+
+	@Override
+	public int number() {
+		return this.comment.getInt("id");
+	}
+
+	@Override
+	public void remove() throws IOException {
+		throw new UnsupportedOperationException("#remove()");
+	}
+
 }
