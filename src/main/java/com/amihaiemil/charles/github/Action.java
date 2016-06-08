@@ -24,47 +24,40 @@
  */
 package com.amihaiemil.charles.github;
 
-import com.jcabi.github.Issue;
+import java.util.UUID;
 
 /**
- * Encapsulates a github issue.
+ * Action that the agent takes once it finds a Github issue where it's been mentioned.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class GithubIssue {
+public class Action implements Runnable {
+
+	/**
+	 * Thread that runs this.
+	 */
+	private Thread tr;
 	
 	/**
-	 * Repo's full name.
-	 */
-    private String repo;
-    /**
-     * Issue's number.
-     */
-    private int number;
-    /**
-     * Other informations about the issue.
-     */
-    private Issue self;
-    
-    /**
 	 * Constructor.
+	 * @param issue - The Github issue where the agent was mentionsd.
+	 * @param agentLogin - The Github username of the agent.
 	 */
-	public GithubIssue(String repo, int number, Issue self) {
-		this.repo = repo;
-		this.number = number;
-		this.self = self;
-	}
-
-	public String getRepo() {
-		return repo;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public Issue getSelf() {
-		return self;
+	public Action(GithubIssue issue, String agentLogin) {
+		String threadName = issue.getRepo() + "/" + issue.getNumber() + "_" + UUID.randomUUID().toString();
+		tr = new Thread(this, threadName);
 	}
 	
+	
+	@Override
+	public void run() {
+		//to be implemented
+	}
+	
+	/**
+	 * Take this action.
+	 */
+	public void take() { 
+		this.tr.start();
+	}
 }
