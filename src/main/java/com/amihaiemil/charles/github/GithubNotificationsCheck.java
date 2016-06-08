@@ -40,13 +40,17 @@ import javax.ejb.Singleton;
 public class GithubNotificationsCheck {
 	
 	@EJB 
-	GithubAgent githubIssues;
+	GithubAgent agent;
 	
 	@Schedule(minute="*", persistent=false)
     public void checkForNotifications() throws IOException {
-    	List<GithubIssue> issues = githubIssues.issuesMentionedIn();
+    	List<GithubIssue> issues = agent.issuesMentionedIn();
+    	String login = "";
+    	if(issues.size() > 0) {
+    		login = agent.agentLogin();
+    	}
     	for(GithubIssue issue : issues) {
-    		//...
+    		new Action(issue, login).take();
     	}
     }
 }
