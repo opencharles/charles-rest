@@ -67,22 +67,26 @@ public class GithubAgent {
 	 * @return List of Github {@link Issue}
 	 * @throws IOException - if something goes wrong.
 	 */
-	public List<Issue> issuesMentionedIn() throws IOException {
+	public List<GithubIssue> issuesMentionedIn() throws IOException {
 		LOG.info("Checking for issues where the agent was mentioned");
 		Iterable<JsonObject> notifications = new RtPagination<JsonObject>(
 			this.github.entry().uri().path("/notifications").back(),
 			RtPagination.COPYING
 		);
-		List<Issue> issues = new ArrayList<Issue>();
+		List<GithubIssue> issues = new ArrayList<GithubIssue>();
 		for(JsonObject notification : notifications) {
 			if("mention".equals(notification.getString("reason"))) {
 				String issueUrl = notification.getJsonObject("subject").getString("url");
 				int issueNumber = Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1));
 				String repoFullName = notification.getJsonObject("repository").getString("full_name");
 				issues.add(
-					this.github.repos().get(
-						new Coordinates.Simple(repoFullName)
-					).issues().get(issueNumber)
+					new GithubIssue(
+						repoFullName,
+						issueNumber,
+						this.github.repos().get(
+								new Coordinates.Simple(repoFullName)
+						).issues().get(issueNumber)
+					)
 				);
 			}
 		}

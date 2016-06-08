@@ -24,29 +24,47 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
+import com.jcabi.github.Issue;
 
 /**
- * EJB that checks every minute for github notifications (mentions of the agent using @username).
+ * Encapsulates a github issue.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Singleton
-public class GithubNotificationsCheck {
+public class GithubIssue {
 	
-	@EJB 
-	GithubAgent githubIssues;
+	/**
+	 * Repo's full name.
+	 */
+    private String repo_fullname;
+    /**
+     * Issue's number.
+     */
+    private int number;
+    /**
+     * Other informations about the issue.
+     */
+    private Issue self;
+    
+    /**
+	 * Constructor.
+	 */
+	public GithubIssue(String repo, int number, Issue self) {
+		this.repo_fullname = repo;
+		this.number = number;
+		this.self = self;
+	}
+
+	public String getRepo_fullname() {
+		return repo_fullname;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public Issue getSelf() {
+		return self;
+	}
 	
-	@Schedule(minute="*", persistent=false)
-    public void checkForNotifications() throws IOException {
-    	List<GithubIssue> issues = githubIssues.issuesMentionedIn();
-    	for(GithubIssue issue : issues) {
-    		//...
-    	}
-    }
 }
