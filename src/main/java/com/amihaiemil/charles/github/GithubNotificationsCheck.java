@@ -42,7 +42,7 @@ import com.jcabi.github.Issue;
 public class GithubNotificationsCheck {
 	
 	@EJB 
-	GithubIssues githubIssues;
+	GithubAgent githubIssues;
 	
 	@Schedule(minute="*", persistent=false)
     public void checkForNotifications() throws IOException {
