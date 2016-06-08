@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Stateful;
+import javax.ejb.Stateless;
 import javax.json.JsonObject;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -50,12 +50,12 @@ import com.jcabi.http.response.RestResponse;
  * @author Mihai Andronache(amihaiemil@gmail.com)
  *
  */
-@Stateful
-public class GithubIssues {
+@Stateless
+public class GithubAgent {
 	private Github github;
-	private static final Logger LOG = LoggerFactory.getLogger(GithubIssues.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GithubAgent.class);
 	
-	public GithubIssues() {
+	public GithubAgent() {
 		this.github = new RtGithub(
 					      System.getProperty("charles.github.ejb.token")
 					  );
@@ -96,6 +96,10 @@ public class GithubIssues {
 			LOG.info("No issues where the agent is mentioned!");
 		}
 		return issues;
+	}
+	
+	public String agentLogin() throws IOException {
+		return this.github.users().self().login();
 	}
 	
 	/**

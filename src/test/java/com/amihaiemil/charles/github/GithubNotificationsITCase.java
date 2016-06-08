@@ -29,14 +29,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Test cases for {@link GithubIssues}
+ * Test cases for {@link GithubAgent}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
 public class GithubNotificationsITCase {
 	@Test
     public void getsNotifitcations() throws Exception {
-    	GithubIssues gn = new GithubIssues();
+    	GithubAgent gn = new GithubAgent();
     	assertTrue(gn.issuesMentionedIn() != null);
     }
 }
