@@ -55,7 +55,7 @@ public class GithubIssues {
 	private Github github;
 	private static final Logger LOG = LoggerFactory.getLogger(GithubIssues.class);
 	
-	public GithubIssues() throws IOException {
+	public GithubIssues() {
 		this.github = new RtGithub(
 					      System.getProperty("charles.github.ejb.token")
 					  );
