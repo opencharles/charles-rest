@@ -34,6 +34,8 @@ import javax.ejb.Stateful;
 import javax.json.JsonObject;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -51,11 +53,13 @@ import com.jcabi.http.response.RestResponse;
 @Stateful
 public class GithubIssues {
 	private Github github;
-
-	public GithubIssues() {
+	private static final Logger LOG = LoggerFactory.getLogger(GithubIssues.class);
+	
+	public GithubIssues() throws IOException {
 		this.github = new RtGithub(
 					      System.getProperty("charles.github.ejb.token")
 					  );
+		
 	}
 
 	/**
@@ -63,7 +67,8 @@ public class GithubIssues {
 	 * @return List of Github {@link Issue}
 	 * @throws IOException - if something goes wrong.
 	 */
-	public List<Issue> issuesMentionedIn() throws IOException {		
+	public List<Issue> issuesMentionedIn() throws IOException {
+		LOG.info("Checking for issues where the agent was mentioned");
 		Iterable<JsonObject> notifications = new RtPagination<JsonObject>(
 			this.github.entry().uri().path("/notifications").back(),
 			RtPagination.COPYING
@@ -82,11 +87,17 @@ public class GithubIssues {
 			}
 		}
 		if(!issues.isEmpty()) {
+			LOG.info("Found "  + issues.size() + " issues where the agent " + 
+					" was mentioned. Marking the corresponding notifications as read.");
+
 			this.markAsRead();
+			LOG.info("Done marking notifications as read.");
+		} else {
+			LOG.info("No issues where the agent is mentioned!");
 		}
 		return issues;
 	}
-
+	
 	/**
 	 * Mark notifications as read.
 	 * @throws IOException
