@@ -50,7 +50,7 @@ public class LastComment implements Comment {
 		} else {
 			List<Comment> comments = Lists.newArrayList(issue.getSelf().comments().iterate());
 			boolean agentFound = false;
-			for(int i=comments.size() - 2; !agentFound && i >=0; i--) {//we go backwards, ignoring the last comment.
+			for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
 				JsonObject currentJsonComment = comments.get(i).json();
 				if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
 					agentFound = true; //we found a reply of the agent, so stop looking.
