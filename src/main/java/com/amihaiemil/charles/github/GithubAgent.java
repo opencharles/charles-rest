@@ -46,7 +46,7 @@ import com.jcabi.http.Request;
 import com.jcabi.http.response.RestResponse;
 
 /**
- * Fetches from Github the issues in which the agent has been mentioned.
+ * This represents the user account which listens for commands.
  * @author Mihai Andronache(amihaiemil@gmail.com)
  *
  */
@@ -76,13 +76,17 @@ public class GithubAgent {
 		List<GithubIssue> issues = new ArrayList<GithubIssue>();
 		for(JsonObject notification : notifications) {
 			if("mention".equals(notification.getString("reason"))) {
-				String issueUrl = notification.getJsonObject("subject").getString("url");
+				JsonObject subject = notification.getJsonObject("subject"); 
+				String issueUrl = subject.getString("url");
+				String latest_comment_url = subject.getString("latest_comment_url");
 				int issueNumber = Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1));
 				String repoFullName = notification.getJsonObject("repository").getString("full_name");
+				int latestCommentNumber = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
 				issues.add(
 					new GithubIssue(
 						repoFullName,
 						issueNumber,
+						latestCommentNumber,
 						this.github.repos().get(
 								new Coordinates.Simple(repoFullName)
 						).issues().get(issueNumber)
@@ -102,6 +106,11 @@ public class GithubAgent {
 		return issues;
 	}
 	
+	/**
+	 * Username of the agent.
+	 * @return String
+	 * @throws IOException If something goes wrong.
+	 */
 	public String agentLogin() throws IOException {
 		return this.github.users().self().login();
 	}

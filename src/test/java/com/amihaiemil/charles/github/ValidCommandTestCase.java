@@ -22,59 +22,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+
+import org.junit.Test;
+import org.mockito.Mockito;
+import static org.junit.Assert.*;
 import com.jcabi.github.Comment;
-import com.jcabi.github.Issue;
 
 /**
- * Encapsulates a github issue.
+ * Unit tests for {@link ValidCommand}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class GithubIssue {
+public class ValidCommandTestCase {
 	
-	/**
-	 * Repo's full name.
-	 */
-    private String repo;
-    /**
-     * Issue's number.
-     */
-    private int number;
-    /**
-     * Other informations about the issue.
-     */
-    private Issue self;
-    
-    /**
-     * Latest comment on the issue.
-     */
-    private Comment latestComment;
-    
-    /**
-	 * Constructor.
-	 */
-	public GithubIssue(String repo, int number, int latestCommentNumber, Issue self) {
-		this.repo = repo;
-		this.number = number;
-		this.self = self;
-		this.latestComment = self.comments().get(latestCommentNumber);
-	}
-
-	public String getRepo() {
-		return repo;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public Issue getSelf() {
-		return self;
-	}
+	@Test(expected = IllegalArgumentException.class)
+    public void exceptionOnEmptyComment() throws Exception {
+    	Comment mockComment = Mockito.mock(Comment.class);
+    	Mockito.when(mockComment.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
+    	
+    	new ValidCommand(mockComment);
+    }
 	
-	public Comment getLatestComment() {
-		return this.latestComment;
+	@Test(expected = IllegalArgumentException.class)
+    public void exceptionOnBadId() throws Exception {
+    	Comment mockComment = Mockito.mock(Comment.class);
+    	Mockito.when(mockComment.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
+    	
+    	new ValidCommand(mockComment);
+    }
+	
+	@Test
+	public void acceptsValidComment() throws Exception {
+    	Comment mockComment = Mockito.mock(Comment.class);
+    	JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
+    	Mockito.when(mockComment.json()).thenReturn(json);
+    	
+    	assertTrue(new ValidCommand(mockComment).json().equals(json));
 	}
 }
