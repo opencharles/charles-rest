@@ -40,9 +40,8 @@ import com.jcabi.github.Issue;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-//TODO write tests for this class.
 public class LastComment implements Comment {
-	private JsonObject com;
+	private JsonObject com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
 	
 	public LastComment(GithubIssue issue, String agentlogin) throws IOException {
 		JsonObject latestCommentJson = issue.getLatestComment().json();
@@ -50,20 +49,15 @@ public class LastComment implements Comment {
 			this.com = latestCommentJson;
 		} else {
 			List<Comment> comments = Lists.newArrayList(issue.getSelf().comments().iterate());
-			boolean agentReplyFound = false;
-			for(int i=comments.size() - 1; !agentReplyFound && i >=0; i--) {
-				Comment current = comments.get(i);
-				if(current.number() == latestCommentJson.getInt("id")) {
-					continue;
+			boolean agentFound = false;
+			for(int i=comments.size() - 2; !agentFound && i >=0; i--) {//we go backwards, ignoring the last comment.
+				JsonObject currentJsonComment = comments.get(i).json();
+				if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
+					agentFound = true; //we found a reply of the agent, so stop looking.
 				} else {
-					JsonObject currentJsonComment = current.json();
-					if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
-						agentReplyFound = true;
-						this.com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-					} else {
-						if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
-							this.com = currentJsonComment;
-						}
+					if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
+						this.com = currentJsonComment;
+						agentFound = true;
 					}
 				}
 			}
