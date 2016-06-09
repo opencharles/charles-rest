@@ -22,30 +22,47 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Properties;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+
+import javax.json.JsonObject;
+
+import com.jcabi.github.Issue;
 
 /**
- * Activated at app startup by the EJB container. Loads the responses.
+ * Reply with a text message to a given comment.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Startup
-@Singleton
-public class Responses {
-	private Properties responses = new Properties();
-	public Responses() throws IOException {
-		responses.load(
-			this.getClass().getClassLoader().getResourceAsStream("responses.properties")
-		);
-		System.out.println(responses.get("hello.comment"));
+public class TextReply implements Reply {
+
+	
+	private Issue issue;
+	private JsonObject command;
+	
+	public TextReply(Command comm) {
+		this.issue = comm.issue();
+		this.command = comm.json();
 	}
 	
-	public String getResponse(String key) {
-		return this.responses.getProperty(key);
+	/**
+	 * Send the reply comment to the Github issue.
+	 * @throws IOException 
+	 */
+	@Override
+	public void send(String response) throws IOException {
+		JsonObject author = command.getJsonObject("user");
+		String authorLogin = "";
+		if(author != null) {
+			authorLogin = author.getString("logn", "");
+		}
+		if(authorLogin.isEmpty()) {
+			issue.comments().post(String.format(response, author));			
+		} else {
+			issue.comments().post(response);
+		}
 	}
+
 }

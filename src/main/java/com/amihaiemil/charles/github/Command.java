@@ -24,28 +24,25 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-import java.util.Properties;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import javax.json.JsonObject;
+
+import com.jcabi.github.Issue;
 
 /**
- * Activated at app startup by the EJB container. Loads the responses.
+ * Command for the github agent.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Startup
-@Singleton
-public class Responses {
-	private Properties responses = new Properties();
-	public Responses() throws IOException {
-		responses.load(
-			this.getClass().getClassLoader().getResourceAsStream("responses.properties")
-		);
-		System.out.println(responses.get("hello.comment"));
-	}
-	
-	public String getResponse(String key) {
-		return this.responses.getProperty(key);
-	}
+public interface Command {
+	/**
+	 * The json comment.
+	 * @return Json Object representing the comment on Github issue.
+	 */
+    JsonObject json();
+    
+    /**
+     * Parent issue.
+     * @return com.jcabi.github.Issue
+     */
+    Issue issue();
 }

@@ -26,9 +26,11 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+
 import javax.json.JsonObject;
+
 import org.apache.commons.lang3.StringUtils;
-import com.jcabi.github.Comment;
+
 import com.jcabi.github.Issue;
 
 /**
@@ -36,54 +38,33 @@ import com.jcabi.github.Issue;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class ValidCommand implements Comment {
+public class ValidCommand implements Command {
 	private JsonObject comment;
-	
+	private Issue issue;
 	/**
 	 * Constructor.
 	 * @param Given Comment.
 	 * @throws IllegalArgumentException if the comment (command) is not valid..
 	 * @throws IOException
 	 */
-	public ValidCommand(Comment com) throws IllegalArgumentException, IOException {
-		JsonObject commentJson = com.json();
-		String body = commentJson.getString("body");
-		if(StringUtils.isEmpty(body) || body.contains("//nobots")
-			|| commentJson.getInt("id", -1) == -1) {
+	public ValidCommand(Command com) throws IllegalArgumentException {
+		this.issue = com.issue();
+		this.comment = com.json();
+		String body = comment.getString("body");
+		if(StringUtils.isEmpty(body) || comment.getInt("id", -1) == -1) {
 			throw new IllegalArgumentException("Invalid command!");
 		}
-		this.comment = commentJson;
 	}
 	
-	@Override
-	public int compareTo(Comment o) {
-		throw new UnsupportedOperationException("#compareTo(Comment)");
-	}
 
 	@Override
-	public JsonObject json() throws IOException {
+	public JsonObject json() {
 		return this.comment;
 	}
 
 	@Override
-	public void patch(JsonObject json) throws IOException {
-		throw new UnsupportedOperationException("#path(JsonObject)");
-		
-	}
-
-	@Override
 	public Issue issue() {
-		throw new UnsupportedOperationException("#issue()");
-	}
-
-	@Override
-	public int number() {
-		return this.comment.getInt("id");
-	}
-
-	@Override
-	public void remove() throws IOException {
-		throw new UnsupportedOperationException("#remove()");
+		return this.issue;
 	}
 
 }

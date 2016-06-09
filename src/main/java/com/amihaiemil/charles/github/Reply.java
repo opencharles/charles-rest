@@ -22,30 +22,16 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Properties;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
 
 /**
- * Activated at app startup by the EJB container. Loads the responses.
+ * Reply to a command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Startup
-@Singleton
-public class Responses {
-	private Properties responses = new Properties();
-	public Responses() throws IOException {
-		responses.load(
-			this.getClass().getClassLoader().getResourceAsStream("responses.properties")
-		);
-		System.out.println(responses.get("hello.comment"));
-	}
-	
-	public String getResponse(String key) {
-		return this.responses.getProperty(key);
-	}
+public interface Reply {
+	public void send(String response) throws IOException;
 }
