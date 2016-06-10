@@ -22,46 +22,27 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
-
-import javax.json.Json;
 import javax.json.JsonObject;
 
-import org.junit.Test;
-import org.mockito.Mockito;
+import com.jcabi.github.Issue;
 
 /**
- * Unit tests for {@link ValidCommand}
+ * Command for the github agent.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class ValidCommandTestCase {
-	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnEmptyComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
-    	
-    	new ValidCommand(comm);
-    }
-	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnBadId() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
-    	
-    	new ValidCommand(comm);
-    }
-	
-	@Test
-	public void acceptsValidComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
-		Mockito.when(comm.json()).thenReturn(json);
-		    	
-    	assertTrue(new ValidCommand(comm).json().equals(json));
-	}
+public interface Command {
+	/**
+	 * The json comment.
+	 * @return Json Object representing the comment on Github issue.
+	 */
+    JsonObject json();
+    
+    /**
+     * Parent issue.
+     * @return com.jcabi.github.Issue
+     */
+    Issue issue();
 }

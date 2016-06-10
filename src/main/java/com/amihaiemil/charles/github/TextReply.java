@@ -25,43 +25,44 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
 
-import javax.json.Json;
 import javax.json.JsonObject;
 
-import org.junit.Test;
-import org.mockito.Mockito;
+import com.jcabi.github.Issue;
 
 /**
- * Unit tests for {@link ValidCommand}
+ * Reply with a text message to a given comment.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class ValidCommandTestCase {
+public class TextReply implements Reply {
+
 	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnEmptyComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
-    	
-    	new ValidCommand(comm);
-    }
+	private Issue issue;
+	private JsonObject command;
 	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnBadId() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
-    	
-    	new ValidCommand(comm);
-    }
-	
-	@Test
-	public void acceptsValidComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
-		Mockito.when(comm.json()).thenReturn(json);
-		    	
-    	assertTrue(new ValidCommand(comm).json().equals(json));
+	public TextReply(Command comm) {
+		this.issue = comm.issue();
+		this.command = comm.json();
 	}
+	
+	/**
+	 * Send the reply comment to the Github issue.
+	 * @throws IOException 
+	 */
+	@Override
+	public void send(String response) throws IOException {
+		JsonObject author = command.getJsonObject("user");
+		String authorLogin = "";
+		if(author != null) {
+			authorLogin = author.getString("login", "");
+		}
+		if(authorLogin.isEmpty()) {
+			issue.comments().post(response);
+		} else {
+			issue.comments().post(String.format(response, "@" + authorLogin));	
+		}
+	}
+
 }

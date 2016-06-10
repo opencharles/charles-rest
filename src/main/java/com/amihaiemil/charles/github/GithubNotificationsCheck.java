@@ -42,7 +42,10 @@ public class GithubNotificationsCheck {
 	@EJB 
 	GithubAgent agent;
 	
-	@Schedule(minute="*", persistent=false)
+	@EJB
+	Responses resp; 
+	
+	@Schedule(hour="*", minute="*", persistent=false)
     public void checkForNotifications() throws IOException {
     	List<GithubIssue> issues = agent.issuesMentionedIn();
     	String login = "";
@@ -50,7 +53,7 @@ public class GithubNotificationsCheck {
     		login = agent.agentLogin();
     	}
     	for(GithubIssue issue : issues) {
-    		new Action(issue, login).take();
+    		new Action(issue, login, resp).take();
     	}
     }
 }

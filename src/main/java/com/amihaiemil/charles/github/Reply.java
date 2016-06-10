@@ -25,43 +25,13 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-
-import org.junit.Test;
-import org.mockito.Mockito;
+import java.io.IOException;
 
 /**
- * Unit tests for {@link ValidCommand}
+ * Reply to a command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class ValidCommandTestCase {
-	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnEmptyComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
-    	
-    	new ValidCommand(comm);
-    }
-	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnBadId() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
-    	
-    	new ValidCommand(comm);
-    }
-	
-	@Test
-	public void acceptsValidComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
-		Mockito.when(comm.json()).thenReturn(json);
-		    	
-    	assertTrue(new ValidCommand(comm).json().equals(json));
-	}
+public interface Reply {
+	public void send(String response) throws IOException;
 }

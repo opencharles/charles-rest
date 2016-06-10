@@ -40,10 +40,12 @@ import com.jcabi.github.Issue;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class LastComment implements Comment {
+public class LastComment implements Command {
 	private JsonObject com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
+	private Issue issue;
 	
 	public LastComment(GithubIssue issue, String agentlogin) throws IOException {
+		this.issue = issue.getSelf();
 		JsonObject latestCommentJson = issue.getLatestComment().json();
 		if(latestCommentJson.getString("body").contains("@" + agentlogin)) {
 			this.com = latestCommentJson;
@@ -64,33 +66,16 @@ public class LastComment implements Comment {
 		}
 	}
 
-	@Override
-	public int compareTo(Comment arg0) {
-		throw new UnsupportedOperationException("#compareTo(Comment)");
-	}
 
 	@Override
-	public JsonObject json() throws IOException {
+	public JsonObject json() {
 		return this.com;
 	}
 
-	@Override
-	public void patch(JsonObject json) throws IOException {
-		throw new UnsupportedOperationException("#path(JsonObject)");
-	}
 
 	@Override
 	public Issue issue() {
-		throw new UnsupportedOperationException("#issue()");
+		return this.issue;
 	}
 
-	@Override
-	public int number() {
-		return com.getInt("id");
-	}
-
-	@Override
-	public void remove() throws IOException {
-		throw new UnsupportedOperationException("#remove()");
-	}
 }

@@ -24,7 +24,10 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action that the agent takes once it finds a Github issue where it's been mentioned.
@@ -33,25 +36,63 @@ import java.util.UUID;
  */
 public class Action implements Runnable {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Action.class);
+
 	/**
 	 * Thread that runs this.
 	 */
 	private Thread tr;
+	/**
+	 * Github issue where the command was given.
+	 */
+	private GithubIssue issue;
+	
+	/**
+	 * Github username of the agent.
+	 */
+	private String agentLogin;
+	
+	/**
+	 * Possible responses of the agent.
+	 */
+	private Responses responses;
 	
 	/**
 	 * Constructor.
 	 * @param issue - The Github issue where the agent was mentionsd.
 	 * @param agentLogin - The Github username of the agent.
+	 * @param resp Possible responses.
 	 */
-	public Action(GithubIssue issue, String agentLogin) {
+	public Action(GithubIssue issue, String agentLogin, Responses resp) {
 		String threadName = issue.getRepo() + "/" + issue.getNumber() + "_" + UUID.randomUUID().toString();
 		tr = new Thread(this, threadName);
+		this.agentLogin = agentLogin;
+		this.issue = issue;
+		this.responses = resp;
 	}
 	
 	
 	@Override
 	public void run() {
-		//to be implemented
+		ValidCommand command;
+		try {
+			command = new ValidCommand(new LastComment(issue, agentLogin));
+			String commandBody = command.json().getString("body");
+			if(commandBody.equals("@" + agentLogin + " hello") || commandBody.equals("@" + agentLogin + " hi")) {
+				this.sendReply(
+					new TextReply(command),
+					responses.getResponse("hello.comment")
+				);
+			}
+		} catch (IllegalArgumentException e) {
+			LOG.info("No command found in the issue or the agent has already replied to the last command!");
+		} catch (IOException e) {
+			LOG.error("Action failed with IOException: ",  e);
+			this.sendReply(
+				new ErrorReply("#", this.issue.getSelf()),
+				responses.getResponse("error.comment")
+			);
+		}
 	}
 	
 	/**
@@ -59,5 +100,18 @@ public class Action implements Runnable {
 	 */
 	public void take() { 
 		this.tr.start();
+	}
+	
+	/**
+	 * Send the reply to Github issue.
+	 * @param reply 
+	 * @param response
+	 */
+	private void sendReply(Reply reply, String response) {
+		try {
+			reply.send(response);
+		} catch (IOException e) {
+			LOG.error("FAILED TO REPLY!", e);
+		}
 	}
 }

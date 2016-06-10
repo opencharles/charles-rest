@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Chales Github EJB</name>
 	<description>Ejb interface between Github and Charles</description>
-	<packaging>ejb</packaging>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>javax</groupId>
@@ -48,16 +48,37 @@
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-ejb-plugin</artifactId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.6</version>
 				<configuration>
-					<ejbVersion>3.1</ejbVersion>
+					<finalName>charles-github-ejb-${project.version}</finalName>
+					<!-- get all project dependencies -->
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
 					<archive>
 						<manifest>
 							<addClasspath>true</addClasspath>
 						</manifest>
+						<manifestEntries>
+							<JCabi-Version>0.28</JCabi-Version>
+							<JCabi-Date>2016-06-05 07:16</JCabi-Date>
+							<JCabi-Build>cce246f</JCabi-Build>
+						</manifestEntries>
 					</archive>
 				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<!-- bind to the packaging phase -->
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
