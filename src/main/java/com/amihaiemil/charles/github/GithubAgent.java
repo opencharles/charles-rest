@@ -81,12 +81,12 @@ public class GithubAgent {
 				String latest_comment_url = subject.getString("latest_comment_url");
 				int issueNumber = Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1));
 				String repoFullName = notification.getJsonObject("repository").getString("full_name");
-				int latestCommentNumber = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
+				int latestCommentId = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
 				issues.add(
 					new GithubIssue(
 						repoFullName,
 						issueNumber,
-						latestCommentNumber,
+						latestCommentId,
 						this.github.repos().get(
 								new Coordinates.Simple(repoFullName)
 						).issues().get(issueNumber)

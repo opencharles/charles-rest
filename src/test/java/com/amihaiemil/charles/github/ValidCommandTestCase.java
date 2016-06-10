@@ -48,14 +48,6 @@ public class ValidCommandTestCase {
     	new ValidCommand(comm);
     }
 	
-	@Test(expected = IllegalArgumentException.class)
-    public void exceptionOnBadId() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
-    	
-    	new ValidCommand(comm);
-    }
-	
 	@Test
 	public void acceptsValidComment() throws Exception {
 		Command comm = Mockito.mock(Command.class);

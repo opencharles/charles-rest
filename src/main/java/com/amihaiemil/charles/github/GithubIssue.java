@@ -55,11 +55,11 @@ public class GithubIssue {
     /**
 	 * Constructor.
 	 */
-	public GithubIssue(String repo, int number, int latestCommentNumber, Issue self) {
+	public GithubIssue(String repo, int number, int latestCommentId, Issue self) {
 		this.repo = repo;
 		this.number = number;
 		this.self = self;
-		this.latestComment = self.comments().get(latestCommentNumber);
+		this.latestComment = self.comments().get(latestCommentId);
 	}
 
 	public String getRepo() {
