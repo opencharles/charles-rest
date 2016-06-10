@@ -47,7 +47,6 @@ public class GithubNotificationsCheck {
 	
 	@Schedule(hour="*", minute="*", persistent=false)
     public void checkForNotifications() throws IOException {
-		System.out.println("CHECKING NOTIFICATIONS");
     	List<GithubIssue> issues = agent.issuesMentionedIn();
     	String login = "";
     	if(issues.size() > 0) {

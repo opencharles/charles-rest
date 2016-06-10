@@ -42,7 +42,6 @@ public class Responses {
 		responses.load(
 			this.getClass().getClassLoader().getResourceAsStream("responses.properties")
 		);
-		System.out.println(responses.get("hello.comment"));
 	}
 	
 	public String getResponse(String key) {

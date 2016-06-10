@@ -59,7 +59,7 @@ public class TextReply implements Reply {
 			authorLogin = author.getString("logn", "");
 		}
 		if(authorLogin.isEmpty()) {
-			issue.comments().post(String.format(response, author));			
+			issue.comments().post(String.format(response, "@" + authorLogin));			
 		} else {
 			issue.comments().post(response);
 		}
