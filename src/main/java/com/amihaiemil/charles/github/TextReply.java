@@ -29,9 +29,6 @@ import java.io.IOException;
 
 import javax.json.JsonObject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.jcabi.github.Issue;
 
 /**
