@@ -3,5 +3,5 @@ jdk:
   - oraclejdk7
   - openjdk7
 script:
-  - set -e
+  -set -e
   - mvn clean install
