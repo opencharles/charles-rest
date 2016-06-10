@@ -56,12 +56,12 @@ public class TextReply implements Reply {
 		JsonObject author = command.getJsonObject("user");
 		String authorLogin = "";
 		if(author != null) {
-			authorLogin = author.getString("logn", "");
+			authorLogin = author.getString("login", "");
 		}
 		if(authorLogin.isEmpty()) {
-			issue.comments().post(String.format(response, "@" + authorLogin));			
-		} else {
 			issue.comments().post(response);
+		} else {
+			issue.comments().post(String.format(response, "@" + authorLogin));	
 		}
 	}
 

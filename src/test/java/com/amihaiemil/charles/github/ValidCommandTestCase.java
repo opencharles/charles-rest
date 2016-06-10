@@ -25,16 +25,13 @@
 
 package com.amihaiemil.charles.github;
 
+import static org.junit.Assert.assertTrue;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import static org.junit.Assert.*;
-
-import com.jcabi.github.Comment;
 
 /**
  * Unit tests for {@link ValidCommand}
@@ -44,29 +41,27 @@ import com.jcabi.github.Comment;
 public class ValidCommandTestCase {
 	
 	@Test(expected = IllegalArgumentException.class)
-	@Ignore
     public void exceptionOnEmptyComment() throws Exception {
-    	Comment mockComment = Mockito.mock(Comment.class);
-    	Mockito.when(mockComment.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
+		Command comm = Mockito.mock(Command.class);
+		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
     	
-//    	new ValidCommand(mockComment);
+    	new ValidCommand(comm);
     }
 	
 	@Test(expected = IllegalArgumentException.class)
-	@Ignore
     public void exceptionOnBadId() throws Exception {
-    	Comment mockComment = Mockito.mock(Comment.class);
-    	Mockito.when(mockComment.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
+		Command comm = Mockito.mock(Command.class);
+		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "test").add("id", -1).build());
     	
-//    	new ValidCommand(mockComment);
+    	new ValidCommand(comm);
     }
 	
 	@Test
 	public void acceptsValidComment() throws Exception {
-    	Comment mockComment = Mockito.mock(Comment.class);
-    	JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
-    	Mockito.when(mockComment.json()).thenReturn(json);
-    	
-//    	assertTrue(new ValidCommand(mockComment).json().equals(json));
+		Command comm = Mockito.mock(Command.class);
+		JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
+		Mockito.when(comm.json()).thenReturn(json);
+		    	
+    	assertTrue(new ValidCommand(comm).json().equals(json));
 	}
 }
