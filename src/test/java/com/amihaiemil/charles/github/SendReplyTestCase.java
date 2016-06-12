@@ -43,7 +43,9 @@ import com.jcabi.github.mock.MkGithub;
 /**
  * Unit tests for {@link SendReply}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class SendReplyTestCase {
 	/**

@@ -27,7 +27,9 @@ package com.amihaiemil.charles.github;
 /**
  * English language.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class English implements Language {
 

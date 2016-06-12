@@ -31,8 +31,10 @@ import java.io.IOException;
  * One step that the agent needs to perform in order to
  * fulfill the command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public interface Step {
-    public void perform() throws IOException;
+    void perform() throws IOException;
 }

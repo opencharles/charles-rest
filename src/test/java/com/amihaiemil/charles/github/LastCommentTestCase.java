@@ -41,7 +41,9 @@ import com.jcabi.github.mock.MkStorage;
 /**
  * Unit tests for {@link LastComment}
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class LastCommentTestCase {
 	/**

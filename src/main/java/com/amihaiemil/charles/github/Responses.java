@@ -32,7 +32,9 @@ import javax.ejb.Stateful;
 /**
  * Activated at app startup by the EJB container. Loads the responses.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 @Stateful
 public class Responses {

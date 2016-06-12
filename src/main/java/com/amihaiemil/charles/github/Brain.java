@@ -36,7 +36,9 @@ import javax.ejb.Stateful;
  * figure out the Steps that need to be performed to fulfill the 
  * command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 @Stateful
 public class Brain {

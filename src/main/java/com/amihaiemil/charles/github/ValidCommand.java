@@ -36,7 +36,9 @@ import com.jcabi.github.Issue;
 /**
  * Valid command for the Github agent.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class ValidCommand implements Command {
 	private JsonObject comment;

@@ -30,7 +30,9 @@ import com.jcabi.github.Issue;
 /**
  * Encapsulates a github issue.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class GithubIssue {
 	

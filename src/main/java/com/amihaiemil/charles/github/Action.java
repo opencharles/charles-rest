@@ -36,7 +36,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Action that the agent takes once it finds a Github issue where it's been mentioned.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class Action implements Runnable {
 

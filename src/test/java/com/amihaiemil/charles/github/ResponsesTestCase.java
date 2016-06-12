@@ -32,7 +32,9 @@ import org.junit.Test;
 /**
  * Unit tests for {@link Responses}
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class ResponsesTestCase {
     /**

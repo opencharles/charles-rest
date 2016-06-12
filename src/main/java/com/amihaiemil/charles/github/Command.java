@@ -31,7 +31,9 @@ import com.jcabi.github.Issue;
 /**
  * Command for the github agent.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public interface Command {
 	/**

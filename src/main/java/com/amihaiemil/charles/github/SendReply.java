@@ -30,7 +30,9 @@ import java.io.IOException;
 /**
  * Step where the agent sends a text reply.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class SendReply implements Step {
 	private Reply rep;

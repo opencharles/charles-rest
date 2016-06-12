@@ -32,7 +32,9 @@ import com.jcabi.github.Issue;
 /**
  * Reply the agent gives when there was an error on the server.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class ErrorReply implements Reply {
 

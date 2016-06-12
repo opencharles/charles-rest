@@ -28,8 +28,10 @@ package com.amihaiemil.charles.github;
 /**
  * Language that the agent speaks.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public interface Language {
-    public String categorize(String command);
+    String categorize(String command);
 }

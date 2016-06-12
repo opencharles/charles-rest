@@ -38,7 +38,9 @@ import com.jcabi.github.Issue;
 /**
  * Last comment where the agent was mentioned.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class LastComment implements Command {
 	private JsonObject com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();

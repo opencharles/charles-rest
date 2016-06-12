@@ -34,7 +34,9 @@ import javax.ejb.Singleton;
 /**
  * EJB that checks every minute for github notifications (mentions of the agent using @username).
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 @Singleton
 public class GithubNotificationsCheck {

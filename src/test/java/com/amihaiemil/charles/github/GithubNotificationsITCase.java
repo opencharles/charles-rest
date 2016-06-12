@@ -31,7 +31,9 @@ import org.junit.Test;
 /**
  * Test cases for {@link GithubAgent}
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class GithubNotificationsITCase {
 	@Test

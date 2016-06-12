@@ -48,7 +48,9 @@ import com.jcabi.http.response.RestResponse;
 /**
  * This represents the user account which listens for commands.
  * @author Mihai Andronache(amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 @Stateless
 public class GithubAgent {

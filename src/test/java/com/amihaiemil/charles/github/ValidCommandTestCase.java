@@ -36,7 +36,9 @@ import org.mockito.Mockito;
 /**
  * Unit tests for {@link ValidCommand}
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 public class ValidCommandTestCase {
 	
