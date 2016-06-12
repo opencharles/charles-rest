@@ -25,7 +25,10 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.UUID;
+
+import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Action implements Runnable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(Action.class);
+	private Logger LOG;
 
 	/**
 	 * Thread that runs this.
@@ -64,11 +67,22 @@ public class Action implements Runnable {
 	 * @param resp Possible responses.
 	 */
 	public Action(GithubIssue issue, String agentLogin, Responses resp) {
-		String threadName = issue.getRepo() + "/" + issue.getNumber() + "_" + UUID.randomUUID().toString();
+		String threadName = issue.getRepo() + "_" + issue.getNumber() + "_" + UUID.randomUUID().toString();
+
 		tr = new Thread(this, threadName);
 		this.agentLogin = agentLogin;
 		this.issue = issue;
 		this.responses = resp;
+
+		Properties prop = new Properties();
+	    prop.setProperty("log4j.logger.Action_" + threadName,"DEBUG, thread");
+	    prop.setProperty("log4j.appender.thread","org.apache.log4j.FileAppender");
+	    prop.setProperty("log4j.appender.thread.File", "${LOG_ROOT}/Charles-Github-Ejb/ActionsLogs/" + threadName + ".log");
+	    prop.setProperty("log4j.appender.thread.layout","org.apache.log4j.PatternLayout");
+	    prop.setProperty("log4j.appender.thread.layout.ConversionPattern","%d %c{1} - %m%n");
+	    prop.setProperty("log4j.appender.thread.Threshold", "DEBUG");
+		PropertyConfigurator.configure(prop);
+		this.LOG = LoggerFactory.getLogger("Action_"+threadName);
 	}
 	
 	
@@ -76,13 +90,18 @@ public class Action implements Runnable {
 	public void run() {
 		ValidCommand command;
 		try {
-			command = new ValidCommand(new LastComment(issue, agentLogin));
+			LastComment lc = new LastComment(issue, agentLogin);
+			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
+			LOG.info("Received command: " + commandBody);
 			if(commandBody.equals("@" + agentLogin + " hello") || commandBody.equals("@" + agentLogin + " hi")) {
+				LOG.info("Sending hello reply...");
 				this.sendReply(
 					new TextReply(command),
 					responses.getResponse("hello.comment")
 				);
+				LOG.info("Reply sent successfully!");
+
 			}
 		} catch (IllegalArgumentException e) {
 			LOG.info("No command found in the issue or the agent has already replied to the last command!");

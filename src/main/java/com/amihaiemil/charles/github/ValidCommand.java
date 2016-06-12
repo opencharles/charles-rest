@@ -51,7 +51,7 @@ public class ValidCommand implements Command {
 		this.issue = com.issue();
 		this.comment = com.json();
 		String body = comment.getString("body");
-		if(StringUtils.isEmpty(body) || comment.getInt("id", -1) == -1) {
+		if(StringUtils.isEmpty(body)) {
 			throw new IllegalArgumentException("Invalid command!");
 		}
 	}

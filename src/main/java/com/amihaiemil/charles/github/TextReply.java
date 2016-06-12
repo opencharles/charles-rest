@@ -38,7 +38,6 @@ import com.jcabi.github.Issue;
  */
 public class TextReply implements Reply {
 
-	
 	private Issue issue;
 	private JsonObject command;
 	
