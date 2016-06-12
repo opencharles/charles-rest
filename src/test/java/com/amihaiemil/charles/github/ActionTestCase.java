@@ -27,6 +27,7 @@ package com.amihaiemil.charles.github;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,7 +57,7 @@ public class ActionTestCase {
 	@Test
 	public void actionsExecute() throws Exception {
 		Responses resp = new Responses();
-		Brain br = new Brain(resp);
+		Brain br = new Brain(resp, Arrays.asList((Language)new English()));
 		GithubIssue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
 		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");

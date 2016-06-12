@@ -22,80 +22,63 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import java.util.LinkedList;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
 import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateful;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.google.common.collect.Lists;
+import com.jcabi.github.Comment;
+import com.jcabi.github.Coordinates;
+import com.jcabi.github.Github;
+import com.jcabi.github.Issue;
+import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.mock.MkGithub;
 
 /**
- * The "brain" of the Github agent. Can understand commands and 
- * figure out the Steps that need to be performed to fulfill the 
- * command.
+ * Unit tests for {@link SendReply}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Stateful
-public class Brain {
-	
-	private List<Language> languages = new LinkedList<Language>();
-	@EJB
-	private Responses responses;
-	
+public class SendReplyTestCase {
 	/**
-	 * Constructor.
+	 * {@link SendReply} can send a comment to a Github issue.
+	 * @throws Exception If something goes wrong.
 	 */
-	public Brain() {
-		this.languages.add(new English());
-	}
-	
-	/**
-	 * Constructor which takes the responses and languages.
-	 * @param resp
-	 * @param langs
-	 */
-	public Brain(Responses resp, List<Language> langs) {
-		this.responses = resp;
-		this.languages = langs;
-	}
-	
-	/**
-	 * Understand a command.
-	 * @param com Given command.
-	 * @return list of Steps.
-	 */
-     public List<Step> understand(Command com) {
-	     String authorLogin = com.json().getJsonObject("user").getString("login");
-    	 List<Step> steps = new LinkedList<Step>();
-    	 String category = "unkown";
-    	 for(Language l : languages) {
-    		 category = l.categorize(com.json().getString("body"));
-    	 }
-    	 switch (category) {
-    	 	case "hello":
-    	 		String hello = String.format(responses.getResponse("hello.comment"), "@" + authorLogin);
-    	 		steps.add(
-    	 			new SendReply(
-    	 				new TextReply(com, hello)
-    	 			)
-    	 		);
-    	 		break;
-    	 	default:
-    	 		String unknown = String.format(
-    	 			responses.getResponse("unknown.comment"),
-    	 			"@" + authorLogin,
-    	 			//TODO add link to docs
-    	 			"#");
-    	 		steps.add(
-        	 		new SendReply(
-            	 		new TextReply(com, unknown)
-            	 	)
-    	 		);
-    	 		break;
-		 }
-    	 return steps;
-     }
+	@Test
+    public void sendsComment() throws Exception {
+    	Command com = this.mockCommand();
+    	Reply rep = new TextReply(com, "Hello there!");
+    	SendReply sr = new SendReply(rep);
+
+    	sr.perform();
+    	
+    	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+    	assertTrue(comments.size() == 1);
+    	assertTrue(comments.get(0).json().getString("body").equals("Hello there!"));
+
+    }
+    
+    /**
+     * Mock a command.
+     * @return The created Command.
+     * @throws IOException If something goes wrong.
+     */
+    public Command mockCommand() throws IOException {
+    	Github gh = new MkGithub("amihaiemil");
+    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+    	gh.repos().create(repoCreate);
+    	Issue issue = gh.repos().get(
+    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+    				  ).issues().create("Test issue for commands", "test body");
+    	Command com = Mockito.mock(Command.class);
+    	Mockito.when(com.issue()).thenReturn(issue);
+    	return com;
+    }
+
 }
