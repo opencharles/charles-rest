@@ -20,8 +20,8 @@ public class ErrorReply implements Reply {
 	}
 	
 	@Override
-	public void send(String response) throws IOException {
-		this.issue.comments().post(String.format(response, this.logsAddress));
+	public void send() throws IOException {
+		this.issue.comments().post(String.format("", this.logsAddress));
 	}
 
 }

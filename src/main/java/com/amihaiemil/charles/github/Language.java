@@ -25,32 +25,11 @@
 
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
 /**
- * Reply with a text message to a given command.
+ * Language that the agent speaks.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class TextReply implements Reply {
-
-	private Command command;
-	private String response;
-	
-	public TextReply(Command com, String response) {
-		this.command = com;
-		this.response = response;
-	}
-	
-	/**
-	 * Send the reply comment to the Github issue.
-	 * @throws IOException 
-	 */
-	@Override
-	public void send() throws IOException {
-		//TODO add yhe command to response (preview of the command before
-		//response text)
-		command.issue().comments().post(response);	
-	}
-
+public interface Language {
+    public String categorize(String command);
 }

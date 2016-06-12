@@ -43,7 +43,7 @@ public class GithubNotificationsCheck {
 	GithubAgent agent;
 	
 	@EJB
-	Responses resp; 
+	Responses resp;
 	
 	@Schedule(hour="*", minute="*", persistent=false)
     public void checkForNotifications() throws IOException {

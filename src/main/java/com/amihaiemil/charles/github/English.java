@@ -22,35 +22,19 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
 /**
- * Reply with a text message to a given command.
+ * English language.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class TextReply implements Reply {
+public class English implements Language {
 
-	private Command command;
-	private String response;
-	
-	public TextReply(Command com, String response) {
-		this.command = com;
-		this.response = response;
-	}
-	
-	/**
-	 * Send the reply comment to the Github issue.
-	 * @throws IOException 
-	 */
 	@Override
-	public void send() throws IOException {
-		//TODO add yhe command to response (preview of the command before
-		//response text)
-		command.issue().comments().post(response);	
+	public String categorize(String command) {
+		//TODO implement this method.
+		return "hello";
 	}
 
 }

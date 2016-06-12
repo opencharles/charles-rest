@@ -80,6 +80,7 @@ public class ActionTestCase {
     	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getLatestComment().issue().comments().iterate());
+    	System.out.println(commentsWithReply1.get(1).json().getString("body"));
     	assertTrue(commentsWithReply1.get(1).json().getString("body")
     			.equals(String.format(resp.getResponse("hello.comment"),"@amihaiemil"))); //there should be only 2 comments - the command and the reply.
     	assertTrue(commentsWithReply2.get(1).json().getString("body")

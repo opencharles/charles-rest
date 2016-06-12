@@ -33,5 +33,5 @@ import java.io.IOException;
  *
  */
 public interface Reply {
-	public void send(String response) throws IOException;
+	public void send() throws IOException;
 }

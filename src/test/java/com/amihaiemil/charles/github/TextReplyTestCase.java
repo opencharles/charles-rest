@@ -53,12 +53,12 @@ public class TextReplyTestCase {
 	@Test
     public void repliesToComment() throws Exception {
     	Command com = this.mockCommand();
-    	Reply rep = new TextReply(com);
+    	Reply rep = new TextReply(com, "Hi to you too, @amihaiemil!");
     	
     	List<Comment> initialComments = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(initialComments.size() == 1);
     	
-    	rep.send("Hi to you too, %s!");
+    	rep.send();
     	
     	List<Comment> commentsWithReply = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(commentsWithReply.size() == 2);

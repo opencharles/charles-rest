@@ -28,29 +28,24 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 
 /**
- * Reply with a text message to a given command.
+ * Step where the agent sends a text reply.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class TextReply implements Reply {
-
-	private Command command;
-	private String response;
-	
-	public TextReply(Command com, String response) {
-		this.command = com;
-		this.response = response;
-	}
+public class SendReply implements Step {
+	private Reply rep;
 	
 	/**
-	 * Send the reply comment to the Github issue.
-	 * @throws IOException 
+	 * Constructor
+	 * @param rep The reply to be sent.
 	 */
+	public SendReply(Reply rep) { 
+		this.rep = rep;
+	}
+	
 	@Override
-	public void send() throws IOException {
-		//TODO add yhe command to response (preview of the command before
-		//response text)
-		command.issue().comments().post(response);	
+	public void perform() throws IOException {
+		rep.send();
 	}
 
 }
