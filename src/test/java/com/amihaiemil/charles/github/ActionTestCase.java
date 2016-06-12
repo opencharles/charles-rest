@@ -56,14 +56,15 @@ public class ActionTestCase {
 	@Test
 	public void actionsExecute() throws Exception {
 		Responses resp = new Responses();
+		Brain br = new Brain(resp);
 		GithubIssue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
 		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");
 		GithubIssue issue4 = this.githubIssue("marius", "@charlesmike hello");
-		Action ac1 = new Action(issue1, "charlesmike", resp);
-		Action ac2 = new Action(issue2, "charlesmike", resp);
-		Action ac3 = new Action(issue3, "charlesmike", resp);
-		Action ac4 = new Action(issue4, "charlesmike", resp);
+		Action ac1 = new Action(br, issue1, "charlesmike");
+		Action ac2 = new Action(br, issue2, "charlesmike");
+		Action ac3 = new Action(br, issue3, "charlesmike");
+		Action ac4 = new Action(br, issue4, "charlesmike");
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(5);
 		List<Future> futures = new ArrayList<Future>();

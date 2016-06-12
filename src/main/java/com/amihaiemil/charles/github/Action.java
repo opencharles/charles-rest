@@ -25,7 +25,6 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -56,11 +55,10 @@ public class Action implements Runnable {
 	 * Github username of the agent.
 	 */
 	private String agentLogin;
-	
 	/**
-	 * Possible responses of the agent.
+	 * Brain of the github agent.
 	 */
-	private Responses responses;
+	private Brain br;	
 	
 	/**
 	 * Constructor.
@@ -68,13 +66,13 @@ public class Action implements Runnable {
 	 * @param agentLogin - The Github username of the agent.
 	 * @param resp Possible responses.
 	 */
-	public Action(GithubIssue issue, String agentLogin, Responses resp) {
+	public Action(Brain br, GithubIssue issue, String agentLogin) {
 		String threadName = issue.getRepo() + "_" + issue.getNumber() + "_" + UUID.randomUUID().toString();
 
 		tr = new Thread(this, threadName);
 		this.agentLogin = agentLogin;
 		this.issue = issue;
-		this.responses = resp;
+		this.br = br;
 
 		Properties prop = new Properties();
 	    prop.setProperty("log4j.logger.Action_" + threadName,"DEBUG, thread");
@@ -96,9 +94,6 @@ public class Action implements Runnable {
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
 			LOG.info("Received command: " + commandBody);
-			List<Language> langs = new LinkedList<Language>();
-			langs.add(new English());
-			Brain br = new Brain(langs, responses);
 			List<Step> steps = br.understand(command);
 			for(Step s : steps) {
 				s.perform();

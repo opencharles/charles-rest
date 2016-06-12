@@ -28,6 +28,9 @@ package com.amihaiemil.charles.github;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateful;
+
 /**
  * The "brain" of the Github agent. Can understand commands and 
  * figure out the Steps that need to be performed to fulfill the 
@@ -35,24 +38,27 @@ import java.util.List;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
+@Stateful
 public class Brain {
 	
 	private List<Language> languages = new LinkedList<Language>();
+	@EJB
 	private Responses responses;
 	
 	/**
-	 * Constructor with given languages.
-	 * @param langs List of languages. If empty, the default is {@link English}.
-	 * @param responses The responses that the agent knows.
+	 * Constructor.
 	 */
-	public Brain(List<Language> langs, Responses responses) {
-		for(Language l : langs) {
-			this.languages.add(l);
-		}
-		if(languages.isEmpty()) {
-			this.languages.add(new English());
-		}
-		this.responses = responses;
+	public Brain() {
+		this.languages.add(new English());
+	}
+	
+	/**
+	 * Constructor which takes the responses..
+	 * @param resp
+	 */
+	public Brain(Responses resp) {
+		this.responses = resp;
+		this.languages.add(new English());
 	}
 	
 	/**
