@@ -24,36 +24,61 @@
  */
 package com.amihaiemil.charles.github;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
+import org.junit.Test;
+import org.mockito.Mockito;
+
+import com.google.common.collect.Lists;
+import com.jcabi.github.Comment;
+import com.jcabi.github.Coordinates;
+import com.jcabi.github.Github;
+import com.jcabi.github.Issue;
+import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.mock.MkGithub;
 
 /**
- * EJB that checks every minute for github notifications (mentions of the agent using @username).
+ * Unit tests for {@link SendReply}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Singleton
-public class GithubNotificationsCheck {
-	
-	@EJB 
-	GithubAgent agent;
-	
-	@EJB
-	Brain br;
-	
-	@Schedule(hour="*", minute="*", persistent=false)
-    public void checkForNotifications() throws IOException {
-    	List<GithubIssue> issues = agent.issuesMentionedIn();
-    	String login = "";
-    	if(issues.size() > 0) {
-    		login = agent.agentLogin();
-    	}
-    	for(GithubIssue issue : issues) {
-    		new Action(br, issue, login).take();
-    	}
+public class SendReplyTestCase {
+	/**
+	 * {@link SendReply} can send a comment to a Github issue.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+    public void sendsComment() throws Exception {
+    	Command com = this.mockCommand();
+    	Reply rep = new TextReply(com, "Hello there!");
+    	SendReply sr = new SendReply(rep);
+
+    	sr.perform();
+    	
+    	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+    	assertTrue(comments.size() == 1);
+    	assertTrue(comments.get(0).json().getString("body").equals("Hello there!"));
+
     }
+    
+    /**
+     * Mock a command.
+     * @return The created Command.
+     * @throws IOException If something goes wrong.
+     */
+    public Command mockCommand() throws IOException {
+    	Github gh = new MkGithub("amihaiemil");
+    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+    	gh.repos().create(repoCreate);
+    	Issue issue = gh.repos().get(
+    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+    				  ).issues().create("Test issue for commands", "test body");
+    	Command com = Mockito.mock(Command.class);
+    	Mockito.when(com.issue()).thenReturn(issue);
+    	return com;
+    }
+
 }

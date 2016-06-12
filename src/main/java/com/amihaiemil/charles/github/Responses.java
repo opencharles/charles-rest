@@ -26,16 +26,15 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 import java.util.Properties;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+
+import javax.ejb.Stateful;
 
 /**
  * Activated at app startup by the EJB container. Loads the responses.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Startup
-@Singleton
+@Stateful
 public class Responses {
 	private Properties responses = new Properties();
 	public Responses() throws IOException {

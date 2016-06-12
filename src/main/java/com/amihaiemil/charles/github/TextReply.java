@@ -27,23 +27,19 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
-import javax.json.JsonObject;
-
-import com.jcabi.github.Issue;
-
 /**
- * Reply with a text message to a given comment.
+ * Reply with a text message to a given command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
 public class TextReply implements Reply {
 
-	private Issue issue;
-	private JsonObject command;
+	private Command command;
+	private String response;
 	
-	public TextReply(Command comm) {
-		this.issue = comm.issue();
-		this.command = comm.json();
+	public TextReply(Command com, String response) {
+		this.command = com;
+		this.response = response;
 	}
 	
 	/**
@@ -51,17 +47,10 @@ public class TextReply implements Reply {
 	 * @throws IOException 
 	 */
 	@Override
-	public void send(String response) throws IOException {
-		JsonObject author = command.getJsonObject("user");
-		String authorLogin = "";
-		if(author != null) {
-			authorLogin = author.getString("login", "");
-		}
-		if(authorLogin.isEmpty()) {
-			issue.comments().post(response);
-		} else {
-			issue.comments().post(String.format(response, "@" + authorLogin));	
-		}
+	public void send() throws IOException {
+		//TODO add yhe command to response (preview of the command before
+		//response text)
+		command.issue().comments().post(response);	
 	}
 
 }

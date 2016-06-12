@@ -22,38 +22,80 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
+import javax.ejb.Stateful;
 
 /**
- * EJB that checks every minute for github notifications (mentions of the agent using @username).
+ * The "brain" of the Github agent. Can understand commands and 
+ * figure out the Steps that need to be performed to fulfill the 
+ * command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Singleton
-public class GithubNotificationsCheck {
+@Stateful
+public class Brain {
 	
-	@EJB 
-	GithubAgent agent;
-	
+	private List<Language> languages = new LinkedList<Language>();
 	@EJB
-	Brain br;
+	private Responses responses;
 	
-	@Schedule(hour="*", minute="*", persistent=false)
-    public void checkForNotifications() throws IOException {
-    	List<GithubIssue> issues = agent.issuesMentionedIn();
-    	String login = "";
-    	if(issues.size() > 0) {
-    		login = agent.agentLogin();
-    	}
-    	for(GithubIssue issue : issues) {
-    		new Action(br, issue, login).take();
-    	}
-    }
+	/**
+	 * Constructor.
+	 */
+	public Brain() {
+		this.languages.add(new English());
+	}
+	
+	/**
+	 * Constructor which takes the responses and languages.
+	 * @param resp
+	 * @param langs
+	 */
+	public Brain(Responses resp, List<Language> langs) {
+		this.responses = resp;
+		this.languages = langs;
+	}
+	
+	/**
+	 * Understand a command.
+	 * @param com Given command.
+	 * @return list of Steps.
+	 */
+     public List<Step> understand(Command com) {
+	     String authorLogin = com.json().getJsonObject("user").getString("login");
+    	 List<Step> steps = new LinkedList<Step>();
+    	 String category = "unkown";
+    	 for(Language l : languages) {
+    		 category = l.categorize(com.json().getString("body"));
+    	 }
+    	 switch (category) {
+    	 	case "hello":
+    	 		String hello = String.format(responses.getResponse("hello.comment"), "@" + authorLogin);
+    	 		steps.add(
+    	 			new SendReply(
+    	 				new TextReply(com, hello)
+    	 			)
+    	 		);
+    	 		break;
+    	 	default:
+    	 		String unknown = String.format(
+    	 			responses.getResponse("unknown.comment"),
+    	 			"@" + authorLogin,
+    	 			//TODO add link to docs
+    	 			"#");
+    	 		steps.add(
+        	 		new SendReply(
+            	 		new TextReply(com, unknown)
+            	 	)
+    	 		);
+    	 		break;
+		 }
+    	 return steps;
+     }
 }

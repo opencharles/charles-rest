@@ -25,6 +25,7 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -54,11 +55,10 @@ public class Action implements Runnable {
 	 * Github username of the agent.
 	 */
 	private String agentLogin;
-	
 	/**
-	 * Possible responses of the agent.
+	 * Brain of the github agent.
 	 */
-	private Responses responses;
+	private Brain br;	
 	
 	/**
 	 * Constructor.
@@ -66,13 +66,13 @@ public class Action implements Runnable {
 	 * @param agentLogin - The Github username of the agent.
 	 * @param resp Possible responses.
 	 */
-	public Action(GithubIssue issue, String agentLogin, Responses resp) {
+	public Action(Brain br, GithubIssue issue, String agentLogin) {
 		String threadName = issue.getRepo() + "_" + issue.getNumber() + "_" + UUID.randomUUID().toString();
 
 		tr = new Thread(this, threadName);
 		this.agentLogin = agentLogin;
 		this.issue = issue;
-		this.responses = resp;
+		this.br = br;
 
 		Properties prop = new Properties();
 	    prop.setProperty("log4j.logger.Action_" + threadName,"DEBUG, thread");
@@ -94,22 +94,17 @@ public class Action implements Runnable {
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
 			LOG.info("Received command: " + commandBody);
-			if(commandBody.equals("@" + agentLogin + " hello") || commandBody.equals("@" + agentLogin + " hi")) {
-				LOG.info("Sending hello reply...");
-				this.sendReply(
-					new TextReply(command),
-					responses.getResponse("hello.comment")
-				);
-				LOG.info("Reply sent successfully!");
-
+			List<Step> steps = br.understand(command);
+			for(Step s : steps) {
+				s.perform();
 			}
 		} catch (IllegalArgumentException e) {
 			LOG.info("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException e) {
 			LOG.error("Action failed with IOException: ",  e);
 			this.sendReply(
-				new ErrorReply("#", this.issue.getSelf()),
-				responses.getResponse("error.comment")
+				new ErrorReply("#", this.issue.getSelf())
+//				responses.getResponse("error.comment")
 			);
 		}
 	}
@@ -123,12 +118,11 @@ public class Action implements Runnable {
 	
 	/**
 	 * Send the reply to Github issue.
-	 * @param reply 
-	 * @param response
+	 * @param reply
 	 */
-	private void sendReply(Reply reply, String response) {
+	private void sendReply(Reply reply) {
 		try {
-			reply.send(response);
+			reply.send();
 		} catch (IOException e) {
 			LOG.error("FAILED TO REPLY!", e);
 		}

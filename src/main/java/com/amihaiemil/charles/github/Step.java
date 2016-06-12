@@ -22,38 +22,17 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Singleton;
 
 /**
- * EJB that checks every minute for github notifications (mentions of the agent using @username).
+ * One step that the agent needs to perform in order to
+ * fulfill the command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-@Singleton
-public class GithubNotificationsCheck {
-	
-	@EJB 
-	GithubAgent agent;
-	
-	@EJB
-	Brain br;
-	
-	@Schedule(hour="*", minute="*", persistent=false)
-    public void checkForNotifications() throws IOException {
-    	List<GithubIssue> issues = agent.issuesMentionedIn();
-    	String login = "";
-    	if(issues.size() > 0) {
-    		login = agent.agentLogin();
-    	}
-    	for(GithubIssue issue : issues) {
-    		new Action(br, issue, login).take();
-    	}
-    }
+public interface Step {
+    public void perform() throws IOException;
 }

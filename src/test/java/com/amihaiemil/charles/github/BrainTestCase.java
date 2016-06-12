@@ -22,52 +22,52 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.google.common.collect.Lists;
+import static org.junit.Assert.*;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.github.mock.MkGithub;
+
 /**
- * Unit tests for {@link TextReply}
+ * Unit tests for {@link Brain}.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  *
  */
-public class TextReplyTestCase {
+public class BrainTestCase {
+
 	/**
-	 * The agent can reply to a comment on a Github issue.
-	 * @throws Exception If something goes wrong.
+	 * {@link Brain} can undestand a command.
+	 * @throws Exception if something goes wrong.
 	 */
 	@Test
-    public void repliesToComment() throws Exception {
-    	Command com = this.mockCommand();
-    	Reply rep = new TextReply(com, "Hi to you too, @amihaiemil!");
-    	
-    	List<Comment> initialComments = Lists.newArrayList(com.issue().comments().iterate());
-    	assertTrue(initialComments.size() == 1);
-    	
-    	rep.send();
-    	
-    	List<Comment> commentsWithReply = Lists.newArrayList(com.issue().comments().iterate());
-    	assertTrue(commentsWithReply.size() == 2);
-    	assertTrue(commentsWithReply.get(1).json().getString("body").equals("Hi to you too, @amihaiemil!"));
-    }
-    
-    /**
+	public void understandsCommand() throws Exception {
+		Command com = this.mockCommand();
+		
+		Language english = Mockito.mock(English.class);
+		Mockito.when(english.categorize(
+				com.json().getString("body")
+			)
+		).thenReturn("hello");
+		
+		Brain br = new Brain(new Responses(), Arrays.asList(english));
+		List<Step> steps = br.understand(com);
+		assertTrue(steps.size() == 1);
+		assertTrue(steps.get(0) instanceof SendReply);
+	}
+	
+	/**
      * Mock a Github command where the agent is mentioned.
-     * @return The created Command.
+     * @return The created MkIssue.
      * @throws IOException If something goes wrong.
      */
     public Command mockCommand() throws IOException {

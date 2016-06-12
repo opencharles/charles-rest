@@ -27,6 +27,7 @@ package com.amihaiemil.charles.github;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,14 +57,15 @@ public class ActionTestCase {
 	@Test
 	public void actionsExecute() throws Exception {
 		Responses resp = new Responses();
+		Brain br = new Brain(resp, Arrays.asList((Language)new English()));
 		GithubIssue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
 		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");
 		GithubIssue issue4 = this.githubIssue("marius", "@charlesmike hello");
-		Action ac1 = new Action(issue1, "charlesmike", resp);
-		Action ac2 = new Action(issue2, "charlesmike", resp);
-		Action ac3 = new Action(issue3, "charlesmike", resp);
-		Action ac4 = new Action(issue4, "charlesmike", resp);
+		Action ac1 = new Action(br, issue1, "charlesmike");
+		Action ac2 = new Action(br, issue2, "charlesmike");
+		Action ac3 = new Action(br, issue3, "charlesmike");
+		Action ac4 = new Action(br, issue4, "charlesmike");
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(5);
 		List<Future> futures = new ArrayList<Future>();
@@ -80,6 +82,7 @@ public class ActionTestCase {
     	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getLatestComment().issue().comments().iterate());
+    	System.out.println(commentsWithReply1.get(1).json().getString("body"));
     	assertTrue(commentsWithReply1.get(1).json().getString("body")
     			.equals(String.format(resp.getResponse("hello.comment"),"@amihaiemil"))); //there should be only 2 comments - the command and the reply.
     	assertTrue(commentsWithReply2.get(1).json().getString("body")
