@@ -31,6 +31,9 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * EJB that checks every minute for github notifications (mentions of the agent using @username).
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -40,6 +43,7 @@ import javax.ejb.Singleton;
  */
 @Singleton
 public class GithubNotificationsCheck {
+	private static final Logger LOG = LoggerFactory.getLogger(GithubNotificationsCheck.class.getName());
 	
 	@EJB 
 	GithubAgent agent;
@@ -48,14 +52,19 @@ public class GithubNotificationsCheck {
 	Brain br;
 	
 	@Schedule(hour="*", minute="*", persistent=false)
-    public void checkForNotifications() throws IOException {
-    	List<GithubIssue> issues = agent.issuesMentionedIn();
-    	String login = "";
-    	if(issues.size() > 0) {
-    		login = agent.agentLogin();
-    	}
-    	for(GithubIssue issue : issues) {
-    		new Action(br, issue, login).take();
-    	}
+    public void checkForNotifications() {
+		try {
+			List<GithubIssue> issues = agent.issuesMentionedIn();
+			String login = "";
+			if(issues.size() > 0) {
+				login = agent.agentLogin();				
+			}
+			for(GithubIssue issue : issues) {
+				new Action(br, issue, login).take();
+			}
+			LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
+		} catch (IOException ex) {
+			LOG.error(ex.getMessage(), ex);
+		}
     }
 }
