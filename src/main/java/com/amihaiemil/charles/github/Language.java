@@ -25,6 +25,15 @@
 
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Language that the agent speaks.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -32,6 +41,39 @@ package com.amihaiemil.charles.github;
  * @since 1.0.0
  * 
  */
-public interface Language {
-    String categorize(Command command);
+abstract class Language {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(Language.class.getName());
+
+	private Properties commandsPatterns = new Properties();
+	
+	Language(String commandsFileName) {
+		try {
+			commandsPatterns.load(
+				this.getClass().getClassLoader().getResourceAsStream(commandsFileName)
+			);
+		} catch (IOException e) {
+			LOG.error("Exception when loading commands' patterns!", e);
+			throw new IllegalStateException(e);
+		}
+	}
+	
+    String categorize(Command command) {
+    	Set<Object> keys = this.commandsPatterns.keySet();
+		for(Object key : keys) {
+			String keyString = (String) key;
+			String regex = this.commandsPatterns.getProperty(keyString, "");
+			if(!regex.isEmpty()) {
+				String formattedRegex = String.format(regex, "@" + command.login());
+				Pattern p = Pattern.compile(formattedRegex);
+				String text = command.json().getString("body");
+				Matcher m = p.matcher(text);
+
+				if(m.matches()) {
+					return keyString.split("\\.")[0];
+				}
+			}
+		}
+		return "unknown";
+    }
 }
