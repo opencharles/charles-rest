@@ -74,7 +74,7 @@ public class Brain {
     	 List<Step> steps = new LinkedList<Step>();
     	 String category = "unkown";
     	 for(Language l : languages) {
-    		 category = l.categorize(com.json().getString("body"));
+    		 category = l.categorize(com);
     	 }
     	 switch (category) {
     	 	case "hello":
@@ -84,6 +84,10 @@ public class Brain {
     	 				new TextReply(com, hello)
     	 			)
     	 		);
+    	 		break;
+    	 	case "indexsite":
+    	 		break;
+    	 	case "indexpage":
     	 		break;
     	 	default:
     	 		String unknown = String.format(

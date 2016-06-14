@@ -45,6 +45,7 @@ import com.jcabi.github.Issue;
 public class LastComment implements Command {
 	private JsonObject com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
 	private Issue issue;
+	private String agentLogin;
 	
 	public LastComment(GithubIssue issue, String agentlogin) throws IOException {
 		this.issue = issue.getSelf();
@@ -66,6 +67,7 @@ public class LastComment implements Command {
 				}
 			}
 		}
+		this.agentLogin = agentlogin;
 	}
 
 
@@ -78,6 +80,12 @@ public class LastComment implements Command {
 	@Override
 	public Issue issue() {
 		return this.issue;
+	}
+
+
+	@Override
+	public String login() {
+		return this.agentLogin;
 	}
 
 }

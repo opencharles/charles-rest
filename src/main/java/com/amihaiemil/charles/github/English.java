@@ -24,6 +24,15 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * English language.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -32,11 +41,38 @@ package com.amihaiemil.charles.github;
  * 
  */
 public class English implements Language {
+	private static final Logger LOG = LoggerFactory.getLogger(English.class.getName());
+
+	private Properties commandsPatterns = new Properties();
+	public English() {
+		try {
+			commandsPatterns.load(
+				this.getClass().getClassLoader().getResourceAsStream("commands_en.properties")
+			);
+		} catch (IOException e) {
+			LOG.error("Exception when loading english commands' patterns!", e);
+			throw new IllegalStateException(e);
+		}
+	}
 
 	@Override
-	public String categorize(String command) {
-		//TODO implement this method.
-		return "hello";
+	public String categorize(Command com) {
+		Set<Object> keys = this.commandsPatterns.keySet();
+		for(Object key : keys) {
+			String keyString = (String) key;
+			String regex = this.commandsPatterns.getProperty(keyString, "");
+			if(!regex.isEmpty()) {
+				String formattedRegex = String.format(regex, "@" + com.login());
+				Pattern p = Pattern.compile(formattedRegex);
+				String text = com.json().getString("body");
+				Matcher m = p.matcher(text);
+
+				if(m.matches()) {
+					return keyString.split("\\.")[0];
+				}
+			}
+		}
+		return "unknown";
 	}
 
 }

@@ -43,6 +43,7 @@ import com.jcabi.github.Issue;
 public class ValidCommand implements Command {
 	private JsonObject comment;
 	private Issue issue;
+	private String agentLogin;
 	/**
 	 * Constructor.
 	 * @param Given Comment.
@@ -56,6 +57,7 @@ public class ValidCommand implements Command {
 		if(StringUtils.isEmpty(body)) {
 			throw new IllegalArgumentException("Invalid command!");
 		}
+		this.agentLogin = com.login();
 	}
 	
 
@@ -67,6 +69,12 @@ public class ValidCommand implements Command {
 	@Override
 	public Issue issue() {
 		return this.issue;
+	}
+
+
+	@Override
+	public String login() {
+		return this.agentLogin;
 	}
 
 }

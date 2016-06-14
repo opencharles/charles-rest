@@ -47,4 +47,10 @@ public interface Command {
      * @return com.jcabi.github.Issue
      */
     Issue issue();
+    
+    /**
+     * Username of the Githbu agent.
+     * @return Github agent's String username.
+     */
+    String login();
 }
