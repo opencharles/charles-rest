@@ -60,8 +60,7 @@ public class EnglishTestCase {
     }
 	
 	/**
-	 * A 'index site' command is understood.
-	 * @throws Exception 
+	 * A 'indexsite' command is understood.
 	 */
 	@Test
 	public void recognizezIndexSiteCommands() {
@@ -72,13 +71,16 @@ public class EnglishTestCase {
     	Command index5 = this.mockCommand("@charlesmike, pls index?");
     	
     	Language english = new English();
-    	assertTrue(english.categorize(index1).equals("index"));
-    	assertTrue(english.categorize(index2).equals("index"));
-    	assertTrue(english.categorize(index3).equals("index"));
-    	assertTrue(english.categorize(index4).equals("index"));
-    	assertTrue(english.categorize(index5).equals("index"));
+    	assertTrue(english.categorize(index1).equals("indexsite"));
+    	assertTrue(english.categorize(index2).equals("indexsite"));
+    	assertTrue(english.categorize(index3).equals("indexsite"));
+    	assertTrue(english.categorize(index4).equals("indexsite"));
+    	assertTrue(english.categorize(index5).equals("indexsite"));
 	}
 	
+	/**
+	 * A 'indexpage' command is understood.
+	 */
 	@Test
 	public void recognizesIndexPageCommands() {
 		Command indexPage1 = this.mockCommand("@charlesmike, please index [this](http://www.amihaiemil.com) page");
@@ -88,11 +90,11 @@ public class EnglishTestCase {
     	Command indexPage5 = this.mockCommand("@charlesmike index [this]       (http://www.amihaiemil.com) page ...");
 
     	Language english = new English();
-    	assertTrue(english.categorize(indexPage1).equals("index"));
-    	assertTrue(english.categorize(indexPage2).equals("index"));
-    	assertTrue(english.categorize(indexPage3).equals("index"));
-    	assertTrue(english.categorize(indexPage4).equals("index"));
-    	assertTrue(english.categorize(indexPage5).equals("index"));
+    	assertTrue(english.categorize(indexPage1).equals("indexpage"));
+    	assertTrue(english.categorize(indexPage2).equals("indexpage"));
+    	assertTrue(english.categorize(indexPage3).equals("indexpage"));
+    	assertTrue(english.categorize(indexPage4).equals("indexpage"));
+    	assertTrue(english.categorize(indexPage5).equals("indexpage"));
 	}
 	
 	/**
