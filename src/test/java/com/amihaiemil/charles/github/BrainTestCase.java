@@ -56,9 +56,7 @@ public class BrainTestCase {
 		Command com = this.mockCommand();
 		
 		Language english = Mockito.mock(English.class);
-		Mockito.when(english.categorize(
-				com.json().getString("body")
-			)
+		Mockito.when(english.categorize(com)
 		).thenReturn("hello");
 		
 		Brain br = new Brain(new Responses(), Arrays.asList(english));

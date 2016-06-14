@@ -33,5 +33,5 @@ package com.amihaiemil.charles.github;
  * 
  */
 public interface Language {
-    String categorize(String command);
+    String categorize(Command command);
 }
