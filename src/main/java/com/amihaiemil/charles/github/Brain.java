@@ -28,7 +28,6 @@ package com.amihaiemil.charles.github;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateful;
 
 /**
@@ -44,8 +43,6 @@ import javax.ejb.Stateful;
 public class Brain {
 	
 	private List<Language> languages = new LinkedList<Language>();
-	@EJB
-	private Responses responses;
 	
 	/**
 	 * Constructor.
@@ -59,8 +56,7 @@ public class Brain {
 	 * @param resp
 	 * @param langs
 	 */
-	public Brain(Responses resp, List<Language> langs) {
-		this.responses = resp;
+	public Brain(List<Language> langs) {
 		this.languages = langs;
 	}
 	
@@ -72,13 +68,13 @@ public class Brain {
      public List<Step> understand(Command com) {
 	     String authorLogin = com.json().getJsonObject("user").getString("login");
     	 List<Step> steps = new LinkedList<Step>();
-    	 String category = "unkown";
+    	 CommandCategory category = new CommandCategory("unknown", languages.get(0));
     	 for(Language l : languages) {
     		 category = l.categorize(com);
     	 }
-    	 switch (category) {
+    	 switch (category.type()) {
     	 	case "hello":
-    	 		String hello = String.format(responses.getResponse("hello.comment"), "@" + authorLogin);
+    	 		String hello = String.format(category.language().response("hello.comment"), "@" + authorLogin);
     	 		steps.add(
     	 			new SendReply(
     	 				new TextReply(com, hello)
@@ -91,10 +87,8 @@ public class Brain {
     	 		break;
     	 	default:
     	 		String unknown = String.format(
-    	 			responses.getResponse("unknown.comment"),
-    	 			"@" + authorLogin,
-    	 			//TODO add link to docs
-    	 			"#");
+    	 			category.language().response("unknown.comment"),
+    	 			"@" + authorLogin);
     	 		steps.add(
         	 		new SendReply(
             	 		new TextReply(com, unknown)

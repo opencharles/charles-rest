@@ -35,11 +35,11 @@ package com.amihaiemil.charles.github;
 public class English extends Language {
 
 	public English() {
-		super("commands_en.properties");
+		super("commands_en.properties", "responses_en.properties");
 	}
 
 	@Override
-	public String categorize(Command com) {
+	public CommandCategory categorize(Command com) {
 		return super.categorize(com);
 	}
 

@@ -52,11 +52,11 @@ public class EnglishTestCase {
     	Command hello5 = this.mockCommand("@charlesmike who are you?");
     	
     	Language english = new English();
-    	assertTrue(english.categorize(hello1).equals("hello"));
-    	assertTrue(english.categorize(hello2).equals("hello"));
-    	assertTrue(english.categorize(hello3).equals("hello"));
-    	assertTrue(english.categorize(hello4).equals("hello"));
-    	assertTrue(english.categorize(hello5).equals("hello"));
+    	assertTrue(english.categorize(hello1).type().equals("hello"));
+    	assertTrue(english.categorize(hello2).type().equals("hello"));
+    	assertTrue(english.categorize(hello3).type().equals("hello"));
+    	assertTrue(english.categorize(hello4).type().equals("hello"));
+    	assertTrue(english.categorize(hello5).type().equals("hello"));
     }
 	
 	/**
@@ -71,11 +71,11 @@ public class EnglishTestCase {
     	Command index5 = this.mockCommand("@charlesmike, pls index?");
     	
     	Language english = new English();
-    	assertTrue(english.categorize(index1).equals("indexsite"));
-    	assertTrue(english.categorize(index2).equals("indexsite"));
-    	assertTrue(english.categorize(index3).equals("indexsite"));
-    	assertTrue(english.categorize(index4).equals("indexsite"));
-    	assertTrue(english.categorize(index5).equals("indexsite"));
+    	assertTrue(english.categorize(index1).type().equals("indexsite"));
+    	assertTrue(english.categorize(index2).type().equals("indexsite"));
+    	assertTrue(english.categorize(index3).type().equals("indexsite"));
+    	assertTrue(english.categorize(index4).type().equals("indexsite"));
+    	assertTrue(english.categorize(index5).type().equals("indexsite"));
 	}
 	
 	/**
@@ -90,11 +90,21 @@ public class EnglishTestCase {
     	Command indexPage5 = this.mockCommand("@charlesmike index [this]       (http://www.amihaiemil.com) page ...");
 
     	Language english = new English();
-    	assertTrue(english.categorize(indexPage1).equals("indexpage"));
-    	assertTrue(english.categorize(indexPage2).equals("indexpage"));
-    	assertTrue(english.categorize(indexPage3).equals("indexpage"));
-    	assertTrue(english.categorize(indexPage4).equals("indexpage"));
-    	assertTrue(english.categorize(indexPage5).equals("indexpage"));
+    	assertTrue(english.categorize(indexPage1).type().equals("indexpage"));
+    	assertTrue(english.categorize(indexPage2).type().equals("indexpage"));
+    	assertTrue(english.categorize(indexPage3).type().equals("indexpage"));
+    	assertTrue(english.categorize(indexPage4).type().equals("indexpage"));
+    	assertTrue(english.categorize(indexPage5).type().equals("indexpage"));
+	}
+	
+	/**
+	 * There is an English response for "hello".
+	 */
+	@Test
+	public void knowsTheHelloResponse() {
+		Language eng = new English();
+		String hi = eng.response("hello.comment");
+		assertTrue(hi.contains("Hi, %s! I can help you index your Github"));
 	}
 	
 	/**
