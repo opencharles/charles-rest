@@ -29,7 +29,7 @@ import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0.0
  * 
  */
-@Singleton
+@Stateless
 public class GithubNotificationsCheck {
 	private static final Logger LOG = LoggerFactory.getLogger(GithubNotificationsCheck.class.getName());
 	
@@ -62,7 +62,9 @@ public class GithubNotificationsCheck {
 			for(GithubIssue issue : issues) {
 				new Action(br, issue, login).take();
 			}
-			LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
+			if(issues.size() > 0) {
+				LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
+			}
 		} catch (IOException ex) {
 			LOG.error(ex.getMessage(), ex);
 		}

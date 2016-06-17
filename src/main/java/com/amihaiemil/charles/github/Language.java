@@ -45,12 +45,23 @@ abstract class Language {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(Language.class.getName());
 
+	/**
+	 * Commands that the agent can understand, in a given language.
+	 */
 	private Properties commandsPatterns = new Properties();
 	
-	Language(String commandsFileName) {
+	/**
+	 * Responses that the agent can give, in a given language
+	 */
+	private Properties responses = new Properties();
+	
+	Language(String commandsFileName, String responsesFileName) {
 		try {
 			commandsPatterns.load(
 				this.getClass().getClassLoader().getResourceAsStream(commandsFileName)
+			);
+			responses.load(
+				this.getClass().getClassLoader().getResourceAsStream(responsesFileName)
 			);
 		} catch (IOException e) {
 			LOG.error("Exception when loading commands' patterns!", e);
@@ -58,7 +69,7 @@ abstract class Language {
 		}
 	}
 	
-    String categorize(Command command) {
+    CommandCategory categorize(Command command) {
     	Set<Object> keys = this.commandsPatterns.keySet();
 		for(Object key : keys) {
 			String keyString = (String) key;
@@ -70,10 +81,14 @@ abstract class Language {
 				Matcher m = p.matcher(text);
 
 				if(m.matches()) {
-					return keyString.split("\\.")[0];
+					return new CommandCategory(keyString.split("\\.")[0], this);
 				}
 			}
 		}
-		return "unknown";
+		return new CommandCategory("unknown", this);
+    }
+    
+    String response(String key) {
+    	return responses.getProperty(key);
     }
 }

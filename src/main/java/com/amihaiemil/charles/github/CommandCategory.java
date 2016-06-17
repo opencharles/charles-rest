@@ -24,28 +24,39 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-import java.util.Properties;
-
-import javax.ejb.Stateful;
-
 /**
- * Activated at app startup by the EJB container. Loads the responses.
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 1.0.0
- * 
+ * Category of a command.
+ * @author Mihai Andronache (amihaimeil@gmail.com)
+ *
  */
-@Stateful
-public class Responses {
-	private Properties responses = new Properties();
-	public Responses() throws IOException {
-		responses.load(
-			this.getClass().getClassLoader().getResourceAsStream("responses.properties")
-		);
-	}
-	
-	public String getResponse(String key) {
-		return this.responses.getProperty(key);
-	}
+public class CommandCategory {
+	/**
+	 * Type of the command.
+	 */
+    private String type;
+    /**
+     * Language of a command.
+     */
+    private Language lang;
+    
+    public CommandCategory(String type, Language lang) {
+    	this.type = type;
+    	this.lang = lang;
+    }
+    
+    /**
+     * The type of the command.
+     * @return String type.
+     */
+    public String type() {
+    	return this.type;
+    }
+    
+    /**
+     * Tha Language of the command.
+     * @return Language.
+     */
+    public Language language() {
+    	return this.lang;
+    }
 }

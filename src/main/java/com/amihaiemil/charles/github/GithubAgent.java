@@ -44,6 +44,7 @@ import com.jcabi.github.RtGithub;
 import com.jcabi.github.RtPagination;
 import com.jcabi.http.Request;
 import com.jcabi.http.response.RestResponse;
+import com.jcabi.http.wire.RetryWire;
 
 /**
  * This represents the user account which listens for commands.
@@ -58,10 +59,9 @@ public class GithubAgent {
 	private static final Logger LOG = LoggerFactory.getLogger(GithubAgent.class);
 	
 	public GithubAgent() {
-		this.github = new RtGithub(
-					      System.getProperty("charles.github.ejb.token")
-					  );
-		
+		github = new RtGithub(
+				   new RtGithub("charles.github.ejb.token").entry().through(RetryWire.class)
+				 );
 	}
 
 	/**

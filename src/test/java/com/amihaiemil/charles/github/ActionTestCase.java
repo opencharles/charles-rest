@@ -58,8 +58,8 @@ public class ActionTestCase {
 	 */
 	@Test
 	public void actionsExecute() throws Exception {
-		Responses resp = new Responses();
-		Brain br = new Brain(resp, Arrays.asList((Language)new English()));
+		Language english = (Language)new English();
+		Brain br = new Brain(Arrays.asList(english));
 		GithubIssue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
 		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");
@@ -84,17 +84,16 @@ public class ActionTestCase {
     	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getLatestComment().issue().comments().iterate());
-    	System.out.println(commentsWithReply1.get(1).json().getString("body"));
     	assertTrue(commentsWithReply1.get(1).json().getString("body")
-    			.equals(String.format(resp.getResponse("hello.comment"),"@amihaiemil"))); //there should be only 2 comments - the command and the reply.
+    			.equals(String.format(english.response("hello.comment"),"@amihaiemil"))); //there should be only 2 comments - the command and the reply.
     	assertTrue(commentsWithReply2.get(1).json().getString("body")
-    			.equals(String.format(resp.getResponse("hello.comment"),"@jeff"))); //there should be only 2 comments - the command and the reply.
+    			.equals(String.format(english.response("hello.comment"),"@jeff"))); //there should be only 2 comments - the command and the reply.
 		
     	assertTrue(commentsWithReply3.get(1).json().getString("body")
-    			.equals(String.format(resp.getResponse("hello.comment"),"@vlad"))); //there should be only 2 comments - the command and the reply.
+    			.equals(String.format(english.response("hello.comment"),"@vlad"))); //there should be only 2 comments - the command and the reply.
 		
     	assertTrue(commentsWithReply4.get(1).json().getString("body")
-    			.equals(String.format(resp.getResponse("hello.comment"),"@marius"))); //there should be only 2 comments - the command and the reply.
+    			.equals(String.format(english.response("hello.comment"),"@marius"))); //there should be only 2 comments - the command and the reply.
 		
 	}
 	/**

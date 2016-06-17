@@ -24,13 +24,15 @@
  */
 package com.amihaiemil.charles.github;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import static org.junit.Assert.*;
+
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -56,10 +58,11 @@ public class BrainTestCase {
 		Command com = this.mockCommand();
 		
 		Language english = Mockito.mock(English.class);
+		Mockito.when(english.response("hello.comment")).thenReturn("hi there, %s");
 		Mockito.when(english.categorize(com)
-		).thenReturn("hello");
+		).thenReturn(new CommandCategory("hello", english));
 		
-		Brain br = new Brain(new Responses(), Arrays.asList(english));
+		Brain br = new Brain(Arrays.asList(english));
 		List<Step> steps = br.understand(com);
 		assertTrue(steps.size() == 1);
 		assertTrue(steps.get(0) instanceof SendReply);
