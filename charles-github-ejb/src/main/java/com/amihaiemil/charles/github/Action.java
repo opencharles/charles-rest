@@ -63,17 +63,29 @@ public class Action implements Runnable {
 	private Brain br;	
 	
 	/**
+	 * Location of the logs.
+	 */
+	private Logs logs;
+	
+	/**
 	 * Constructor.
-	 * @param issue - The Github issue where the agent was mentionsd.
+	 * @param issue - The Github issue where the agent was mentioned.
+	 * @param logs - Location of the logs.
 	 * @param agentLogin - The Github username of the agent.
 	 * @param resp Possible responses.
 	 */
-	public Action(Brain br, GithubIssue issue, String agentLogin) {
+	public Action(
+		Brain br,
+		GithubIssue issue,
+		Logs logs,
+		String agentLogin
+	) {
 		String threadName = UUID.randomUUID().toString();
 
 		tr = new Thread(this, threadName);
 		this.agentLogin = agentLogin;
 		this.issue = issue;
+		this.logs = logs;
 		this.br = br;
 
 		Properties prop = new Properties();
