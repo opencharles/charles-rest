@@ -118,8 +118,7 @@ public class Action implements Runnable {
 		} catch (IOException e) {
 			LOG.error("Action failed with IOException: ",  e);
 			this.sendReply(
-				new ErrorReply("#", this.issue.getSelf())
-//				responses.getResponse("error.comment")
+				new ErrorReply(logs.address(this.tr.getName() + ".log"), this.issue.getSelf())
 			);
 		}
 	}
