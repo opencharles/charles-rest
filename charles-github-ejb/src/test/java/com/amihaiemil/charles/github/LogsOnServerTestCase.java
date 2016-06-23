@@ -22,54 +22,38 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Schedule;
-import javax.ejb.Stateless;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * EJB that checks every minute for github notifications (mentions of the agent using @username).
+ * Testcase for {@ling LogsOnServer}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  * 
  */
-@Stateless
-public class GithubNotificationsCheck {
-	private static final Logger LOG = LoggerFactory.getLogger(GithubNotificationsCheck.class.getName());
+public class LogsOnServerTestCase {
+
+    /**
+     * LogsOnServer formats the address correctly when
+     * the endpoint is given without a final slash.
+     */
+	@Test
+	public void formatsAddressWithoutSlash() {
+    	Logs logs = new LogsOnServer("www.example.com/charles/api/logs");
+    	assertTrue(logs.address("action.log").equals("www.example.com/charles/api/logs/action.log"));
+    }
 	
-	@EJB 
-	GithubAgent agent;
-	
-	@EJB
-	Brain br;
-	
-	@Schedule(hour="*", minute="*", persistent=false)
-    public void checkForNotifications() {
-		try {
-			List<GithubIssue> issues = agent.issuesMentionedIn();
-			String login = "";
-			if(issues.size() > 0) {
-				login = agent.agentLogin();
-				String logsEndpoint = System.getProperty("charles.rest.logs.endpoint");
-				Logs logs = null;
-				if(logsEndpoint != null) {
-					logs = new LogsOnServer(logsEndpoint);
-				}
-				for(GithubIssue issue : issues) {
-					new Action(br, issue, logs, login).take();
-				}
-				LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
-			}
-		} catch (IOException ex) {
-			LOG.error(ex.getMessage(), ex);
-		}
+	/**
+     * LogsOnServer formats the address correctly when
+     * the endpoint is given with a final slash.
+     */
+	@Test
+	public void formatsAddressWithSlash() {
+    	Logs logs = new LogsOnServer("www.example.com/charles/api/logs/");
+    	assertTrue(logs.address("action.log").equals("www.example.com/charles/api/logs/action.log"));
     }
 }

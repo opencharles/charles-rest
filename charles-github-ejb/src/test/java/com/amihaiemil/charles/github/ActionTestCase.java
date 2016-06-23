@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
@@ -64,10 +65,10 @@ public class ActionTestCase {
 		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");
 		GithubIssue issue4 = this.githubIssue("marius", "@charlesmike hello");
-		Action ac1 = new Action(br, issue1, "charlesmike");
-		Action ac2 = new Action(br, issue2, "charlesmike");
-		Action ac3 = new Action(br, issue3, "charlesmike");
-		Action ac4 = new Action(br, issue4, "charlesmike");
+		Action ac1 = new Action(br, issue1, Mockito.mock(Logs.class), "charlesmike");
+		Action ac2 = new Action(br, issue2, Mockito.mock(Logs.class), "charlesmike");
+		Action ac3 = new Action(br, issue3, Mockito.mock(Logs.class), "charlesmike");
+		Action ac4 = new Action(br, issue4, Mockito.mock(Logs.class), "charlesmike");
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(5);
 		List<Future> futures = new ArrayList<Future>();
