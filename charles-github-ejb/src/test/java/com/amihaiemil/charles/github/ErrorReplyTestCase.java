@@ -22,37 +22,63 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+import java.util.List;
 
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+import com.google.common.collect.Lists;
+import com.jcabi.github.Comment;
+import com.jcabi.github.Coordinates;
+import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
+import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.mock.MkGithub;
 
 /**
- * Reply the agent gives when there was an error on the server.
+ * Unit tests for {@link ErrorReply}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  * 
  */
-public class ErrorReply implements Reply {
+public class ErrorReplyTestCase {
 
-	private String logsAddress;
-	private Issue issue;
-	
-	public ErrorReply(String logsAddress, Issue issue) {
-		this.logsAddress = logsAddress;
-		this.issue = issue;
-	}
-	
-	@Override
-	public void send() throws IOException {
-		this.issue.comments().post(String.format(
-			"There was an error when processing your command. [Here](%s) are the logs.",
-			this.logsAddress
-		)
-	);
+	/**
+	 * {@link ErrorReply} can send the error message to a Github issue.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void sendsReply() throws Exception {
+		Logs logs = new LogsOnServer("www.example.com/rest/endpoint/");
+		Issue issue = this.mockIssue();
+		ErrorReply er = new ErrorReply(logs.address("test.log"), issue);
+		er.send();
+		List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
+		assertTrue(comments.size() == 1);
+		assertTrue(
+			comments.get(0).json().getString("body").equals(
+				"There was an error when processing your command. [Here](www.example.com/rest/endpoint/test.log) are the logs."
+			)
+		);
 	}
 
+	/**
+     * Mock a Github issue.
+     * @return The created Issue.
+     * @throws IOException If something goes wrong.
+     */
+    public Issue mockIssue() throws IOException {
+    	Github gh = new MkGithub("amihaiemil");
+    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+    	gh.repos().create(repoCreate);
+    	return gh.repos().get(
+    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+    				  ).issues().create("Test issue for commands", "test body");
+    }
+	
 }
