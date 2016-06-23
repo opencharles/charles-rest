@@ -69,7 +69,7 @@ public class Action implements Runnable {
 	 * @param resp Possible responses.
 	 */
 	public Action(Brain br, GithubIssue issue, String agentLogin) {
-		String threadName = issue.getRepo() + "_" + issue.getNumber() + "_" + UUID.randomUUID().toString();
+		String threadName = UUID.randomUUID().toString();
 
 		tr = new Thread(this, threadName);
 		this.agentLogin = agentLogin;
@@ -84,6 +84,7 @@ public class Action implements Runnable {
 	    prop.setProperty("log4j.appender.thread.layout.ConversionPattern","%d %c{1} - %m%n");
 	    prop.setProperty("log4j.appender.thread.Threshold", "DEBUG");
 		PropertyConfigurator.configure(prop);
+
 		this.LOG = LoggerFactory.getLogger("Action_"+threadName);
 	}
 	

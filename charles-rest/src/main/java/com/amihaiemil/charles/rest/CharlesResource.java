@@ -8,7 +8,7 @@
  * Redistributions in binary form must reproduce the above copyright notice,
  this list of conditions and the following disclaimer in the documentation
  and/or other materials provided with the distribution.
- * Neither the name of charles nor the names of its
+ * Neither the name of charles-rest nor the names of its
  contributors may be used to endorse or promote products derived from
  this software without specific prior written permission.
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -24,12 +24,16 @@
 */
 package com.amihaiemil.charles.rest;
 
+import javax.ws.rs.Path;
+
 
 /**
- * REST interface.
+ * REST interface for charles' logic.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
  */
+@Path("/")
 public class CharlesResource {
 	
 }
