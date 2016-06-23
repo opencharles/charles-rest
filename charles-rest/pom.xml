@@ -29,8 +29,8 @@
 	</build>
 	<dependencies>
 		<dependency>
-		    <groupId>com.amihaiemil.web</groupId>
-		    <artifactId>charles-github-ejb</artifactId>
+			<groupId>com.amihaiemil.web</groupId>
+			<artifactId>charles-github-ejb</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
