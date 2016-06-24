@@ -54,7 +54,7 @@ public class TextReplyTestCase {
 	 */
 	@Test
     public void repliesToComment() throws Exception {
-    	Command com = this.mockCommand();
+    	Command com = this.mockCommand("@charlesmike hello there!");
     	Reply rep = new TextReply(com, "Hi to you too, @amihaiemil!");
     	
     	List<Comment> initialComments = Lists.newArrayList(com.issue().comments().iterate());
@@ -64,7 +64,11 @@ public class TextReplyTestCase {
     	
     	List<Comment> commentsWithReply = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(commentsWithReply.size() == 2);
-    	assertTrue(commentsWithReply.get(1).json().getString("body").equals("Hi to you too, @amihaiemil!"));
+    	assertTrue(
+            commentsWithReply.get(1).json().getString("body").equals(
+                "> @charlesmike hello there!\n\nHi to you too, @amihaiemil!"
+            )
+        );
     }
     
     /**
@@ -72,14 +76,14 @@ public class TextReplyTestCase {
      * @return The created Command.
      * @throws IOException If something goes wrong.
      */
-    public Command mockCommand() throws IOException {
+    public Command mockCommand(String msg) throws IOException {
     	Github gh = new MkGithub("amihaiemil");
     	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
     	gh.repos().create(repoCreate);
     	Issue issue = gh.repos().get(
     					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
     				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike hello there!");
+    	Comment c = issue.comments().post(msg);
     	
     	Command com = Mockito.mock(Command.class);
     

@@ -36,23 +36,31 @@ import java.io.IOException;
  */
 public class TextReply implements Reply {
 
-	private Command command;
-	private String response;
-	
-	public TextReply(Command com, String response) {
-		this.command = com;
-		this.response = response;
-	}
-	
 	/**
-	 * Send the reply comment to the Github issue.
-	 * @throws IOException 
+	 * Command to which this reply goes.
 	 */
-	@Override
-	public void send() throws IOException {
-		//TODO add yhe command to response (preview of the command before
-		//response text)
-		command.issue().comments().post(response);	
-	}
+    private Command command;
+
+    /**
+     * The agent's response.
+     */
+    private String response;
+
+    public TextReply(Command com, String response) {
+        this.command = com;
+        this.response = response;
+    }
+
+    /**
+     * Send the reply comment to the Github issue.
+     * @throws IOException 
+     */
+    @Override
+    public void send() throws IOException {
+    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
+        command.issue().comments().post(
+            cmdPreview + this.response
+        );	
+    }
 
 }
