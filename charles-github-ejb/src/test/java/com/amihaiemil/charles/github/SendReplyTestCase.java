@@ -29,6 +29,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import javax.json.Json;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -62,7 +64,11 @@ public class SendReplyTestCase {
     	
     	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(comments.size() == 1);
-    	assertTrue(comments.get(0).json().getString("body").equals("Hello there!"));
+    	assertTrue(
+    		comments.get(0).json().getString("body").equals(
+    			"> @charlesmike hello\n\nHello there!"
+    		)
+    	);
 
     }
     
@@ -80,6 +86,7 @@ public class SendReplyTestCase {
     				  ).issues().create("Test issue for commands", "test body");
     	Command com = Mockito.mock(Command.class);
     	Mockito.when(com.issue()).thenReturn(issue);
+    	Mockito.when(com.json()).thenReturn(Json.createObjectBuilder().add("body", "@charlesmike hello").build());
     	return com;
     }
 

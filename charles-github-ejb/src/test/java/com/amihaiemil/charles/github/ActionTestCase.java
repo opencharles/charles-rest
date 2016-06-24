@@ -85,16 +85,21 @@ public class ActionTestCase {
     	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getLatestComment().issue().comments().iterate());
     	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getLatestComment().issue().comments().iterate());
+    	String expectedReply1 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"@amihaiemil");
     	assertTrue(commentsWithReply1.get(1).json().getString("body")
-    			.equals(String.format(english.response("hello.comment"),"@amihaiemil"))); //there should be only 2 comments - the command and the reply.
+    			.equals(expectedReply1)); //there should be only 2 comments - the command and the reply.
+    	
+    	String expectedReply2 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"@jeff");
     	assertTrue(commentsWithReply2.get(1).json().getString("body")
-    			.equals(String.format(english.response("hello.comment"),"@jeff"))); //there should be only 2 comments - the command and the reply.
+    			.equals(expectedReply2)); //there should be only 2 comments - the command and the reply.
 		
+    	String expectedReply3 = "> @charlesmike hi\n\n" + String.format(english.response("hello.comment"),"@vlad");
     	assertTrue(commentsWithReply3.get(1).json().getString("body")
-    			.equals(String.format(english.response("hello.comment"),"@vlad"))); //there should be only 2 comments - the command and the reply.
+    			.equals(expectedReply3)); //there should be only 2 comments - the command and the reply.
 		
+    	String expectedReply4 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"@marius");
     	assertTrue(commentsWithReply4.get(1).json().getString("body")
-    			.equals(String.format(english.response("hello.comment"),"@marius"))); //there should be only 2 comments - the command and the reply.
+    			.equals(expectedReply4)); //there should be only 2 comments - the command and the reply.
 		
 	}
 	/**
