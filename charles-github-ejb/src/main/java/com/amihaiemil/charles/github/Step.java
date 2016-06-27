@@ -25,8 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
 /**
  * One step that the agent needs to perform in order to
  * fulfill the command.
@@ -36,5 +34,5 @@ import java.io.IOException;
  * 
  */
 public interface Step {
-    void perform() throws IOException;
+    boolean perform();
 }
