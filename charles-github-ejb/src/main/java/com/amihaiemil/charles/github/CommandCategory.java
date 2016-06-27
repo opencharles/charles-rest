@@ -59,4 +59,13 @@ public class CommandCategory {
     public Language language() {
     	return this.lang;
     }
+    
+    /**
+     * Is the command understood?
+     * A command is understood if its type is any other than "unknown"
+     * @return True if understood, false otherwise.
+     */
+    public boolean isUnderstood() {
+    	return !this.type.equals("unkown");
+    }
 }
