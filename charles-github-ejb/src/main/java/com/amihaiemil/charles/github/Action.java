@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Action implements Runnable {
 
-	private Logger LOG;
+	private Logger logger;
 
 	/**
 	 * Thread that runs this.
@@ -97,7 +97,7 @@ public class Action implements Runnable {
 	    prop.setProperty("log4j.appender.thread.Threshold", "DEBUG");
 		PropertyConfigurator.configure(prop);
 
-		this.LOG = LoggerFactory.getLogger("Action_"+threadName);
+		this.logger = LoggerFactory.getLogger("Action_"+threadName);
 	}
 	
 	
@@ -105,18 +105,23 @@ public class Action implements Runnable {
 	public void run() {
 		ValidCommand command;
 		try {
+			logger.info("Started action " + this.tr.getName());
 			LastComment lc = new LastComment(issue, agentLogin);
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
-			LOG.info("Received command: " + commandBody);
-			List<Step> steps = br.understand(command);
+			logger.info("Received command: " + commandBody);
+			List<Step> steps = br.understand(command, logger);
+			logger.info("Have to execute " + steps.size() + " step(s) to fulfill the command!");
 			for(Step s : steps) {
+				logger.info("Executing step " + s.getClass().getName() + "... ");
 				s.perform();
+				logger.info("Step " + s.getClass().getName() + " executed successfully!");
 			}
+			logger.info("Finished action " + this.tr.getName());
 		} catch (IllegalArgumentException e) {
-			LOG.info("No command found in the issue or the agent has already replied to the last command!");
+			logger.info("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException e) {
-			LOG.error("Action failed with IOException: ",  e);
+			logger.error("Action failed with IOException: ",  e);
 			this.sendReply(
 				new ErrorReply(logs.address(this.tr.getName() + ".log"), this.issue.getSelf())
 			);
@@ -138,7 +143,7 @@ public class Action implements Runnable {
 		try {
 			reply.send();
 		} catch (IOException e) {
-			LOG.error("FAILED TO REPLY!", e);
+			logger.error("FAILED TO REPLY!", e);
 		}
 	}
 }
