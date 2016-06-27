@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
@@ -63,7 +64,9 @@ public class BrainTestCase {
 		).thenReturn(new CommandCategory("hello", english));
 		
 		Brain br = new Brain(Arrays.asList(english));
-		List<Step> steps = br.understand(com);
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		List<Step> steps = br.understand(com, logger);
 		assertTrue(steps.size() == 1);
 		assertTrue(steps.get(0) instanceof SendReply);
 	}

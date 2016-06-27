@@ -30,6 +30,8 @@ import java.util.List;
 
 import javax.ejb.Stateful;
 
+import org.slf4j.Logger;
+
 /**
  * The "brain" of the Github agent. Can understand commands and 
  * figure out the Steps that need to be performed to fulfill the 
@@ -65,19 +67,22 @@ public class Brain {
 	 * @param com Given command.
 	 * @return list of Steps.
 	 */
-     public List<Step> understand(Command com) {
+     public List<Step> understand(Command com, Logger logger) {
 	     String authorLogin = com.json().getJsonObject("user").getString("login");
+	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
     	 CommandCategory category = new CommandCategory("unknown", languages.get(0));
     	 for(Language l : languages) {
     		 category = l.categorize(com);
     		 if(category.isUnderstood()) {
+    			 logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
     			 break;
     		 }
     	 }
     	 switch (category.type()) {
     	 	case "hello":
     	 		String hello = String.format(category.language().response("hello.comment"), "@" + authorLogin);
+    	 		logger.info("Prepared response: " + hello);
     	 		steps.add(
     	 			new SendReply(
     	 				new TextReply(com, hello)
@@ -89,9 +94,11 @@ public class Brain {
     	 	case "indexpage":
     	 		break;
     	 	default:
+    	 		logger.info("Unknwon command!");
     	 		String unknown = String.format(
     	 			category.language().response("unknown.comment"),
     	 			"@" + authorLogin);
+    	 		logger.info("Prepared response: " + unknown);
     	 		steps.add(
         	 		new SendReply(
             	 		new TextReply(com, unknown)

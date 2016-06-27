@@ -52,7 +52,7 @@ public class LogsResource {
 			if(log.exists()) {
 				return Response.ok()
 					.entity(log)
-					.header("Content-Type", "text/html; charset=UTF-8").build();
+					.header("Content-Type", "text/plain; charset=UTF-8").build();
 			}
 		}
 		return Response.noContent().build();
