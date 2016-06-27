@@ -71,6 +71,9 @@ public class Brain {
     	 CommandCategory category = new CommandCategory("unknown", languages.get(0));
     	 for(Language l : languages) {
     		 category = l.categorize(com);
+    		 if(category.isUnderstood()) {
+    			 break;
+    		 }
     	 }
     	 switch (category.type()) {
     	 	case "hello":

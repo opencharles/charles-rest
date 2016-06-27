@@ -60,7 +60,9 @@ public class GithubAgent {
 	
 	public GithubAgent() {
 		github = new RtGithub(
-				   new RtGithub("charles.github.ejb.token").entry().through(RetryWire.class)
+				     new RtGithub(
+				         System.getProperty("charles.github.ejb.token")
+				     ).entry().through(RetryWire.class)
 				 );
 	}
 
