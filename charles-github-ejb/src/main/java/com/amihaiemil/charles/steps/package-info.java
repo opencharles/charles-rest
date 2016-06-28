@@ -23,16 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.amihaiemil.charles.github;
-
 /**
- * One step that has to be performed to
- * fulfill a command/request.
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 1.0.0
- * 
+ * Contains {@link Step}s that can be reused outside the Github integration context.
  */
-public interface Step {
-    boolean perform();
-}
+package com.amihaiemil.charles.steps;
