@@ -25,14 +25,42 @@
 
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+
+import com.jcabi.github.Repo;
+
 /**
- * One step that has to be performed to
- * fulfill a command/request.
+ * A Github-hosted site repository has to be starred once indexed.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public interface Step {
-    boolean perform();
+public class StarRepo implements Step {
+
+	/**
+	 * Repository to be starred.
+	 */
+    private Repo repo;
+
+    /**
+	 * Constructor.
+	 * @param repo Given repo.
+	 */
+    public StarRepo(Repo repo) {
+        this.repo = repo;
+    }
+    
+    /**
+     * Star the repository.
+     * @return true if successful, false otherwise.
+     */
+    public boolean perform() {
+    	try {
+			this.repo.stars().star();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+    }
 }

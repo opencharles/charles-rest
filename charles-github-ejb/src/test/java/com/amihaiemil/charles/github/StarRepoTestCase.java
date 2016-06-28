@@ -25,14 +25,50 @@
 
 package com.amihaiemil.charles.github;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import com.amihaiemil.charles.github.StarRepo;
+import com.amihaiemil.charles.github.Step;
+import com.jcabi.github.Github;
+import com.jcabi.github.Repo;
+import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.mock.MkGithub;
+
 /**
- * One step that has to be performed to
- * fulfill a command/request.
+ * Unit tests for {@link StarRepo}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public interface Step {
-    boolean perform();
+public class StarRepoTestCase {
+
+    /**
+     * StarRepo can successfully star a given repository.
+     * @throws Exception If something goes wrong.
+     */
+	@Test
+	public void starsRepo() throws Exception {
+		Repo repo = this.mockGithubRepo();
+
+        Step sr = new StarRepo(repo);
+        assertFalse(repo.stars().starred());
+        assertTrue(sr.perform());
+        assertTrue(repo.stars().starred());
+    }
+
+	/**
+	 * Return a Github Repo mock for test.
+	 * @return Repo.
+	 * @throws Exception
+	 */
+	public Repo mockGithubRepo() throws Exception {
+		Github gh = new MkGithub("amihaiemil");
+    	return gh.repos().create(
+    		new RepoCreate("amihaiemil.github.io", false)
+    	);
+	}
 }
