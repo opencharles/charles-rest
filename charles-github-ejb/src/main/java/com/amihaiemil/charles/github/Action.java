@@ -25,7 +25,6 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -110,14 +109,13 @@ public class Action implements Runnable {
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
 			logger.info("Received command: " + commandBody);
-			List<Step> steps = br.understand(command, logger);
-			logger.info("Have to execute " + steps.size() + " step(s) to fulfill the command!");
-			for(Step s : steps) {
-				logger.info("Executing step " + s.getClass().getName() + "... ");
-				s.perform();
-				logger.info("Step " + s.getClass().getName() + " executed successfully!");
+			Steps steps = br.understand(command, logger);
+			boolean success = steps.perform();
+			if(success){
+				logger.info("Finished action " + this.tr.getName());
+			} else {
+				logger.error("Some steps did not execute successfully! Check above for details.");
 			}
-			logger.info("Finished action " + this.tr.getName());
 		} catch (IllegalArgumentException e) {
 			logger.info("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException e) {

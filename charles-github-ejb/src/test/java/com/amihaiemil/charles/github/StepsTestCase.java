@@ -25,34 +25,62 @@
 
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
+import java.util.Arrays;
+
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.mockito.Mockito;
 
 /**
- * Step where the agent sends a text reply.
+ * Unit tests for {@link Steps}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
  */
-public class SendReply implements Step {
-	private Reply rep;
+public class StepsTestCase {
+
+	/**
+	 * Steps can perform 1 single step.
+	 */
+	@Test
+    public void oneStepIsPerformed() {
+    	Step s = Mockito.mock(Step.class);
+    	Mockito.when(s.perform()).thenReturn(true);
+
+    	Steps steps = new Steps(Arrays.asList(s));
+    	assertTrue(steps.perform());
+    }
 	
 	/**
-	 * Constructor
-	 * @param rep The reply to be sent.
+	 * Steps can perform more steps.
 	 */
-	public SendReply(Reply rep) { 
-		this.rep = rep;
-	}
-	
-	@Override
-	public boolean perform() {
-		try {
-			rep.send();
-		} catch (IOException e) {
-			return false;
-		}
-		return true;
-	}
+	@Test
+    public void moreStepsArePeformed() {
+    	Step s1 = Mockito.mock(Step.class);
+    	Mockito.when(s1.perform()).thenReturn(true);
+    	Step s2 = Mockito.mock(Step.class);
+    	Mockito.when(s2.perform()).thenReturn(true);
+    	Step s3 = Mockito.mock(Step.class);
+    	Mockito.when(s3.perform()).thenReturn(true);
 
+    	Steps steps = new Steps(Arrays.asList(s1, s2, s3));
+    	assertTrue(steps.perform());
+    }
+
+	/**
+	 * Steps stops performing the steps and returns false when 1 step fails.
+	 */
+	@Test
+	public void stopsPeformingWhenOneStepFails() {
+		Step s1 = Mockito.mock(Step.class);
+    	Mockito.when(s1.perform()).thenReturn(true);
+    	Step s2 = Mockito.mock(Step.class);
+    	Mockito.when(s2.perform()).thenReturn(false);
+    	Step s3 = Mockito.mock(Step.class);
+    	Mockito.when(s3.perform()).thenReturn(true);
+
+    	Steps steps = new Steps(Arrays.asList(s1, s2, s3));
+    	assertFalse(steps.perform());
+	}
 }

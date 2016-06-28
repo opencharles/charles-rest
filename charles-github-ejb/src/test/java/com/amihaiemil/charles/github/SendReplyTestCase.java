@@ -60,7 +60,7 @@ public class SendReplyTestCase {
     	Reply rep = new TextReply(com, "Hello there!");
     	SendReply sr = new SendReply(rep);
 
-    	sr.perform();
+    	assertTrue(sr.perform());
     	
     	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(comments.size() == 1);

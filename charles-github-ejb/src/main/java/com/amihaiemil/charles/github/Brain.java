@@ -65,9 +65,9 @@ public class Brain {
 	/**
 	 * Understand a command.
 	 * @param com Given command.
-	 * @return list of Steps.
+	 * @return Steps.
 	 */
-     public List<Step> understand(Command com, Logger logger) {
+     public Steps understand(Command com, Logger logger) {
 	     String authorLogin = com.json().getJsonObject("user").getString("login");
 	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
@@ -106,6 +106,7 @@ public class Brain {
     	 		);
     	 		break;
 		 }
-    	 return steps;
+		 logger.info("Have to execute " + steps.size() + " step(s) to fulfill the command!");
+    	 return new Steps(steps);
      }
 }

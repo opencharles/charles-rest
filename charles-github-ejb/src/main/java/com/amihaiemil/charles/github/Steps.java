@@ -25,31 +25,37 @@
 
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
- * Step where the agent sends a text reply.
+ * Steps taken to fulfill a command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
  */
-public class SendReply implements Step {
-	private Reply rep;
+public class Steps implements Step {
+    /**
+     * Steps to be performed.
+     */
+	private List<Step> steps;
 	
 	/**
-	 * Constructor
-	 * @param rep The reply to be sent.
+	 * Constructor.
+	 * @param steps Given steps.
 	 */
-	public SendReply(Reply rep) { 
-		this.rep = rep;
-	}
-	
+	public Steps(List<Step> steps) {
+    	this.steps = steps;
+    }
+
+    /**
+	 * Perform all the given steps.
+	 */
 	@Override
 	public boolean perform() {
-		try {
-			rep.send();
-		} catch (IOException e) {
+		for(Step s : steps) {
+			if(s.perform()) {
+				continue;
+			}
 			return false;
 		}
 		return true;
