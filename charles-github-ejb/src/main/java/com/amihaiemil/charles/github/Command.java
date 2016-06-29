@@ -49,8 +49,14 @@ public interface Command {
     Issue issue();
     
     /**
-     * Username of the Githbu agent.
+     * Username of the Github agent.
      * @return Github agent's String username.
      */
-    String login();
+    String agentLogin();
+    
+    /**
+     * Username of this command's author.
+     * @return String Github username.
+     */
+    String authorLogin();
 }

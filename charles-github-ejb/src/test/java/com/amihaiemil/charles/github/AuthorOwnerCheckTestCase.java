@@ -22,72 +22,83 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
+
+import javax.json.Json;
+import javax.json.JsonObject;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 
-import com.jcabi.github.Comment;
-import com.jcabi.github.Coordinates;
-import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
-import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.Repo;
 import com.jcabi.github.mock.MkGithub;
 
 /**
- * Unit tests for {@link Brain}.
+ * Unit tests for {@link AuthorOwnerCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class BrainTestCase {
+public class AuthorOwnerCheckTestCase {
 
+    /**
+     * AuthorOwnerCheck can tell when the command author is owner of the repo.
+     * @throws Exception If something goes wrong.
+     */
+	@Test
+	public void authorIsRepoOwner() throws Exception {
+    	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
+    		this.mockCommand("amihaiemil", "amihaiemil"),
+    		Mockito.mock(SendReply.class)
+    	);
+    	assertTrue(aoc.perform());
+    }
+	
 	/**
-	 * {@link Brain} can undestand a command.
-	 * @throws Exception if something goes wrong.
+	 * AuthorOwnerCheck can tell when the command author is NOT owner of the repo.
+	 * @throws Exception If something goes wrong.
 	 */
 	@Test
-	public void understandsCommand() throws Exception {
-		Command com = this.mockCommand();
-		
-		Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("hello.comment")).thenReturn("hi there, %s");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("hello", english));
-		
-		Brain br = new Brain(Arrays.asList(english));
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Steps steps = br.understand(com, logger);
-		assertTrue(steps != null);
+	public void authorIsNotRepoOwner() throws Exception {
+		SendReply sr = Mockito.mock(SendReply.class);
+		Mockito.when(sr.perform()).thenReturn(true);
+    	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
+    		this.mockCommand("someone", "amihaiemil"),
+    		sr
+    	);
+    	assertFalse(aoc.perform());
 	}
 	
 	/**
-     * Mock a Github command where the agent is mentioned.
-     * @return The created MkIssue.
-     * @throws IOException If something goes wrong.
-     */
-    public Command mockCommand() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike hello there!");
-    	
-    	Command com = Mockito.mock(Command.class);
-    
-     	Mockito.when(com.json()).thenReturn(c.json());
-     	Mockito.when(com.issue()).thenReturn(issue);
-     	
-     	return com;
-    }
+	 * Mock a command for the unit tests.
+	 * @param author Author of the command.
+	 * @param repoOwner Repository owner.
+	 * @return Command mock.
+	 * @throws IOException If something goes wrong.
+	 */
+	public Command mockCommand(String author, String repoOwner) throws IOException {
+		JsonObject repoJson = Json.createObjectBuilder()
+			.add(
+				"owner",
+				Json.createObjectBuilder().add("login", repoOwner).build()
+			).build();
+		Repo repo = Mockito.mock(Repo.class);
+		Mockito.when(repo.json()).thenReturn(repoJson);
+		Issue issue = Mockito.mock(Issue.class);
+		Mockito.when(issue.repo()).thenReturn(repo);
+		Command command = Mockito.mock(Command.class);
+		Mockito.when(command.authorLogin()).thenReturn(author);
+		Mockito.when(command.issue()).thenReturn(issue);
+		Repo r = new MkGithub().randomRepo();
+		System.out.println(r.json());
+		return command;
+	}
 }

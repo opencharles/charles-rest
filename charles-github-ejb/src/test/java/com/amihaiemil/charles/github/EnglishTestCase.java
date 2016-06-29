@@ -115,7 +115,7 @@ public class EnglishTestCase {
     	JsonObject body = Json.createObjectBuilder().add("body", message).build();
     	Command com = Mockito.mock(Command.class);
     	Mockito.when(com.json()).thenReturn(body);
-    	Mockito.when(com.login()).thenReturn("charlesmike");
+    	Mockito.when(com.agentLogin()).thenReturn("charlesmike");
     	return com;
     }
 }

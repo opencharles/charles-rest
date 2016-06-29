@@ -68,7 +68,7 @@ public class Brain {
 	 * @return Steps.
 	 */
      public Steps understand(Command com, Logger logger) {
-	     String authorLogin = com.json().getJsonObject("user").getString("login");
+    	 String authorLogin = com.authorLogin();
 	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
     	 CommandCategory category = new CommandCategory("unknown", languages.get(0));
