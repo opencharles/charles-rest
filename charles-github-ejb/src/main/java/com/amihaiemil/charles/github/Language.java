@@ -75,7 +75,7 @@ abstract class Language {
 			String keyString = (String) key;
 			String regex = this.commandsPatterns.getProperty(keyString, "");
 			if(!regex.isEmpty()) {
-				String formattedRegex = String.format(regex, "@" + command.login());
+				String formattedRegex = String.format(regex, "@" + command.agentLogin());
 				Pattern p = Pattern.compile(formattedRegex);
 				String text = command.json().getString("body");
 				Matcher m = p.matcher(text);

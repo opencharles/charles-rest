@@ -22,72 +22,81 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
+
+import javax.json.Json;
+import javax.json.JsonObject;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 
-import com.jcabi.github.Comment;
-import com.jcabi.github.Coordinates;
-import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
-import com.jcabi.github.Repos.RepoCreate;
-import com.jcabi.github.mock.MkGithub;
+import com.jcabi.github.Repo;
 
 /**
- * Unit tests for {@link Brain}.
+ * Unit tests for {@link RepoNameCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class BrainTestCase {
+public class RepoNameCheckTestCase {
 
 	/**
-	 * {@link Brain} can undestand a command.
-	 * @throws Exception if something goes wrong.
+	 * RepoNameCheck can tell when the repo's name is in the right format.
+	 * @throws Exception If something goes wrong.
 	 */
 	@Test
-	public void understandsCommand() throws Exception {
-		Command com = this.mockCommand();
-		
-		Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("hello.comment")).thenReturn("hi there, %s");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("hello", english));
-		
-		Brain br = new Brain(Arrays.asList(english));
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Steps steps = br.understand(com, logger);
-		assertTrue(steps != null);
+	public void repoNameMatches() throws Exception {
+    	RepoNameCheck rnc = new RepoNameCheck(
+    		this.mockCommand("amihaiemil", "amihaiemil.github.io"),
+    		Mockito.mock(SendReply.class)
+    	);
+    	assertTrue(rnc.perform());
+    }
+	
+	/**
+	 * RepoNameCheck can tell when the repo's name is not in the right format.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void repoNameDoesntMatch() throws Exception {
+		SendReply sr = Mockito.mock(SendReply.class);
+		Mockito.when(sr.perform()).thenReturn(true);
+    	RepoNameCheck rnc = new RepoNameCheck(
+    		this.mockCommand("amihaiemil", "reponame"),
+    		sr
+    	);
+    	assertFalse(rnc.perform());
 	}
 	
 	/**
-     * Mock a Github command where the agent is mentioned.
-     * @return The created MkIssue.
-     * @throws IOException If something goes wrong.
-     */
-    public Command mockCommand() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike hello there!");
-    	
-    	Command com = Mockito.mock(Command.class);
-    
-     	Mockito.when(com.json()).thenReturn(c.json());
-     	Mockito.when(com.issue()).thenReturn(issue);
-     	
-     	return com;
-    }
+	 * Mock a command for the unit tests.
+	 * @param owner Owner of the repo.
+	 * @param name Repository name.
+	 * @return Command mock.
+	 * @throws IOException If something goes wrong.
+	 */
+	public Command mockCommand(String owner, String name) throws IOException {
+		JsonObject repoJson = Json.createObjectBuilder()
+			.add("name", name)
+			.add(
+				"owner",
+				Json.createObjectBuilder().add("login", owner).build()
+			).build();
+		Repo repo = Mockito.mock(Repo.class);
+		Mockito.when(repo.json()).thenReturn(repoJson);
+		Issue issue = Mockito.mock(Issue.class);
+		Mockito.when(issue.repo()).thenReturn(repo);
+		Command command = Mockito.mock(Command.class);
+		Mockito.when(command.issue()).thenReturn(issue);
+		return command;
+	}
+
 }

@@ -57,7 +57,7 @@ public class ValidCommand implements Command {
 		if(StringUtils.isEmpty(body)) {
 			throw new IllegalArgumentException("Invalid command!");
 		}
-		this.agentLogin = com.login();
+		this.agentLogin = com.agentLogin();
 	}
 	
 
@@ -73,8 +73,13 @@ public class ValidCommand implements Command {
 
 
 	@Override
-	public String login() {
+	public String agentLogin() {
 		return this.agentLogin;
+	}
+
+	@Override
+	public String authorLogin() {
+		return comment.getJsonObject("user").getString("login");
 	}
 
 }

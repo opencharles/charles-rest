@@ -26,71 +26,53 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.List;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-
-import com.google.common.collect.Lists;
-import com.jcabi.github.Comment;
-import com.jcabi.github.Issue;
 
 /**
- * Last comment where the agent was mentioned.
+ * Step where the repo's name is checked.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class LastComment implements Command {
-	private JsonObject com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-	private Issue issue;
-	private String agentLogin;
-	
-	public LastComment(GithubIssue issue, String agentlogin) throws IOException {
-		this.issue = issue.getSelf();
-		JsonObject latestCommentJson = issue.getLatestComment().json();
-		if(latestCommentJson.getString("body").contains("@" + agentlogin)) {
-			this.com = latestCommentJson;
-		} else {
-			List<Comment> comments = Lists.newArrayList(issue.getSelf().comments().iterate());
-			boolean agentFound = false;
-			for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
-				JsonObject currentJsonComment = comments.get(i).json();
-				if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
-					agentFound = true; //we found a reply of the agent, so stop looking.
-				} else {
-					if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
-						this.com = currentJsonComment;
-						agentFound = true;
-					}
-				}
+public class RepoNameCheck implements Step{
+
+	/**
+	 * Command.
+	 */
+	private Command com; 
+
+	/**
+	 * Send a reply to the commander in case the check fails.
+	 */
+	private SendReply reply;
+
+	/**
+	 * Constructor.
+	 * @param command Command received.
+	 * @param message For the commander in case this check fails.
+	 */
+	public RepoNameCheck(Command command, SendReply rpl) {
+		this.com = command;
+		this.reply = rpl;
+	}
+
+	/**
+	 * Check that the repo's name respects the format owner.github.io
+	 * @return true if the check is successful, false otherwise
+	 */
+	@Override
+	public boolean perform() {
+		try {
+			String  owner = this.com.issue().repo().json().getJsonObject("owner").getString("login");
+			String expectedName = owner + ".github.io";
+			if(expectedName.equals(com.issue().repo().json().getString("name"))) {
+				return true;
 			}
+			this.reply.perform();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		this.agentLogin = agentlogin;
+		return false;
 	}
-
-
-	@Override
-	public JsonObject json() {
-		return this.com;
-	}
-
-
-	@Override
-	public Issue issue() {
-		return this.issue;
-	}
-
-
-	@Override
-	public String agentLogin() {
-		return this.agentLogin;
-	}
-
-	@Override
-	public String authorLogin() {
-		return com.getJsonObject("user").getString("login");
-	}
-
 }
