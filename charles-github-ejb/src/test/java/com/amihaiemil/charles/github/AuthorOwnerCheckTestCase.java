@@ -38,7 +38,6 @@ import org.mockito.Mockito;
 
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
-import com.jcabi.github.mock.MkGithub;
 
 /**
  * Unit tests for {@link AuthorOwnerCheck}
@@ -97,8 +96,6 @@ public class AuthorOwnerCheckTestCase {
 		Command command = Mockito.mock(Command.class);
 		Mockito.when(command.authorLogin()).thenReturn(author);
 		Mockito.when(command.issue()).thenReturn(issue);
-		Repo r = new MkGithub().randomRepo();
-		System.out.println(r.json());
 		return command;
 	}
 }

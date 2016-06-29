@@ -38,7 +38,6 @@ import org.mockito.Mockito;
 
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
-import com.jcabi.github.mock.MkGithub;
 
 /**
  * Unit tests for {@link RepoNameCheck}
@@ -96,10 +95,7 @@ public class RepoNameCheckTestCase {
 		Issue issue = Mockito.mock(Issue.class);
 		Mockito.when(issue.repo()).thenReturn(repo);
 		Command command = Mockito.mock(Command.class);
-		Mockito.when(command.authorLogin()).thenReturn(owner);
 		Mockito.when(command.issue()).thenReturn(issue);
-		Repo r = new MkGithub().randomRepo();
-		System.out.println(r.json());
 		return command;
 	}
 
