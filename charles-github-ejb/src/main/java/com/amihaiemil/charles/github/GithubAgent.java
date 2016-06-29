@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import javax.json.JsonObject;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.hamcrest.Matchers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,12 +59,25 @@ public class GithubAgent {
 	private Github github;
 	private static final Logger LOG = LoggerFactory.getLogger(GithubAgent.class);
 	
+	/**
+	 * Constructor.
+	 */
 	public GithubAgent() {
-		github = new RtGithub(
-				     new RtGithub(
-				         System.getProperty("charles.github.ejb.token")
-				     ).entry().through(RetryWire.class)
-				 );
+		this(
+			new RtGithub(
+				 new RtGithub(
+				     System.getProperty("charles.github.ejb.token")
+				 ).entry().through(RetryWire.class)
+			)
+		);
+	}
+	
+	/**
+	 * Constructor.
+	 * @param gh Github server.
+	 */
+	public GithubAgent(Github gh) {
+		this.github = gh;
 	}
 
 	/**
@@ -73,29 +87,24 @@ public class GithubAgent {
 	 */
 	public List<GithubIssue> issuesMentionedIn() throws IOException {
 		LOG.info("Checking for issues where the agent was mentioned");
-		Iterable<JsonObject> notifications = new RtPagination<JsonObject>(
-			this.github.entry().uri().path("/notifications").back(),
-			RtPagination.COPYING
-		);
 		List<GithubIssue> issues = new ArrayList<GithubIssue>();
-		for(JsonObject notification : notifications) {
+		for(JsonObject notification : this.notifications()) {
 			if("mention".equals(notification.getString("reason"))) {
 				JsonObject subject = notification.getJsonObject("subject"); 
 				String issueUrl = subject.getString("url");
-				String latest_comment_url = subject.getString("latest_comment_url");
 				int issueNumber = Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1));
 				String repoFullName = notification.getJsonObject("repository").getString("full_name");
-				int latestCommentId = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
-				issues.add(
-					new GithubIssue(
-						repoFullName,
-						issueNumber,
-						latestCommentId,
-						this.github.repos().get(
-								new Coordinates.Simple(repoFullName)
-						).issues().get(issueNumber)
-					)
-				);
+				Issue issue = this.github.repos().get(
+				    new Coordinates.Simple(repoFullName)
+				).issues().get(issueNumber);
+
+				if(issue.exists()) {
+					String latest_comment_url = subject.getString("latest_comment_url");
+					int latestCommentId = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
+					issues.add(
+						new GithubIssue(repoFullName, issueNumber, latestCommentId, issue)
+				    );
+				}
 			}
 		}
 		if(!issues.isEmpty()) {
@@ -135,6 +144,18 @@ public class GithubAgent {
 					"yyyy-MM-dd'T'HH:mm:ss'Z'")).back()
 			.method(Request.PUT).body().set("{}").back().fetch()
 			.as(RestResponse.class)
-			.assertStatus(HttpURLConnection.HTTP_RESET);
+			.assertStatus(
+			    Matchers.isOneOf(
+		            HttpURLConnection.HTTP_OK,
+		            HttpURLConnection.HTTP_RESET
+		        )
+			);
+	}
+	
+	public Iterable<JsonObject> notifications() {
+		return new RtPagination<JsonObject>(
+			this.github.entry().uri().path("/notifications").back(),
+			RtPagination.COPYING
+		);
 	}
 }
