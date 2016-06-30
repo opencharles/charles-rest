@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.amihaiemil.charles.github;
+package com.amihaiemil.charles.steps;
 
 /**
  * One step that has to be performed to

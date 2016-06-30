@@ -27,6 +27,7 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Repo;
 
 /**

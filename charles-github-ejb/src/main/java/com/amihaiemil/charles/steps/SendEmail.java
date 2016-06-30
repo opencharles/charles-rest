@@ -26,7 +26,6 @@ package com.amihaiemil.charles.steps;
 
 import java.io.IOException;
 
-import com.amihaiemil.charles.github.Step;
 import com.jcabi.email.Envelope;
 import com.jcabi.email.Postman;
 

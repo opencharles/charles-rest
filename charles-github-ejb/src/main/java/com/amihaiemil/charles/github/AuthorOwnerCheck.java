@@ -29,6 +29,8 @@ import java.io.IOException;
 
 import javax.json.JsonObject;
 
+import com.amihaiemil.charles.steps.Step;
+
 /**
  * Step where the identity of the command author is checked.
  * @author Mihai Andronache (amihaiemil@gmail.com)

@@ -32,6 +32,8 @@ import javax.ejb.Stateful;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.Step;
+
 /**
  * The "brain" of the Github agent. Can understand commands and 
  * figure out the Steps that need to be performed to fulfill the 

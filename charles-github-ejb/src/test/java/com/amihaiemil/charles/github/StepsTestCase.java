@@ -27,10 +27,13 @@ package com.amihaiemil.charles.github;
 
 import java.util.Arrays;
 
-
 import org.junit.Test;
+
 import static org.junit.Assert.*;
+
 import org.mockito.Mockito;
+
+import com.amihaiemil.charles.steps.Step;
 
 /**
  * Unit tests for {@link Steps}

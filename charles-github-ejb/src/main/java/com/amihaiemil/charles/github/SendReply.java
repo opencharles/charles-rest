@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import com.amihaiemil.charles.steps.Step;
+
 /**
  * Step where the agent sends a text reply.
  * @author Mihai Andronache (amihaiemil@gmail.com)

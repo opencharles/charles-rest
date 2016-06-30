@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.util.List;
 
+import com.amihaiemil.charles.steps.Step;
+
 /**
  * Steps taken to fulfill a command.
  * @author Mihai Andronache (amihaiemil@gmail.com)

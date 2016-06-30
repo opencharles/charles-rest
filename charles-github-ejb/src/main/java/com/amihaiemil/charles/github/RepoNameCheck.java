@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import com.amihaiemil.charles.steps.Step;
+
 /**
  * Step where the repo's name is checked.
  * @author Mihai Andronache (amihaiemil@gmail.com)
