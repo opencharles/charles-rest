@@ -55,12 +55,27 @@ public class AuthorOwnerCheckTestCase {
 	@Test
 	public void authorIsRepoOwner() throws Exception {
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		this.mockCommand("amihaiemil", "amihaiemil"),
+    		this.mockCommand("amihaiemil", "amihaiemil", false),
     		Mockito.mock(SendReply.class)
     	);
     	assertTrue(aoc.perform());
     }
 	
+    /**
+     * AuthorOwnerCheck can tell when the repo is a fork.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void repoIsAFork() throws Exception {
+        SendReply sr = Mockito.mock(SendReply.class);
+        Mockito.when(sr.perform()).thenReturn(true);
+        AuthorOwnerCheck aoc = new AuthorOwnerCheck(
+        	this.mockCommand("amihaiemil", "amihaiemil", true),
+        	sr
+        );
+        assertFalse(aoc.perform());
+    }
+
 	/**
 	 * AuthorOwnerCheck can tell when the command author is NOT owner of the repo.
 	 * @throws Exception If something goes wrong.
@@ -70,7 +85,7 @@ public class AuthorOwnerCheckTestCase {
 		SendReply sr = Mockito.mock(SendReply.class);
 		Mockito.when(sr.perform()).thenReturn(true);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		this.mockCommand("someone", "amihaiemil"),
+    		this.mockCommand("someone", "amihaiemil", false),
     		sr
     	);
     	assertFalse(aoc.perform());
@@ -80,15 +95,18 @@ public class AuthorOwnerCheckTestCase {
 	 * Mock a command for the unit tests.
 	 * @param author Author of the command.
 	 * @param repoOwner Repository owner.
+	 * @param fork Is the repository a fork or not?
 	 * @return Command mock.
 	 * @throws IOException If something goes wrong.
 	 */
-	public Command mockCommand(String author, String repoOwner) throws IOException {
+	public Command mockCommand(String author, String repoOwner, boolean fork) throws IOException {
 		JsonObject repoJson = Json.createObjectBuilder()
 			.add(
 				"owner",
 				Json.createObjectBuilder().add("login", repoOwner).build()
-			).build();
+			)
+			.add("fork", fork)
+			.build();
 		Repo repo = Mockito.mock(Repo.class);
 		Mockito.when(repo.json()).thenReturn(repoJson);
 		Issue issue = Mockito.mock(Issue.class);

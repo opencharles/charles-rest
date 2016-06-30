@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import javax.json.JsonObject;
+
 /**
  * Step where the identity of the command author is checked.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -63,8 +65,10 @@ public class AuthorOwnerCheck implements Step {
 	@Override
 	public boolean perform() {
 		try {
-			String repoOwner = this.com.issue().repo().json().getJsonObject("owner").getString("login");
-			if(repoOwner.equals(com.authorLogin())) {
+			JsonObject repo = this.com.issue().repo().json();
+			String repoOwner = repo.getJsonObject("owner").getString("login");
+			boolean isFork = repo.getBoolean("fork");
+			if(repoOwner.equals(com.authorLogin()) && !isFork) {
 				return true;
 			}
 			this.reply.perform();
