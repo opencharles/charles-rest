@@ -14,10 +14,15 @@
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+		<dependency><!-- Client for the Github API -->
 			<groupId>com.jcabi</groupId>
 			<artifactId>jcabi-github</artifactId>
 			<version>0.28</version>
+		</dependency>
+		<dependency><!-- Email client -->
+			<groupId>com.jcabi</groupId>
+			<artifactId>jcabi-email</artifactId>
+			<version>1.8</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -30,6 +35,12 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>1.7.21</version>
 		</dependency>
+		<dependency> <!-- for email sending unit tests -->
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>1.5.0</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
