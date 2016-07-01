@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Repo;
 
@@ -45,11 +47,17 @@ public class StarRepo implements Step {
     private Repo repo;
 
     /**
+     * Action logger.
+     */
+    private Logger logger;
+    
+    /**
 	 * Constructor.
 	 * @param repo Given repo.
 	 */
-    public StarRepo(Repo repo) {
+    public StarRepo(Repo repo, Logger logger) {
         this.repo = repo;
+        this.logger = logger;
     }
     
     /**
@@ -58,9 +66,12 @@ public class StarRepo implements Step {
      */
     public boolean perform() {
     	try {
+    		this.logger.info("Starring repository...");
 			this.repo.stars().star();
+    		this.logger.info("Repository starred!");
 			return true;
 		} catch (IOException e) {
+			this.logger.error("Error when starring repository: " + e.getMessage(), e);
 			return false;
 		}
     }

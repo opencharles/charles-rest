@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -49,13 +51,19 @@ public class RepoNameCheck implements Step{
 	private SendReply reply;
 
 	/**
+	 * Action logger.
+	 */
+	private Logger logger;
+	
+	/**
 	 * Constructor.
 	 * @param command Command received.
 	 * @param message For the commander in case this check fails.
 	 */
-	public RepoNameCheck(Command command, SendReply rpl) {
+	public RepoNameCheck(Command command, SendReply rpl, Logger logger) {
 		this.com = command;
 		this.reply = rpl;
+		this.logger = logger;
 	}
 
 	/**
@@ -65,15 +73,20 @@ public class RepoNameCheck implements Step{
 	@Override
 	public boolean perform() {
 		try {
+			logger.info("Checking repository name... ");
 			String  owner = this.com.issue().repo().json().getJsonObject("owner").getString("login");
 			String expectedName = owner + ".github.io";
-			if(expectedName.equals(com.issue().repo().json().getString("name"))) {
+			logger.info("Expected name: " + expectedName);
+			String name = com.issue().repo().json().getString("name");
+			logger.info("Actual name: " + name);
+			if(expectedName.equals(name)) {
+				logger.info("Repository name matchers - Ok");
 				return true;
 			}
+			logger.warn("Repository name does not match the expected name");
 			this.reply.perform();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Error when checking repository name: " + e.getMessage(), e);
 		}
 		return false;
 	}

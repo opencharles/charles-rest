@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -37,21 +39,33 @@ import com.amihaiemil.charles.steps.Step;
  * 
  */
 public class SendReply implements Step {
+	/**
+	 * Reply to send.
+	 */
 	private Reply rep;
+	
+	/**
+	 * Logger of the action.
+	 */
+	private Logger logger;
 	
 	/**
 	 * Constructor
 	 * @param rep The reply to be sent.
 	 */
-	public SendReply(Reply rep) { 
+	public SendReply(Reply rep, Logger logger) { 
 		this.rep = rep;
+		this.logger = logger;
 	}
 	
 	@Override
 	public boolean perform() {
 		try {
+			logger.info("Sending reply...");
 			rep.send();
+			logger.info("Reply sent successfully!");
 		} catch (IOException e) {
+			logger.error("Error when sending the reply: " + e.getMessage(), e);
 			return false;
 		}
 		return true;

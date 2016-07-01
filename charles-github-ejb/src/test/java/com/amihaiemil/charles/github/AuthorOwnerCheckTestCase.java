@@ -35,6 +35,7 @@ import javax.json.JsonObject;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
@@ -54,9 +55,15 @@ public class AuthorOwnerCheckTestCase {
      */
 	@Test
 	public void authorIsRepoOwner() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).warn(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
     		this.mockCommand("amihaiemil", "amihaiemil", false),
-    		Mockito.mock(SendReply.class)
+    		Mockito.mock(SendReply.class),
+    		logger
     	);
     	assertTrue(aoc.perform());
     }
@@ -67,11 +74,17 @@ public class AuthorOwnerCheckTestCase {
      */
     @Test
     public void repoIsAFork() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).warn(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
         SendReply sr = Mockito.mock(SendReply.class);
         Mockito.when(sr.perform()).thenReturn(true);
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
         	this.mockCommand("amihaiemil", "amihaiemil", true),
-        	sr
+        	sr,
+        	logger
         );
         assertFalse(aoc.perform());
     }
@@ -82,11 +95,17 @@ public class AuthorOwnerCheckTestCase {
 	 */
 	@Test
 	public void authorIsNotRepoOwner() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).warn(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
 		SendReply sr = Mockito.mock(SendReply.class);
 		Mockito.when(sr.perform()).thenReturn(true);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
     		this.mockCommand("someone", "amihaiemil", false),
-    		sr
+    		sr,
+    		logger
     	);
     	assertFalse(aoc.perform());
 	}

@@ -87,7 +87,8 @@ public class Brain {
     	 		logger.info("Prepared response: " + hello);
     	 		steps.add(
     	 			new SendReply(
-    	 				new TextReply(com, hello)
+    	 				new TextReply(com, hello),
+    	 				logger
     	 			)
     	 		);
     	 		break;
@@ -103,7 +104,8 @@ public class Brain {
     	 		logger.info("Prepared response: " + unknown);
     	 		steps.add(
         	 		new SendReply(
-            	 		new TextReply(com, unknown)
+            	 		new TextReply(com, unknown),
+            	 		logger
             	 	)
     	 		);
     	 		break;

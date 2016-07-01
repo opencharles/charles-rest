@@ -35,6 +35,7 @@ import javax.json.JsonObject;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
@@ -54,9 +55,15 @@ public class RepoNameCheckTestCase {
 	 */
 	@Test
 	public void repoNameMatches() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).warn(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
     	RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "amihaiemil.github.io"),
-    		Mockito.mock(SendReply.class)
+    		Mockito.mock(SendReply.class),
+    		logger
     	);
     	assertTrue(rnc.perform());
     }
@@ -67,11 +74,17 @@ public class RepoNameCheckTestCase {
 	 */
 	@Test
 	public void repoNameDoesntMatch() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).warn(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
 		SendReply sr = Mockito.mock(SendReply.class);
 		Mockito.when(sr.perform()).thenReturn(true);
     	RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "reponame"),
-    		sr
+    		sr,
+    		logger
     	);
     	assertFalse(rnc.perform());
 	}
