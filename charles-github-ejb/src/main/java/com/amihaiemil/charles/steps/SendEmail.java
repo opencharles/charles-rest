@@ -26,6 +26,9 @@ package com.amihaiemil.charles.steps;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.jcabi.email.Envelope;
 import com.jcabi.email.Postman;
 
@@ -49,24 +52,43 @@ public class SendEmail implements Step {
 	private Envelope env;
 	
 	/**
+	 * Logger.
+	 */
+	private Logger logger;
+	
+	/**
 	 * Constructor.
 	 * @param postman "postman" that delivers the email.
 	 * @param env Email data in an envelope.
 	 */
 	public SendEmail(Postman postman, Envelope env) {
-		this.postman = postman;
-		this.env = env;
+		this(postman, env, LoggerFactory.getLogger(SendEmail.class));
 	}
 
+	/**
+	 * Constructor.
+	 * @param postman "postman" that delivers the email.
+	 * @param env Email data in an envelope.
+	 * @param logger Action logger.
+	 */
+	public SendEmail(Postman postman, Envelope env, Logger logger) {
+		this.postman = postman;
+		this.env = env;
+		this.logger = logger;
+	}
+	
 	/**
 	 * Send the email.
 	 */
 	@Override
 	public boolean perform() {
 		try {
+			logger.info("Sending e-mail...");
 			this.postman.send(env);
+			logger.info("E-mail sent successfully!");
 			return true;
 		} catch (IOException e) {
+			logger.error("Error when sending the email " + e.getMessage(), e);
 			e.printStackTrace();
 		}
 		return false;

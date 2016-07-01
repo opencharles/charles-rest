@@ -29,6 +29,8 @@ import java.io.IOException;
 
 import javax.json.JsonObject;
 
+import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -51,13 +53,19 @@ public class AuthorOwnerCheck implements Step {
 	private SendReply reply;
 	
 	/**
+	 * Logger of the action.
+	 */
+	private Logger logger;
+	
+	/**
 	 * Constructor.
 	 * @param command Command received.
 	 * @param message For the commander in case this check fails.
 	 */
-	public AuthorOwnerCheck(Command command, SendReply rpl) {
+	public AuthorOwnerCheck(Command command, SendReply rpl, Logger logger) {
 		this.com = command;
 		this.reply = rpl;
+		this.logger = logger;
 	}
 	
 	/**
@@ -66,17 +74,24 @@ public class AuthorOwnerCheck implements Step {
 	 */
 	@Override
 	public boolean perform() {
+		logger.info("Checking ownership of the repo");
 		try {
+			logger.info("Getting repository info...");
 			JsonObject repo = this.com.issue().repo().json();
 			String repoOwner = repo.getJsonObject("owner").getString("login");
 			boolean isFork = repo.getBoolean("fork");
 			if(repoOwner.equals(com.authorLogin()) && !isFork) {
+				logger.info("Commander is repo owner and repo is not a fork - OK");
 				return true;
 			}
+			logger.warn("The commander needs to be owner of the repo and the repo cannot be a fork!");
 			this.reply.perform();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(
+				"IOException when performing step " +
+			    AuthorOwnerCheck.class.getName() + ": " +
+				e
+			);
 		}
 		return false;
 	}

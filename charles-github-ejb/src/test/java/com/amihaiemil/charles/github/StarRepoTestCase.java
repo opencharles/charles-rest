@@ -29,6 +29,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.amihaiemil.charles.github.StarRepo;
 import com.amihaiemil.charles.steps.Step;
@@ -52,9 +54,12 @@ public class StarRepoTestCase {
      */
 	@Test
 	public void starsRepo() throws Exception {
-		Repo repo = this.mockGithubRepo();
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
-        Step sr = new StarRepo(repo);
+		Repo repo = this.mockGithubRepo();
+        Step sr = new StarRepo(repo, logger);
         assertFalse(repo.stars().starred());
         assertTrue(sr.perform());
         assertTrue(repo.stars().starred());

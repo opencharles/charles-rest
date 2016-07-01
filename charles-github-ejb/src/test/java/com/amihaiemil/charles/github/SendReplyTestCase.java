@@ -33,6 +33,7 @@ import javax.json.Json;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
@@ -56,9 +57,13 @@ public class SendReplyTestCase {
 	 */
 	@Test
     public void sendsComment() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
     	Command com = this.mockCommand();
     	Reply rep = new TextReply(com, "Hello there!");
-    	SendReply sr = new SendReply(rep);
+    	SendReply sr = new SendReply(rep, logger);
 
     	assertTrue(sr.perform());
     	
