@@ -62,17 +62,16 @@ public class StarRepo implements Step {
     
     /**
      * Star the repository.
-     * @return true if successful, false otherwise.
+     * @return Always returns true, since it's not a critical step.
      */
     public boolean perform() {
     	try {
     		this.logger.info("Starring repository...");
 			this.repo.stars().star();
     		this.logger.info("Repository starred!");
-			return true;
 		} catch (IOException e) {
 			this.logger.error("Error when starring repository: " + e.getMessage(), e);
-			return false;
 		}
+    	return true;
     }
 }

@@ -25,67 +25,88 @@
 
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
-import javax.json.JsonObject;
-
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.IndexSite;
+import com.amihaiemil.charles.steps.SendEmail;
 import com.amihaiemil.charles.steps.Step;
 
 /**
- * Step where the identity of the command author is checked.
+ * Step taken by the Github agent when receiving an indexsite command. 
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $id$
+ * @version $Id$
  * @since 1.0.0
  *
  */
-public class AuthorOwnerCheck implements Step {
+public class IndexSiteSteps implements Step {
 
 	/**
-	 * Command.
+	 * Index site command.
 	 */
-	private Command com; 
+	private Command com;
 	
 	/**
-	 * Logger of the action.
+	 * Spoken language.
+	 */
+	private Language lang;
+	
+	/**
+	 * Action logger.
 	 */
 	private Logger logger;
 	
 	/**
 	 * Constructor.
-	 * @param command Command received.
+	 * @param com Command.
+	 * @param lang Conversation language.
+	 * @param logger Logger.
 	 */
-	public AuthorOwnerCheck(Command command, Logger logger) {
-		this.com = command;
+	public IndexSiteSteps(Command com, Language lang, Logger logger) {
+		this.com = com;
 		this.logger = logger;
+		this.lang = lang;
 	}
-	
+
 	/**
-	 * Check that the author of a command is owner of the repo.
-	 * @return true if the check is successful, false otherwise
+	 * Perform the steps necessary to fulfill an indexsite command.<br><br>
+	 * 1) Check if the author is owner of the repo and check if repo is not a fork.<br>
+	 * 2) Check if repo name matches pattern owner.github.io or repo has a gh-pages branch. <br>
+	 * 3) Crawl and index site. <br>
+	 * 4) Send email to commander with follow-up data.
 	 */
 	@Override
 	public boolean perform() {
-		logger.info("Checking ownership of the repo");
-		try {
-			logger.info("Getting repository info...");
-			JsonObject repo = this.com.issue().repo().json();
-			String repoOwner = repo.getJsonObject("owner").getString("login");
-			boolean isFork = repo.getBoolean("fork");
-			if(repoOwner.equals(com.authorLogin()) && !isFork) {
-				logger.info("Commander is repo owner and repo is not a fork - OK");
-				return true;
-			}
-			logger.warn("The commander needs to be owner of the repo and the repo cannot be a fork!");
-		} catch (IOException e) {
-			logger.error(
-				"IOException when performing step " +
-			    AuthorOwnerCheck.class.getName() + ": " +
-				e
-			);
-		}
+		AuthorOwnerCheck aoc = new AuthorOwnerCheck(com, logger);
+		if(aoc.perform()) {
+		    boolean siteRepo = new RepoNameCheck(this.com, this.logger).perform();
+	    	IndexSite is = new IndexSite();
+		    if (siteRepo) {
+		    	if(is.perform()) {
+                    SendEmail se = new SendEmail(null, null);
+                    se.perform();
+		    	}
+		    } else {
+		    	// maybe it has a gh-pages branch
+		    }
+        } else {
+            return this.replyForUnauthorizedCommander().perform();
+        }
 		return false;
 	}
-	
+
+    /**
+     * Builds the reply to send to an unauthorized commander.
+     * @return SendReply step.
+     */
+    public SendReply replyForUnauthorizedCommander() {
+        Reply rep = new TextReply(
+            com,
+            String.format(
+         	    lang.response("denied.comment"),
+                "@" + com.authorLogin()
+         	)
+        );
+        return new SendReply(rep, logger);
+    }
+
 }

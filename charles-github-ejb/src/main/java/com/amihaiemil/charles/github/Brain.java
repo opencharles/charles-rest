@@ -93,6 +93,9 @@ public class Brain {
     	 		);
     	 		break;
     	 	case "indexsite":
+    	 		//...
+    	 		steps.add(new IndexSiteSteps(com, category.language(), logger));
+    	 		//...
     	 		break;
     	 	case "indexpage":
     	 		break;
