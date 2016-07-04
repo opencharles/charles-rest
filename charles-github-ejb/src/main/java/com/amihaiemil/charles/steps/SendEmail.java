@@ -26,11 +26,19 @@ package com.amihaiemil.charles.steps;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jcabi.email.Envelope;
 import com.jcabi.email.Postman;
+import com.jcabi.email.Protocol;
+import com.jcabi.email.Token;
+import com.jcabi.email.enclosure.EnPlain;
+import com.jcabi.email.stamp.StRecipient;
+import com.jcabi.email.stamp.StSender;
+import com.jcabi.email.stamp.StSubject;
+import com.jcabi.email.wire.SMTP;
 
 /**
  * Step where an email is sent.
@@ -58,6 +66,54 @@ public class SendEmail implements Step {
 	
 	/**
 	 * Constructor.
+	 * @param to Recipient of this mail.
+	 * @param subject Mail subject.
+	 * @param message Contents of the mail.
+	 */
+	public SendEmail(String to,  String subject, String message) {
+		this(to, subject, message, LoggerFactory.getLogger(SendEmail.class));
+	}
+	
+	/**
+	 * Constructor.
+	 * @param to Recipient of this mail.
+	 * @param subject Mail subject.
+	 * @param message Contents of the mail.
+	 * @param logger Action logger.
+	 */
+	public SendEmail(String to,  String subject, String message, Logger logger) {
+		String username = System.getProperty("charles.smtp.username");
+		String pwd = System.getProperty("charles.smtp.password");
+		if(username != null && pwd != null) {
+            String host = System.getProperty("charles.smtp.host");
+            String port = System.getProperty("charles.smtp.port");
+            if(!StringUtils.isEmpty(host) && !StringUtils.isEmpty(port)) {
+            	Protocol prot = new Protocol.SMTP(host, Integer.valueOf(port));
+            	if(Boolean.valueOf(System.getProperty("charles.smtp.secure"))) {
+            		prot = new Protocol.SMTPS(host, Integer.valueOf(port));
+            	}
+            	this.postman = new Postman.Default(
+                    new SMTP(new Token(username, pwd).access(prot))
+                );
+            } else {
+            	this.postman = new Postman.Default(
+                    new SMTP(
+                        new Token(username, pwd)
+                            .access(new Protocol.SMTPS("smtp.gmail.com", 465))
+                    )
+                );
+            }
+            this.env = new Envelope.MIME()
+                .with(new StSender(username))
+                .with(new StRecipient(to))
+                .with(new StSubject(subject))
+                .with(new EnPlain(message));
+		}
+		this.logger = logger;
+	}
+	
+	/**
+	 * Constructor.
 	 * @param postman "postman" that delivers the email.
 	 * @param env Email data in an envelope.
 	 */
@@ -82,14 +138,18 @@ public class SendEmail implements Step {
 	 */
 	@Override
 	public boolean perform() {
-		try {
-			logger.info("Sending e-mail...");
-			this.postman.send(env);
-			logger.info("E-mail sent successfully!");
-			return true;
-		} catch (IOException e) {
-			logger.error("Error when sending the email " + e.getMessage(), e);
-			e.printStackTrace();
+		logger.info("Sending e-mail...");
+		if(this.postman == null) {
+			logger.warn("Uninitialized postman (username and/or password missing). Cannot send email!");
+			return false;
+		} else {
+		    try {
+			    this.postman.send(env);
+			    logger.info("E-mail sent successfully!");
+			    return true;
+		    } catch (IOException e) {
+			    logger.error("Error when sending the email " + e.getMessage(), e);
+		    }
 		}
 		return false;
 	}
