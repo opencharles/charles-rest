@@ -88,11 +88,12 @@ public class SendEmail implements Step {
             String host = System.getProperty("charles.smtp.host");
             String port = System.getProperty("charles.smtp.port");
             if(!StringUtils.isEmpty(host) && !StringUtils.isEmpty(port)) {
+            	Protocol prot = new Protocol.SMTP(host, Integer.valueOf(port));
+            	if(Boolean.valueOf(System.getProperty("charles.smtp.secure"))) {
+            		prot = new Protocol.SMTPS(host, Integer.valueOf(port));
+            	}
             	this.postman = new Postman.Default(
-                    new SMTP(
-                        new Token(username, pwd)
-                            .access(new Protocol.SMTP(host, Integer.valueOf(port)))
-                    )
+                    new SMTP(new Token(username, pwd).access(prot))
                 );
             } else {
             	this.postman = new Postman.Default(
