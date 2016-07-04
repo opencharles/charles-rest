@@ -7,6 +7,7 @@ import java.net.ServerSocket;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 
+import org.junit.After;
 import org.junit.Test;
 
 import com.icegreen.greenmail.util.GreenMail;
@@ -50,13 +51,11 @@ public class SendEmailTestCase {
                         .access(new Protocol.SMTP(bind, port))
                 )
             ), 
-            new Envelope.Safe(
-                new Envelope.MIME()
-                    .with(new StSender("Charles Michael <amihai.emil@gmail.com>"))
-                    .with(new StRecipient("commandergithub@test.com"))
-                    .with(new StSubject("test subject: test email"))
-                    .with(new EnPlain("hello, how are you? This is a test email..."))
-            )
+            new Envelope.MIME()
+                .with(new StSender("Charles Michael <amihai.emil@gmail.com>"))
+                .with(new StRecipient("commandergithub@test.com"))
+                .with(new StSubject("test subject: test email"))
+                .with(new EnPlain("hello, how are you? This is a test email..."))
         );
 
         try {
@@ -73,11 +72,52 @@ public class SendEmailTestCase {
     }
 	
 	/**
-	 * Mock a smtp server.
-	 * @return GreenMail smtp server.
-	 * @throws IOException If something goes wrong.
+	 * SendEmail can send an email when username, password, host and port are specified.
+	 * @throws Exception If something goes wrong.
 	 */
-	public GreenMail smtpServer(String bind, int port) throws IOException {
+	@Test
+	public void sendsEmailFromGivenUser() throws Exception {
+		String bind = "localhost";
+		int port = this.port();
+		GreenMail server = this.smtpServer(bind, port);
+        server.start();
+        
+        System.setProperty("charles.smtp.username","mihai");
+        System.setProperty("charles.smtp.password","");
+        System.setProperty("charles.smtp.host","localhost");
+        System.setProperty("charles.smtp.port", String.valueOf(port));
+
+        SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
+
+        try {
+            assertTrue(se.perform());
+            final MimeMessage[] messages = server.getReceivedMessages();
+            assertTrue(messages.length == 1);
+            for (final Message msg : messages) {
+                assertTrue(msg.getFrom()[0].toString().contains("mihai"));
+                assertTrue(msg.getSubject().contains("hello"));
+            }
+        } finally {
+            server.stop();
+        }
+	}
+
+    /**
+     * SendEmail does not send any email if username and/or password are not specified.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void uninitializedPostman() {
+        SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
+        assertFalse(se.perform());
+    }
+
+    /**
+     * Mock a smtp server.
+     * @return GreenMail smtp server.
+     * @throws IOException If something goes wrong.
+     */
+    public GreenMail smtpServer(String bind, int port) throws IOException {
         return new GreenMail(
             new ServerSetup(
             	port, bind,
@@ -95,5 +135,13 @@ public class SendEmailTestCase {
         try (ServerSocket socket = new ServerSocket(0)) {
             return socket.getLocalPort();
         }
+    }
+
+    @After
+    public void clean() {
+    	System.clearProperty("charles.smtp.username");
+        System.clearProperty("charles.smtp.password");
+        System.clearProperty("charles.smtp.host");
+        System.clearProperty("charles.smtp.port");
     }
 }
