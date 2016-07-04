@@ -86,6 +86,7 @@ public class SendEmail implements Step {
 			logger.info("Sending e-mail...");
 			this.postman.send(env);
 			logger.info("E-mail sent successfully!");
+			return true;
 		} catch (IOException e) {
 			logger.error("Error when sending the email " + e.getMessage(), e);
 			e.printStackTrace();
