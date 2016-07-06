@@ -62,7 +62,6 @@ public class RepoNameCheckTestCase {
 
     	RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "amihaiemil.github.io"),
-    		Mockito.mock(SendReply.class),
     		logger
     	);
     	assertTrue(rnc.perform());
@@ -79,11 +78,8 @@ public class RepoNameCheckTestCase {
 		Mockito.doNothing().when(logger).warn(Mockito.anyString());
 		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
-		SendReply sr = Mockito.mock(SendReply.class);
-		Mockito.when(sr.perform()).thenReturn(true);
     	RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "reponame"),
-    		sr,
     		logger
     	);
     	assertFalse(rnc.perform());

@@ -25,10 +25,13 @@
 
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateful;
+import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
@@ -68,8 +71,9 @@ public class Brain {
 	 * Understand a command.
 	 * @param com Given command.
 	 * @return Steps.
+	 * @throws IOException if something goes worng.
 	 */
-     public Steps understand(Command com, Logger logger) {
+     public Steps understand(Command com, Logger logger) throws IOException {
     	 String authorLogin = com.authorLogin();
 	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
@@ -83,7 +87,7 @@ public class Brain {
     	 }
     	 switch (category.type()) {
     	 	case "hello":
-    	 		String hello = String.format(category.language().response("hello.comment"), "@" + authorLogin);
+    	 		String hello = String.format(category.language().response("hello.comment"), authorLogin);
     	 		logger.info("Prepared response: " + hello);
     	 		steps.add(
     	 			new SendReply(
@@ -93,6 +97,7 @@ public class Brain {
     	 		);
     	 		break;
     	 	case "indexsite":
+    	 		steps.addAll(this.indexSiteSteps(com, category, logger));
     	 		break;
     	 	case "indexpage":
     	 		break;
@@ -100,7 +105,7 @@ public class Brain {
     	 		logger.info("Unknwon command!");
     	 		String unknown = String.format(
     	 			category.language().response("unknown.comment"),
-    	 			"@" + authorLogin);
+    	 			authorLogin);
     	 		logger.info("Prepared response: " + unknown);
     	 		steps.add(
         	 		new SendReply(
@@ -112,5 +117,47 @@ public class Brain {
 		 }
 		 logger.info("Have to execute " + steps.size() + " step(s) to fulfill the command!");
     	 return new Steps(steps);
+     }
+     
+    private List<Step> indexSiteSteps(Command com, CommandCategory category, Logger logger) throws IOException{
+        List<Step> steps = new ArrayList<Step>();
+		JsonObject repo = com.issue().repo().json();
+		steps.add(
+		    new SendReply(
+		        new TextReply(
+		            com,
+		            String.format(
+		                category.language().response("index.start.comment"),
+		                com.authorLogin()
+		            )
+		        ),
+		        logger
+		    )		
+		);
+
+		steps.add(
+		    new IndexSiteSteps.IndexSiteStepsBuilder(
+		        com, category.language(), logger
+		    )
+			.authorOwnerCheck(new AuthorOwnerCheck(com, logger))
+			.repoNameCheck(new RepoNameCheck(com, logger))
+			.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
+			.starRepo(new StarRepo(com.issue().repo(), logger))
+			.build()
+		);
+		
+		steps.add(
+	        new SendReply(
+			    new TextReply(
+			        com,
+			        String.format(
+			            category.language().response("index.finished.comment"),
+			            com.authorLogin()
+			        )
+			    ),
+			    logger
+			)		
+		);
+		return steps;
      }
 }

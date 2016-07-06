@@ -46,11 +46,6 @@ public class AuthorOwnerCheck implements Step {
 	 * Command.
 	 */
 	private Command com; 
-
-	/**
-	 * Send a reply to the commander in case the check fails.
-	 */
-	private SendReply reply;
 	
 	/**
 	 * Logger of the action.
@@ -60,11 +55,9 @@ public class AuthorOwnerCheck implements Step {
 	/**
 	 * Constructor.
 	 * @param command Command received.
-	 * @param message For the commander in case this check fails.
 	 */
-	public AuthorOwnerCheck(Command command, SendReply rpl, Logger logger) {
+	public AuthorOwnerCheck(Command command, Logger logger) {
 		this.com = command;
-		this.reply = rpl;
 		this.logger = logger;
 	}
 	
@@ -85,7 +78,6 @@ public class AuthorOwnerCheck implements Step {
 				return true;
 			}
 			logger.warn("The commander needs to be owner of the repo and the repo cannot be a fork!");
-			this.reply.perform();
 		} catch (IOException e) {
 			logger.error(
 				"IOException when performing step " +

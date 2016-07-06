@@ -81,5 +81,11 @@ public class ValidCommand implements Command {
 	public String authorLogin() {
 		return comment.getJsonObject("user").getString("login");
 	}
+	
+	@Override
+	public String authorEmail() {
+		return comment.getJsonObject("user").getString("email");
+	}
+
 
 }

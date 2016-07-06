@@ -22,47 +22,34 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
 
-import javax.json.JsonObject;
-
-import com.jcabi.github.Issue;
+package com.amihaiemil.charles.steps;
 
 /**
- * Command for the github agent.
+ * Step to index a website.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public interface Command {
-	/**
-	 * The json comment.
-	 * @return Json Object representing the comment on Github issue.
-	 */
-    JsonObject json();
+public class IndexSite implements Step {
+    /**
+     * Url to the index page of the website.
+     */
+	private String url;
     
     /**
-     * Parent issue.
-     * @return com.jcabi.github.Issue
+     * Constructor.
+     * @param url The website's url.
      */
-    Issue issue();
-    
-    /**
-     * Username of the Github agent.
-     * @return Github agent's String username.
-     */
-    String agentLogin();
-    
-    /**
-     * Username of this command's author.
-     * @return String Github username.
-     */
-    String authorLogin();
+    public IndexSite(String url) {
+        this.url = url;
+    }
 
-    /**
-     * Email address of this command's author.
-     * @return String email address.
-     */
-	String authorEmail();
+	@Override
+	public boolean perform() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
 }

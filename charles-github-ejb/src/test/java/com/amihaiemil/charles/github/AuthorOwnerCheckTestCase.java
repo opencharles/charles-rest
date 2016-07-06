@@ -62,7 +62,6 @@ public class AuthorOwnerCheckTestCase {
 
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
     		this.mockCommand("amihaiemil", "amihaiemil", false),
-    		Mockito.mock(SendReply.class),
     		logger
     	);
     	assertTrue(aoc.perform());
@@ -79,11 +78,8 @@ public class AuthorOwnerCheckTestCase {
 		Mockito.doNothing().when(logger).warn(Mockito.anyString());
 		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
-        SendReply sr = Mockito.mock(SendReply.class);
-        Mockito.when(sr.perform()).thenReturn(true);
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
         	this.mockCommand("amihaiemil", "amihaiemil", true),
-        	sr,
         	logger
         );
         assertFalse(aoc.perform());
@@ -100,11 +96,8 @@ public class AuthorOwnerCheckTestCase {
 		Mockito.doNothing().when(logger).warn(Mockito.anyString());
 		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
-		SendReply sr = Mockito.mock(SendReply.class);
-		Mockito.when(sr.perform()).thenReturn(true);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
     		this.mockCommand("someone", "amihaiemil", false),
-    		sr,
     		logger
     	);
     	assertFalse(aoc.perform());
