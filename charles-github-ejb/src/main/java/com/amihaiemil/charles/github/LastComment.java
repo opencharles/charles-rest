@@ -92,5 +92,10 @@ public class LastComment implements Command {
 	public String authorLogin() {
 		return com.getJsonObject("user").getString("login");
 	}
+	
+	@Override
+	public String authorEmail() {
+		return com.getJsonObject("user").getString("email");
+	}
 
 }

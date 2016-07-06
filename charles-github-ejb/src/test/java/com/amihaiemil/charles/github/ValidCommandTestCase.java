@@ -58,4 +58,47 @@ public class ValidCommandTestCase {
 		    	
     	assertTrue(new ValidCommand(comm).json().equals(json));
 	}
+
+	@Test
+	public void getsAuthorLogin() throws Exception {
+		Command comm = Mockito.mock(Command.class);
+		JsonObject user = Json.createObjectBuilder().add("login", "amihaiemil").build();
+		
+		JsonObject json = Json.createObjectBuilder()
+		    .add("user", user)
+			.add("body", "test text")
+		    .add("id", 2)
+		    .build();
+		Mockito.when(comm.json()).thenReturn(json);
+		ValidCommand vc = new ValidCommand(comm);
+		assertTrue(vc.authorLogin().equals("amihaiemil"));
+	}
+	
+	@Test
+	public void getsAuthorEmail() throws Exception {
+		Command comm = Mockito.mock(Command.class);
+		JsonObject user = Json.createObjectBuilder().add("login", "amihaiemil").build();
+		
+		JsonObject json = Json.createObjectBuilder()
+		    .add("user", user)
+			.add("body", "test text")
+		    .add("id", 2)
+		    .build();
+		Mockito.when(comm.json()).thenReturn(json);
+		ValidCommand vc = new ValidCommand(comm);
+		assertTrue(vc.authorLogin().equals("amihaiemil"));
+	}
+	
+	@Test
+	public void getsAgentLogin() {
+		Command comm = Mockito.mock(Command.class);
+		Mockito.when(comm.agentLogin()).thenReturn("chalesmike");
+		JsonObject json = Json.createObjectBuilder()
+			.add("body", "test text")
+		    .add("id", 2)
+		    .build();
+		Mockito.when(comm.json()).thenReturn(json);
+		ValidCommand vc = new ValidCommand(comm);
+		assertTrue(vc.agentLogin().equals("chalesmike"));
+	}
 }

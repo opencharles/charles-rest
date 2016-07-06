@@ -64,6 +64,24 @@ public class StarRepoTestCase {
         assertTrue(sr.perform());
         assertTrue(repo.stars().starred());
     }
+	
+	/**
+     * StarRepo tries to star a repo twice.
+     * @throws Exception If something goes wrong.
+     */
+	@Test
+	public void starsRepoTwice() throws Exception {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).error(Mockito.anyString());
+
+		Repo repo = this.mockGithubRepo();
+        Step sr = new StarRepo(repo, logger);
+        assertFalse(repo.stars().starred());
+        assertTrue(sr.perform());
+        assertTrue(sr.perform());
+        assertTrue(repo.stars().starred());
+    }
 
 	/**
 	 * Return a Github Repo mock for test.

@@ -61,9 +61,9 @@ public class SendReply implements Step {
 	@Override
 	public boolean perform() {
 		try {
-			logger.info("Sending reply...");
+			logger.info("Sending comment...");
 			rep.send();
-			logger.info("Reply sent successfully!");
+			logger.info("Comment sent successfully!");
 		} catch (IOException e) {
 			logger.error("Error when sending the reply: " + e.getMessage(), e);
 			return false;

@@ -59,4 +59,10 @@ public interface Command {
      * @return String Github username.
      */
     String authorLogin();
+
+    /**
+     * Email address of this command's author.
+     * @return String email address.
+     */
+	String authorEmail();
 }
