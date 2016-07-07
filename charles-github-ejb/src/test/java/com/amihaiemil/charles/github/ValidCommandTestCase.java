@@ -99,7 +99,7 @@ public class ValidCommandTestCase {
 		JsonObject authorInfo = Json.createObjectBuilder().add("login", "amihaiemil").build();
 		JsonObject json = Json.createObjectBuilder()
 			.add("user", authorInfo)
-			.add("body", "test text")
+			.add("body", com.json().getString("body"))
 		    .add("id", 2)
 		    .build();
 		Mockito.when(comm.json()).thenReturn(json);
