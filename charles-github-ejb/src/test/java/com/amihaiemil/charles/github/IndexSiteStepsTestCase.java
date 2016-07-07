@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import javax.json.Json;
+import javax.json.JsonObject;
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
 
@@ -61,6 +62,7 @@ public class IndexSiteStepsTestCase {
     public void builderWorks() {
         IndexSiteSteps iss = new IndexSiteSteps.IndexSiteStepsBuilder(
             Mockito.mock(Command.class),
+            Mockito.mock(JsonObject.class),
             Mockito.mock(Language.class),
             Mockito.mock(Logger.class)
         )
@@ -87,6 +89,7 @@ public class IndexSiteStepsTestCase {
     	
     	IndexSiteSteps iss = new IndexSiteSteps.IndexSiteStepsBuilder(
             com,
+            com.issue().repo().json(),
             lang,
             Mockito.mock(Logger.class)
         )
@@ -103,6 +106,9 @@ public class IndexSiteStepsTestCase {
      */
     @Test
     public void repoNameAndGhPagesCheckFails() throws Exception {
+    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
+    	Mockito.when(rfc.perform()).thenReturn(true);
+
     	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
     	Mockito.when(aoc.perform()).thenReturn(true);
 
@@ -122,9 +128,11 @@ public class IndexSiteStepsTestCase {
     	
     	IndexSiteSteps iss = new IndexSiteSteps.IndexSiteStepsBuilder(
             com,
+            com.issue().repo().json(),
             lang,
             Mockito.mock(Logger.class)
         )
+    	.repoForkCheck(rfc)
     	.authorOwnerCheck(aoc)
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
@@ -146,6 +154,9 @@ public class IndexSiteStepsTestCase {
     	IndexSite is = Mockito.mock(IndexSite.class);
     	Mockito.when(is.perform()).thenReturn(true);
     	
+    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
+    	Mockito.when(rfc.perform()).thenReturn(true);
+    	
     	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
     	Mockito.when(aoc.perform()).thenReturn(true);
 
@@ -163,8 +174,9 @@ public class IndexSiteStepsTestCase {
     	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
     	IndexSiteSteps iss = Mockito.spy(
     	    new IndexSiteSteps.IndexSiteStepsBuilder(
-    		    com, lang, Mockito.mock(Logger.class)
+    		    com, com.issue().repo().json(), lang, Mockito.mock(Logger.class)
             )
+    	    .repoForkCheck(rfc)
     	    .authorOwnerCheck(aoc)
     	    .repoNameCheck(rnc)
     	    .ghPagesBranchCheck(ghc)

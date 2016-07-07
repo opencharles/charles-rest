@@ -22,7 +22,6 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
 import javax.json.JsonObject;
@@ -32,50 +31,44 @@ import org.slf4j.Logger;
 import com.amihaiemil.charles.steps.Step;
 
 /**
- * Step where the repo's name is checked.
+ * Check for repository fork.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class RepoNameCheck implements Step{
+public class RepoForkCheck implements Step {
 
-	/**
-	 * Json repository as returned by the Github API.
-	 */
-	private JsonObject repo;
-	/**
-	 * Action logger.
-	 */
-	private Logger logger;
-	
+    /**
+     * Repository json as returned by the Github API.
+     */
+    private JsonObject repo;
+
+    /**
+     * Logger.
+     */
+    private Logger logger;
+
     /**
      * Constructor.
-     * @param repo Json repo.
-     * @param message For the commander in case this check fails.
+     * @param repo Given repository json.
+     * @param logger Action logger.
      */
-    public RepoNameCheck(JsonObject repo, Logger logger) {
+    public RepoForkCheck(JsonObject repo, Logger logger) {
         this.repo = repo;
         this.logger = logger;
     }
 
     /**
-     * Check that the repo's name respects the format owner.github.io
-     * @return true if the check is successful, false otherwise
+     * Check whether the repo is a fork or not.
+     * @returns true if the repo is NOT a fork, false otherwise.
      */
-    @Override
-    public boolean perform() {
-        logger.info("Checking repository name... ");
-        String  owner = this.repo.getJsonObject("owner").getString("login");
-        String expectedName = owner + ".github.io";
-        logger.info("Expected name: " + expectedName);
-        String name = this.repo.getString("name");
-        logger.info("Actual name: " + name);
-        if(expectedName.equals(name)) {
-            logger.info("Repository name matchers - Ok");
-            return true;
-        }
-        logger.warn("Repository name does not match the expected name");
-        return false;
-    }
+	@Override
+	public boolean perform() {
+		boolean fork = repo.getBoolean("fork");
+		if(fork) {
+			logger.warn("Repository should NOT be a fork!");
+		}
+		return !fork;
+	}
 }

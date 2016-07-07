@@ -50,6 +50,11 @@ public class IndexSiteSteps implements Step {
 	private Command com;
 	
 	/**
+	 * Json repository as returned by the Github API.
+	 */
+	private JsonObject repoJson;
+	
+	/**
 	 * Spoken language.
 	 */
 	private Language lang;
@@ -63,6 +68,11 @@ public class IndexSiteSteps implements Step {
 	 * Author check step.
 	 */
 	private Step aoc;
+	
+	/**
+	 * Repo fork check.
+	 */
+	private Step rfc;
 	
 	/**
 	 * Repo name check step.
@@ -87,9 +97,11 @@ public class IndexSiteSteps implements Step {
      */
     public IndexSiteSteps(IndexSiteStepsBuilder builder) {
         this.com = builder.com;
+        this.repoJson = builder.repo;
         this.logger = builder.logger;
         this.lang = builder.lang;
         this.aoc = builder.authorOwnerStep;
+        this.rfc = builder.repoForkCheck;
         this.rpc = builder.repoNameCheck;
         this.gpc = builder.ghPagesBranchCheck;
         this.sr = builder.starRepo;
@@ -104,32 +116,30 @@ public class IndexSiteSteps implements Step {
 	 */
 	@Override
 	public boolean perform() {
-		JsonObject repoJson;
-		try {
-			repoJson = this.com.issue().repo().json();
-		    if(this.aoc.perform()) {
-		        boolean siteRepo = this.rpc.perform();
-		        boolean indexed = false;
+        if(this.aoc.perform()) {
+		    if(this.rfc.perform()) {
+			    boolean siteRepo = this.rpc.perform();
+			    boolean indexed = false;
 		        if (siteRepo) {
-		        	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), false).perform();
+		    	    indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), false).perform();
 		        } else {
-		    	    boolean ghPagesBranch = this.gpc.perform();
-		    	    if(ghPagesBranch) {
-		    	    	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), true).perform();
-		    	    } else {
-		    	    	return this.denialReply("denied.name.comment").perform();
-		    	    }
-		        }
+		            boolean ghPagesBranch = this.gpc.perform();
+		            if(ghPagesBranch) {
+		        	    indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), true).perform();
+		            } else {
+		        	    return this.denialReply("denied.name.comment").perform();
+		            }
+		           }
 		        if(indexed) {
-		        	sr.perform();
-		        	return this.sendConfirmationEmail(this.com.authorEmail(), repoJson.getString("name"));
-		        }
-            } else {
-                return this.denialReply("denied.commander.comment").perform();
-            }
-		} catch (IOException e) {
-			this.logger.error("Error when communicating with the Github API: " + e.getMessage(), e);
-		}
+			    	sr.perform();
+			    	return this.sendConfirmationEmail(this.com.authorEmail(), repoJson.getString("name"));
+			    }
+		    } else {
+		    	return this.denialReply("denied.fork.comment").perform();
+		    }
+        } else {
+            return this.denialReply("denied.commander.comment").perform();
+        }
 		return false;
 	}
 
@@ -194,9 +204,11 @@ public class IndexSiteSteps implements Step {
      */
     public static class IndexSiteStepsBuilder {
     	private Command com;
+    	private JsonObject repo;
     	private Language lang;
     	private Logger logger;
     	private Step authorOwnerStep;
+    	private Step repoForkCheck;
     	private Step repoNameCheck;
     	private Step ghPagesBranchCheck;
     	private Step starRepo;
@@ -204,11 +216,13 @@ public class IndexSiteSteps implements Step {
     	/**
     	 * Constructor.
     	 * @param com Command that triggered the action.
+    	 * @param repo Json repo as returned by the Github API
     	 * @param lang Spoken Language.
     	 * @param logger Action logger.
     	 */
-    	public IndexSiteStepsBuilder(Command com, Language lang, Logger logger) {
+    	public IndexSiteStepsBuilder(Command com, JsonObject repo, Language lang, Logger logger) {
     		this.com = com;
+    		this.repo = repo;
     		this.lang = lang;
     		this.logger = logger;
     	}
@@ -220,6 +234,16 @@ public class IndexSiteSteps implements Step {
     	 */
     	public IndexSiteStepsBuilder authorOwnerCheck(Step aoc) {
     		this.authorOwnerStep = aoc;
+    		return this;
+    	}
+    	
+    	/**
+    	 * Specify the repository fork check for this builder.
+    	 * @param rfc Given RepositoryForkCheck.
+    	 * @return This builder.
+    	 */
+    	public IndexSiteStepsBuilder repoForkCheck(Step rfc) {
+    		this.repoForkCheck = rfc;
     		return this;
     	}
     	

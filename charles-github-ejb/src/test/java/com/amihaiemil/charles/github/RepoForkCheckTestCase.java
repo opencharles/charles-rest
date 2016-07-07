@@ -25,57 +25,41 @@
 
 package com.amihaiemil.charles.github;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.Step;
+import static org.junit.Assert.*;
 
 /**
- * Step where the repo's name is checked.
+ * Unit tests for {@link RepoForkCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class RepoNameCheck implements Step{
+public class RepoForkCheckTestCase {
 
-	/**
-	 * Json repository as returned by the Github API.
-	 */
-	private JsonObject repo;
-	/**
-	 * Action logger.
-	 */
-	private Logger logger;
-	
     /**
-     * Constructor.
-     * @param repo Json repo.
-     * @param message For the commander in case this check fails.
+     * RepoNameCheck can tell if the repo is a fork. 
      */
-    public RepoNameCheck(JsonObject repo, Logger logger) {
-        this.repo = repo;
-        this.logger = logger;
+    @Test
+	public void recognizesFork() {
+        JsonObject repo = Json.createObjectBuilder().add("fork", true).build();
+        RepoForkCheck rfc = new RepoForkCheck(repo, Mockito.mock(Logger.class));
+        assertFalse(rfc.perform());
     }
-
+    
     /**
-     * Check that the repo's name respects the format owner.github.io
-     * @return true if the check is successful, false otherwise
+     * RepoNameCheck can tell if the repo is NOT a fork. 
      */
-    @Override
-    public boolean perform() {
-        logger.info("Checking repository name... ");
-        String  owner = this.repo.getJsonObject("owner").getString("login");
-        String expectedName = owner + ".github.io";
-        logger.info("Expected name: " + expectedName);
-        String name = this.repo.getString("name");
-        logger.info("Actual name: " + name);
-        if(expectedName.equals(name)) {
-            logger.info("Repository name matchers - Ok");
-            return true;
-        }
-        logger.warn("Repository name does not match the expected name");
-        return false;
+    @Test
+	public void recognizesNotFork() {
+        JsonObject repo = Json.createObjectBuilder().add("fork", false).build();
+        RepoForkCheck rfc = new RepoForkCheck(repo, Mockito.mock(Logger.class));
+        assertTrue(rfc.perform());
     }
 }

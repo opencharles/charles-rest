@@ -55,34 +55,13 @@ public class AuthorOwnerCheckTestCase {
      */
 	@Test
 	public void authorIsRepoOwner() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).warn(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
-
+        Command com = this.mockCommand("amihaiemil", "amihaiemil", false);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		this.mockCommand("amihaiemil", "amihaiemil", false),
-    		logger
+    	    com,
+    	    com.issue().repo().json(),
+    	    Mockito.mock(Logger.class)
     	);
     	assertTrue(aoc.perform());
-    }
-	
-    /**
-     * AuthorOwnerCheck can tell when the repo is a fork.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void repoIsAFork() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).warn(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
-
-        AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-        	this.mockCommand("amihaiemil", "amihaiemil", true),
-        	logger
-        );
-        assertFalse(aoc.perform());
     }
 
 	/**
@@ -91,18 +70,15 @@ public class AuthorOwnerCheckTestCase {
 	 */
 	@Test
 	public void authorIsNotRepoOwner() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).warn(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
-
+        Command com  = this.mockCommand("someone", "amihaiemil", false);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		this.mockCommand("someone", "amihaiemil", false),
-    		logger
+    		com,
+    		com.issue().repo().json(),
+    		Mockito.mock(Logger.class)
     	);
     	assertFalse(aoc.perform());
 	}
-	
+
 	/**
 	 * Mock a command for the unit tests.
 	 * @param author Author of the command.
