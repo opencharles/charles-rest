@@ -31,29 +31,36 @@ package com.amihaiemil.charles.github;
  * @since 1.0.0
  *
  */
-public class LogsOnServer implements Logs{
+public class LogsOnServer implements LogsLocation{
 	/**
 	 * REST endpoint.
 	 */
 	private String endpoint;
 
 	/**
+	 * Name of the log file.
+	 */
+	private String logFilename;
+	
+	/**
 	 * Constructor.
 	 * @param ep Rest endpoint which fetches the log file.
+	 * @param logFilename Name of the logfile.
 	 */
-	public LogsOnServer(String ep) {
+	public LogsOnServer(String ep, String logFilename) {
 		this.endpoint = ep;
+		this.logFilename = logFilename;
 	}
 
 	/**
 	 * Returns the formatted REST url which fetches the log file from the server.
 	 */
 	@Override
-	public String address(String log) {
+	public String address() {
 		if(endpoint.endsWith("/")) {
-			return endpoint + log;
+			return endpoint + this.logFilename;
 		}
-		return endpoint + "/" + log;
+		return endpoint + "/" + this.logFilename;
 	}
 
 }

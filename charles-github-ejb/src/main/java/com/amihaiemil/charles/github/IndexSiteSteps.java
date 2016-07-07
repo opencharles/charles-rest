@@ -132,7 +132,7 @@ public class IndexSiteSteps implements Step {
 		           }
 		        if(indexed) {
 			    	sr.perform();
-			    	return this.sendConfirmationEmail(this.com.authorEmail(), repoJson.getString("name"));
+			    	return this.sendFollowupMessage(repoJson.getString("name"));
 			    }
 		    } else {
 		    	return this.denialReply("denied.fork.comment").perform();
@@ -159,30 +159,54 @@ public class IndexSiteSteps implements Step {
     }
     
     /**
-     * After the index is complete, an email is sent to the commander containing follow-up info.
-     * @param email E-mail address of the commander.
+     * After the index is complete, send a follow-up message (containing further instructions)
+     * to the command's author. If they have a public email address on Github, use that to send 
+     * them an e-mail, otherwise post a comment in the issue.
      * @param repoName Name of the indexed repo.
      * @return true if successful, false otherwise
      */
-    boolean sendConfirmationEmail(String email, String repoName) {
+    boolean sendFollowupMessage(String repoName) {
     	String issueUrl = "#";
+    	String email = "";
     	try {
-			 issueUrl = this.com.issue().json().getString("html_url");
+		    email = this.com.authorEmail();
 		} catch (IOException e) {
-			this.logger.error("Error when getting the issue url for the confirmation email! " + e.getMessage(), e);
+			this.logger.error("Error when getting the author's email address! " + e.getMessage(), e);
 		}
-        String message = String.format(
-            this.lang.response("index.confirmation.email"),
-            issueUrl,
-            this.com.authorLogin(),
-            repoName,
-            this.com.agentLogin()
-        );
-        String subject = "Repo " + repoName + " successfully indexed";
-    	SendEmail se = new SendEmail(
-            email, subject, message, this.logger 
-        ); 
-        return se.perform();
+    	if(!email.isEmpty()) {
+    		try {
+				issueUrl = this.com.issue().json().getString("html_url");
+			} catch (IOException e) {
+				this.logger.error(
+				    "Error when getting the issues url for the follow-up email! " +
+				    e.getMessage(), e
+				);
+			}
+            String emailBody = String.format(
+                this.lang.response("index.followup.email"),
+                this.com.authorLogin(),
+                repoName,
+                issueUrl,
+                repoName,
+                this.com.agentLogin()
+            );
+            String subject = "Repo " + repoName + " successfully indexed";
+    	    SendEmail se = new SendEmail(
+                email, subject, emailBody, this.logger 
+            );
+    	    return se.perform();
+    	} else {
+    		String comment = String.format(
+                this.lang.response("index.followup.comment"),
+                this.com.authorLogin(),
+                repoName
+            );
+    		SendReply sr = new SendReply(
+    		    new TextReply(this.com, comment),
+    		    this.logger
+    		);
+    		return sr.perform();
+    	}
     }
 
     /**

@@ -63,9 +63,7 @@ public class BrainTestCase {
 		).thenReturn(new CommandCategory("hello", english));
 		
 		Brain br = new Brain(Arrays.asList(english));
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Steps steps = br.understand(com, logger);
+		Steps steps = br.understand(com, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class));
 		assertTrue(steps != null);
 	}
 	

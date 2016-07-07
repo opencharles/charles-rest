@@ -43,8 +43,8 @@ public class LogsOnServerTestCase {
      */
 	@Test
 	public void formatsAddressWithoutSlash() {
-    	Logs logs = new LogsOnServer("www.example.com/charles/api/logs");
-    	assertTrue(logs.address("action.log").equals("www.example.com/charles/api/logs/action.log"));
+    	LogsLocation logs = new LogsOnServer("www.example.com/charles/api/logs", "action.log");
+    	assertTrue(logs.address().equals("www.example.com/charles/api/logs/action.log"));
     }
 	
 	/**
@@ -53,7 +53,7 @@ public class LogsOnServerTestCase {
      */
 	@Test
 	public void formatsAddressWithSlash() {
-    	Logs logs = new LogsOnServer("www.example.com/charles/api/logs/");
-    	assertTrue(logs.address("action.log").equals("www.example.com/charles/api/logs/action.log"));
+    	LogsLocation logs = new LogsOnServer("www.example.com/charles/api/logs/", "action.log");
+    	assertTrue(logs.address().equals("www.example.com/charles/api/logs/action.log"));
     }
 }

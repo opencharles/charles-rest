@@ -31,15 +31,14 @@ package com.amihaiemil.charles.github;
  * @since 1.0.0
  *
  */
-public class LogsInGist implements Logs {
+public class LogsInGist implements LogsLocation {
 
 	/**
 	 * Writes the log in a secret Github Gist and returns the address.
 	 */
 	@Override
-	public String address(String log) {
-		// TODO Auto-generated method stub
-		return null;
+	public String address() {
+		return "";
 	}
 
 }

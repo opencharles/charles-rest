@@ -24,9 +24,13 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+import java.util.Iterator;
+
 import javax.json.JsonObject;
 
 import com.jcabi.github.Issue;
+import com.jcabi.github.User;
 
 /**
  * Command for the github agent.
@@ -35,34 +39,56 @@ import com.jcabi.github.Issue;
  * @since 1.0.0
  * 
  */
-public interface Command {
+public abstract class Command {
+	protected JsonObject comment;
+	protected Issue issue;
+	protected String agentLogin;
+	
 	/**
 	 * The json comment.
 	 * @return Json Object representing the comment on Github issue.
 	 */
-    JsonObject json();
+    public JsonObject json() {
+    	return this.comment;
+    }
     
     /**
      * Parent issue.
      * @return com.jcabi.github.Issue
      */
-    Issue issue();
+    public Issue issue() {
+    	return this.issue;
+    }
     
     /**
      * Username of the Github agent.
      * @return Github agent's String username.
      */
-    String agentLogin();
+    public String agentLogin() {
+    	return this.agentLogin;
+    }
     
     /**
      * Username of this command's author.
      * @return String Github username.
      */
-    String authorLogin();
+    public String authorLogin() {
+    	return comment.getJsonObject("user").getString("login");
+    }
 
     /**
      * Email address of this command's author.
      * @return String email address.
+     * @throws IOException if there is an error while making the HTTP call
+     * to get the author's email address.
      */
-	String authorEmail();
+    public String authorEmail() throws IOException {
+		User author = this.issue.repo().github().users().get(this.authorLogin());
+		Iterator<String> addresses = author.emails().iterate().iterator();
+		if(addresses.hasNext()) {
+			return addresses.next();
+		} else {
+			return "";
+		}
+	}
 }

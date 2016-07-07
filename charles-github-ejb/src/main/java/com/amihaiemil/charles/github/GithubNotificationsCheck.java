@@ -58,13 +58,8 @@ public class GithubNotificationsCheck {
 			String login = "";
 			if(issues.size() > 0) {
 				login = agent.agentLogin();
-				String logsEndpoint = System.getProperty("charles.rest.logs.endpoint");
-				Logs logs = null;
-				if(logsEndpoint != null) {
-					logs = new LogsOnServer(logsEndpoint);
-				}
 				for(GithubIssue issue : issues) {
-					new Action(br, issue, logs, login).take();
+					new Action(br, issue, login).take();
 				}
 				LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
 			}

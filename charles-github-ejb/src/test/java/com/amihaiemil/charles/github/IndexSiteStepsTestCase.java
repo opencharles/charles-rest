@@ -167,7 +167,7 @@ public class IndexSiteStepsTestCase {
     	Mockito.when(ghc.perform()).thenReturn(false);
     	
     	Language lang = Mockito.mock(Language.class);
-    	Mockito.when(lang.response("index.confirmation.email")).thenReturn(
+    	Mockito.when(lang.response("index.followup.email")).thenReturn(
     		"Your Github Pages repository (or gh-pages branch from) has been indexed"
         );
     	

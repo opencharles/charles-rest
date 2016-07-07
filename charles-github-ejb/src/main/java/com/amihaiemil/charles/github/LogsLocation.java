@@ -33,11 +33,11 @@ package com.amihaiemil.charles.github;
  * @since 1.0.0
  *
  */
-public interface Logs {
+public interface LogsLocation {
 
 	/**
 	 * Get the log file's address.
 	 * @return String address.
 	 */
-    String address(String log);
+    String address();
 }
