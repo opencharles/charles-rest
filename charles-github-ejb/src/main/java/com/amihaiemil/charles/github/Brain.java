@@ -121,7 +121,6 @@ public class Brain {
      
     private List<Step> indexSiteSteps(Command com, CommandCategory category, Logger logger) throws IOException{
         List<Step> steps = new ArrayList<Step>();
-		JsonObject repo = com.issue().repo().json();
 		steps.add(
 		    new SendReply(
 		        new TextReply(
@@ -135,12 +134,14 @@ public class Brain {
 		    )		
 		);
 
+		JsonObject repo = com.issue().repo().json();
+
 		steps.add(
 		    new IndexSiteSteps.IndexSiteStepsBuilder(
-		        com, category.language(), logger
+		        com, repo, category.language(), logger
 		    )
-			.authorOwnerCheck(new AuthorOwnerCheck(com, logger))
-			.repoNameCheck(new RepoNameCheck(com, logger))
+			.authorOwnerCheck(new AuthorOwnerCheck(com, repo, logger))
+			.repoNameCheck(new RepoNameCheck(repo, logger))
 			.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
 			.starRepo(new StarRepo(com.issue().repo(), logger))
 			.build()

@@ -61,7 +61,7 @@ public class RepoNameCheckTestCase {
 		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
     	RepoNameCheck rnc = new RepoNameCheck(
-    		this.mockCommand("amihaiemil", "amihaiemil.github.io"),
+    		this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
     		logger
     	);
     	assertTrue(rnc.perform());
@@ -79,7 +79,7 @@ public class RepoNameCheckTestCase {
 		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
     	RepoNameCheck rnc = new RepoNameCheck(
-    		this.mockCommand("amihaiemil", "reponame"),
+    		this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
     		logger
     	);
     	assertFalse(rnc.perform());
