@@ -144,6 +144,7 @@ public class Brain {
 		    new IndexSiteSteps.IndexSiteStepsBuilder(
 		        com, repo, category.language(), logger
 		    )
+		    .repoForkCheck(new RepoForkCheck(repo, logger))
 			.authorOwnerCheck(new AuthorOwnerCheck(com, repo, logger))
 			.repoNameCheck(new RepoNameCheck(repo, logger))
 			.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
@@ -157,6 +158,7 @@ public class Brain {
 			        com,
 			        String.format(
 			            category.language().response("index.finished.comment"),
+			            com.authorLogin(),
 			            logs.address()
 			        )
 			    ),
