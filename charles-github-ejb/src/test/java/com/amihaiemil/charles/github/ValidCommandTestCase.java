@@ -27,11 +27,20 @@ package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.jcabi.github.Comment;
+import com.jcabi.github.Github;
+import com.jcabi.github.Issue;
+import com.jcabi.github.Repo;
+import com.jcabi.github.mock.MkGithub;
+import com.jcabi.github.mock.MkStorage;
 
 /**
  * Unit tests for {@link ValidCommand}
@@ -73,20 +82,31 @@ public class ValidCommandTestCase {
 		ValidCommand vc = new ValidCommand(comm);
 		assertTrue(vc.authorLogin().equals("amihaiemil"));
 	}
-	
+
 	@Test
 	public void getsAuthorEmail() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject user = Json.createObjectBuilder().add("login", "amihaiemil").build();
+		MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
 		
+		MkGithub authorGh = new MkGithub(storage, "amihaiemil");
+		authorGh.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
+		Repo authorRepo = authorGh.randomRepo();
+		Comment com = authorRepo.issues().create("", "").comments().post("@charlesmike do something");
+
+		Github agentGh = new MkGithub(storage, "charlesmike");
+		Issue issue = agentGh.repos().get(authorRepo.coordinates()).issues().get(com.issue().number());
+		Command comm = Mockito.mock(Command.class);
+		
+		JsonObject authorInfo = Json.createObjectBuilder().add("login", "amihaiemil").build();
 		JsonObject json = Json.createObjectBuilder()
-		    .add("user", user)
-			.add("body", "test text")
+			.add("user", authorInfo)
+			.add("body", com.json().getString("body"))
 		    .add("id", 2)
 		    .build();
 		Mockito.when(comm.json()).thenReturn(json);
+		Mockito.when(comm.issue()).thenReturn(issue);
+
 		ValidCommand vc = new ValidCommand(comm);
-		assertTrue(vc.authorLogin().equals("amihaiemil"));
+		assertTrue(vc.authorEmail().equals("amihaiemil@gmail.com"));
 	}
 	
 	@Test

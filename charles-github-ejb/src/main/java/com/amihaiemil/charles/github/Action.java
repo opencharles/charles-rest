@@ -64,7 +64,7 @@ public class Action implements Runnable {
 	/**
 	 * Location of the logs.
 	 */
-	private Logs logs;
+	private LogsLocation logs;
 	
 	/**
 	 * Constructor.
@@ -76,15 +76,13 @@ public class Action implements Runnable {
 	public Action(
 		Brain br,
 		GithubIssue issue,
-		Logs logs,
 		String agentLogin
 	) {
 		String threadName = UUID.randomUUID().toString();
 
-		tr = new Thread(this, threadName);
+		this.tr = new Thread(this, threadName);
 		this.agentLogin = agentLogin;
 		this.issue = issue;
-		this.logs = logs;
 		this.br = br;
 
 		Properties prop = new Properties();
@@ -95,8 +93,14 @@ public class Action implements Runnable {
 	    prop.setProperty("log4j.appender.thread.layout.ConversionPattern","%d %c{1} - %m%n");
 	    prop.setProperty("log4j.appender.thread.Threshold", "DEBUG");
 		PropertyConfigurator.configure(prop);
-
+		
 		this.logger = LoggerFactory.getLogger("Action_"+threadName);
+		
+		String logsEndpoint = System.getProperty("charles.rest.logs.endpoint");
+		this.logs = new LogsInGist();
+		if(logsEndpoint != null) {
+			this.logs = new LogsOnServer(logsEndpoint, this.tr.getName() + ".log");
+		}
 	}
 	
 	
@@ -109,7 +113,7 @@ public class Action implements Runnable {
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
 			logger.info("Received command: " + commandBody);
-			Steps steps = br.understand(command, logger);
+			Steps steps = br.understand(command, logger, logs);
 			boolean success = steps.perform();
 			if(success){
 				logger.info("Finished action " + this.tr.getName());
@@ -121,7 +125,7 @@ public class Action implements Runnable {
 		} catch (IOException e) {
 			logger.error("Action failed with IOException: ",  e);
 			this.sendReply(
-				new ErrorReply(logs.address(this.tr.getName() + ".log"), this.issue.getSelf())
+				new ErrorReply(logs.address(), this.issue.getSelf())
 			);
 		}
 	}

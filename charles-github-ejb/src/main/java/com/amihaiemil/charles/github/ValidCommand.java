@@ -27,11 +27,7 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
-import javax.json.JsonObject;
-
 import org.apache.commons.lang3.StringUtils;
-
-import com.jcabi.github.Issue;
 
 /**
  * Valid command for the Github agent.
@@ -40,10 +36,8 @@ import com.jcabi.github.Issue;
  * @since 1.0.0
  * 
  */
-public class ValidCommand implements Command {
-	private JsonObject comment;
-	private Issue issue;
-	private String agentLogin;
+public class ValidCommand extends Command {
+
 	/**
 	 * Constructor.
 	 * @param Given Comment.
@@ -51,41 +45,13 @@ public class ValidCommand implements Command {
 	 * @throws IOException
 	 */
 	public ValidCommand(Command com) throws IllegalArgumentException {
-		this.issue = com.issue();
-		this.comment = com.json();
-		String body = comment.getString("body");
+		String body = com.json().getString("body");
 		if(StringUtils.isEmpty(body)) {
 			throw new IllegalArgumentException("Invalid command!");
 		}
+		this.issue = com.issue();
+		this.comment = com.json();
 		this.agentLogin = com.agentLogin();
 	}
-	
-
-	@Override
-	public JsonObject json() {
-		return this.comment;
-	}
-
-	@Override
-	public Issue issue() {
-		return this.issue;
-	}
-
-
-	@Override
-	public String agentLogin() {
-		return this.agentLogin;
-	}
-
-	@Override
-	public String authorLogin() {
-		return comment.getJsonObject("user").getString("login");
-	}
-	
-	@Override
-	public String authorEmail() {
-		return comment.getJsonObject("user").getString("email");
-	}
-
 
 }

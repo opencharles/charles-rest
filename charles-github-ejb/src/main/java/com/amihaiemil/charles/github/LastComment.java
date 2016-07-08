@@ -33,7 +33,6 @@ import javax.json.JsonObject;
 
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
-import com.jcabi.github.Issue;
 
 /**
  * Last comment where the agent was mentioned.
@@ -42,16 +41,14 @@ import com.jcabi.github.Issue;
  * @since 1.0.0
  * 
  */
-public class LastComment implements Command {
-	private JsonObject com = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-	private Issue issue;
-	private String agentLogin;
+public class LastComment extends Command {
 	
 	public LastComment(GithubIssue issue, String agentlogin) throws IOException {
+		this.comment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
 		this.issue = issue.getSelf();
 		JsonObject latestCommentJson = issue.getLatestComment().json();
 		if(latestCommentJson.getString("body").contains("@" + agentlogin)) {
-			this.com = latestCommentJson;
+			this.comment = latestCommentJson;
 		} else {
 			List<Comment> comments = Lists.newArrayList(issue.getSelf().comments().iterate());
 			boolean agentFound = false;
@@ -61,41 +58,13 @@ public class LastComment implements Command {
 					agentFound = true; //we found a reply of the agent, so stop looking.
 				} else {
 					if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
-						this.com = currentJsonComment;
+						this.comment = currentJsonComment;
 						agentFound = true;
 					}
 				}
 			}
 		}
 		this.agentLogin = agentlogin;
-	}
-
-
-	@Override
-	public JsonObject json() {
-		return this.com;
-	}
-
-
-	@Override
-	public Issue issue() {
-		return this.issue;
-	}
-
-
-	@Override
-	public String agentLogin() {
-		return this.agentLogin;
-	}
-
-	@Override
-	public String authorLogin() {
-		return com.getJsonObject("user").getString("login");
-	}
-	
-	@Override
-	public String authorEmail() {
-		return com.getJsonObject("user").getString("email");
 	}
 
 }

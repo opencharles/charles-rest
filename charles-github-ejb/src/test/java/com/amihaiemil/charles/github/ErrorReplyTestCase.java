@@ -54,9 +54,9 @@ public class ErrorReplyTestCase {
 	 */
 	@Test
 	public void sendsReply() throws Exception {
-		Logs logs = new LogsOnServer("www.example.com/rest/endpoint/");
+		LogsLocation logs = new LogsOnServer("www.example.com/rest/endpoint/", "test.log");
 		Issue issue = this.mockIssue();
-		ErrorReply er = new ErrorReply(logs.address("test.log"), issue);
+		ErrorReply er = new ErrorReply(logs.address(), issue);
 		er.send();
 		List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
 		assertTrue(comments.size() == 1);

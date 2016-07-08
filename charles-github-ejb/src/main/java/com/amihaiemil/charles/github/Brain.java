@@ -70,10 +70,12 @@ public class Brain {
 	/**
 	 * Understand a command.
 	 * @param com Given command.
+	 * @param logger Action logger.
+	 * @param logs Location of the logs.
 	 * @return Steps.
 	 * @throws IOException if something goes worng.
 	 */
-     public Steps understand(Command com, Logger logger) throws IOException {
+     public Steps understand(Command com, Logger logger, LogsLocation logs) throws IOException {
     	 String authorLogin = com.authorLogin();
 	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
@@ -97,7 +99,7 @@ public class Brain {
     	 		);
     	 		break;
     	 	case "indexsite":
-    	 		steps.addAll(this.indexSiteSteps(com, category, logger));
+    	 		steps.addAll(this.indexSiteSteps(com, category, logger, logs));
     	 		break;
     	 	case "indexpage":
     	 		break;
@@ -119,7 +121,9 @@ public class Brain {
     	 return new Steps(steps);
      }
      
-    private List<Step> indexSiteSteps(Command com, CommandCategory category, Logger logger) throws IOException{
+    private List<Step> indexSiteSteps(
+        Command com, CommandCategory category, Logger logger, LogsLocation logs
+    ) throws IOException{
         List<Step> steps = new ArrayList<Step>();
 		steps.add(
 		    new SendReply(
@@ -153,7 +157,7 @@ public class Brain {
 			        com,
 			        String.format(
 			            category.language().response("index.finished.comment"),
-			            com.authorLogin()
+			            logs.address()
 			        )
 			    ),
 			    logger
