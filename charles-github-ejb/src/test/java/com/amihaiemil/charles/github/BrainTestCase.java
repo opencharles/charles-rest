@@ -58,6 +58,7 @@ public class BrainTestCase {
 		Command com = this.mockCommand();
 		
 		Language english = Mockito.mock(English.class);
+		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
 		Mockito.when(english.response("hello.comment")).thenReturn("hi there, %s");
 		Mockito.when(english.categorize(com)
 		).thenReturn(new CommandCategory("hello", english));

@@ -117,8 +117,20 @@ public class Brain {
     	 		);
     	 		break;
 		 }
-		 logger.info("Have to execute " + steps.size() + " step(s) to fulfill the command!");
-    	 return new Steps(steps);
+    	 return new Steps(
+    	     steps,
+    	     new SendReply(
+    	         new TextReply(
+    	             com,
+    	             String.format(
+    	                 category.language().response("step.failure.comment"),
+    	                 com.authorLogin(),
+    	                 logs.address()
+    	             )
+    	         ),
+    	         logger
+    	     )
+    	 );
      }
      
     private List<Step> indexSiteSteps(
@@ -153,14 +165,15 @@ public class Brain {
 		);
 		
 		steps.add(
-	        new SendReply(
+		    new SendReply(
 			    new TextReply(
-			        com,
-			        String.format(
-			            category.language().response("index.finished.comment"),
-			            com.authorLogin(),
-			            logs.address()
-			        )
+			       com,
+			       String.format(
+			           category.language().response("index.finished.comment"),
+			           com.authorLogin(),
+			           repo.getString("name"),
+			           logs.address()
+			       )
 			    ),
 			    logger
 			)		

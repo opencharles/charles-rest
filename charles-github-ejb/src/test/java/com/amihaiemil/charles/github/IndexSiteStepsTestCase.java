@@ -25,22 +25,19 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
 
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.IndexSite;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.jcabi.github.Issue;
@@ -145,72 +142,6 @@ public class IndexSiteStepsTestCase {
     		)
         );
     }
-
-    /**
-     * After checks pass and repo is indexed, a confirmation mail is sent to the commander.
-     */
-    @Test
-    public void confirmationMailSent() throws Exception {
-    	IndexSite is = Mockito.mock(IndexSite.class);
-    	Mockito.when(is.perform()).thenReturn(true);
-    	
-    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
-    	Mockito.when(rfc.perform()).thenReturn(true);
-    	
-    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
-    	Mockito.when(aoc.perform()).thenReturn(true);
-
-    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
-    	Mockito.when(rnc.perform()).thenReturn(true);
-
-    	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
-    	Mockito.when(ghc.perform()).thenReturn(false);
-    	
-    	Language lang = Mockito.mock(Language.class);
-    	Mockito.when(lang.response("index.followup.email")).thenReturn(
-    		"Your Github Pages repository (or gh-pages branch from) has been indexed"
-        );
-    	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
-    	IndexSiteSteps iss = Mockito.spy(
-    	    new IndexSiteSteps.IndexSiteStepsBuilder(
-    		    com, com.issue().repo().json(), lang, Mockito.mock(Logger.class)
-            )
-    	    .repoForkCheck(rfc)
-    	    .authorOwnerCheck(aoc)
-    	    .repoNameCheck(rnc)
-    	    .ghPagesBranchCheck(ghc)
-    	    .starRepo(Mockito.mock(StarRepo.class))
-            .build()
-        );
-    	String repoName = com.issue().repo().json().getString("name");
-    	
-    	Mockito.when(iss.indexSiteStep("amihaiemil", repoName, false)).thenReturn(is);
-    	
-    	
-    	String bind = "localhost";
-		int port = this.port();
-		GreenMail server = this.smtpServer(bind, port);
-        server.start();
-        
-        System.setProperty("charles.smtp.username","mihai");
-        System.setProperty("charles.smtp.password","");
-        System.setProperty("charles.smtp.host","localhost");
-        System.setProperty("charles.smtp.port", String.valueOf(port));
-        
-        try {
-    	    assertTrue(iss.perform());
-    	    String expectedSubject = "Repo " + repoName + " successfully indexed";
-    	    final MimeMessage[] messages = server.getReceivedMessages();
-            assertTrue(messages.length == 1);
-            for (final Message msg : messages) {
-                assertTrue(msg.getFrom()[0].toString().contains("mihai"));
-                assertTrue(msg.getSubject().equals(expectedSubject));
-            }
-        } finally {
-        	server.stop();
-        }
-    }
     
     /**
 	 * Mock a command for the unit tests.
@@ -233,36 +164,4 @@ public class IndexSiteStepsTestCase {
 		return command;
 	}
 	
-	/**
-     * Mock a smtp server.
-     * @return GreenMail smtp server.
-     * @throws IOException If something goes wrong.
-     */
-    private GreenMail smtpServer(String bind, int port) throws IOException {
-        return new GreenMail(
-            new ServerSetup(
-            	port, bind,
-                ServerSetup.PROTOCOL_SMTP
-            )
-        );
-	}
-	
-	/**
-     * Find a free port.
-     * @return A free port.
-     * @throws IOException If something goes wrong.
-     */
-    private int port() throws IOException {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        }
-    }
-
-    @After
-    public void clean() {
-    	System.clearProperty("charles.smtp.username");
-        System.clearProperty("charles.smtp.password");
-        System.clearProperty("charles.smtp.host");
-        System.clearProperty("charles.smtp.port");
-    }
 }

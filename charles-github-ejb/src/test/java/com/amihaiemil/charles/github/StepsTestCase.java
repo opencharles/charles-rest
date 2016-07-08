@@ -51,7 +51,7 @@ public class StepsTestCase {
     	Step s = Mockito.mock(Step.class);
     	Mockito.when(s.perform()).thenReturn(true);
 
-    	Steps steps = new Steps(Arrays.asList(s));
+    	Steps steps = new Steps(Arrays.asList(s), Mockito.mock(SendReply.class));
     	assertTrue(steps.perform());
     }
 	
@@ -67,7 +67,7 @@ public class StepsTestCase {
     	Step s3 = Mockito.mock(Step.class);
     	Mockito.when(s3.perform()).thenReturn(true);
 
-    	Steps steps = new Steps(Arrays.asList(s1, s2, s3));
+    	Steps steps = new Steps(Arrays.asList(s1, s2, s3), Mockito.mock(SendReply.class));
     	assertTrue(steps.perform());
     }
 
@@ -83,7 +83,7 @@ public class StepsTestCase {
     	Step s3 = Mockito.mock(Step.class);
     	Mockito.when(s3.perform()).thenReturn(true);
 
-    	Steps steps = new Steps(Arrays.asList(s1, s2, s3));
+    	Steps steps = new Steps(Arrays.asList(s1, s2, s3), Mockito.mock(SendReply.class));
     	assertFalse(steps.perform());
 	}
 }

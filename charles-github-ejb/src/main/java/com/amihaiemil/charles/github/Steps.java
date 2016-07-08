@@ -42,11 +42,18 @@ public class Steps implements Step {
 	private List<Step> steps;
 	
 	/**
+	 * Message to send in case some step fails.
+	 */
+	private SendReply failureMessage;
+	
+	/**
 	 * Constructor.
 	 * @param steps Given steps.
+	 * @param fm failure message in case any step fails.
 	 */
-	public Steps(List<Step> steps) {
+	public Steps(List<Step> steps, SendReply fm) {
     	this.steps = steps;
+    	this.failureMessage = fm;
     }
 
     /**
@@ -58,6 +65,7 @@ public class Steps implements Step {
 			if(s.perform()) {
 				continue;
 			}
+			failureMessage.perform();
 			return false;
 		}
 		return true;
