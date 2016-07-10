@@ -154,7 +154,7 @@ public class Brain {
 
 		steps.add(
 		    new IndexSiteSteps.IndexSiteStepsBuilder(
-		        com, repo, category.language(), logger
+		        com, repo, category.language(), logger, logs
 		    )
 		    .repoForkCheck(new RepoForkCheck(repo, logger))
 			.authorOwnerCheck(new AuthorOwnerCheck(com, repo, logger))
@@ -163,21 +163,7 @@ public class Brain {
 			.starRepo(new StarRepo(com.issue().repo(), logger))
 			.build()
 		);
-		
-		steps.add(
-		    new SendReply(
-			    new TextReply(
-			       com,
-			       String.format(
-			           category.language().response("index.finished.comment"),
-			           com.authorLogin(),
-			           repo.getString("name"),
-			           logs.address()
-			       )
-			    ),
-			    logger
-			)		
-		);
+
 		return steps;
      }
 }

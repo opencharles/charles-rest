@@ -62,6 +62,11 @@ public class IndexSiteSteps implements Step {
 	private Logger logger;
 	
 	/**
+	 * Location of the logs.
+	 */
+	private LogsLocation logs;
+	
+	/**
 	 * Author check step.
 	 */
 	private Step aoc;
@@ -96,6 +101,7 @@ public class IndexSiteSteps implements Step {
         this.com = builder.com;
         this.repoJson = builder.repo;
         this.logger = builder.logger;
+        this.logs = builder.logs;
         this.lang = builder.lang;
         this.aoc = builder.authorOwnerStep;
         this.rfc = builder.repoForkCheck;
@@ -129,7 +135,7 @@ public class IndexSiteSteps implements Step {
 		           }
 		        if(indexed) {
 			    	sr.perform();
-			    	return true;
+			    	return this.confirmationReply("index.finished.comment").perform();
 			    }
 		    } else {
 		    	return this.denialReply("denied.fork.comment").perform();
@@ -149,10 +155,30 @@ public class IndexSiteSteps implements Step {
             com,
             String.format(
          	    lang.response(messagekey),
-                "@" + com.authorLogin()
+                com.authorLogin()
          	)
         );
         return new SendReply(rep, logger);
+    }
+    
+    /**
+     * Confirmation rely, after the index is finished successfully.
+     * @param messageKey Key of the message.
+     * @return SendReply step.
+     */
+    SendReply confirmationReply(String messageKey) {
+        return new SendReply(
+		    new TextReply(
+			   com,
+			    String.format(
+			       this.lang.response(messageKey),
+			       this.com.authorLogin(),
+			       this.repoJson.getString("name"),
+			       this.logs.address()
+			    )
+			),
+			this.logger
+	    );
     }
 
     /**
@@ -176,6 +202,7 @@ public class IndexSiteSteps implements Step {
     	private Command com;
     	private JsonObject repo;
     	private Language lang;
+    	private LogsLocation logs;
     	private Logger logger;
     	private Step authorOwnerStep;
     	private Step repoForkCheck;
@@ -190,11 +217,15 @@ public class IndexSiteSteps implements Step {
     	 * @param lang Spoken Language.
     	 * @param logger Action logger.
     	 */
-    	public IndexSiteStepsBuilder(Command com, JsonObject repo, Language lang, Logger logger) {
+    	public IndexSiteStepsBuilder(
+    	    Command com, JsonObject repo,
+    	    Language lang, Logger logger, LogsLocation logs
+    	) {
     		this.com = com;
     		this.repo = repo;
     		this.lang = lang;
     		this.logger = logger;
+    		this.logs = logs;
     	}
     	
     	/**

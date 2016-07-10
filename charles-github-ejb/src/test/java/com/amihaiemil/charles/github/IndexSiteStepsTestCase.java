@@ -61,7 +61,8 @@ public class IndexSiteStepsTestCase {
             Mockito.mock(Command.class),
             Mockito.mock(JsonObject.class),
             Mockito.mock(Language.class),
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class)
         )
     	.authorOwnerCheck(Mockito.mock(AuthorOwnerCheck.class))
     	.repoNameCheck(Mockito.mock(RepoNameCheck.class))
@@ -88,7 +89,8 @@ public class IndexSiteStepsTestCase {
             com,
             com.issue().repo().json(),
             lang,
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class)
         )
     	.authorOwnerCheck(aoc)
         .build();
@@ -127,7 +129,8 @@ public class IndexSiteStepsTestCase {
             com,
             com.issue().repo().json(),
             lang,
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
     	.authorOwnerCheck(aoc)
