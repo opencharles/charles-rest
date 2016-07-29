@@ -3,7 +3,7 @@ $(document).ready(function() {
 	    [
 		    "https://api.github.com/repos/amihaiemil/charles-github-ejb/contributors",
 			"https://api.github.com/repos/amihaiemil/charles/contributors"
-		]
+		], contributorsCallback
 	);
 });
 function getContributors(contributorsUrls, successCallback) {
