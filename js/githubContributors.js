@@ -57,7 +57,7 @@ function contributorsCallback(contributors) {
 		var authorBubbleId = "#" + contributors[index].login;
 		if($(authorBubbleId).length == 0) {//Check if the contributor wasn't already added on the page with a previous call.
 	        var authorBubble =
-		        "<li><a title='" + contributors[index].login + " Avatar'target='_blank' href='" + contributors[index].html_url + "'><img class='img-responsive' src='" + contributors[index].avatar_url + "'></a></li>";
+		        "<li><a id='" + contributors[index].login + "' title='" + contributors[index].login + " Avatar'target='_blank' href='" + contributors[index].html_url + "'><img class='img-responsive' src='" + contributors[index].avatar_url + "'></a></li>";
 			$('#contributors').append(authorBubble);
 		}
 	}
