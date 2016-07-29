@@ -11,7 +11,7 @@ function getContributors(contributorsUrls, successCallback) {
 	for (var index in contributorsUrls) {
         $.ajax({
 		    type : "GET",
-		    url : contributorsUrl,
+		    url : contributorsUrls[index],
 		    dataType : 'json',
 		    contentType : "application/json; charset=utf-8",
 		    headers : {
