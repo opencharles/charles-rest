@@ -50,14 +50,14 @@
                     <li class="hidden">
                         <a href="#page-top"></a>
                     </li>
+					<li class="page-scroll">
+                        <a href="#about">About</a>
+                    </li>
                     <li class="page-scroll">
                         <a href="#portfolio">Portfolio</a>
                     </li>
                     <li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#contact">Contributors</a>
+                        <a href="#githubContributors">Contributors</a>
                     </li>
                 </ul>
             </div>
@@ -74,38 +74,15 @@
                     <img class="img-responsive bubbleProfile" src="https://avatars.githubusercontent.com/u/19765212?v=3" alt="charlesmike avatar">
                     <div class="intro-text">
                         <span class="name">Charles Michael</span>
-                        <span class="skills">Index Assistant - Github Chatbot</span>
+                        <span class="skills">Index Assistant - Github Chatbot - Beta v. (to be released)</span>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Portfolio Grid Section -->
-    <section id="portfolio">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2>Portfolio</h2>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-4 portfolio-item">
-                    <a href="#portfolioModal1" class="portfolio-link" data-toggle="modal">
-                        <div class="caption">
-                            <div class="caption-content">
-                                <i class="fa fa-search-plus fa-3x"></i>
-                            </div>
-                        </div>
-                        <img src="img/portfolio/cabin.png" class="img-responsive" alt="">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- About Section -->
-    <section class="success" id="about">
+    <section id="about">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -122,13 +99,39 @@
                 </div>
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <p>This service is available for <a target="_blank" title="Github Pages" href="https://pages.github.com/"><b>Github-hosted</b></a> websites/blogs and is completely <b>free</b>. In the future it might be available for other websites as well.</p>
-                </div>
+                    <br/>
+					<a href="#" class="btn btn-default">Documentation</a>
+				</div>
             </div>
         </div>
     </section>
 
+    <!-- Portfolio Grid Section -->
+    <section class="success" id="portfolio">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h2>Portfolio</h2>
+					<br/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <p>After successfully indexing a repository, Charles will <b>star</b> it. This way, the indexed repos are tracked and shown here, as part of the portfolio.</p>
+                    <p>So far, <a href="https://www.github.com/charlesmike" target="_blank">@charlesmike</a> has successfully indexed the following websites:</p>
+
+					<p>
+					    <ul id="starred" class="list-unstyled">
+						    <li id="amihaiemil/amihaiemil.github.io"><p><a href="#">amihaiemil/amihaiemil.github.io</a></p></li>
+						</ul>
+					</p>
+                </div>
+            </div>
+        </div>
+    </section>
+	
     <!-- Contributors Section -->
-    <section id="contact">
+    <section id="githubContributors">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
@@ -186,7 +189,18 @@ have to add a JS script to your page to render the search box.</p>
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
+                        Last updated: <span>lastUpdated date</span>
+                    </div>
+                </div>
+				<div class="row">
+                    <div class="col-lg-12">
                         Copyright &copy; charles.amihaiemil.com 2016
+                    </div>
+                </div>
+				<div class="row">
+                    <div class="col-lg-12">
+                        <a style="color:white;" href="#">Terms and conditions</a> | 
+						<a style="color:white;" href="#">Privacy policy</a>
                     </div>
                 </div>
             </div>
