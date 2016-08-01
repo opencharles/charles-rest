@@ -28,7 +28,8 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+    <script data-bg="#0C1961" data-fg="#99D9FF" type="text/javascript" id="cookiebanner"
+        src="http://cookiebanner.eu/js/cookiebanner.min.js"></script>
 </head>
 
 <body id="page-top" class="index">
@@ -100,7 +101,7 @@
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <p>This service is available for <a target="_blank" title="Github Pages" href="https://pages.github.com/"><b>Github-hosted</b></a> websites/blogs and is completely <b>free</b>. In the future it might be available for other websites as well.</p>
                     <br/>
-					<a href="#" class="btn btn-default">Documentation</a>
+					<a href="doc.html" class="btn btn-default">Documentation</a>
 				</div>
             </div>
         </div>
@@ -189,7 +190,7 @@ have to add a JS script to your page to render the search box.</p>
             <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
-                        Last updated: <span>lastUpdated date</span>
+                        Last updated: <span id="lastupdated"></span>
                     </div>
                 </div>
 				<div class="row">
@@ -450,6 +451,8 @@ have to add a JS script to your page to render the search box.</p>
     <!-- Theme JavaScript -->
     <script src="js/freelancer.min.js"></script>
     <script src="js/githubContributors.js"></script>
+	<script src="js/lastUpdated.js"></script>
+
 </body>
 
 </html>
