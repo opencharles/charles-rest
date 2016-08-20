@@ -79,15 +79,17 @@
             <br/>
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-2">
-                    <p>Charles Michael is an easy-to-use web-content indexer. You interface with it <b>via Github issue comments</b>. For now, it accepts <b>3 types</b> of commands: <b>hello, index-website and index-page</b>. Say <b>"@charlesmike hi there!"</b> in a comment and check out the answer!</p>
+                    <p>Like already mentioned, you interact with this service via <b>Github issue comments</b>. The code behind 
+it can be found <a target="_blank" href="https://github.com/amihaiemil/charles-github-ejb" title="charles-github-ejb Github">here</a>. In short, 
+there is an job that uses the Github API to interact with the <a target="_blank" href="https://github.com/charlesmike" title="Charles Michael's Github account">@charlesmike</a> account. Every minute, the notifications are checked and actions are taken according to each notification.</p>
                 </div>
                 <div class="col-lg-4">
-                    <p>Charles is hosted in the AWS cloud and indexes your data into ElasticSearch instances! When an index command is successfully run you will receive a JS <b>script</b> to put on your website (this only needs to be done the first time) and bam: the search functionality is there out of the box.</p>
+                    <p>The crawling, fetching and storing of web-content logic is in <a target="_blank" title="Charles library" href="https://github.com/amihaiemil/charles">this</a> library. You can think of the library as the "engine" of everything, while the chatbot and the code behind it are only the "front end", the part which interacts with the user. Of course, it is reusable and you can use it in your own project if you want to. The crawling and fetching of content can be used directly, while you might want to define your own <code>Repository</code></p>
                 </div>
                 <div class="col-lg-8 col-lg-offset-2 text-center">
-                    <p>This service is available for <a target="_blank" title="Github Pages" href="https://pages.github.com/"><b>Github-hosted</b></a> websites/blogs and is completely <b>free</b>. In the future it might be available for other websites as well.</p>
+                    <p></p>
                     <br/>
-				</div>
+		</div>
             </div>
         </div>
     </section>
@@ -100,6 +102,22 @@
                     <h2>Commands</h2>
 					<br/>
                 </div>
+            </div>
+            <div class="col-lg-4 col-lg-offset-2">
+                <p>For now, 3 types of commands are "understood": <b>hello, index site, and index page</b>. We say types
+because <a target="_blank" href="https://en.wikipedia.org/wiki/Regular_expression" title="What is RegEx?">regex rules</a> are used and so, for instance, "hi" and "hello" or "hi there!" will be understood as salutations.</p>
+
+            <ul>
+                <li><b>hello</b> will trigger a salutation from the bot, and it will reply explaining what it can offer and on what conditions. Give it a try: say <b>@charlesmike helo there!!</b> in an issue comment</li>
+                <li><b>index site</b> will trigger the crawling and indexing of the whole website and can be triggered by saying <b>@charlesmike pls index</b> or simply <b>@charlesmike index</b></li>
+                <li><b>index page</b> will trigger the crawling and indexing of a single page of the website and can be triggered by saying something like <b>@charlesmike pls index [this](http://link-to-page.com)</b> - here <a target="_blank" href="https://guides.github.com/features/mastering-markdown/" title="Github Mastering Markdown">Markdown</a> styling is used, to pretty format the Github comment and also make the text easely parasable.</li>
+            </ul>
+            </div>
+            <div class="col-lg-4">
+                  <p>Any Github user, in any Issue, can say <b>hi</b> to the bot and it will answer, but <b>only the repository owner can
+                   trigger index commands</b>. Owner means that the repo is under his/her name and it is not a fork. If the repo is under
+                   an <b>organization</b>, then the user must be <b>admin</b> of that organization. If the ownership condition is not met, the 
+bot will answer explaining that this condition is not met and will not take any further action.</p>
             </div>
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
