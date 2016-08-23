@@ -66,7 +66,7 @@ public class AuthorOwnerCheck implements Step {
 		this.repo = repo;
 		this.logger = logger;
 	}
-	
+
 	/**
 	 * Check that the author of a command is owner of the repo.
 	 * @return true if the check is successful, false otherwise
