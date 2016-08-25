@@ -32,10 +32,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
 import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
@@ -54,7 +51,7 @@ import com.jcabi.github.mock.MkGithub;
 public class ActionTestCase {
 	
 	/**
-	 * More Actions are executed on sepparate threads.
+	 * More Actions are executed on separate threads.
 	 * @throws Exception If something goes wrong.
 	 */
 	@Test

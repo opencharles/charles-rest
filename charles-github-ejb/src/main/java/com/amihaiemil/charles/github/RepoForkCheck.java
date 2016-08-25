@@ -67,7 +67,7 @@ public class RepoForkCheck implements Step {
 	public boolean perform() {
 		boolean fork = repo.getBoolean("fork");
 		if(fork) {
-			logger.warn("Repository should NOT be a fork!");
+			logger.error("Repository should NOT be a fork!");
 		}
 		return !fork;
 	}
