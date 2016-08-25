@@ -24,8 +24,9 @@
 */
 package com.amihaiemil.charles.rest;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-
+import javax.ws.rs.core.Response;
 
 /**
  * REST interface for charles' logic.
@@ -35,5 +36,15 @@ import javax.ws.rs.Path;
  */
 @Path("/")
 public class CharlesResource {
-	
+
+   /**
+     * Endpoint for checking if the service is online.
+     * @return ok response.
+     */
+    @GET
+    @Path("/ping")
+    public Response ping() {
+        return Response.ok().entity("Service is online.").build();
+    }
+
 }
