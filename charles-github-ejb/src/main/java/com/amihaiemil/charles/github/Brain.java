@@ -151,17 +151,20 @@ public class Brain {
 		);
 
 		JsonObject repo = com.issue().repo().json();
-
+		IndexPreconditionCheck preconditions = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+		    com, repo, category.language(), logger, logs
+		)
+		.repoForkCheck(new RepoForkCheck(repo, logger))
+		.authorOwnerCheck(new AuthorOwnerCheck(com.authorLogin(), repo, logger))
+		.repoNameCheck(new RepoNameCheck(repo, logger))
+		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
+		.build();
 		steps.add(
-		    new IndexSiteSteps.IndexSiteStepsBuilder(
-		        com, repo, category.language(), logger, logs
+		    new IndexSiteSteps(
+		        com, repo, category.language(),
+		        logger, logs, new StarRepo(com.issue().repo(), logger),
+		        preconditions
 		    )
-		    .repoForkCheck(new RepoForkCheck(repo, logger))
-			.authorOwnerCheck(new AuthorOwnerCheck(com, repo, logger))
-			.repoNameCheck(new RepoNameCheck(repo, logger))
-			.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
-			.starRepo(new StarRepo(com.issue().repo(), logger))
-			.build()
 		);
 
 		return steps;

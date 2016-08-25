@@ -57,7 +57,7 @@ public class AuthorOwnerCheckTestCase {
 	public void authorIsRepoOwner() throws Exception {
         Command com = this.mockCommand("amihaiemil", "amihaiemil", false);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    	    com,
+    	    com.authorLogin(),
     	    com.issue().repo().json(),
     	    Mockito.mock(Logger.class)
     	);
@@ -72,7 +72,7 @@ public class AuthorOwnerCheckTestCase {
 	public void authorIsNotRepoOwner() throws Exception {
         Command com  = this.mockCommand("someone", "amihaiemil", false);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		com,
+    		com.authorLogin(),
     		com.issue().repo().json(),
     		Mockito.mock(Logger.class)
     	);

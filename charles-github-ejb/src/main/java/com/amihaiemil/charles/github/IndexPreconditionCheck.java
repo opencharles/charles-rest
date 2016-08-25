@@ -38,19 +38,92 @@ import com.amihaiemil.charles.steps.Step;
  */
 class IndexPreconditionCheck implements Step {
 
+	private Command com;
+	private Language lang;
+	private Logger logger;
+	/**
+	 * Checks that can be performed as a precondition.
+	 */
+	private Step authorOwnerStep = new Step() {
+		@Override
+		public boolean perform() {
+			return true;
+		}
+	};
+	
+	private Step repoForkCheck = new Step() {
+		@Override
+		public boolean perform() {
+			return true;
+		}
+	};
+	
+	private Step repoNameCheck = new Step() {
+		@Override
+		public boolean perform() {
+			return true;
+		}
+	};
+	
+	private Step ghPagesBranchCheck = new Step() {
+		@Override
+		public boolean perform() {
+			return true;
+		}
+	};
+
 	/**
 	 * Builder pattern ctor.
 	 * @param builder
 	 */
 	IndexPreconditionCheck(IndexPreconditionCheckBuilder builder) {
+	    this.com = builder.com;
+	    this.lang = builder.lang;
+	    this.logger = builder.logger;
+	    this.authorOwnerStep = builder.authorOwnerStep;
+	    this.repoForkCheck = builder.repoForkCheck;
+	    this.repoNameCheck = builder.repoNameCheck;
+	    this.ghPagesBranchCheck = builder.ghPagesBranchCheck;
 	}
 
 	@Override
 	public boolean perform() {
-		// TODO Auto-generated method stub
+		if(this.authorOwnerStep.perform()) {
+		    if(this.repoForkCheck.perform()) {
+		        if (this.repoNameCheck.perform()) {
+		    	    return true;
+		        } else {
+		            boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
+		            if(ghPagesBranch) {
+		                return true;
+		            } else {
+		        	    this.denialReply("denied.name.comment").perform();
+		            }
+		        }
+		    } else {
+		    	this.denialReply("denied.fork.comment").perform();
+		    }
+        } else {
+            this.denialReply("denied.commander.comment").perform();
+        }
 		return false;
 	}
 
+    /**
+     * Builds the reply to send to an unauthorized command.
+     * @return SendReply step.
+     */
+    SendReply denialReply(String messagekey) {
+        Reply rep = new TextReply(
+            this.com,
+            String.format(
+         	    this.lang.response(messagekey),
+                this.com.authorLogin()
+         	)
+        );
+        return new SendReply(rep, this.logger);
+    }
+	
 	/**
      * Builder for {@link IndexSiteSteps}
      */

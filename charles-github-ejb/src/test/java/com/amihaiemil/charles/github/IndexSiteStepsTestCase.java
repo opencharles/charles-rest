@@ -25,21 +25,9 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
-import java.net.ServerSocket;
-
 import javax.json.Json;
-import javax.json.JsonObject;
-
-import org.junit.After;
-import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-
-import com.icegreen.greenmail.util.GreenMail;
-import com.icegreen.greenmail.util.ServerSetup;
 import com.jcabi.github.Issue;
 import com.jcabi.github.mock.MkGithub;
 
@@ -52,100 +40,6 @@ import com.jcabi.github.mock.MkGithub;
  */
 public class IndexSiteStepsTestCase {
 
-    /**
-     * {@link IndexSiteSteps.IndexSiteStepsBuilder.build()} can build an IndexSiteSteps instance.
-     */
-    @Test
-    public void builderWorks() {
-        IndexSiteSteps iss = new IndexSiteSteps.IndexSiteStepsBuilder(
-            Mockito.mock(Command.class),
-            Mockito.mock(JsonObject.class),
-            Mockito.mock(Language.class),
-            Mockito.mock(Logger.class),
-            Mockito.mock(LogsLocation.class)
-        )
-    	.authorOwnerCheck(Mockito.mock(AuthorOwnerCheck.class))
-    	.repoNameCheck(Mockito.mock(RepoNameCheck.class))
-    	.ghPagesBranchCheck(Mockito.mock(GhPagesBranchCheck.class))
-    	.build();
-    	assertTrue(iss != null);
-    }
-    
-    /**
-     * The check for author identity fails and a denial reply is sent to the commander.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void authorCheckNameFails() throws Exception {
-    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
-    	Mockito.when(aoc.perform()).thenReturn(false);
-    	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "owner");
-    	
-    	Language lang = Mockito.mock(Language.class);
-    	Mockito.when(lang.response("denied.commander.comment")).thenReturn("Expected repo owner!");
-    	
-    	IndexSiteSteps iss = new IndexSiteSteps.IndexSiteStepsBuilder(
-            com,
-            com.issue().repo().json(),
-            lang,
-            Mockito.mock(Logger.class),
-            Mockito.mock(LogsLocation.class)
-        )
-    	.authorOwnerCheck(aoc)
-        .build();
-    	assertTrue(iss.perform());
-    	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
-    	assertTrue(deniedMessage.contains("Expected repo owner!"));
-    }
-    
-    /**
-     * The repository doesn't match the name and it does not have a gh-pages branch.
-     * @throws Exception If something goes worng.
-     */
-    @Test
-    public void repoNameAndGhPagesCheckFails() throws Exception {
-    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
-    	Mockito.when(rfc.perform()).thenReturn(true);
-
-    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
-    	Mockito.when(aoc.perform()).thenReturn(true);
-
-    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
-    	Mockito.when(rnc.perform()).thenReturn(false);
-
-    	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
-    	Mockito.when(ghc.perform()).thenReturn(false);
-
-    	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
-    	
-    	Language lang = Mockito.mock(Language.class);
-    	Mockito.when(lang.response("denied.name.comment")).thenReturn(
-    		"The repository's name must match the format owner.github.io or it must have a project website on branch gh-pages"
-        );
-    	
-    	IndexSiteSteps iss = new IndexSiteSteps.IndexSiteStepsBuilder(
-            com,
-            com.issue().repo().json(),
-            lang,
-            Mockito.mock(Logger.class),
-            Mockito.mock(LogsLocation.class)
-        )
-    	.repoForkCheck(rfc)
-    	.authorOwnerCheck(aoc)
-    	.repoNameCheck(rnc)
-    	.ghPagesBranchCheck(ghc)
-        .build();
-    	assertTrue(iss.perform());
-    	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
-    	assertTrue(
-    	    deniedMessage.contains(
-                "The repository's name must match the format owner.github.io or it must have a project website on branch gh-pages"
-    		)
-        );
-    }
-    
     /**
 	 * Mock a command for the unit tests.
 	 * @param author Author of the command.

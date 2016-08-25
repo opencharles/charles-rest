@@ -45,121 +45,78 @@ public class IndexSiteSteps implements Step {
 	 * Index site command.
 	 */
 	private Command com;
-	
+
 	/**
 	 * Json repository as returned by the Github API.
 	 */
 	private JsonObject repoJson;
-	
+
 	/**
 	 * Spoken language.
 	 */
 	private Language lang;
-	
+
 	/**
 	 * Action logger.
 	 */
 	private Logger logger;
-	
+
 	/**
 	 * Location of the logs.
 	 */
 	private LogsLocation logs;
-	
-	/**
-	 * Author check step.
-	 */
-	private Step aoc;
-	
-	/**
-	 * Repo fork check.
-	 */
-	private Step rfc;
-	
-	/**
-	 * Repo name check step.
-	 */
-	private Step rpc;
-	
-	/**
-	 * Gh pages branch check step.
-	 */
-	private Step gpc;
 
-	/**
-	 * Star the repo after indexing.
-	 */
-	private Step sr;
-	
+    /**
+     * Preconditions that have to be met in order to preform this step;
+     */
+    private Step preconditions;
+
+    /**
+     * Star the repo after indexing.
+     */
+    private Step sr;
+
     /**
      * Constructor.
      * @param com Command.
      * @param lang Conversation language.
      * @param logger Logger.
      */
-    public IndexSiteSteps(IndexSiteStepsBuilder builder) {
-        this.com = builder.com;
-        this.repoJson = builder.repo;
-        this.logger = builder.logger;
-        this.logs = builder.logs;
-        this.lang = builder.lang;
-        this.aoc = builder.authorOwnerStep;
-        this.rfc = builder.repoForkCheck;
-        this.rpc = builder.repoNameCheck;
-        this.gpc = builder.ghPagesBranchCheck;
-        this.sr = builder.starRepo;
-	}
+    public IndexSiteSteps(
+        Command com, JsonObject repo, Language lang, Logger log, LogsLocation logsLogaction, Step star, Step precStep
+    ) {
+        this.com = com;
+        this.repoJson = repo;
+        this.logger = log;
+        this.logs = logsLogaction;
+        this.lang = lang;
+        this.sr = star;
+        this.preconditions = precStep;
+    }
 
-	/**
-	 * Perform the steps necessary to fulfill an indexsite command.<br><br>
-	 * 1) Check if the author is owner of the repo and check if repo is not a fork.<br>
-	 * 2) Check if repo name matches pattern owner.github.io or repo has a gh-pages branch. <br>
-	 * 3) Crawl and index site. <br>
-	 * 4) Send email to commander with follow-up data.
-	 */
-	@Override
-	public boolean perform() {
-        if(this.aoc.perform()) {
-		    if(this.rfc.perform()) {
-			    boolean siteRepo = this.rpc.perform();
-			    boolean indexed = false;
-		        if (siteRepo) {
-		    	    indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), false).perform();
-		        } else {
-		            boolean ghPagesBranch = this.gpc.perform();
-		            if(ghPagesBranch) {
-		        	    indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), true).perform();
-		            } else {
-		        	    return this.denialReply("denied.name.comment").perform();
-		            }
-		           }
-		        if(indexed) {
-			    	sr.perform();
-			    	return this.confirmationReply("index.finished.comment").perform();
-			    }
-		    } else {
-		    	return this.denialReply("denied.fork.comment").perform();
-		    }
-        } else {
-            return this.denialReply("denied.commander.comment").perform();
+    /**
+     * Perform the steps necessary to fulfill an indexsite command.<br><br>
+     * 1) Check the preconditions.
+     * 2) Perform he index if the preconditions are met.
+     * 3) Star the repository.
+     */
+    @Override
+    public boolean perform() {
+        if(this.preconditions.perform()) {
+            String expectedName = this.repoJson.getJsonObject("owner").getString("login") + ".github.io";
+            boolean indexed = false;
+            if(expectedName.equals(this.repoJson.getString("name"))) {
+            	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), false).perform();
+            } else {
+            	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), true).perform();
+            }
+            if(indexed) {
+            	sr.perform();
+            	return this.confirmationReply("index.finished.comment").perform();
+            }
         }
 		return false;
 	}
-
-    /**
-     * Builds the reply to send to an unauthorized command.
-     * @return SendReply step.
-     */
-    SendReply denialReply(String messagekey) {
-        Reply rep = new TextReply(
-            com,
-            String.format(
-         	    lang.response(messagekey),
-                com.authorLogin()
-         	)
-        );
-        return new SendReply(rep, logger);
-    }
     
     /**
      * Confirmation rely, after the index is finished successfully.
@@ -193,95 +150,6 @@ public class IndexSiteSteps implements Step {
     		return new IndexSite("http://" + repoName);
     	}
     	return new IndexSite("http://" + ownerLogin + ".github.io/" + repoName);
-    }
-    
-    /**
-     * Builder for {@link IndexSiteSteps}
-     */
-    public static class IndexSiteStepsBuilder {
-    	private Command com;
-    	private JsonObject repo;
-    	private Language lang;
-    	private LogsLocation logs;
-    	private Logger logger;
-    	private Step authorOwnerStep;
-    	private Step repoForkCheck;
-    	private Step repoNameCheck;
-    	private Step ghPagesBranchCheck;
-    	private Step starRepo;
-    	
-    	/**
-    	 * Constructor.
-    	 * @param com Command that triggered the action.
-    	 * @param repo Json repo as returned by the Github API
-    	 * @param lang Spoken Language.
-    	 * @param logger Action logger.
-    	 */
-    	public IndexSiteStepsBuilder(
-    	    Command com, JsonObject repo,
-    	    Language lang, Logger logger, LogsLocation logs
-    	) {
-    		this.com = com;
-    		this.repo = repo;
-    		this.lang = lang;
-    		this.logger = logger;
-    		this.logs = logs;
-    	}
-    	
-    	/**
-    	 * Specify the author name check to this builder.
-    	 * @param aoc Given author name check.
-    	 * @return This builder.
-    	 */
-    	public IndexSiteStepsBuilder authorOwnerCheck(Step aoc) {
-    		this.authorOwnerStep = aoc;
-    		return this;
-    	}
-    	
-    	/**
-    	 * Specify the repository fork check for this builder.
-    	 * @param rfc Given RepositoryForkCheck.
-    	 * @return This builder.
-    	 */
-    	public IndexSiteStepsBuilder repoForkCheck(Step rfc) {
-    		this.repoForkCheck = rfc;
-    		return this;
-    	}
-    	
-    	/**
-    	 * Specify the repository name check to this builder.
-    	 * @param rnc Given repository name check.
-    	 * @return This builder.
-    	 */
-    	public IndexSiteStepsBuilder repoNameCheck(Step rnc) {
-    		this.repoNameCheck = rnc;
-    		return this;
-    	}
-    	
-    	/**
-    	 * Specify the gh-pages branch check to this builder.
-    	 * @param gpc Given Github pages branch check.
-    	 * @return This builder.
-    	 */
-    	public IndexSiteStepsBuilder ghPagesBranchCheck(Step gpc) {
-    		this.ghPagesBranchCheck = gpc;
-    		return this;
-    	}
-
-    	/**
-    	 * Specify the StarRepo step to this builder. (after an index is complete, the repo is starred by the agent)
-    	 * @param sr StarRepo step. 
-    	 * @return This builder.
-    	 */
-    	public IndexSiteStepsBuilder starRepo(Step sr) {
-            this.starRepo = sr;
-            return this;
-    	}
-
-    	public IndexSiteSteps build() {
-			return new IndexSiteSteps(this);
-		}
-    	
     }
 
 }

@@ -40,15 +40,16 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class RepoNameCheck implements Step{
 
-	/**
-	 * Json repository as returned by the Github API.
-	 */
-	private JsonObject repo;
-	/**
-	 * Action logger.
-	 */
-	private Logger logger;
-	
+    /**
+     * Json repository as returned by the Github API.
+     */
+    private JsonObject repo;
+
+    /**
+     * Action logger.
+     */
+    private Logger logger;
+
     /**
      * Constructor.
      * @param repo Json repo.

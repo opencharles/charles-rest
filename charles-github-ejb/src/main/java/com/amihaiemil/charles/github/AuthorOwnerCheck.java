@@ -41,9 +41,9 @@ import com.amihaiemil.charles.steps.Step;
 public class AuthorOwnerCheck implements Step {
 
 	/**
-	 * Command.
+	 * Author.
 	 */
-	private Command com;
+	private String author;
 	
 	/**
 	 * Json repo as returned by the Github API.
@@ -57,12 +57,12 @@ public class AuthorOwnerCheck implements Step {
 
 	/**
 	 * Constructor.
-	 * @param command Command received.
+	 * @param authorLogin Username of the command's author.
 	 * @param repo Json repo object.
 	 * @param logger Action logger.
 	 */
-	public AuthorOwnerCheck(Command command, JsonObject repo, Logger logger) {
-		this.com = command;
+	public AuthorOwnerCheck(String authorLogin, JsonObject repo, Logger logger) {
+		this.author = authorLogin;
 		this.repo = repo;
 		this.logger = logger;
 	}
@@ -75,7 +75,7 @@ public class AuthorOwnerCheck implements Step {
 	public boolean perform() {
         logger.info("Checking ownership of the repo");
         String repoOwner = repo.getJsonObject("owner").getString("login");
-        if(repoOwner.equals(com.authorLogin())) {
+        if(repoOwner.equals(this.author)) {
             logger.info("Commander is repo owner - OK");
             return true;
         }
