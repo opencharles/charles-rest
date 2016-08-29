@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ejb.Stateful;
 import javax.json.JsonObject;
 
 import org.slf4j.Logger;
@@ -46,9 +45,11 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  * 
  */
-@Stateful
 public class Brain {
-	
+
+	/**
+	 * All the languages that the chatbot can understang/speaks.
+	 */
 	private List<Language> languages = new LinkedList<Language>();
 	
 	/**

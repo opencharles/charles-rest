@@ -47,10 +47,7 @@ public class GithubNotificationsCheck {
 	
 	@EJB 
 	GithubAgent agent;
-	
-	@EJB
-	Brain br;
-	
+
 	@Schedule(hour="*", minute="*", persistent=false)
     public void checkForNotifications() {
 		try {
@@ -59,7 +56,7 @@ public class GithubNotificationsCheck {
 			if(issues.size() > 0) {
 				login = agent.agentLogin();
 				for(GithubIssue issue : issues) {
-					new Action(br, issue, login).take();
+					new Action(new Brain(), issue, login).take();
 				}
 				LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
 			}
