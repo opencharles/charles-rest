@@ -1,0 +1,8 @@
+2016-08-23 13:40:51,441 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Started action 6bb41980-4c8e-4719-9848-9972982a24f0
+2016-08-23 13:40:51,466 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Received command: @charlesmike hi
+2016-08-23 13:40:51,467 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Command author's login: vlad
+2016-08-23 13:40:51,469 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Command type: hello. Language: com.amihaiemil.charles.github.English
+2016-08-23 13:40:51,469 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Prepared response: Hi, @vlad! I can help you index your Github-hosted website, provided that the repository name respects the format ``owner.github.io`` (or has a ``gh-pages`` branch) and the command is given by the repo's owner. 
+2016-08-23 13:40:51,471 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Sending comment...
+2016-08-23 13:40:51,534 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Comment sent successfully!
+2016-08-23 13:40:51,534 Action_6bb41980-4c8e-4719-9848-9972982a24f0 - Finished action 6bb41980-4c8e-4719-9848-9972982a24f0

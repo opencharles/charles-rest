@@ -24,70 +24,42 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jcabi.github.Gist;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import com.jcabi.github.Gists;
+import com.jcabi.github.Github;
+import com.jcabi.github.mock.MkGithub;
 
 /**
- * Log file in a Github Gist
+ * Test cases for {@link LogsInGist}
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id%
+ * @version $Id$
  * @since 1.0.0
- *
  */
-public class LogsInGist implements LogsLocation {
-
-	private static final Logger LOG = LoggerFactory.getLogger(LogsInGist.class);
-
-	/**
-	 * Logs file path.
-	 */
-    private String logsPath;
+public class LogsInGistTestCase {
 
     /**
-     * Github gists API,
+     * LogsInGist can write a log file to a secret gist and return url to that gist.
+     * @throws Exception If something goes wrong.
      */
-    private Gists gists;
-
-    /**
-     * Constructor.
-     * @param fileName Logs' file name.
-     * @param gistsApi Github gitsts' api.
-     */
-    public LogsInGist(String filePath, Gists gistsApi) {
-        this.logsPath = filePath;
-        this.gists = gistsApi;
+    @Test
+	public void writesLogsToGist() throws Exception {
+    	String testLogPath = "src/test/resources/logsfortest.log";
+    	Gists gists = this.mockGistsApi();
+        LogsLocation logs = new LogsInGist(testLogPath, gists);
+        assertTrue(logs.address().equals("https://gist.github.com/1"));
+        String gistContent = gists.get("1").read("logsfortest.log");
+        assertTrue(gistContent.contains("Started action 6bb41980-4c8e-4719-9848-9972982a24f0"));
+        assertTrue(gistContent.contains("Finished action 6bb41980-4c8e-4719-9848-9972982a24f0"));
     }
 
     /**
-     * Writes the log in a secret Github Gist and returns the address.
+     * Mocks the Gists api.
+     * @return a mock of the Github Gists api.
+     * @throws Exception If something goes wrong.
      */
-    @Override
-    public String address() {
-    	File logsfile = new File(this.logsPath);
-        try {
-            String logs = FileUtils.readFileToString(new File(this.logsPath));
-            Map<String, String> gist = new HashMap<String, String>();
-            gist.put(logsfile.getName(), logs);
-            Gist created = this.gists.create(gist, false);
-            return "https://gist.github.com/" + created.identifier();
-        } catch (IOException ex) {
-    	    LOG.error(
-                "Error when writing the log file " + logsfile.getName() + " to a secret gist. " +
-                "If this behaviour persists, please open an issue at https://github.com/amihaiemil/charles-github-ejb",
-                ex
-            );
-    	    return "#";
-        }
-
+    public Gists mockGistsApi() throws Exception {
+        Github gh = new MkGithub("amihaiemil");
+        return gh.gists();
     }
-
 }
