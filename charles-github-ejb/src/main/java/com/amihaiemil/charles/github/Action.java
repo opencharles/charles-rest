@@ -97,9 +97,13 @@ public class Action implements Runnable {
 		this.logger = LoggerFactory.getLogger("Action_"+threadName);
 		
 		String logsEndpoint = System.getProperty("charles.rest.logs.endpoint");
-		this.logs = new LogsInGist();
 		if(logsEndpoint != null) {
 			this.logs = new LogsOnServer(logsEndpoint, this.tr.getName() + ".log");
+		} else {
+			this.logs = new LogsInGist(
+			    this.tr.getName() + ".log",
+			    this.issue.getSelf().repo().github().gists()
+			);
 		}
 	}
 	
