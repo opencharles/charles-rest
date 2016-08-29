@@ -151,7 +151,7 @@ public class Action implements Runnable {
 		org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.tr.getName());
 		String logRoot = System.getProperty("LOG_ROOT");
 		if(logRoot == null) {
-			logRoot = "";
+			logRoot = ".";
 		}
 		String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log";
 		
