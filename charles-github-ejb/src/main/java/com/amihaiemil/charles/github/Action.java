@@ -24,11 +24,13 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.UUID;
 
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +49,17 @@ public class Action implements Runnable {
 	 * Thread that runs this.
 	 */
 	private Thread tr;
+
 	/**
 	 * Github issue where the command was given.
 	 */
 	private GithubIssue issue;
-	
+
 	/**
 	 * Github username of the agent.
 	 */
 	private String agentLogin;
+
 	/**
 	 * Brain of the github agent.
 	 */
@@ -72,39 +76,21 @@ public class Action implements Runnable {
 	 * @param logs - Location of the logs.
 	 * @param agentLogin - The Github username of the agent.
 	 * @param resp Possible responses.
+	 * @throws IOException If the file appender cannot be instantiated.
 	 */
-	public Action(
-		Brain br,
-		GithubIssue issue,
-		String agentLogin
-	) {
-		String threadName = UUID.randomUUID().toString();
-
-		this.tr = new Thread(this, threadName);
+	public Action(Brain br, GithubIssue issue, String agentLogin) throws IOException {
+		this.tr = new Thread(this, UUID.randomUUID().toString());
 		this.agentLogin = agentLogin;
 		this.issue = issue;
 		this.br = br;
-
-		Properties prop = new Properties();
-	    prop.setProperty("log4j.logger.Action_" + threadName,"DEBUG, thread");
-	    prop.setProperty("log4j.appender.thread","org.apache.log4j.FileAppender");
-	    prop.setProperty("log4j.appender.thread.File", "${LOG_ROOT}/Charles-Github-Ejb/ActionsLogs/" + threadName + ".log");
-	    prop.setProperty("log4j.appender.thread.layout","org.apache.log4j.PatternLayout");
-	    prop.setProperty("log4j.appender.thread.layout.ConversionPattern","%d %c{1} - %m%n");
-	    prop.setProperty("log4j.appender.thread.Threshold", "DEBUG");
-		PropertyConfigurator.configure(prop);
 		
-		this.logger = LoggerFactory.getLogger("Action_"+threadName);
-		
+		String logFilePath = this.setupLog4jForAction();
 		String logsEndpoint = System.getProperty("charles.rest.logs.endpoint");
 		if(logsEndpoint != null) {
 			this.logs = new LogsOnServer(logsEndpoint, this.tr.getName() + ".log");
 		} else {
 			this.logs = new LogsInGist(
-				//TODO here we have to pass the whole file path, which is to be retrieved from the logger.
-				//Waiting for issue #81 to be solved.
-			    this.tr.getName() + ".log",
-			    this.issue.getSelf().repo().github().gists()
+                logFilePath, this.issue.getSelf().repo().github().gists()
 			);
 		}
 	}
@@ -142,7 +128,7 @@ public class Action implements Runnable {
 	public void take() { 
 		this.tr.start();
 	}
-	
+
 	/**
 	 * Send the reply to Github issue.
 	 * @param reply
@@ -153,5 +139,34 @@ public class Action implements Runnable {
 		} catch (IOException e) {
 			logger.error("FAILED TO REPLY!", e);
 		}
+	}
+
+	/**
+	 * Setup the Log4J logger for this action thread.
+	 * @return String path to log file
+	 * @throws IOException If there's something wrong with the FileAppender.
+	 */
+	private String setupLog4jForAction() throws IOException {
+		String loggerName = "Action_" + this.tr.getName();
+		org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.tr.getName());
+		String logRoot = System.getProperty("LOG_ROOT");
+		if(logRoot == null) {
+			logRoot = ".";
+		}
+		String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log";
+		
+		File logFile = new File(logFilePath);
+		logFile.getParentFile().mkdirs();
+		logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
+
+		FileAppender fa = new FileAppender(new PatternLayout("%d %c{1} - %m%n"), logFilePath);
+		fa.setName(this.tr.getName() + "_appender");
+		fa.setThreshold(Level.DEBUG);
+		log4jLogger.addAppender(fa);
+		log4jLogger.setLevel(Level.DEBUG);
+		
+		this.logger = LoggerFactory.getLogger(loggerName);
+		
+		return fa.getFile();
 	}
 }
