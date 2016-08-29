@@ -101,6 +101,8 @@ public class Action implements Runnable {
 			this.logs = new LogsOnServer(logsEndpoint, this.tr.getName() + ".log");
 		} else {
 			this.logs = new LogsInGist(
+				//TODO here we have to pass the whole file path, which is to be retrieved from the logger.
+				//Waiting for issue #81 to be solved.
 			    this.tr.getName() + ".log",
 			    this.issue.getSelf().repo().github().gists()
 			);
