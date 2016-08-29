@@ -24,6 +24,7 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -152,7 +153,13 @@ public class Action implements Runnable {
 		if(logRoot == null) {
 			logRoot = "";
 		}
-		FileAppender fa = new FileAppender(new PatternLayout("%d %c{1} - %m%n"), logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log");
+		String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log";
+		
+		File logFile = new File(logFilePath);
+		logFile.getParentFile().mkdirs();
+		logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
+
+		FileAppender fa = new FileAppender(new PatternLayout("%d %c{1} - %m%n"), logFilePath);
 		fa.setName(this.tr.getName() + "_appender");
 		fa.setThreshold(Level.DEBUG);
 		log4jLogger.addAppender(fa);
