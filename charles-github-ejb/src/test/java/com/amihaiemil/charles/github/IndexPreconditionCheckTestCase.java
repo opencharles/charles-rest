@@ -65,16 +65,19 @@ public class IndexPreconditionCheckTestCase {
              .build();
         assertNotNull(ipc);
     }
-    
+
     /**
      * The check for author identity fails and a denial reply is sent to the commander.
      * @throws Exception If something goes wrong.
      */
     @Test
     public void authorCheckNameFails() throws Exception {
+    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
+    	Mockito.when(rnc.perform()).thenReturn(true);
+    	
     	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
     	Mockito.when(aoc.perform()).thenReturn(false);
-    	
+
     	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "other");
     	
     	Language lang = Mockito.mock(Language.class);
@@ -83,13 +86,14 @@ public class IndexPreconditionCheckTestCase {
     	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
             com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
+    	.repoNameCheck(rnc)
     	.authorOwnerCheck(aoc)
         .build();
     	assertFalse(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(deniedMessage.contains("Expected repo owner!"));
     }
-    
+
     /**
      * The repository doesn't match the name and it does not have a gh-pages branch.
      * @throws Exception If something goes worng.
@@ -132,13 +136,88 @@ public class IndexPreconditionCheckTestCase {
     		)
         );
     }
+
+    /**
+     * The repository doesn't match the name but it has a gh-pages branch.
+     * @throws Exception If something goes worng.
+     */
+    @Test
+    public void repoWithGhPages() throws Exception {
+    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
+    	Mockito.when(rfc.perform()).thenReturn(true);
+
+    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
+    	Mockito.when(aoc.perform()).thenReturn(true);
+
+    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
+    	Mockito.when(rnc.perform()).thenReturn(false);
+
+    	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
+    	Mockito.when(ghc.perform()).thenReturn(true);
+
+    	
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	
+    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+            com, com.issue().repo().json(), Mockito.mock(Language.class), Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
+        )
+    	.repoForkCheck(rfc)
+    	.authorOwnerCheck(aoc)
+    	.repoNameCheck(rnc)
+    	.ghPagesBranchCheck(ghc)
+        .build();
+    	assertTrue(ipc.perform());
+    }
+
+    /**
+     * The repository doesn't match the name, has the gh-pages branch but the commander is not owner of it.
+     * @throws Exception If something goes worng.
+     */
+    @Test
+    public void repoWithGhPagesButNoOwner() throws Exception {
+    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
+    	Mockito.when(rfc.perform()).thenReturn(true);
+
+    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
+    	Mockito.when(aoc.perform()).thenReturn(false);
+
+    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
+    	Mockito.when(rnc.perform()).thenReturn(false);
+
+    	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
+    	Mockito.when(ghc.perform()).thenReturn(true);
+
+    	
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	
+    	Language lang = Mockito.mock(Language.class);
+    	Mockito.when(lang.response("denied.commander.comment")).thenReturn(
+    		"The repository has a gh-pages branch but the commander is not authorized!"
+        );
+    	
+    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+            com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
+        )
+    	.repoForkCheck(rfc)
+    	.authorOwnerCheck(aoc)
+    	.repoNameCheck(rnc)
+    	.ghPagesBranchCheck(ghc)
+        .build();
+    	assertFalse(ipc.perform());
+    	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
+    	assertTrue(
+    	    deniedMessage.contains(
+                "The repository has a gh-pages branch but the commander is not authorized!"
+    		)
+        );
+    }
     
     /**
      * The repository is a fork.
      * @throws Exception If something goes worng.
      */
     @Test
-    public void repoForkCheckFails() throws Exception {
+    public void repoForkCheckFailsNameOk() throws Exception {
     	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
     	Mockito.when(rfc.perform()).thenReturn(false);
 
@@ -149,7 +228,7 @@ public class IndexPreconditionCheckTestCase {
     	Mockito.when(rnc.perform()).thenReturn(true);
 
     	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
-    	Mockito.when(ghc.perform()).thenReturn(true);
+    	Mockito.when(ghc.perform()).thenReturn(false);
 
     	
     	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
@@ -171,6 +250,47 @@ public class IndexPreconditionCheckTestCase {
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(
     	    deniedMessage.contains("The repository is a fork!")
+        );
+    }
+    
+    /**
+     * The repository is a fork.
+     * @throws Exception If something goes worng.
+     */
+    @Test
+    public void repoForkCheckFailsGhPages() throws Exception {
+    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
+    	Mockito.when(rfc.perform()).thenReturn(false);
+
+    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
+    	Mockito.when(aoc.perform()).thenReturn(true);
+
+    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
+    	Mockito.when(rnc.perform()).thenReturn(false);
+
+    	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
+    	Mockito.when(ghc.perform()).thenReturn(true);
+
+    	
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	
+    	Language lang = Mockito.mock(Language.class);
+    	Mockito.when(lang.response("denied.fork.comment")).thenReturn(
+    		"This gh-pages repository is a fork!"
+        );
+    	
+    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+            com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
+        )
+    	.repoForkCheck(rfc)
+    	.authorOwnerCheck(aoc)
+    	.repoNameCheck(rnc)
+    	.ghPagesBranchCheck(ghc)
+        .build();
+    	assertFalse(ipc.perform());
+    	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
+    	assertTrue(
+    	    deniedMessage.contains("This gh-pages repository is a fork!")
         );
     }
     

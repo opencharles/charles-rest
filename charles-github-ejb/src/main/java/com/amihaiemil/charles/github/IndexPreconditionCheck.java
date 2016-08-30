@@ -90,24 +90,64 @@ class IndexPreconditionCheck implements Step {
 
 	@Override
 	public boolean perform() {
-		if(this.authorOwnerStep.perform()) {
-		    if(this.repoForkCheck.perform()) {
-		        if (this.repoNameCheck.perform()) {
-		    	    return true;
-		        } else {
-		            boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
-		            if(ghPagesBranch) {
-		                return true;
-		            } else {
-		        	    this.denialReply("denied.name.comment").perform();
-		            }
-		        }
-		    } else {
-		    	this.denialReply("denied.fork.comment").perform();
-		    }
+		if (this.repoNameCheck.perform()) {
+			if(this.authorOwnerStep.perform()) {
+			    if(this.repoForkCheck.perform()) {
+			    	return true;
+			    } else {
+			    	this.denialReply("denied.fork.comment").perform();
+			    }
+			} else {
+				this.denialReply("denied.commander.comment").perform();
+			}
         } else {
-            this.denialReply("denied.commander.comment").perform();
+            boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
+            if(ghPagesBranch) {
+            	if(this.authorOwnerStep.perform()) {
+    			    if(this.repoForkCheck.perform()) {
+    			    	return true;
+    			    } else {
+    			    	this.denialReply("denied.fork.comment").perform();
+    			    }
+    			} else {
+    				this.denialReply("denied.commander.comment").perform();
+    			}
+            } else {
+        	    this.denialReply("denied.name.comment").perform();
+            }
         }
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+//		if(this.authorOwnerStep.perform()) {
+//		    if(this.repoForkCheck.perform()) {
+//		        if (this.repoNameCheck.perform()) {
+//		    	    return true;
+//		        } else {
+//		            boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
+//		            if(ghPagesBranch) {
+//		                return true;
+//		            } else {
+//		        	    this.denialReply("denied.name.comment").perform();
+//		            }
+//		        }
+//		    } else {
+//		    	this.denialReply("denied.fork.comment").perform();
+//		    }
+//        } else {
+//            this.denialReply("denied.commander.comment").perform();
+//        }
 		return false;
 	}
 
