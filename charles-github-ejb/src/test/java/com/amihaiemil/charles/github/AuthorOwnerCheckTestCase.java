@@ -27,18 +27,20 @@ package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
-
+import java.net.ServerSocket;
 import javax.json.Json;
 import javax.json.JsonObject;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
+import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
+import com.jcabi.http.mock.MkAnswer;
+import com.jcabi.http.mock.MkContainer;
+import com.jcabi.http.mock.MkGrizzlyContainer;
+import com.jcabi.http.request.ApacheRequest;
 
 /**
  * Unit tests for {@link AuthorOwnerCheck}
@@ -55,11 +57,9 @@ public class AuthorOwnerCheckTestCase {
      */
 	@Test
 	public void authorIsRepoOwner() throws Exception {
-        Command com = this.mockCommand("amihaiemil", "amihaiemil", false);
+        Command com = this.mockCommand("amihaiemil", "amihaiemil", false, false, 0);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    	    com.authorLogin(),
-    	    com.issue().repo().json(),
-    	    Mockito.mock(Logger.class)
+    	    com, com.issue().repo().json(), Mockito.mock(Logger.class)
     	);
     	assertTrue(aoc.perform());
     }
@@ -70,13 +70,55 @@ public class AuthorOwnerCheckTestCase {
 	 */
 	@Test
 	public void authorIsNotRepoOwner() throws Exception {
-        Command com  = this.mockCommand("someone", "amihaiemil", false);
+        Command com  = this.mockCommand("someone", "amihaiemil", false, false, 0);
     	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		com.authorLogin(),
-    		com.issue().repo().json(),
-    		Mockito.mock(Logger.class)
+    		com, com.issue().repo().json(), Mockito.mock(Logger.class)
     	);
     	assertFalse(aoc.perform());
+	}
+
+	/**
+	 * AuthorOwnerCheck can tell when the command author is NOT owner of the repo but is admin
+	 * of the organization that holds the repo.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void authorOrganizationAdmin() throws Exception {
+		JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "admin").build();
+		int port = this.port();
+		MkContainer server = new MkGrizzlyContainer()
+		    .next(new MkAnswer.Simple(membership.toString())).start(port);
+		try {
+			Command com  = this.mockCommand("someone", "orgName", false, true, port);
+			AuthorOwnerCheck aoc = new AuthorOwnerCheck(
+	    		com, com.issue().repo().json(), Mockito.mock(Logger.class)
+	    	);
+	    	assertTrue(aoc.perform());
+		} finally {
+			server.stop();
+		}
+	}
+
+	/**
+	 * AuthorOwnerCheck can tell when the command author is neither repo owner nor admin of
+	 * the organization under which the repo is registered.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void authorNotOrganizationAdmin() throws Exception {
+		JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "member").build();
+		int port = this.port();
+		MkContainer server = new MkGrizzlyContainer()
+		    .next(new MkAnswer.Simple(membership.toString())).start(port);
+		try {
+			Command com  = this.mockCommand("someone", "orgName", false, true, port);
+			AuthorOwnerCheck aoc = new AuthorOwnerCheck(
+	    		com, com.issue().repo().json(), Mockito.mock(Logger.class)
+	    	);
+	    	assertFalse(aoc.perform());
+		} finally {
+			server.stop();
+		}
 	}
 
 	/**
@@ -84,19 +126,31 @@ public class AuthorOwnerCheckTestCase {
 	 * @param author Author of the command.
 	 * @param repoOwner Repository owner.
 	 * @param fork Is the repository a fork or not?
-	 * @return Command mock.
+	 * @param organization Is the repo under an organization or not?
+	 * @param port Port on which the organization membership goes.
+	 * @return Command mock. 
 	 * @throws IOException If something goes wrong.
 	 */
-	public Command mockCommand(String author, String repoOwner, boolean fork) throws IOException {
+	private Command mockCommand(String author, String repoOwner, boolean fork, boolean organization, int port) throws IOException {
+		String type = "User";
+		if (organization) {
+			type = "Organization";
+		}
 		JsonObject repoJson = Json.createObjectBuilder()
 			.add(
 				"owner",
-				Json.createObjectBuilder().add("login", repoOwner).build()
+				Json.createObjectBuilder()
+				.add("login", repoOwner)
+				.add("type", type)
+				.build()
 			)
 			.add("fork", fork)
 			.build();
 		Repo repo = Mockito.mock(Repo.class);
 		Mockito.when(repo.json()).thenReturn(repoJson);
+		Github gh = Mockito.mock(Github.class); 
+		Mockito.when(gh.entry()).thenReturn(new ApacheRequest("http://localhost:"+port+"/"));
+		Mockito.when(repo.github()).thenReturn(gh);
 		Issue issue = Mockito.mock(Issue.class);
 		Mockito.when(issue.repo()).thenReturn(repo);
 		Command command = Mockito.mock(Command.class);
@@ -104,4 +158,15 @@ public class AuthorOwnerCheckTestCase {
 		Mockito.when(command.issue()).thenReturn(issue);
 		return command;
 	}
+	
+	/**
+     * Find a free port.
+     * @return A free port.
+     * @throws IOException If something goes wrong.
+     */
+    private int port() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
+    }
 }

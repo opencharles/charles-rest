@@ -25,11 +25,12 @@
 
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
 import javax.json.JsonObject;
-
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.Step;
+import com.jcabi.http.Request;
+import com.jcabi.http.response.JsonResponse;
 
 /**
  * Step where the identity of the command author is checked.
@@ -41,10 +42,10 @@ import com.amihaiemil.charles.steps.Step;
 public class AuthorOwnerCheck implements Step {
 
 	/**
-	 * Author.
+	 * Given command;
 	 */
-	private String author;
-	
+	private Command com;
+
 	/**
 	 * Json repo as returned by the Github API.
 	 */
@@ -54,15 +55,15 @@ public class AuthorOwnerCheck implements Step {
 	 * Logger of the action.
 	 */
 	private Logger logger;
-
+	
 	/**
 	 * Constructor.
 	 * @param authorLogin Username of the command's author.
 	 * @param repo Json repo object.
 	 * @param logger Action logger.
 	 */
-	public AuthorOwnerCheck(String authorLogin, JsonObject repo, Logger logger) {
-		this.author = authorLogin;
+	public AuthorOwnerCheck(Command com, JsonObject repo, Logger logger) {
+		this.com = com;
 		this.repo = repo;
 		this.logger = logger;
 	}
@@ -75,11 +76,26 @@ public class AuthorOwnerCheck implements Step {
 	public boolean perform() {
         logger.info("Checking ownership of the repo");
         String repoOwner = repo.getJsonObject("owner").getString("login");
-        if(repoOwner.equals(this.author)) {
+        String author = com.authorLogin();
+        if(repoOwner.equals(author)) {
             logger.info("Commander is repo owner - OK");
             return true;
+        } else {
+            logger.info("Commander is not repo owner. Checking for if organization admin...");
+            if(repo.getJsonObject("owner").getString("type").equalsIgnoreCase("organization")) {
+                Request req = this.com.issue().repo().github().entry()
+                    .uri().path("/orgs/").path(repoOwner).path("/").path(author).back();
+                try {
+                    JsonObject membership = req.fetch().as(JsonResponse.class).json().readObject();
+                    String state = membership.getString("state", "statenotfound");
+                    String role = membership.getString("role", "adminnotfound");
+                    return state.equals("active") && role.equals("admin");
+				} catch (IOException e) {
+					logger.error("Exception while fetching the author's organization membership!", e);
+				}
+            }
         }
-        logger.warn("The commander needs to be owner of the repo!");
+        logger.warn("The commander needs to be owner of the repo or admin of the organization which owns the repo!");
         return false;
     }
 	

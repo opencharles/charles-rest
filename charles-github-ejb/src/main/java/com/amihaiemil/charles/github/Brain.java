@@ -174,7 +174,7 @@ public class Brain {
 		    com, repo, category.language(), logger, logs
 		)
 		.repoForkCheck(new RepoForkCheck(repo, logger))
-		.authorOwnerCheck(new AuthorOwnerCheck(com.authorLogin(), repo, logger))
+		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, logger))
 		.repoNameCheck(new RepoNameCheck(repo, logger))
 		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
 		.build();
