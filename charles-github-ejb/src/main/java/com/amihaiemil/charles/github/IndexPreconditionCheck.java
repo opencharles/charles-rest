@@ -34,7 +34,9 @@ import com.amihaiemil.charles.steps.Step;
  * Step that performs all the precondition checks that have to be met in order to execute
  * any action related to the index.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- *
+ * @version $Id$
+ * @since 1.0.0
+ * 
  */
 class IndexPreconditionCheck implements Step {
 
@@ -125,7 +127,7 @@ class IndexPreconditionCheck implements Step {
     }
 	
 	/**
-     * Builder for {@link IndexSiteSteps}
+     * Builder for {@link IndexPreconditionCheck}
      */
     public static class IndexPreconditionCheckBuilder {
     	private Command com;

@@ -26,9 +26,6 @@
 package com.amihaiemil.charles.github;
 
 import javax.json.JsonObject;
-
-import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.Step;
 
@@ -51,54 +48,33 @@ public class IndexSiteSteps implements Step {
 	 */
 	private JsonObject repoJson;
 
-	/**
-	 * Spoken language.
-	 */
-	private Language lang;
-
-	/**
-	 * Action logger.
-	 */
-	private Logger logger;
-
-	/**
-	 * Location of the logs.
-	 */
-	private LogsLocation logs;
-
     /**
      * Preconditions that have to be met in order to preform this step;
      */
     private Step preconditions;
 
     /**
-     * Star the repo after indexing.
+     * To perform after the index command has been executed successfully.
      */
-    private Step sr;
+    private Step followup;
 
     /**
      * Constructor.
      * @param com Command.
-     * @param lang Conversation language.
-     * @param logger Logger.
+ 
      */
-    public IndexSiteSteps(
-        Command com, JsonObject repo, Language lang, Logger log, LogsLocation logsLogaction, Step star, Step precStep
-    ) {
+    public IndexSiteSteps(Command com, JsonObject repo, Step precStep, Step followup) {
         this.com = com;
         this.repoJson = repo;
-        this.logger = log;
-        this.logs = logsLogaction;
-        this.lang = lang;
-        this.sr = star;
         this.preconditions = precStep;
+        this.followup = followup;
     }
 
     /**
      * Perform the steps necessary to fulfill an indexsite command.<br><br>
      * 1) Check the preconditions.
      * 2) Perform he index if the preconditions are met.
-     * 3) Star the repository.
+     * 3) Perform the followup steps.
      */
     @Override
     public boolean perform() {
@@ -110,33 +86,12 @@ public class IndexSiteSteps implements Step {
             } else {
             	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), true).perform();
             }
-            if(indexed) {
-            	sr.perform();
-            	return this.confirmationReply("index.finished.comment").perform();
+        if(indexed) {
+                return followup.perform();
             }
         }
 		return false;
 	}
-    
-    /**
-     * Confirmation rely, after the index is finished successfully.
-     * @param messageKey Key of the message.
-     * @return SendReply step.
-     */
-    SendReply confirmationReply(String messageKey) {
-        return new SendReply(
-		    new TextReply(
-			   com,
-			    String.format(
-			       this.lang.response(messageKey),
-			       this.com.authorLogin(),
-			       this.repoJson.getString("name"),
-			       this.logs.address()
-			    )
-			),
-			this.logger
-	    );
-    }
 
     /**
      * Return an IndexSite Step for the given repo.
