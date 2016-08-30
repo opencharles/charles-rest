@@ -29,11 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -76,18 +73,12 @@ public class Brain {
 	 * @return Steps.
 	 * @throws IOException if something goes worng.
 	 */
-     public Steps understand(Command com, Logger logger, LogsLocation logs) throws IOException {
+    public Steps understand(Command com, Logger logger, LogsLocation logs) throws IOException {
     	 String authorLogin = com.authorLogin();
 	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
-    	 CommandCategory category = new CommandCategory("unknown", languages.get(0));
-    	 for(Language l : languages) {
-    		 category = l.categorize(com);
-    		 if(category.isUnderstood()) {
-    			 logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
-    			 break;
-    		 }
-    	 }
+    	 CommandCategory category = this.categorizeCommand(com, logger);
+
     	 switch (category.type()) {
     	 	case "hello":
     	 		String hello = String.format(category.language().response("hello.comment"), authorLogin);
@@ -125,15 +116,42 @@ public class Brain {
     	             com,
     	             String.format(
     	                 category.language().response("step.failure.comment"),
-    	                 com.authorLogin(),
-    	                 logs.address()
-    	             )
+    	                 com.authorLogin(), "%s"
+    	             ), logs
     	         ),
     	         logger
     	     )
     	 );
-     }
-     
+    }
+
+    /**
+     * Find out the type and Language of a command.
+     * @param com Received Command.
+     * @param logger Logger to use.
+     * @return CommandCategory, which defaults to unknown command and
+     *  first language in the agent's languages list (this.languages)
+     */
+    private CommandCategory categorizeCommand(Command com, Logger logger) {
+        CommandCategory category = new CommandCategory("unknown", languages.get(0));
+   	    for(Language l : languages) {
+   		    category = l.categorize(com);
+   		    if(category.isUnderstood()) {
+   			    logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
+   			    break;
+   		    }
+   	    }
+   	    return category;
+    }
+    
+    /**
+     * Build the list of steps that need to be taken when receiving an index-site command.
+     * @param com Received Command, 
+     * @param category Command category, containing language and type.
+     * @param logger Logger to be used.
+     * @param logs Logs location.
+     * @return List of Step.
+     * @throws IOException If something goes wrong.
+     */
     private List<Step> indexSiteSteps(
         Command com, CommandCategory category, Logger logger, LogsLocation logs
     ) throws IOException{
@@ -160,12 +178,25 @@ public class Brain {
 		.repoNameCheck(new RepoNameCheck(repo, logger))
 		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
 		.build();
+
+        FollowupSteps followup = new FollowupSteps.FollowupStepsBuilder()
+        .starRepo(new StarRepo(com.issue().repo(), logger))
+        .confirmationReply(
+            new SendReply(
+                new TextReply(
+        		    com,
+        			String.format(
+        			    category.language().response("index.finished.comment"),
+        				com.authorLogin(), repo.getString("name"), "%s"
+                    ),
+                    logs
+                ),logger
+            )		
+	    )
+	    .build();
+		
 		steps.add(
-		    new IndexSiteSteps(
-		        com, repo, category.language(),
-		        logger, logs, new StarRepo(com.issue().repo(), logger),
-		        preconditions
-		    )
+		    new IndexSiteSteps(com, repo, preconditions, followup)
 		);
 
 		return steps;

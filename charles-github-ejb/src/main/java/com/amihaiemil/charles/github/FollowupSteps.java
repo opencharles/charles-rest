@@ -22,61 +22,87 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
+import com.amihaiemil.charles.steps.Step;
 
 /**
- * Reply with a text message to a given command.
+ * Step that performs command follow up actions, like sending a confirmation comment and starring the repo.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class TextReply implements Reply {
+class FollowupSteps implements Step {
+
+	private Step starRepo = new Step() {
+		@Override
+		public boolean perform() {
+			return true;
+		}
+	};
+
+	private Step sendConfirmationReply = new Step() {
+		@Override
+		public boolean perform() {
+			return true;
+		}
+	};
 
 	/**
-	 * Command to which this reply goes.
+	 * Ctor for builder pattern.
+	 * @param builder IndexFollowupStepsBuilder
 	 */
-    private Command command;
+	private FollowupSteps(FollowupStepsBuilder builder) {
+	    this.starRepo = builder.sr;
+	    this.sendConfirmationReply = builder.cr;
+	}
 
     /**
-     * The agent's response.
-     */
-    private String response;
-
-    /**
-     * Logs location, used if specified.
-     */
-    private LogsLocation logs;
-    
-    public TextReply(Command com, String response) {
-        this.command = com;
-        this.response = response;
-    }
-    
-    public TextReply(Command com, String response, LogsLocation logs) {
-        this.command = com;
-        this.response = response;
-        this.logs = logs;
-    }
-
-    /**
-     * Send the reply comment to the Github issue.
-     * @throws IOException 
+     * Perform this step.
      */
     @Override
-    public void send() throws IOException {
-    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
+    public boolean perform() {
+        this.starRepo.perform();
+        return this.sendConfirmationReply.perform();
+    }
 
-    	if(this.logs != null) {
-    		this.response = String.format(this.response, logs.address());
+    public static class FollowupStepsBuilder {
+
+		/**
+		 * Star repo step.
+		 */
+    	private Step sr;
+
+    	/**
+    	 * Confirmation reply step.
+    	 */
+    	private Step cr;
+
+    	/**
+    	 * Specify star repo step to this builder.
+    	 * @param sr Given star repo step.
+    	 * @return This builder.
+    	 */
+    	public FollowupStepsBuilder starRepo(StarRepo sr) {
+    		this.sr = sr;
+    		return this;
     	}
     	
-        command.issue().comments().post(
-            cmdPreview + this.response
-        );	
+    	/**
+    	 * Specify the confirmation reply step.
+    	 * @param cr Given confirmation reply.
+    	 * @return This builder.
+    	 */
+    	public FollowupStepsBuilder confirmationReply(SendReply cr) {
+    		this.cr = cr;
+    		return this;
+    	}
+
+    	public FollowupSteps build() {
+			return new FollowupSteps(this);
+		}
+    	
     }
 
 }
