@@ -16,4 +16,5 @@ Check out the [website](http://charles.amihaiemil.com) for more details on how t
 You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies 
 for configuration. More to follow on this topic.
 
-<script src="http://charles.amihaiemil.com/js/status.js"></script>
+<script src="http://charles.amihaiemil.com/js/status.js">
+</script>
