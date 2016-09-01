@@ -1,8 +1,6 @@
 # charles-github-ejb
 [![Build Status](https://travis-ci.org/amihaiemil/charles-github-ejb.svg?branch=master)](https://travis-ci.org/amihaiemil/charles-github-ejb)
-
-<span id="statusBadge">
-</span>
+![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
 
 This repository holds 2 maven projects:
 
@@ -15,6 +13,3 @@ Check out the [website](http://charles.amihaiemil.com) for more details on how t
 
 You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies 
 for configuration. More to follow on this topic.
-
-<script src="http://charles.amihaiemil.com/js/status.js">
-</script>
