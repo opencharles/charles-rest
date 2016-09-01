@@ -25,8 +25,7 @@
 package com.amihaiemil.charles.github;
 
 /**
- * Logs interface, implemented by LogsInGist and LogsOnServer,
- * which will return the address of an Action's log file. 
+ * LogsLocation which will return the address of an Action's log file. 
  * @see https://github.com/amihaiemil/charles-github-ejb/issues/36
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$

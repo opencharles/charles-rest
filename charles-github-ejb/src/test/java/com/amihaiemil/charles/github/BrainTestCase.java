@@ -63,8 +63,8 @@ public class BrainTestCase {
 		Mockito.when(english.categorize(com)
 		).thenReturn(new CommandCategory("hello", english));
 		
-		Brain br = new Brain(Arrays.asList(english));
-		Steps steps = br.understand(com, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class));
+		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+		Steps steps = br.understand(com);
 		assertTrue(steps != null);
 	}
 	

@@ -25,7 +25,7 @@
 package com.amihaiemil.charles.github;
 
 /**
- * Log file situated on the server.
+ * Log file situated on the server, returned through a REST endpoint.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id%
  * @since 1.0.0
@@ -57,8 +57,12 @@ public class LogsOnServer implements LogsLocation{
 	 */
 	@Override
 	public String address() {
-		if(endpoint.endsWith("/")) {
-			return endpoint + this.logFilename;
+		if(endpoint == null) {
+		    this.endpoint = "";	
+		} else {
+		    if(endpoint.endsWith("/")) {
+			    return endpoint + this.logFilename;
+		    }
 		}
 		return endpoint + "/" + this.logFilename;
 	}

@@ -27,10 +27,14 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import javax.json.JsonObject;
+
 import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -48,36 +52,46 @@ public class Brain {
 	 * All the languages that the chatbot can understang/speaks.
 	 */
 	private List<Language> languages = new LinkedList<Language>();
-	
+
+	/**
+	 * The action's logger.
+	 */
+	private Logger logger;
+
+	/**
+	 * Location of the log file.
+	 */
+	private LogsLocation logsLoc;
+
 	/**
 	 * Constructor.
 	 */
-	public Brain() {
-		this.languages.add(new English());
+	public Brain(Logger logger, LogsLocation logsLoc) {
+		this(logger, logsLoc, Arrays.asList((Language) new English()));
 	}
-	
+
 	/**
 	 * Constructor which takes the responses and languages.
 	 * @param resp
 	 * @param langs
 	 */
-	public Brain(List<Language> langs) {
+	public Brain(Logger logger, LogsLocation logsLoc, List<Language> langs) {
+		this.logger = logger;
+		this.logsLoc = logsLoc;
 		this.languages = langs;
 	}
 	
 	/**
 	 * Understand a command.
 	 * @param com Given command.
-	 * @param logger Action logger.
-	 * @param logs Location of the logs.
 	 * @return Steps.
 	 * @throws IOException if something goes worng.
 	 */
-    public Steps understand(Command com, Logger logger, LogsLocation logs) throws IOException {
+    public Steps understand(Command com) throws IOException {
     	 String authorLogin = com.authorLogin();
 	     logger.info("Command author's login: " + authorLogin);
     	 List<Step> steps = new LinkedList<Step>();
-    	 CommandCategory category = this.categorizeCommand(com, logger);
+    	 CommandCategory category = this.categorizeCommand(com);
 
     	 switch (category.type()) {
     	 	case "hello":
@@ -91,7 +105,7 @@ public class Brain {
     	 		);
     	 		break;
     	 	case "indexsite":
-    	 		steps.addAll(this.indexSiteSteps(com, category, logger, logs));
+    	 		steps.addAll(this.indexSiteSteps(com, category));
     	 		break;
     	 	case "indexpage":
     	 		break;
@@ -104,7 +118,7 @@ public class Brain {
     	 		steps.add(
         	 		new SendReply(
             	 		new TextReply(com, unknown),
-            	 		logger
+            	 		this.logger
             	 	)
     	 		);
     	 		break;
@@ -117,9 +131,9 @@ public class Brain {
     	             String.format(
     	                 category.language().response("step.failure.comment"),
     	                 com.authorLogin(), "%s"
-    	             ), logs
+    	             ), this.logsLoc
     	         ),
-    	         logger
+    	         this.logger
     	     )
     	 );
     }
@@ -131,12 +145,12 @@ public class Brain {
      * @return CommandCategory, which defaults to unknown command and
      *  first language in the agent's languages list (this.languages)
      */
-    private CommandCategory categorizeCommand(Command com, Logger logger) {
+    private CommandCategory categorizeCommand(Command com) {
         CommandCategory category = new CommandCategory("unknown", languages.get(0));
    	    for(Language l : languages) {
    		    category = l.categorize(com);
    		    if(category.isUnderstood()) {
-   			    logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
+   		    	this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
    			    break;
    		    }
    	    }
@@ -147,14 +161,10 @@ public class Brain {
      * Build the list of steps that need to be taken when receiving an index-site command.
      * @param com Received Command, 
      * @param category Command category, containing language and type.
-     * @param logger Logger to be used.
-     * @param logs Logs location.
      * @return List of Step.
      * @throws IOException If something goes wrong.
      */
-    private List<Step> indexSiteSteps(
-        Command com, CommandCategory category, Logger logger, LogsLocation logs
-    ) throws IOException{
+    private List<Step> indexSiteSteps(Command com, CommandCategory category) throws IOException{
         List<Step> steps = new ArrayList<Step>();
 		steps.add(
 		    new SendReply(
@@ -165,22 +175,22 @@ public class Brain {
 		                com.authorLogin()
 		            )
 		        ),
-		        logger
+		        this.logger
 		    )		
 		);
 
 		JsonObject repo = com.issue().repo().json();
 		IndexPreconditionCheck preconditions = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
-		    com, repo, category.language(), logger, logs
+		    com, repo, category.language(), this.logger, this.logsLoc
 		)
-		.repoForkCheck(new RepoForkCheck(repo, logger))
-		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, logger))
-		.repoNameCheck(new RepoNameCheck(repo, logger))
-		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, logger))
+		.repoForkCheck(new RepoForkCheck(repo, this.logger))
+		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, this.logger))
+		.repoNameCheck(new RepoNameCheck(repo, this.logger))
+		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
 		.build();
 
         FollowupSteps followup = new FollowupSteps.FollowupStepsBuilder()
-        .starRepo(new StarRepo(com.issue().repo(), logger))
+        .starRepo(new StarRepo(com.issue().repo(), this.logger))
         .confirmationReply(
             new SendReply(
                 new TextReply(
@@ -189,8 +199,8 @@ public class Brain {
         			    category.language().response("index.finished.comment"),
         				com.authorLogin(), repo.getString("name"), "%s"
                     ),
-                    logs
-                ),logger
+                    this.logsLoc
+                ), this.logger
             )		
 	    )
 	    .build();

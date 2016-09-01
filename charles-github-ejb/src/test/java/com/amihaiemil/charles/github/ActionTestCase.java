@@ -24,15 +24,16 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
 import org.junit.Test;
+
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
@@ -57,15 +58,14 @@ public class ActionTestCase {
 	@Test
 	public void actionsExecute() throws Exception {
 		Language english = (Language)new English();
-		Brain br = new Brain(Arrays.asList(english));
 		GithubIssue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
 		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");
 		GithubIssue issue4 = this.githubIssue("marius", "@charlesmike hello");
-		Action ac1 = new Action(br, issue1, "charlesmike");
-		Action ac2 = new Action(br, issue2, "charlesmike");
-		Action ac3 = new Action(br, issue3, "charlesmike");
-		Action ac4 = new Action(br, issue4, "charlesmike");
+		Action ac1 = new Action(issue1, "charlesmike");
+		Action ac2 = new Action(issue2, "charlesmike");
+		Action ac3 = new Action(issue3, "charlesmike");
+		Action ac4 = new Action(issue4, "charlesmike");
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(5);
 		List<Future> futures = new ArrayList<Future>();

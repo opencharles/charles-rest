@@ -64,36 +64,30 @@ public class Action implements Runnable {
 	 * Brain of the github agent.
 	 */
 	private Brain br;	
-	
+
 	/**
 	 * Location of the logs.
 	 */
 	private LogsLocation logs;
-	
-	/**
-	 * Constructor.
-	 * @param issue - The Github issue where the agent was mentioned.
-	 * @param logs - Location of the logs.
-	 * @param agentLogin - The Github username of the agent.
-	 * @param resp Possible responses.
-	 * @throws IOException If the file appender cannot be instantiated.
-	 */
-	public Action(Brain br, GithubIssue issue, String agentLogin) throws IOException {
-		this.tr = new Thread(this, UUID.randomUUID().toString());
-		this.agentLogin = agentLogin;
-		this.issue = issue;
-		this.br = br;
-		
-		String logFilePath = this.setupLog4jForAction();
-		String logsEndpoint = System.getProperty("charles.rest.logs.endpoint");
-		if(logsEndpoint != null) {
-			this.logs = new LogsOnServer(logsEndpoint, this.tr.getName() + ".log");
-		} else {
-			this.logs = new LogsInGist(
-                logFilePath, this.issue.getSelf().repo().github().gists()
-			);
-		}
-	}
+
+    /**
+     * Constructor.
+     * @param issue - The Github issue where the agent was mentioned.
+     * @param logs - Location of the logs.
+     * @param agentLogin - The Github username of the agent.
+     * @param resp Possible responses.
+     * @throws IOException If the file appender cannot be instantiated.
+     */
+    public Action(GithubIssue issue, String agentLogin) throws IOException {
+        this.tr = new Thread(this, UUID.randomUUID().toString());
+        this.agentLogin = agentLogin;
+        this.issue = issue;
+        this.setupLog4jForAction();
+        this.logs = new LogsOnServer(
+            System.getProperty("charles.rest.logs.endpoint"), this.tr.getName() + ".log"
+        );
+        this.br = new Brain(this.logger, this.logs);
+    }
 	
 	
 	@Override
@@ -105,7 +99,7 @@ public class Action implements Runnable {
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
 			logger.info("Received command: " + commandBody);
-			Steps steps = br.understand(command, logger, logs);
+			Steps steps = br.understand(command);
 			boolean success = steps.perform();
 			if(success){
 				logger.info("Finished action " + this.tr.getName());
@@ -146,7 +140,7 @@ public class Action implements Runnable {
 	 * @return String path to log file
 	 * @throws IOException If there's something wrong with the FileAppender.
 	 */
-	private String setupLog4jForAction() throws IOException {
+	private void setupLog4jForAction() throws IOException {
 		String loggerName = "Action_" + this.tr.getName();
 		org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.tr.getName());
 		String logRoot = System.getProperty("LOG_ROOT");
@@ -167,6 +161,5 @@ public class Action implements Runnable {
 		
 		this.logger = LoggerFactory.getLogger(loggerName);
 		
-		return fa.getFile();
 	}
 }
