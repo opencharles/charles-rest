@@ -56,7 +56,7 @@ public class GithubNotificationsCheck {
 			if(issues.size() > 0) {
 				login = agent.agentLogin();
 				for(GithubIssue issue : issues) {
-					new Action(new Brain(), issue, login).take();
+					new Action(issue, login).take();
 				}
 				LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
 			}

@@ -1,18 +1,15 @@
 # charles-github-ejb
 [![Build Status](https://travis-ci.org/amihaiemil/charles-github-ejb.svg?branch=master)](https://travis-ci.org/amihaiemil/charles-github-ejb)
+![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
 
 This repository holds 2 maven projects:
 
-1) ``charles-github-ejb`` - EJB jar which holds the implementation of the interface between Github and indexing logic (implemented with [charles](https://github.com/amihaiemil/charles)). It can be deployed standalone or as a dependency to charles-rest. 
+1) ``charles-github-ejb`` - Codebase for the Github chatbot [Charles Michael](https://www.github.com/charlesmike)
 
-You can use this ejb as a content indexer interacting with your Github account, but for search functionality you need the rest interface. So deploy this ejb by yourself when you only want to index your content and you already have a search mechanism in place. 
+2) ``charles-rest`` - webapp ``.war`` which wraps the above EJB and also exposes a REST api for retrieving log files, indexing and searching of content.
 
-There will be some differences in functionality when using this ejb alone:
+Say ``@charlesmike hi there`` in a Github issue comment and see what happens. 
+Check out the [website](http://charles.amihaiemil.com) for more details on how to use this service.
 
-a) Instead of receiving a rest link to the action logs, the logs will be coppied to a gist and the link to that gist will be returned.
-
-b) When finishing an index command, instead of returning a js &lt;script&gt; to put on the webpage, the link to the ES index will be returned.
-
-2) ``charles-rest`` - webapp ``.war`` which offers [charles'](https://github.com/amihaiemil/charles) functionality through a REST interface and also incapsulates ``charles-github-ejb``, reusing implemented logic, extending functionality and reducing deployments.
-
-Some system properties will have to be set in order to run this successfully. To follow.
+You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies 
+for configuration. More to follow on this topic.
