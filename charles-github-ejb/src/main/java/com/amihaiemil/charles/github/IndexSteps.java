@@ -30,13 +30,13 @@ import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.Step;
 
 /**
- * Step taken by the Github agent when receiving an indexsite command. 
+ * Step taken by the Github agent when receiving an index command. 
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexSiteSteps implements Step {
+public class IndexSteps implements Step {
 
 	/**
 	 * Index site command.
@@ -58,16 +58,18 @@ public class IndexSiteSteps implements Step {
      */
     private Step followup;
 
+    private boolean singlePage;
+
     /**
      * Constructor.
      * @param com Command.
- 
      */
-    public IndexSiteSteps(Command com, JsonObject repo, Step precStep, Step followup) {
+    public IndexSteps(Command com, JsonObject repo, Step precStep, Step followup, boolean singlePage) {
         this.com = com;
         this.repoJson = repo;
         this.preconditions = precStep;
         this.followup = followup;
+        this.singlePage = singlePage;
     }
 
     /**
@@ -82,11 +84,15 @@ public class IndexSiteSteps implements Step {
             String expectedName = this.repoJson.getJsonObject("owner").getString("login") + ".github.io";
             boolean indexed = false;
             if(expectedName.equals(this.repoJson.getString("name"))) {
-            	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), false).perform();
+            	indexed = this.indexStep(
+            	    this.com, repoJson.getString("name"), false, this.singlePage
+            	).perform();
             } else {
-            	indexed = this.indexSiteStep(this.com.authorLogin(), repoJson.getString("name"), true).perform();
+            	indexed = this.indexStep(
+            	    this.com, repoJson.getString("name"), true, this.singlePage
+            	).perform();
             }
-        if(indexed) {
+            if(indexed) {
                 return followup.perform();
             }
         }
@@ -100,11 +106,18 @@ public class IndexSiteSteps implements Step {
      * @param ghPages true if the Repo is not a site repository (owner.github.io) but has a gh-pages branch; false otherwise.
      * @return IndexSite instance.
      */
-    IndexSite indexSiteStep(String ownerLogin, String repoName, boolean ghPages) {
-    	if(!ghPages) {
-    		return new IndexSite("http://" + repoName);
+    Step indexStep(Command com, String repoName, boolean ghPages, boolean singlePage) {
+    	if(!singlePage) {
+    	    if(!ghPages) {
+    		    return new IndexSite("http://" + repoName);
+    	    }
+    	    return new IndexSite("http://" + com.authorLogin() + ".github.io/" + repoName);
     	}
-    	return new IndexSite("http://" + ownerLogin + ".github.io/" + repoName);
+    	if(!ghPages) { //here return IndexPage(...)
+		    return new IndexSite("http://" + repoName);
+	    }
+	    return new IndexSite("http://" + com.authorLogin() + ".github.io/" + repoName);
+
     }
 
 }

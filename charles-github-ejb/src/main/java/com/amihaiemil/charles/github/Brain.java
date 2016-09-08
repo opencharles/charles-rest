@@ -105,9 +105,10 @@ public class Brain {
     	 		);
     	 		break;
     	 	case "indexsite":
-    	 		steps.addAll(this.indexSiteSteps(com, category));
+    	 		steps.addAll(this.indexSteps(com, category, false));
     	 		break;
     	 	case "indexpage":
+    	 		steps.addAll(this.indexSteps(com, category, true));
     	 		break;
     	 	default:
     	 		logger.info("Unknwon command!");
@@ -158,13 +159,14 @@ public class Brain {
     }
     
     /**
-     * Build the list of steps that need to be taken when receiving an index-site command.
+     * Build the list of steps that need to be taken when receiving an index command.
      * @param com Received Command, 
      * @param category Command category, containing language and type.
      * @return List of Step.
      * @throws IOException If something goes wrong.
      */
-    private List<Step> indexSiteSteps(Command com, CommandCategory category) throws IOException{
+    private List<Step> indexSteps(Command com, CommandCategory category, boolean singlePage
+        ) throws IOException {
         List<Step> steps = new ArrayList<Step>();
 		steps.add(
 		    new SendReply(
@@ -178,7 +180,6 @@ public class Brain {
 		        this.logger
 		    )		
 		);
-
 		JsonObject repo = com.issue().repo().json();
 		IndexPreconditionCheck preconditions = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
 		    com, repo, category.language(), this.logger, this.logsLoc
@@ -206,7 +207,7 @@ public class Brain {
 	    .build();
 		
 		steps.add(
-		    new IndexSiteSteps(com, repo, preconditions, followup)
+		    new IndexSteps(com, repo, preconditions, followup, singlePage)
 		);
 
 		return steps;

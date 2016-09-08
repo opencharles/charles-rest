@@ -32,7 +32,7 @@ import com.jcabi.github.Issue;
 import com.jcabi.github.mock.MkGithub;
 
 /**
- * Unit tests for {@link IndexSiteSteps}
+ * Unit tests for {@link IndexSteps}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @sice 1.0.0
