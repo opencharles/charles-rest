@@ -5,6 +5,6 @@ jdk:
 script:
   - set -e
   - cd charles-github-ejb
-  - mvn clean install
+  - mvn clean install jacoco:report coveralls:report
   - cd ../charles-rest
   - mvn clean install
