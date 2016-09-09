@@ -7,6 +7,9 @@
 	<name>Chales Github EJB</name>
 	<description>Ejb interface between Github and Charles</description>
 	<packaging>jar</packaging>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>javax</groupId>
