@@ -48,15 +48,21 @@ public class GithubNotificationsCheck {
 	@EJB 
 	GithubAgent agent;
 
+    /**
+     * Constructor.
+     * @param agent Given github agent.
+     */
+    public GithubNotificationsCheck(GithubAgent agent) {
+	    this.agent = agent;
+    }
+
 	@Schedule(hour="*", minute="*", persistent=false)
     public void checkForNotifications() {
 		try {
-			List<GithubIssue> issues = agent.issuesMentionedIn();
-			String login = "";
+			List<GithubIssue> issues = this.agent.issuesMentionedIn();
 			if(issues.size() > 0) {
-				login = agent.agentLogin();
 				for(GithubIssue issue : issues) {
-					new Action(issue, login).take();
+					new Action(issue, this.agent.agentLogin()).take();
 				}
 				LOG.info("Started " + issues.size() + " Action(s) threads to handle each issue...");
 			}

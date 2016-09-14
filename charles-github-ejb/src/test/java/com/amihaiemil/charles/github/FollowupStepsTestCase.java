@@ -24,21 +24,29 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
+import org.mockito.Mockito;
 
+import static org.junit.Assert.*;
 /**
- * Test cases for {@link GithubAgent}
+ * Unit tests for {@link FollowupSteps}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
  */
-public class GithubNotificationsITCase {
+public class FollowupStepsTestCase {
+    
+	/**
+	 * FollowupSteps is built and performs ok.
+	 */
 	@Test
-    public void getsNotifitcations() throws Exception {
-    	GithubAgent gn = new GithubAgent();
-    	assertTrue(gn.issuesMentionedIn() != null);
+	public void performsOk() {
+	    StarRepo sr = Mockito.mock(StarRepo.class);
+	    Mockito.when(sr.perform()).thenReturn(true);
+	    SendReply reply = Mockito.mock(SendReply.class);
+	    Mockito.when(reply.perform()).thenReturn(true);
+        FollowupSteps fs = new FollowupSteps.FollowupStepsBuilder()
+            .confirmationReply(reply).starRepo(sr).build();
+        assertTrue(fs.perform());
     }
 }
