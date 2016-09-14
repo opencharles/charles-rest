@@ -1,7 +1,7 @@
 # charles-github-ejb
 [![Build Status](https://travis-ci.org/amihaiemil/charles-github-ejb.svg?branch=master)](https://travis-ci.org/amihaiemil/charles-github-ejb)
 ![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
-[![Coverage Status](https://coveralls.io/repos/github/amihaiemil/charles-github-ejb/badge.svg?branch=master&service=github)](https://coveralls.io/github/amihaiemil/charles-github-ejb?branch=master)
+<a href='https://coveralls.io/github/amihaiemil/charles-github-ejb?branch=master'><img src='https://coveralls.io/repos/github/amihaiemil/charles-github-ejb/badge.svg?branch=master' alt='Coverage Status' /></a>
 
 This repository holds 2 maven projects:
 
