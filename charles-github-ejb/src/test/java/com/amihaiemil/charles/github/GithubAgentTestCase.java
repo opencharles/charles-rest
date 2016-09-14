@@ -49,7 +49,7 @@ import com.jcabi.github.mock.MkGithub;
  * @since 1.0.0
  *
  */
-public class GithubNotificationsTestCase {
+public class GithubAgentTestCase {
 
 	/**
 	 * GithubAgent can return the agent's username.
@@ -127,7 +127,7 @@ public class GithubNotificationsTestCase {
 	 * @throws Exception If something goes wrong.
 	 */
 	@Test
-	public void skipsClosedIssue() throws Exception {
+	public void g() throws Exception {
 		Github gh = new MkGithub("amihaiemil");
 		Repo repo = gh.repos().create(
 			new RepoCreate("reponame", false)

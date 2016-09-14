@@ -24,7 +24,7 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -57,13 +57,9 @@ public class SendReplyTestCase {
 	 */
 	@Test
     public void sendsComment() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
-
     	Command com = this.mockCommand();
     	Reply rep = new TextReply(com, "Hello there!");
-    	SendReply sr = new SendReply(rep, logger);
+    	SendReply sr = new SendReply(rep, Mockito.mock(Logger.class));
 
     	assertTrue(sr.perform());
     	
@@ -76,6 +72,17 @@ public class SendReplyTestCase {
     	);
 
     }
+	
+	/**
+	 * {@link SendReply} returns false if the reply send fails.
+	 * @throws Exception If something goes worng.
+	 */
+	@Test
+	public void replySendFails() throws Exception {
+	    Reply rep = Mockito.mock(Reply.class);
+	    Mockito.doThrow(new IOException("This is expected, it's ok!")).when(rep).send();
+	    assertFalse(new SendReply(rep, Mockito.mock(Logger.class)).perform());
+	}
     
     /**
      * Mock a command.

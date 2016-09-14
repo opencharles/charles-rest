@@ -28,6 +28,8 @@ package com.amihaiemil.charles.github;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -36,6 +38,7 @@ import com.amihaiemil.charles.github.StarRepo;
 import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Github;
 import com.jcabi.github.Repo;
+import com.jcabi.github.Stars;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.github.mock.MkGithub;
 
@@ -56,7 +59,7 @@ public class StarRepoTestCase {
 	public void starsRepo() throws Exception {
 		Logger logger = Mockito.mock(Logger.class);
 		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
+		Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
 		Repo repo = this.mockGithubRepo();
         Step sr = new StarRepo(repo, logger);
@@ -73,7 +76,7 @@ public class StarRepoTestCase {
 	public void starsRepoTwice() throws Exception {
 		Logger logger = Mockito.mock(Logger.class);
 		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
+		Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
 		Repo repo = this.mockGithubRepo();
         Step sr = new StarRepo(repo, logger);
@@ -83,6 +86,32 @@ public class StarRepoTestCase {
         assertTrue(repo.stars().starred());
     }
 
+    /**
+     * StarRepo did not star the repository due to an IOException. 
+     * StarRepo.perform() should return true anyway because it's not a critical operation and we
+     * shouldn't fail the whole process just because of this.
+     * 
+     * This test expects an RuntimeException (we mock the logger in such a way) because it's the easiest way
+     * to find out if the flow entered the catch block.
+     * @throws IOException If something goes wrong.
+     */
+    @Test(expected = RuntimeException.class)
+    public void repoStarringFails() throws IOException {
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doThrow(new RuntimeException("Excpected excetion; all is ok!")).when(logger).error(
+		    Mockito.anyString(), Mockito.any(IOException.class)
+		);
+		
+		Repo repo = Mockito.mock(Repo.class);
+		Stars stars = Mockito.mock(Stars.class);
+		Mockito.when(stars.starred()).thenReturn(false);
+		Mockito.doThrow(new IOException()).when(stars).star();
+		Mockito.when(repo.stars()).thenReturn(stars);
+		
+		StarRepo sr = new StarRepo(repo, logger);
+		sr.perform();
+	}
 	/**
 	 * Return a Github Repo mock for test.
 	 * @return Repo.

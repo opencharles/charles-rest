@@ -111,7 +111,9 @@ public class GhPagesBranchCheckTestCase {
 			Logger logger = Mockito.mock(Logger.class);
 			Mockito.doNothing().when(logger).info(Mockito.anyString());
 			Mockito.doNothing().when(logger).warn(Mockito.anyString());
-			Mockito.doNothing().when(logger).error(Mockito.anyString());
+			Mockito.doThrow(new IllegalStateException("Unexpected IOException...")).when(logger).error(
+			    Mockito.anyString(), Mockito.isA(IOException.class)
+			);
 
 			GhPagesBranchCheck gpc = new GhPagesBranchCheck(repo, logger);
 			assertFalse(gpc.perform());
@@ -120,6 +122,26 @@ public class GhPagesBranchCheckTestCase {
 		}
 	}
 	
+	/**
+	 * GhPagesBranchCheck.perform throws IOException because the http request cannot be fulfilled.
+	 * This tests excepts an RuntimeException (we mock the logger in such a way) because it's the easies way
+	 * to see that the flow entered in the catch IOException block.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test (expected = RuntimeException.class)
+	public void requestFetchFails() throws Exception {
+	    int port = this.port();
+		String branchesUrl = "http://localhost:" + port + "/path/to/branches{/branch}";
+		JsonObject repo = Json.createObjectBuilder().add("branches_url", branchesUrl).build();
+		Logger logger = Mockito.mock(Logger.class);
+		Mockito.doNothing().when(logger).info(Mockito.anyString());
+		Mockito.doNothing().when(logger).warn(Mockito.anyString());
+		Mockito.doThrow(new RuntimeException("This is expected, everything is ok!")).when(logger).error(
+		    Mockito.anyString(), Mockito.any(IOException.class)
+	    );
+		new GhPagesBranchCheck(repo, logger).perform();
+	}
+
 	/**
      * Find a free port.
      * @return A free port.

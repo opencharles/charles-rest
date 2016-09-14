@@ -98,6 +98,21 @@ public class EnglishTestCase {
 	}
 	
 	/**
+	 * A command can be categorized as unknown.
+	 */
+	@Test
+	public void unknownCommands() {
+		Command unknown1 = this.mockCommand("@charlesmike I don't think you understand");
+    	Command unknown2 = this.mockCommand("@charlesmike Why don't you respond?");
+    	Command unknown3 = this.mockCommand("@charlesmike how many languages do you speak?");
+
+    	Language english = new English();
+    	assertTrue(english.categorize(unknown1).type().equals("unknown"));
+    	assertTrue(english.categorize(unknown2).type().equals("unknown"));
+    	assertTrue(english.categorize(unknown3).type().equals("unknown"));
+	}
+	
+	/**
 	 * There is an English response for "hello".
 	 */
 	@Test
