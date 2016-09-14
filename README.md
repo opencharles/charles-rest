@@ -12,5 +12,4 @@ This repository holds 2 maven projects:
 Say ``@charlesmike hi there`` in a Github issue comment and see what happens. 
 Check out the [website](http://charles.amihaiemil.com) for more details on how to use this service.
 
-You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies 
-for configuration. More to follow on this topic.
+You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies for configuration. More to follow on this topic.
