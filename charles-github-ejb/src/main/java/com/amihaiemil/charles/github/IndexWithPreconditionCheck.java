@@ -38,11 +38,12 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  * 
  */
-class IndexPreconditionCheck implements Step {
+class IndexWithPreconditionCheck implements Step {
 
 	private Command com;
 	private Language lang;
 	private Logger logger;
+
 	/**
 	 * Checks that can be performed as a precondition.
 	 */
@@ -75,10 +76,15 @@ class IndexPreconditionCheck implements Step {
 	};
 
 	/**
+	 * Index steps;
+	 */
+	private IndexSteps index;
+
+	/**
 	 * Builder pattern ctor.
 	 * @param builder
 	 */
-	IndexPreconditionCheck(IndexPreconditionCheckBuilder builder) {
+	IndexWithPreconditionCheck(IndexWithPreconditionCheckBuilder builder) {
 	    this.com = builder.com;
 	    this.lang = builder.lang;
 	    this.logger = builder.logger;
@@ -86,39 +92,62 @@ class IndexPreconditionCheck implements Step {
 	    this.repoForkCheck = builder.repoForkCheck;
 	    this.repoNameCheck = builder.repoNameCheck;
 	    this.ghPagesBranchCheck = builder.ghPagesBranchCheck;
+	    this.index = builder.index;
 	}
 
 	@Override
 	public boolean perform() {
+	    boolean success;
 		if (this.repoNameCheck.perform()) {
 			if(this.authorOwnerStep.perform()) {
 			    if(this.repoForkCheck.perform()) {
-			    	return true;
+			    	startIndexComment().perform();//ignore this result, it is not critical to let the user know
+			    	                              //that the index action has started (the following steps might work ok)
+			    	success = this.index.perform();
 			    } else {
-			    	this.denialReply("denied.fork.comment").perform();
+			    	success = this.denialReply("denied.fork.comment").perform();
 			    }
 			} else {
-				this.denialReply("denied.commander.comment").perform();
+				success = denialReply("denied.commander.comment").perform();
 			}
         } else {
             boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
             if(ghPagesBranch) {
             	if(this.authorOwnerStep.perform()) {
     			    if(this.repoForkCheck.perform()) {
-    			    	return true;
+    			    	startIndexComment().perform();//ignore this result, it is not critical to let the user know
+    		                                          //that the index action has started (the following steps might work ok)
+    			    	success = this.index.perform();
     			    } else {
-    			    	this.denialReply("denied.fork.comment").perform();
+    			    	success = this.denialReply("denied.fork.comment").perform();
     			    }
     			} else {
-    				this.denialReply("denied.commander.comment").perform();
+    				success = this.denialReply("denied.commander.comment").perform();
     			}
             } else {
-        	    this.denialReply("denied.name.comment").perform();
+            	success = this.denialReply("denied.name.comment").perform();
             }
         }
-		return false;
+		return success;
 	}
 
+	/**
+	 * After all the precondition checks are met, the agent first lets the commander know that the index
+	 * action has started.
+	 * @return SendReply step.
+	 */
+    SendReply startIndexComment() {
+        return new SendReply(
+		    new TextReply(
+		        this.com,
+		        String.format(
+		            this.lang.response("index.start.comment"),
+		            this.com.authorLogin()
+		        )
+		    ), this.logger
+		);
+	}
+	
     /**
      * Builds the reply to send to an unauthorized command.
      * @return SendReply step.
@@ -135,9 +164,9 @@ class IndexPreconditionCheck implements Step {
     }
 	
 	/**
-     * Builder for {@link IndexPreconditionCheck}
+     * Builder for {@link IndexWithPreconditionCheck}
      */
-    public static class IndexPreconditionCheckBuilder {
+    public static class IndexWithPreconditionCheckBuilder {
     	private Command com;
     	private Language lang;
     	private Logger logger;
@@ -145,7 +174,8 @@ class IndexPreconditionCheck implements Step {
     	private Step repoForkCheck;
     	private Step repoNameCheck;
     	private Step ghPagesBranchCheck;
-    	
+    	private IndexSteps index;
+
     	/**
     	 * Constructor.
     	 * @param com Command that triggered the action.
@@ -153,7 +183,7 @@ class IndexPreconditionCheck implements Step {
     	 * @param lang Spoken Language.
     	 * @param logger Action logger.
     	 */
-    	public IndexPreconditionCheckBuilder(
+    	public IndexWithPreconditionCheckBuilder(
     	    Command com, JsonObject repo,
     	    Language lang, Logger logger, LogsLocation logs
     	) {
@@ -167,7 +197,7 @@ class IndexPreconditionCheck implements Step {
     	 * @param aoc Given author name check.
     	 * @return This builder.
     	 */
-    	public IndexPreconditionCheckBuilder authorOwnerCheck(AuthorOwnerCheck aoc) {
+    	public IndexWithPreconditionCheckBuilder authorOwnerCheck(AuthorOwnerCheck aoc) {
     		this.authorOwnerStep = aoc;
     		return this;
     	}
@@ -177,7 +207,7 @@ class IndexPreconditionCheck implements Step {
     	 * @param rfc Given RepositoryForkCheck.
     	 * @return This builder.
     	 */
-    	public IndexPreconditionCheckBuilder repoForkCheck(RepoForkCheck rfc) {
+    	public IndexWithPreconditionCheckBuilder repoForkCheck(RepoForkCheck rfc) {
     		this.repoForkCheck = rfc;
     		return this;
     	}
@@ -187,7 +217,7 @@ class IndexPreconditionCheck implements Step {
     	 * @param rnc Given repository name check.
     	 * @return This builder.
     	 */
-    	public IndexPreconditionCheckBuilder repoNameCheck(RepoNameCheck rnc) {    			
+    	public IndexWithPreconditionCheckBuilder repoNameCheck(RepoNameCheck rnc) {    			
     		this.repoNameCheck = rnc;
     		return this;
     	}
@@ -197,13 +227,23 @@ class IndexPreconditionCheck implements Step {
     	 * @param gpc Given Github pages branch check.
     	 * @return This builder.
     	 */
-    	public IndexPreconditionCheckBuilder ghPagesBranchCheck(GhPagesBranchCheck gpc) {
+    	public IndexWithPreconditionCheckBuilder ghPagesBranchCheck(GhPagesBranchCheck gpc) {
     		this.ghPagesBranchCheck = gpc;
     		return this;
     	}
+    	
+    	/**
+    	 * Specify the index step.
+    	 * @param is Index step.
+    	 * @return This builder.
+    	 */
+    	public IndexWithPreconditionCheckBuilder indexSteps(IndexSteps is) {
+    		this.index = is;
+    		return this;
+    	}
 
-    	public IndexPreconditionCheck build() {
-			return new IndexPreconditionCheck(this);
+    	public IndexWithPreconditionCheck build() {
+			return new IndexWithPreconditionCheck(this);
 		}
     	
     }
