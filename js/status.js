@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    getServiceStatus("domaincharles/api/ping");
+    getServiceStatus("http://ec2-54-68-83-8.us-west-2.compute.amazonaws.com:8080/charles-rest/api/ping");
 });
 
 function getServiceStatus(statusUrl) {
