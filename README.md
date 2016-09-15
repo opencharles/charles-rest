@@ -1,7 +1,7 @@
 # charles-github-ejb
 [![Build Status](https://travis-ci.org/amihaiemil/charles-github-ejb.svg?branch=master)](https://travis-ci.org/amihaiemil/charles-github-ejb)
 ![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
-[![Coverage Status](https://coveralls.io/repos/github/amihaiemil/charles-github-ejb/badge.svg?branch=master&service=github)](https://coveralls.io/github/amihaiemil/charles-github-ejb?branch=master)
+<a href='https://coveralls.io/github/amihaiemil/charles-github-ejb?branch=master'><img src='https://coveralls.io/repos/github/amihaiemil/charles-github-ejb/badge.svg?branch=master' alt='Coverage Status' /></a>
 
 This repository holds 2 maven projects:
 
@@ -12,5 +12,4 @@ This repository holds 2 maven projects:
 Say ``@charlesmike hi there`` in a Github issue comment and see what happens. 
 Check out the [website](http://charles.amihaiemil.com) for more details on how to use this service.
 
-You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies 
-for configuration. More to follow on this topic.
+You can also deploy the ``.war`` on your own infrastructure, with your own chatbot and Elastic Search instance. You just have to set some System properies for configuration. More to follow on this topic.
