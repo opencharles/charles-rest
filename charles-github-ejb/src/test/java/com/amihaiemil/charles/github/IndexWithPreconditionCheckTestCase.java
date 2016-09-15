@@ -39,20 +39,20 @@ import com.jcabi.github.Issue;
 import com.jcabi.github.mock.MkGithub;
 
 /**
- * Unit tests for {@link IndexPreconditionCheck}
+ * Unit tests for {@link IndexWithPreconditionCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  */
-public class IndexPreconditionCheckTestCase {
+public class IndexWithPreconditionCheckTestCase {
 
     /**
      * An IndexPreconditionCheck instance can be built.
      */
     @Test
     public void builderWorks() {
-        IndexPreconditionCheck ipc = new IndexPreconditionCheck
-            .IndexPreconditionCheckBuilder(
+        IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck
+            .IndexWithPreconditionCheckBuilder(
                 Mockito.mock(Command.class),
                 Mockito.mock(JsonObject.class),
                 Mockito.mock(Language.class),
@@ -83,13 +83,13 @@ public class IndexPreconditionCheckTestCase {
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.commander.comment")).thenReturn("Expected repo owner!");
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
             com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoNameCheck(rnc)
     	.authorOwnerCheck(aoc)
         .build();
-    	assertFalse(ipc.perform());
+    	assertTrue(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(deniedMessage.contains("Expected repo owner!"));
     }
@@ -120,7 +120,7 @@ public class IndexPreconditionCheckTestCase {
     		"The repository's name must match the format owner.github.io or it must have a project website on branch gh-pages"
         );
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
             com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
@@ -128,7 +128,7 @@ public class IndexPreconditionCheckTestCase {
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
         .build();
-    	assertFalse(ipc.perform());
+    	assertTrue(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(
     	    deniedMessage.contains(
@@ -155,18 +155,31 @@ public class IndexPreconditionCheckTestCase {
     	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
     	Mockito.when(ghc.perform()).thenReturn(true);
 
+    	IndexSteps index = Mockito.mock(IndexSteps.class);
+    	Mockito.when(index.perform()).thenReturn(true);
     	
     	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
-            com, com.issue().repo().json(), Mockito.mock(Language.class), Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
+    	Language lang = Mockito.mock(Language.class);
+    	Mockito.when(lang.response("index.start.comment")).thenReturn(
+    		"Index action started..."
+        );
+    	
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
+            com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
     	.authorOwnerCheck(aoc)
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
+    	.indexSteps(index)
         .build();
     	assertTrue(ipc.perform());
+    	
+    	String indexStartedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
+    	assertTrue(
+    	    indexStartedMessage.contains("Index action started...")
+        );
     }
 
     /**
@@ -195,7 +208,7 @@ public class IndexPreconditionCheckTestCase {
     		"The repository has a gh-pages branch but the commander is not authorized!"
         );
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
             com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
@@ -203,7 +216,7 @@ public class IndexPreconditionCheckTestCase {
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
         .build();
-    	assertFalse(ipc.perform());
+    	assertTrue(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(
     	    deniedMessage.contains(
@@ -238,7 +251,7 @@ public class IndexPreconditionCheckTestCase {
     		"The repository is a fork!"
         );
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
             com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
@@ -246,7 +259,7 @@ public class IndexPreconditionCheckTestCase {
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
         .build();
-    	assertFalse(ipc.perform());
+    	assertTrue(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(
     	    deniedMessage.contains("The repository is a fork!")
@@ -279,7 +292,7 @@ public class IndexPreconditionCheckTestCase {
     		"This gh-pages repository is a fork!"
         );
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
             com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
@@ -287,7 +300,7 @@ public class IndexPreconditionCheckTestCase {
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
         .build();
-    	assertFalse(ipc.perform());
+    	assertTrue(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
     	assertTrue(
     	    deniedMessage.contains("This gh-pages repository is a fork!")
@@ -312,18 +325,31 @@ public class IndexPreconditionCheckTestCase {
     	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
     	Mockito.when(ghc.perform()).thenReturn(true);
 
+    	IndexSteps index = Mockito.mock(IndexSteps.class);
+    	Mockito.when(index.perform()).thenReturn(true);
     	
     	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
     	
-    	IndexPreconditionCheck ipc = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
-            com, com.issue().repo().json(), Mockito.mock(Language.class), Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
+    	Language lang = Mockito.mock(Language.class);
+    	Mockito.when(lang.response("index.start.comment")).thenReturn(
+    		"Index action started..."
+        );
+    	
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
+            com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
         )
     	.repoForkCheck(rfc)
     	.authorOwnerCheck(aoc)
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
+    	.indexSteps(index)
         .build();
     	assertTrue(ipc.perform());
+    	
+    	String indexStartedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
+    	assertTrue(
+    	    indexStartedMessage.contains("Index action started...")
+        );
     }
     
     /**

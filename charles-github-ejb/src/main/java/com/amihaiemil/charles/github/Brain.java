@@ -105,10 +105,10 @@ public class Brain {
     	 		);
     	 		break;
     	 	case "indexsite":
-    	 		steps.addAll(this.indexSteps(com, category, false));
+    	 		steps.add(this.indexSteps(com, category, false));
     	 		break;
     	 	case "indexpage":
-    	 		steps.addAll(this.indexSteps(com, category, true));
+    	 		steps.add(this.indexSteps(com, category, true));
     	 		break;
     	 	default:
     	 		logger.info("Unknwon command!");
@@ -162,33 +162,12 @@ public class Brain {
      * Build the list of steps that need to be taken when receiving an index command.
      * @param com Received Command, 
      * @param category Command category, containing language and type.
-     * @return List of Step.
+     * @return Steps that have to be followed to fulfill an index command.
      * @throws IOException If something goes wrong.
      */
-    private List<Step> indexSteps(Command com, CommandCategory category, boolean singlePage
+    private Step indexSteps(Command com, CommandCategory category, boolean singlePage
         ) throws IOException {
-        List<Step> steps = new ArrayList<Step>();
-		steps.add(
-		    new SendReply(
-		        new TextReply(
-		            com,
-		            String.format(
-		                category.language().response("index.start.comment"),
-		                com.authorLogin()
-		            )
-		        ),
-		        this.logger
-		    )		
-		);
 		JsonObject repo = com.issue().repo().json();
-		IndexPreconditionCheck preconditions = new IndexPreconditionCheck.IndexPreconditionCheckBuilder(
-		    com, repo, category.language(), this.logger, this.logsLoc
-		)
-		.repoForkCheck(new RepoForkCheck(repo, this.logger))
-		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, this.logger))
-		.repoNameCheck(new RepoNameCheck(repo, this.logger))
-		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
-		.build();
 
         FollowupSteps followup = new FollowupSteps.FollowupStepsBuilder()
         .starRepo(new StarRepo(com.issue().repo(), this.logger))
@@ -206,10 +185,16 @@ public class Brain {
 	    )
 	    .build();
 		
-		steps.add(
-		    new IndexSteps(com, repo, preconditions, followup, singlePage)
-		);
+        IndexWithPreconditionCheck indexWithPreconditions = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
+    		    com, repo, category.language(), this.logger, this.logsLoc
+    		)
+    		.repoForkCheck(new RepoForkCheck(repo, this.logger))
+    		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, this.logger))
+    		.repoNameCheck(new RepoNameCheck(repo, this.logger))
+    		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
+    		.indexSteps(new IndexSteps(com, repo, followup, singlePage))
+    		.build();
 
-		return steps;
+		return indexWithPreconditions;
      }
 }

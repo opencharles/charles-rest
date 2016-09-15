@@ -26,6 +26,7 @@
 package com.amihaiemil.charles.github;
 
 import javax.json.JsonObject;
+
 import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.Step;
 
@@ -49,11 +50,6 @@ public class IndexSteps implements Step {
 	private JsonObject repoJson;
 
     /**
-     * Preconditions that have to be met in order to preform this step;
-     */
-    private Step preconditions;
-
-    /**
      * To perform after the index command has been executed successfully.
      */
     private Step followup;
@@ -64,10 +60,9 @@ public class IndexSteps implements Step {
      * Constructor.
      * @param com Command.
      */
-    public IndexSteps(Command com, JsonObject repo, Step precStep, Step followup, boolean singlePage) {
+    public IndexSteps(Command com, JsonObject repo, Step followup, boolean singlePage) {
         this.com = com;
         this.repoJson = repo;
-        this.preconditions = precStep;
         this.followup = followup;
         this.singlePage = singlePage;
     }
@@ -79,24 +74,22 @@ public class IndexSteps implements Step {
      * 3) Perform the followup steps.
      */
     @Override
-    public boolean perform() {
-        if(this.preconditions.perform()) {
-            String expectedName = this.repoJson.getJsonObject("owner").getString("login") + ".github.io";
-            boolean indexed = false;
-            if(expectedName.equals(this.repoJson.getString("name"))) {
-            	indexed = this.indexStep(
-            	    this.com, repoJson.getString("name"), false, this.singlePage
-            	).perform();
-            } else {
-            	indexed = this.indexStep(
-            	    this.com, repoJson.getString("name"), true, this.singlePage
-            	).perform();
-            }
-            if(indexed) {
-                return followup.perform();
-            }
+    public boolean perform() {    	
+        String expectedName = this.repoJson.getJsonObject("owner").getString("login") + ".github.io";
+        boolean indexed = false;
+        if(expectedName.equals(this.repoJson.getString("name"))) {
+        	indexed = this.indexStep(
+        	    this.com, repoJson.getString("name"), false, this.singlePage
+            ).perform();
+        } else {
+        	indexed = this.indexStep(
+        	    this.com, repoJson.getString("name"), true, this.singlePage
+        	).perform();
         }
-		return false;
+        if(indexed) {
+            return followup.perform();
+        }
+		return true;
 	}
 
     /**
