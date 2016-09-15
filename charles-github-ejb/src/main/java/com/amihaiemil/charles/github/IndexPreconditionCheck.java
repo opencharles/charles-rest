@@ -116,38 +116,6 @@ class IndexPreconditionCheck implements Step {
         	    this.denialReply("denied.name.comment").perform();
             }
         }
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		if(this.authorOwnerStep.perform()) {
-//		    if(this.repoForkCheck.perform()) {
-//		        if (this.repoNameCheck.perform()) {
-//		    	    return true;
-//		        } else {
-//		            boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
-//		            if(ghPagesBranch) {
-//		                return true;
-//		            } else {
-//		        	    this.denialReply("denied.name.comment").perform();
-//		            }
-//		        }
-//		    } else {
-//		    	this.denialReply("denied.fork.comment").perform();
-//		    }
-//        } else {
-//            this.denialReply("denied.commander.comment").perform();
-//        }
 		return false;
 	}
 

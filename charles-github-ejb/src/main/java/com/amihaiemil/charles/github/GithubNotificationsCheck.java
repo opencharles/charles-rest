@@ -48,6 +48,13 @@ public class GithubNotificationsCheck {
 	@EJB 
 	GithubAgent agent;
 
+	/**
+	 * Default ctor.
+	 */
+	public GithubNotificationsCheck() {
+        //default ctor for cdi
+    }
+
     /**
      * Constructor.
      * @param agent Given github agent.
