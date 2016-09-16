@@ -7,11 +7,6 @@ function getServiceStatus(statusUrl) {
 	$.ajax({
 		type : "GET",
 		url : statusUrl,
-		dataType : 'json',
-		contentType : "application/json; charset=utf-8",
-		headers : {
-			Accept : "application/json; charset=utf-8"
-		},
 		success : function(response, status) {
 			var lastUpdated;
 			if(status == "success") {
