@@ -22,51 +22,45 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.steps;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.WebCrawl;
 
 /**
- * Step to index a website.
+ * Unit tests for {@link IndexSite}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexSite implements Step {
-
+public class IndexSiteTestCase {
+	
 	/**
-	 * Action's logger.
+	 * IndexSite can perform ok.
 	 */
-	private Logger logger;
-
-	/**
-	 * The Web crawl used.
-	 */
-	private WebCrawl siteCrawl;
-
-    /**
-     * Constructor.
-     * @param url The website's url.
-     */
-    public IndexSite(WebCrawl crawl, Logger logger) {
-        this.logger = logger;
-        this.siteCrawl = crawl;
+	@Test
+    public void performsOk() {
+    	IndexSite is = new IndexSite( Mockito.mock(WebCrawl.class), Mockito.mock(Logger.class));
+    	assertTrue(is.perform());
     }
-
-	@Override
-	public boolean perform() {
-        try {
-            this.siteCrawl.crawl();
-		} catch (DataExportException e) {
-			logger.error("Exception while crawling the website: " + e.getMessage(), e);
-			return false;
-		}
-		return true;
-	}
-
+	
+	/**
+	 * IndexSite can perform ok.
+	 * @throws Exception - If something goes wrong.
+	 */
+	@Test
+    public void webCrawlThrowsException() throws Exception {
+		WebCrawl crawl = Mockito.mock(WebCrawl.class);
+		Mockito.doThrow(new DataExportException("Expected exception; it's ok")).when(crawl).crawl();
+    	IndexSite is = new IndexSite(crawl, Mockito.mock(Logger.class));
+    	assertFalse(is.perform());
+    }
 }
