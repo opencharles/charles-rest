@@ -26,15 +26,11 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -192,7 +188,7 @@ public class Brain {
     		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, this.logger))
     		.repoNameCheck(new RepoNameCheck(repo, this.logger))
     		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
-    		.indexSteps(new IndexSteps(com, repo, followup, singlePage))
+    		.indexSteps(new IndexSteps(com, repo, followup, this.logger, singlePage))
     		.build();
 
 		return indexWithPreconditions;
