@@ -81,7 +81,7 @@
                 <div class="col-lg-4 col-lg-offset-2">
                     <p>Like already mentioned, you interact with this service via <b>Github issue comments</b>. The code behind 
 it can be found <a target="_blank" href="https://github.com/amihaiemil/charles-github-ejb" title="charles-github-ejb Github">here</a>. In short, 
-there is an job that uses the Github API to interact with the <a target="_blank" href="https://github.com/charlesmike" title="Charles Michael's Github account">@charlesmike</a> account. Every minute, the notifications are checked and actions are taken according to each notification.</p>
+there is a job that uses the Github API to interact with the <a target="_blank" href="https://github.com/charlesmike" title="Charles Michael's Github account">@charlesmike</a> account. Every minute, the notifications are checked and actions are taken according to each notification.</p>
                 </div>
                 <div class="col-lg-4">
                     <p>The crawling, fetching and storing of web-content logic is in <a target="_blank" title="Charles library" href="https://github.com/amihaiemil/charles">this</a> library. You can think of the library as the "engine" of everything, while the chatbot and the code behind it are only the "front end", the part which interacts with the user. Of course, it is reusable and you can use it in your own project if you want to. The crawling and fetching of content can be used directly, while you might want to define your own <code>Repository</code></p>
@@ -121,7 +121,8 @@ bot will answer explaining that this condition is not met and will not take any 
             </div>
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
-                    
+				    <br/><br/>
+					<a href="commands.html" class="btn btn-default">More on commands</a>                    
                 </div>
             </div>
         </div>
@@ -135,8 +136,37 @@ bot will answer explaining that this condition is not met and will not take any 
                     <h2>Index and Search</h2>
                 </div>
             </div>
-        </div>
-    </section>
+            <br/>
+            <div class="row">
+                <div class="col-lg-4 col-lg-offset-2">
+                    <p>The key points about the <b>indexing</b> process are:</p>
+					<ul>
+					    <li>Runs <b>only</b> on command. It is no preprogrammed and does not run periodically!</li>
+						<li>You can index the whole website or just particular pages, one page at a time.</li>
+						<li>Once the index command is run your content becomes searcheable almost instantly.</li>
+						<li>The data is not altered in any way! We index it as we find it.</li>
+						<b><li>Your data is safe with us, we do not sell it or make it public in any way other than the search endpoint(s)!</li>
+						<li>You should only index public data that could be accessible through the web, by navigating through your site.
+						In other words, do not try to index something you wouldn't like to see published on your site!</li></b>
+						<li>The indexes reside in the cloud, on <a title="Amazon EC2" href = "https://aws.amazon.com/ec2/">Amazon EC2</a> instance(s).</li>
+					</ul>
+                </div>
+                <div class="col-lg-4">
+				    <p>The key points about the <b>searching</b> process are:</p>
+					<ul>
+					    <li>You have to edit your site a little, just the first time (ideally, only add a script we provide).</li>
+						<li>Once an index command is finished, your search will see it almost in real time.</li>
+						<li><b>Relies on Javascript. It won't work if the javascript is disabled in the browser!</b></li>
+						<li>Should work fine on all modern browsers and mobile. <b>We don't care about Internet Explorer</b>; you should catch up with the world if you do.</li>
+					</ul>
+                </div>
+                <div class="col-lg-8 col-lg-offset-2 text-center">
+                    <br/><br/>
+					<a href="onsearch.html" class="btn btn-default">More on search</a>                    
+		        </div>
+            </div>
+        </div>    
+	</section>
 
     <!-- Footer -->
     <footer class="text-center">
