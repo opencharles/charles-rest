@@ -92,18 +92,20 @@ public class GithubAgent {
 			if("mention".equals(notification.getString("reason"))) {
 				JsonObject subject = notification.getJsonObject("subject"); 
 				String issueUrl = subject.getString("url");
-				int issueNumber = Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1));
-				String repoFullName = notification.getJsonObject("repository").getString("full_name");
-				Issue issue = this.github.repos().get(
-				    new Coordinates.Simple(repoFullName)
-				).issues().get(issueNumber);
+				String latest_comment_url = subject.getString("latest_comment_url");
+				if(!issueUrl.equals(latest_comment_url)) {//if the 2 are equal it means the notification was not about a comment (maybe about close/reopen issue)
+				    int issueNumber = Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1));
+				    String repoFullName = notification.getJsonObject("repository").getString("full_name");
+				    Issue issue = this.github.repos().get(
+				        new Coordinates.Simple(repoFullName)
+				    ).issues().get(issueNumber);
 
-				if(issue.exists()) {
-					String latest_comment_url = subject.getString("latest_comment_url");
-					int latestCommentId = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
-					issues.add(
-						new GithubIssue(repoFullName, issueNumber, latestCommentId, issue)
-				    );
+				    if(issue.exists()) {
+					    int latestCommentId = Integer.parseInt(latest_comment_url.substring(latest_comment_url.lastIndexOf("/") + 1));
+					    issues.add(
+						    new GithubIssue(repoFullName, issueNumber, latestCommentId, issue)
+				        );
+				    }
 				}
 			}
 		}
