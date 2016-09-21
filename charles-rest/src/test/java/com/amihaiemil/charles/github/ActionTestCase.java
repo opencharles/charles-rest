@@ -78,10 +78,10 @@ public class ActionTestCase {
 			assertTrue(f.get()==null);
 		}
 		
-    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.getLatestComment().issue().comments().iterate());
-    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getLatestComment().issue().comments().iterate());
-    	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getLatestComment().issue().comments().iterate());
-    	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getLatestComment().issue().comments().iterate());
+    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.getSelf().comments().iterate());
+    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getSelf().comments().iterate());
+    	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getSelf().comments().iterate());
+    	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getSelf().comments().iterate());
     	String expectedReply1 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"amihaiemil");
     	assertTrue(commentsWithReply1.get(1).json().getString("body")
     			.equals(expectedReply1)); //there should be only 2 comments - the command and the reply.
@@ -113,7 +113,7 @@ public class ActionTestCase {
     				  ).issues().create("Test issue for commands", "test body");
     	Comment com = issue.comments().post(command);
     	
-    	GithubIssue gissue = new GithubIssue(commander + ".github.io", issue.number(), com.number(), issue);
+    	GithubIssue gissue = null;//new GithubIssue(commander + ".github.io", issue.number(), com.number(), issue);
     	return gissue;
 	}
 
