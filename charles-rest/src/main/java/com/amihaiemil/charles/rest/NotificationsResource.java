@@ -24,17 +24,29 @@
 */
 package com.amihaiemil.charles.rest;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Set;
 
-import javax.json.JsonArray;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amihaiemil.charles.github.Action;
+import com.amihaiemil.charles.github.Notification;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jcabi.github.Coordinates;
+import com.jcabi.github.Github;
+import com.jcabi.github.RtGithub;
+import com.jcabi.http.wire.RetryWire;
 
 /**
  * REST interface to receive Github notifications form the EJB checker.
@@ -47,10 +59,15 @@ import javax.ws.rs.core.Response;
 public class NotificationsResource {
 
     /**
+     * Logger,
+     */
+	private static final Logger LOG = LoggerFactory.getLogger(NotificationsResource.class.getName());
+
+	/**
      * The http request.
      */
 	@Context
-	HttpServletRequest request;
+	private HttpServletRequest request;
 
 	/**
 	 * Consumes a JsonArray consisting of Github notifications json objects.
@@ -75,17 +92,81 @@ public class NotificationsResource {
 	 */
 	@POST
 	@Path("notifications")
-	@Consumes(MediaType.APPLICATION_JSON)
-    public Response postNotifications(JsonArray notifications) {
-		String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if(token == null || token.isEmpty()) {
-			return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
-		} else {
-		    if(token.equals("s3cr3t")) {
-		    	return Response.ok().entity(notifications.toString()).build();
+    public Response postNotifications(String notifications) {
+		try {
+		    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+		    if(token == null || token.isEmpty()) {
+			    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
 		    } else {
-		    	return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+		        if(token.equals("s3cr3t")) {
+		        	if(startedActionThreads() > 15) {
+		        		return Response.status(HttpURLConnection.HTTP_UNAVAILABLE).build();
+		        	}
+		        	ObjectMapper mapper = new ObjectMapper();
+				    List<Notification> parsedNotifications = mapper.readValue(notifications, new TypeReference<List<Notification>>(){});
+		    	    boolean startedHandling = this.handleNotifications(parsedNotifications);
+		    	    if(startedHandling) {
+		    	    	return Response.ok().build();
+		    	    }
+		        } else {
+		    	    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+		        }
+	     	}
+        } catch (IOException ex) {
+            LOG.error("Exception when parsing Json notifications!", ex);
+        }
+		return Response.serverError().build();
+	}
+
+	/**
+	 * Handles notifications, starts one action thread for each of them.
+	 * @param notifications List of notifications.
+	 * @return true if actions were started successfully; false otherwise.
+	 */
+	private boolean handleNotifications(List<Notification> notifications) {
+		String authToken = System.getProperty("github.auth.token");
+		if(authToken == null || authToken.isEmpty()) {
+	        LOG.error("Missing github.auth.token. Please specify a Github api access token!");
+		    return false;
+		} else {
+		    Github gh = new RtGithub(
+		        new RtGithub(
+		            authToken
+		        ).entry().through(RetryWire.class)
+	        );
+		    try {
+		        String agentLogin = gh.users().self().login();
+		        for(Notification notification : notifications) {
+		            new Action(
+		                gh.repos().get(
+					        new Coordinates.Simple(notification.getRepoFullName())
+					    ).issues().get(notification.getIssueNumber()),
+				 	    agentLogin
+		            ).take();
+		        }
+		        LOG.info("Started " + notifications.size() + " actions, to handle each notification!");
+		        return true;
+		    } catch (IOException ex) {
+		    	LOG.error("IOException while getting the Issue from Github API");
+		    	return false;
 		    }
 		}
-    }
+	}
+
+    /**
+     * When notifications are received, we check how many action threads are currently running.
+     * If there are too many action threads started, we return HTTP 503 code, so the caller knows
+     * to try again later when we have less load running.
+     * @return number of Action threads started.
+     */
+    private int startedActionThreads() {
+        Set<Thread> threads = Thread.getAllStackTraces().keySet();
+        int runningActions = 0;
+        for(Thread tr : threads) {
+            if(tr.getName().startsWith("Action_")) {
+                runningActions ++;
+            }
+        }
+        return runningActions;
+	}
 }

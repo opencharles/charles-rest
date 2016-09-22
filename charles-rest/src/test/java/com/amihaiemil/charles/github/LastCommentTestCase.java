@@ -46,164 +46,126 @@ import com.jcabi.github.mock.MkStorage;
  * 
  */
 public class LastCommentTestCase {
-//	/**
-//	 * The latest comment in the issue mentions the agent.
-//	 * @throws Exception if something goes wrong.
-//	 */
-//	@Test
-//    public void latestCommentMentionsTheAgent() throws Exception {
-//    	Issue issue = this.mockIssue();
-//    	Comment com = issue.comments().post("@charlesmike hello there, how are you?");
-//    	GithubIssue gissue = new GithubIssue(
-//    			"amihaiemil.github.io",
-//    			issue.number(),
-//    			com.number(), 
-//    			issue
-//    	);
-//    	LastComment lastComment = new LastComment(gissue, "charlesmike");
-//    	JsonObject jsonComment = lastComment.json();
-//    	assertTrue(com.json().equals(jsonComment));
-//    }
-//	
-//	/**
-//	 * The agent is not mentioned in the latest comment but in a previous one.
-//	 * @throws Exception If something goes wrong.
-//	 */
-//	@Test
-//	public void agentMentionedInOtherComment() throws Exception {
-//    	Issue issue = this.mockIssue();
-//    	Comment agentcom = issue.comments().post("@charlesmike hello there, how are you?");
-//    	Comment latest = issue.comments().post("@someoneelse, please check that...");
-//
-//    	GithubIssue gissue = new GithubIssue(
-//    			"amihaiemil.github.io",
-//    			issue.number(),
-//    			latest.number(), 
-//    			issue
-//    	);
-//    	LastComment lastComment = new LastComment(gissue, "charlesmike");
-//    	JsonObject jsonComment = lastComment.json();
-//    	assertTrue(agentcom.json().equals(jsonComment));
-//	}
-//	
-//	/**
-//	 * The agent is mentioned in more previous comments and it should respond only to the last mention.
-//	 * @throws Exception If something goes wrong.
-//	 */
-//	@Test
-//	public void mentionedInMoreComments() throws Exception {
-//    	Issue issue = this.mockIssue();
-//    	issue.comments().post("@charlesmike hello there, how are you?");
-//    	issue.comments().post("@charlesmike hello? Please answer?");
-//    	Comment agentCom = issue.comments().post("@charlesmike why won't you answer?");
-//
-//    	issue.comments().post("@someoneelse, please do something...");
-//    	Comment latest = issue.comments().post("@someoneelse, please check that...");
-//
-//    	GithubIssue gissue = new GithubIssue(
-//    			"amihaiemil.github.io",
-//    			issue.number(),
-//    			latest.number(), 
-//    			issue
-//    	);
-//    	LastComment lastComment = new LastComment(gissue, "charlesmike");
-//    	JsonObject jsonComment = lastComment.json();
-//    	assertTrue(agentCom.json().equals(jsonComment));
-//	}
-//	
-//	/**
-//	 * If the agent is not mentioned at all in the issue (should happen rearely, only if the a mentioning comment was removed before it
-//	 * checked the notifications) then LastComment should an "empty" one.
-//	 * @throws Exception If something goes wrong.
-//	 */
-//	@Test
-//	public void agentNotMentionedAtAll() throws Exception {
-//    	Issue issue = this.mockIssue();
-//    	issue.comments().post("@someoneelse hello there, how are you?");
-//    	Comment latest = issue.comments().post("@someoneelse, please check that...");
-//
-//    	GithubIssue gissue = new GithubIssue(
-//    			"amihaiemil.github.io",
-//    			issue.number(),
-//    			latest.number(), 
-//    			issue
-//    	);
-//    	LastComment lastComment = new LastComment(gissue, "charlesmike");
-//    	JsonObject jsonComment = lastComment.json();
-//    	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-//    	assertTrue(emptyMentionComment.equals(jsonComment));
-//	}
-//
-//	/**
-//	 * Agent already replied once to the last comment.
-//	 * @throws Exception if something goes wrong.
-//	 */
-//	@Test
-//	public void agentRepliedAlreadyToTheLastComment() throws Exception {
-//		final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
-//        final Repo repoMihai = new MkGithub(storage, "amihaiemil").repos().create( new RepoCreate("amihaiemil.github.io", false));
-//        final Issue issue = repoMihai.issues().create("test issue", "body");
-//        issue.comments().post("@charlesmike hello!");
-//        
-//        final Github charlesmike = new MkGithub(storage, "charlesmike");
-//        Issue issueCharlesmike = charlesmike.repos().get(repoMihai.coordinates()).issues().get(issue.number());
-//        issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... ");
-//
-//    	Comment latest = issue.comments().post("@someoneelse, please check that...");
-//
-//        GithubIssue gissue = new GithubIssue(
-//    		"amihaiemil.github.io",
-//    		issue.number(),
-//    		latest.number(), 
-//    		issue
-//    	);
-//        
-//    	LastComment lastComment = new LastComment(gissue, "charlesmike");
-//    	JsonObject jsonComment = lastComment.json();
-//    	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-//    	assertTrue(emptyMentionComment.equals(jsonComment)); 
-//	}
-//	
-//	/**
-//	 * There is more than 1 mention of the agent in the issue and it has already 
-//	 * replied to others, but the last one is not replied to yet.
-//	 * @throws Exception if something goes wrong.
-//	 */
-//	@Test
-//	public void agentRepliedToPreviousMention() throws Exception {
-//		final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
-//        final Repo repoMihai = new MkGithub(storage, "amihaiemil").repos().create( new RepoCreate("amihaiemil.github.io", false));
-//        final Issue issue = repoMihai.issues().create("test issue", "body");
-//        issue.comments().post("@charlesmike hello!");//first mention
-//        
-//        final Github charlesmike = new MkGithub(storage, "charlesmike");
-//        Issue issueCharlesmike = charlesmike.repos().get(repoMihai.coordinates()).issues().get(issue.number());
-//        issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... "); //first reply
-//
-//        Comment lastMention = issue.comments().post("@charlesmike hello again!!");//second mention
-//    	Comment latest = issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
-//
-//        GithubIssue gissue = new GithubIssue(
-//    		"amihaiemil.github.io",
-//    		issue.number(),
-//    		latest.number(), 
-//    		issue
-//    	);
-//        
-//    	LastComment lastComment = new LastComment(gissue, "charlesmike");
-//    	JsonObject jsonComment = lastComment.json();
-//    	assertTrue(lastMention.json().equals(jsonComment)); 
-//	}
-//	
-//    /**
-//     * Mock an issue on Github.
-//     * @return The created MkIssue.
-//     * @throws IOException If something goes wrong.
-//     */
-//    public Issue mockIssue() throws IOException {
-//    	Github gh = new MkGithub("amihaiemil");
-//    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-//    	gh.repos().create(repoCreate);
-//    	return gh.repos().get(new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")).issues().create("Test issue for commands", "test body");
-//    }
+	/**
+	 * The latest comment in the issue mentions the agent.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+    public void latestCommentMentionsTheAgent() throws Exception {
+    	Issue issue = this.mockIssue();
+    	Comment com = issue.comments().post("@charlesmike hello there, how are you?");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	JsonObject jsonComment = lastComment.json();
+    	assertTrue(com.json().equals(jsonComment));
+    }
+	
+	/**
+	 * The agent is not mentioned in the latest comment but in a previous one.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void agentMentionedInOtherComment() throws Exception {
+    	Issue issue = this.mockIssue();
+    	Comment agentcom = issue.comments().post("@charlesmike hello there, how are you?");
+    	issue.comments().post("@someoneelse, please check that...");
+
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	JsonObject jsonComment = lastComment.json();
+    	assertTrue(agentcom.json().equals(jsonComment));
+	}
+	
+	/**
+	 * The agent is mentioned in more previous comments and it should respond only to the last mention.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void mentionedInMoreComments() throws Exception {
+    	Issue issue = this.mockIssue();
+    	issue.comments().post("@charlesmike hello there, how are you?");
+    	issue.comments().post("@charlesmike hello? Please answer?");
+    	Comment agentCom = issue.comments().post("@charlesmike why won't you answer?");
+
+    	issue.comments().post("@someoneelse, please do something...");
+    	issue.comments().post("@someoneelse, please check that...");
+
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	JsonObject jsonComment = lastComment.json();
+    	assertTrue(agentCom.json().equals(jsonComment));
+	}
+	
+	/**
+	 * If the agent is not mentioned at all in the issue (should happen rearely, only if the a mentioning comment was removed before it
+	 * checked the notifications) then LastComment should an "empty" one.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void agentNotMentionedAtAll() throws Exception {
+    	Issue issue = this.mockIssue();
+    	issue.comments().post("@someoneelse hello there, how are you?");
+    	issue.comments().post("@someoneelse, please check that...");
+
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	JsonObject jsonComment = lastComment.json();
+    	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
+    	assertTrue(emptyMentionComment.equals(jsonComment));
+	}
+
+	/**
+	 * Agent already replied once to the last comment.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+	public void agentRepliedAlreadyToTheLastComment() throws Exception {
+		final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
+        final Repo repoMihai = new MkGithub(storage, "amihaiemil").repos().create( new RepoCreate("amihaiemil.github.io", false));
+        final Issue issue = repoMihai.issues().create("test issue", "body");
+        issue.comments().post("@charlesmike hello!");
+        
+        final Github charlesmike = new MkGithub(storage, "charlesmike");
+        Issue issueCharlesmike = charlesmike.repos().get(repoMihai.coordinates()).issues().get(issue.number());
+        issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... ");
+
+    	issue.comments().post("@someoneelse, please check that...");
+        
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	JsonObject jsonComment = lastComment.json();
+    	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
+    	assertTrue(emptyMentionComment.equals(jsonComment)); 
+	}
+	
+	/**
+	 * There is more than 1 mention of the agent in the issue and it has already 
+	 * replied to others, but the last one is not replied to yet.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+	public void agentRepliedToPreviousMention() throws Exception {
+		final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
+        final Repo repoMihai = new MkGithub(storage, "amihaiemil").repos().create( new RepoCreate("amihaiemil.github.io", false));
+        final Issue issue = repoMihai.issues().create("test issue", "body");
+        issue.comments().post("@charlesmike hello!");//first mention
+        
+        final Github charlesmike = new MkGithub(storage, "charlesmike");
+        Issue issueCharlesmike = charlesmike.repos().get(repoMihai.coordinates()).issues().get(issue.number());
+        issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... "); //first reply
+
+        Comment lastMention = issue.comments().post("@charlesmike hello again!!");//second mention
+    	issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
+        
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	JsonObject jsonComment = lastComment.json();
+    	assertTrue(lastMention.json().equals(jsonComment)); 
+	}
+	
+    /**
+     * Mock an issue on Github.
+     * @return The created MkIssue.
+     * @throws IOException If something goes wrong.
+     */
+    public Issue mockIssue() throws IOException {
+    	Github gh = new MkGithub("amihaiemil");
+    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+    	gh.repos().create(repoCreate);
+    	return gh.repos().get(new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")).issues().create("Test issue for commands", "test body");
+    }
 }

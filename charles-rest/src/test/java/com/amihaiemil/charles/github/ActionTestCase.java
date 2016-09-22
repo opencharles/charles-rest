@@ -41,6 +41,7 @@ import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.github.mock.MkGithub;
+import com.jcabi.github.mock.MkStorage;
 
 /**
  * Unit tests for {@link action}
@@ -58,10 +59,10 @@ public class ActionTestCase {
 	@Test
 	public void actionsExecute() throws Exception {
 		Language english = (Language)new English();
-		GithubIssue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
-		GithubIssue issue2 = this.githubIssue("jeff", "@charlesmike hello");
-		GithubIssue issue3 = this.githubIssue("vlad", "@charlesmike hi");
-		GithubIssue issue4 = this.githubIssue("marius", "@charlesmike hello");
+		Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
+		Issue issue2 = this.githubIssue("jeff", "@charlesmike hello");
+		Issue issue3 = this.githubIssue("vlad", "@charlesmike hi");
+		Issue issue4 = this.githubIssue("marius", "@charlesmike hello");
 		Action ac1 = new Action(issue1, "charlesmike");
 		Action ac2 = new Action(issue2, "charlesmike");
 		Action ac3 = new Action(issue3, "charlesmike");
@@ -78,10 +79,10 @@ public class ActionTestCase {
 			assertTrue(f.get()==null);
 		}
 		
-    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.getSelf().comments().iterate());
-    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.getSelf().comments().iterate());
-    	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.getSelf().comments().iterate());
-    	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.getSelf().comments().iterate());
+    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
+    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
+    	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.comments().iterate());
+    	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.comments().iterate());
     	String expectedReply1 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"amihaiemil");
     	assertTrue(commentsWithReply1.get(1).json().getString("body")
     			.equals(expectedReply1)); //there should be only 2 comments - the command and the reply.
@@ -100,21 +101,23 @@ public class ActionTestCase {
 		
 	}
 	/**
-	 * Creates a GithubIssue with the given command.
-	 * @param command command.
-	 * @return GithubIssue
+	 * Creates an Issue with the given command.
+	 * @param commander Author of the comment;
+	 * @param command The comment's body;
+	 * @return Github issue
 	 */
-	public GithubIssue githubIssue(String commander, String command) throws Exception {
-		Github gh = new MkGithub(commander);
+	public Issue githubIssue(String commander, String command) throws Exception {
+		MkStorage storage = new MkStorage.InFile();
+		Github commanderGh = new MkGithub(storage, commander);
     	RepoCreate repoCreate = new RepoCreate(commander + ".github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
+    	commanderGh.repos().create(repoCreate);
+    	Issue issue = commanderGh.repos().get(
     					  new Coordinates.Simple(commander, commander + ".github.io")
     				  ).issues().create("Test issue for commands", "test body");
-    	Comment com = issue.comments().post(command);
+    	issue.comments().post(command);
     	
-    	GithubIssue gissue = null;//new GithubIssue(commander + ".github.io", issue.number(), com.number(), issue);
-    	return gissue;
+    	return issue;
+    	
 	}
 
 }
