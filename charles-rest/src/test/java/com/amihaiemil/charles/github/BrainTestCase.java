@@ -54,18 +54,81 @@ public class BrainTestCase {
 	 * @throws Exception if something goes wrong.
 	 */
 	@Test
-	public void understandsCommand() throws Exception {
+	public void understandsHelloCommand() throws Exception {
 		Command com = this.mockCommand();
 		
 		Language english = Mockito.mock(English.class);
 		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("hello.comment")).thenReturn("hi there, %s");
+		Mockito.when(english.response("hello.comment")).thenReturn("hi there");
 		Mockito.when(english.categorize(com)
 		).thenReturn(new CommandCategory("hello", english));
 		
 		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
 		Steps steps = br.understand(com);
 		assertTrue(steps != null);
+		assertTrue(steps.getStepsToPerform() instanceof SendReply);
+	}
+	
+	/**
+	 * {@link Brain} can undestand an index site command.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+	public void understandsIndexSiteCommand() throws Exception {
+		Command com = this.mockCommand();
+		
+		Language english = Mockito.mock(English.class);
+		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
+		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+		Mockito.when(english.categorize(com)
+		).thenReturn(new CommandCategory("indexsite", english));
+		
+		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+		Steps steps = br.understand(com);
+		assertTrue(steps != null);
+		assertTrue(steps.getStepsToPerform() instanceof IndexWithPreconditionCheck);
+	}
+	
+	/**
+	 * {@link Brain} can undestand an index page command.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+	public void understandsIndexPageCommand() throws Exception {
+        Command com = this.mockCommand();
+		
+        Language english = Mockito.mock(English.class);
+		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
+		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+		Mockito.when(english.categorize(com)
+		).thenReturn(new CommandCategory("indexpage", english));
+		
+		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+		Steps steps = br.understand(com);
+		assertTrue(steps != null);
+		assertTrue(steps.getStepsToPerform() instanceof IndexWithPreconditionCheck);
+	}
+	
+	/**
+	 * {@link Brain} can see an unknown command.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+	public void uknownCommand() throws Exception {
+        Command com = this.mockCommand();
+		
+        Language english = Mockito.mock(English.class);
+		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+		Mockito.when(english.response("unknown.comment")).thenReturn("Unknown command!");
+		Mockito.when(english.categorize(com)
+		).thenReturn(new CommandCategory("uknown", english));
+		
+		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+		Steps steps = br.understand(com);
+		assertTrue(steps != null);
+		assertTrue(steps.getStepsToPerform() instanceof SendReply);
 	}
 	
 	/**
@@ -80,7 +143,7 @@ public class BrainTestCase {
     	Issue issue = gh.repos().get(
     					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
     				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike hello there!");
+    	Comment c = issue.comments().post("@charlesmike mock command for you!");
     	
     	Command com = Mockito.mock(Command.class);
     
