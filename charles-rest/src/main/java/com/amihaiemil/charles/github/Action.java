@@ -34,6 +34,8 @@ import org.apache.log4j.PatternLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jcabi.github.Issue;
+
 /**
  * Action that the agent takes once it finds a Github issue where it's been mentioned.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -53,13 +55,13 @@ public class Action implements Runnable {
 	/**
 	 * Github issue where the command was given.
 	 */
-	private GithubIssue issue;
+	private Issue issue;
 
 	/**
-	 * Github username of the agent.
+	 * Github agent login;
 	 */
 	private String agentLogin;
-
+	
 	/**
 	 * Brain of the github agent.
 	 */
@@ -73,15 +75,13 @@ public class Action implements Runnable {
     /**
      * Constructor.
      * @param issue - The Github issue where the agent was mentioned.
-     * @param logs - Location of the logs.
-     * @param agentLogin - The Github username of the agent.
-     * @param resp Possible responses.
+     * @param agentLogin - the Github agent's login (which is the same for all actions), to save http calls.
      * @throws IOException If the file appender cannot be instantiated.
      */
-    public Action(GithubIssue issue, String agentLogin) throws IOException {
-        this.tr = new Thread(this, UUID.randomUUID().toString());
-        this.agentLogin = agentLogin;
+    public Action(Issue issue, String agentLogin) throws IOException {
+        this.tr = new Thread(this, "Action_" + UUID.randomUUID().toString());
         this.issue = issue;
+        this.agentLogin = agentLogin;
         this.setupLog4jForAction();
         this.logs = new LogsOnServer(
             System.getProperty("charles.rest.logs.endpoint"), this.tr.getName() + ".log"
@@ -110,8 +110,8 @@ public class Action implements Runnable {
 			logger.info("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException e) {
 			logger.error("Action failed with IOException: ",  e);
-			this.sendReply(
-				new ErrorReply(logs.address(), this.issue.getSelf())
+	        this.sendReply(
+				new ErrorReply(logs.address(), this.issue)
 			);
 		}
 	}

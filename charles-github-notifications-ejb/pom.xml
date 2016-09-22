@@ -2,35 +2,51 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.amihaiemil.web</groupId>
-	<artifactId>charles-github-ejb</artifactId>
+	<artifactId>charles-github-notifications-ejb</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Chales Github EJB</name>
-	<description>Ejb interface between Github and Charles</description>
+	<name>Chales Github Notifications EJB</name>
+	<description>
+	    This EJB checks a Github account's notifications and POSTs them to a RESTful service for further processing
+	</description>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<!-- <dependencies> <dependency> <groupId>javax</groupId> <artifactId>javaee-api</artifactId> 
+		<version>7.0</version> <scope>provided</scope> </dependency> <dependency> 
+		<groupId>com.jcabi</groupId> <artifactId>jcabi-http</artifactId> <version>1.16</version> 
+		</dependency> <dependency> <groupId>junit</groupId> <artifactId>junit</artifactId> 
+		<version>4.12</version> <scope>test</scope> </dependency> <dependency> <groupId>org.slf4j</groupId> 
+		<artifactId>slf4j-log4j12</artifactId> <version>1.7.21</version> </dependency> 
+		<dependency> for email sending unit tests <groupId>com.icegreen</groupId> 
+		<artifactId>greenmail</artifactId> <version>1.5.0</version> <scope>test</scope> 
+		</dependency> <dependency> <groupId>org.glassfish.jersey.core</groupId> <artifactId>jersey-common</artifactId> 
+		<version>2.22.2</version> <scope>test</scope> </dependency> <dependency> 
+		<groupId>com.sun.grizzly</groupId> <artifactId>grizzly-servlet-webserver</artifactId> 
+		<version>1.9.64</version> <scope>test</scope> </dependency> <dependency> 
+		<groupId>org.mockito</groupId> <artifactId>mockito-all</artifactId> <version>1.9.5</version> 
+		<scope>test</scope> </dependency> </dependencies> -->
 	<dependencies>
 		<dependency>
-		    <groupId>javax</groupId>
-	            <artifactId>javaee-api</artifactId>
-	            <version>7.0</version>
-	            <scope>provided</scope>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
+			<scope>provided</scope>
 		</dependency>
-                <dependency>
-	            <groupId>com.amihaiemil.web</groupId>
-	            <artifactId>charles</artifactId>
-		    <version>1.0.0-SNAPSHOT</version>
-                </dependency>
-		<dependency><!-- Client for the Github API -->
+		<dependency>
 			<groupId>com.jcabi</groupId>
-			<artifactId>jcabi-github</artifactId>
-			<version>0.28</version>
+			<artifactId>jcabi-http</artifactId>
+			<version>1.16</version>
 		</dependency>
-		<dependency><!-- Email client -->
-			<groupId>com.jcabi</groupId>
-			<artifactId>jcabi-email</artifactId>
-			<version>1.8</version>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -44,11 +60,11 @@
 			<version>1.7.21</version>
 		</dependency>
 		<dependency> <!-- for email sending unit tests -->
-            <groupId>com.icegreen</groupId>
-            <artifactId>greenmail</artifactId>
-            <version>1.5.0</version>
-            <scope>test</scope>
-        </dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<version>1.5.0</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-common</artifactId>
@@ -56,11 +72,11 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-servlet-webserver</artifactId>
-            <version>1.9.64</version>
-            <scope>test</scope>
-        </dependency>
+			<groupId>com.sun.grizzly</groupId>
+			<artifactId>grizzly-servlet-webserver</artifactId>
+			<version>1.9.64</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
@@ -69,14 +85,14 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>charles-github-ejb</finalName>
+		<finalName>charles-github-notifications-ejb</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<finalName>charles-github-ejb-${project.version}</finalName>
+					<finalName>charles-github-notifications-ejb-${project.version}</finalName>
 					<!-- get all project dependencies -->
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -112,7 +128,6 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -131,16 +146,9 @@
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>4.2.0</version>
 				<configuration>
-				  <failOnServiceError>false</failOnServiceError>
+					<failOnServiceError>false</failOnServiceError>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-        <repositories>
-            <repository>
-                <id>amihaiemilmvn</id>
-                <name>Remote maven repo for development (holding snapshot dependencies)</name>
-                <url>http://ec2-54-68-83-8.us-west-2.compute.amazonaws.com:1452</url>
-            </repository>
-        </repositories>
 </project>

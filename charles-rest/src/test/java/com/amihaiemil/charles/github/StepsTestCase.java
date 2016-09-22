@@ -25,15 +25,26 @@
 
 package com.amihaiemil.charles.github;
 
-import java.util.Arrays;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.json.Json;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.amihaiemil.charles.steps.Step;
+import com.google.common.collect.Lists;
+import com.jcabi.github.Comment;
+import com.jcabi.github.Coordinates;
+import com.jcabi.github.Github;
+import com.jcabi.github.Issue;
+import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.mock.MkGithub;
 
 /**
  * Unit tests for {@link Steps}
@@ -47,43 +58,55 @@ public class StepsTestCase {
 	 * Steps can perform 1 single step.
 	 */
 	@Test
-    public void oneStepIsPerformed() {
+    public void stepsPerformOk() {
     	Step s = Mockito.mock(Step.class);
     	Mockito.when(s.perform()).thenReturn(true);
 
-    	Steps steps = new Steps(Arrays.asList(s), Mockito.mock(SendReply.class));
+    	Steps steps = new Steps(s, Mockito.mock(SendReply.class));
     	assertTrue(steps.perform());
     }
 	
 	/**
 	 * Steps can perform more steps.
+	 * @throws Exception if something goes wrong.
 	 */
 	@Test
-    public void moreStepsArePeformed() {
-    	Step s1 = Mockito.mock(Step.class);
-    	Mockito.when(s1.perform()).thenReturn(true);
-    	Step s2 = Mockito.mock(Step.class);
-    	Mockito.when(s2.perform()).thenReturn(true);
-    	Step s3 = Mockito.mock(Step.class);
-    	Mockito.when(s3.perform()).thenReturn(true);
+    public void stepsFail() throws Exception {
+		Command com = this.mockCommand();
+    	Reply rep = new TextReply(com, "Error whene executig steps!");
+    	SendReply sr = new SendReply(rep, Mockito.mock(Logger.class));
 
-    	Steps steps = new Steps(Arrays.asList(s1, s2, s3), Mockito.mock(SendReply.class));
-    	assertTrue(steps.perform());
+    	Step s = Mockito.mock(Step.class);
+    	Mockito.when(s.perform()).thenReturn(false);
+
+    	Steps steps = new Steps(s, sr);
+    	assertFalse(steps.perform());
+
+    	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+    	assertTrue(comments.size() == 1);
+    	assertTrue(
+    		comments.get(0).json().getString("body").equals(
+    			"> @charlesmike mock command\n\nError whene executig steps!"
+    		)
+    	);
+    }
+	
+	/**
+     * Mock a command.
+     * @return The created Command.
+     * @throws IOException If something goes wrong.
+     */
+    public Command mockCommand() throws IOException {
+    	Github gh = new MkGithub("amihaiemil");
+    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+    	gh.repos().create(repoCreate);
+    	Issue issue = gh.repos().get(
+    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+    				  ).issues().create("Test issue for commands", "test body");
+    	Command com = Mockito.mock(Command.class);
+    	Mockito.when(com.issue()).thenReturn(issue);
+    	Mockito.when(com.json()).thenReturn(Json.createObjectBuilder().add("body", "@charlesmike mock command").build());
+    	return com;
     }
 
-	/**
-	 * Steps stops performing the steps and returns false when 1 step fails.
-	 */
-	@Test
-	public void stopsPeformingWhenOneStepFails() {
-		Step s1 = Mockito.mock(Step.class);
-    	Mockito.when(s1.perform()).thenReturn(true);
-    	Step s2 = Mockito.mock(Step.class);
-    	Mockito.when(s2.perform()).thenReturn(false);
-    	Step s3 = Mockito.mock(Step.class);
-    	Mockito.when(s3.perform()).thenReturn(true);
-
-    	Steps steps = new Steps(Arrays.asList(s1, s2, s3), Mockito.mock(SendReply.class));
-    	assertFalse(steps.perform());
-	}
 }

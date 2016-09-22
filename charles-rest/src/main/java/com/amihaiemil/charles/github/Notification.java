@@ -22,61 +22,31 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.amihaiemil.charles.github;
 
-import com.jcabi.github.Comment;
-import com.jcabi.github.Issue;
-
 /**
- * Encapsulates a github issue.
+ * Model for a JSON simplified notification.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class GithubIssue {
-	
-	/**
-	 * Repo's full name.
-	 */
-    private String repo;
-    /**
-     * Issue's number.
-     */
-    private int number;
-    /**
-     * Other informations about the issue.
-     */
-    private Issue self;
+public class Notification {
+    private String repoFullName;
+    private int issueNumber;
+	public String getRepoFullName() {
+		return repoFullName;
+	}
+	public void setRepoFullName(String repoFullName) {
+		this.repoFullName = repoFullName;
+	}
+	public int getIssueNumber() {
+		return issueNumber;
+	}
+	public void setIssueNumber(int issueNumber) {
+		this.issueNumber = issueNumber;
+	}
     
-    /**
-     * Latest comment on the issue.
-     */
-    private Comment latestComment;
     
-    /**
-	 * Constructor.
-	 */
-	public GithubIssue(String repo, int number, int latestCommentId, Issue self) {
-		this.repo = repo;
-		this.number = number;
-		this.self = self;
-		this.latestComment = self.comments().get(latestCommentId);
-	}
-
-	public String getRepo() {
-		return repo;
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public Issue getSelf() {
-		return self;
-	}
-	
-	public Comment getLatestComment() {
-		return this.latestComment;
-	}
 }

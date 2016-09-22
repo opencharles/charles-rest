@@ -25,8 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import java.util.List;
-
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -36,10 +34,11 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  */
 public class Steps implements Step {
+
     /**
      * Steps to be performed.
      */
-	private List<Step> steps;
+	private Step steps;
 	
 	/**
 	 * Message to send in case some step fails.
@@ -51,24 +50,29 @@ public class Steps implements Step {
 	 * @param steps Given steps.
 	 * @param fm failure message in case any step fails.
 	 */
-	public Steps(List<Step> steps, SendReply fm) {
+	public Steps(Step steps, SendReply fm) {
     	this.steps = steps;
     	this.failureMessage = fm;
     }
 
+	/**
+	 * Return the steps to perform.
+	 * @return
+	 */
+	public Step getStepsToPerform() {
+		return this.steps;
+	}
+	
     /**
 	 * Perform all the given steps.
 	 */
 	@Override
 	public boolean perform() {
-		for(Step s : steps) {
-			if(s.perform()) {
-				continue;
-			}
-			failureMessage.perform();
-			return false;
+		if(steps.perform()) {
+			return true;
 		}
-		return true;
+		failureMessage.perform();
+		return false;
 	}
 
 }

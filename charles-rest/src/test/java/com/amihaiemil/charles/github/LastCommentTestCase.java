@@ -54,13 +54,7 @@ public class LastCommentTestCase {
     public void latestCommentMentionsTheAgent() throws Exception {
     	Issue issue = this.mockIssue();
     	Comment com = issue.comments().post("@charlesmike hello there, how are you?");
-    	GithubIssue gissue = new GithubIssue(
-    			"amihaiemil.github.io",
-    			issue.number(),
-    			com.number(), 
-    			issue
-    	);
-    	LastComment lastComment = new LastComment(gissue, "charlesmike");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(com.json().equals(jsonComment));
     }
@@ -73,15 +67,9 @@ public class LastCommentTestCase {
 	public void agentMentionedInOtherComment() throws Exception {
     	Issue issue = this.mockIssue();
     	Comment agentcom = issue.comments().post("@charlesmike hello there, how are you?");
-    	Comment latest = issue.comments().post("@someoneelse, please check that...");
+    	issue.comments().post("@someoneelse, please check that...");
 
-    	GithubIssue gissue = new GithubIssue(
-    			"amihaiemil.github.io",
-    			issue.number(),
-    			latest.number(), 
-    			issue
-    	);
-    	LastComment lastComment = new LastComment(gissue, "charlesmike");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(agentcom.json().equals(jsonComment));
 	}
@@ -98,15 +86,9 @@ public class LastCommentTestCase {
     	Comment agentCom = issue.comments().post("@charlesmike why won't you answer?");
 
     	issue.comments().post("@someoneelse, please do something...");
-    	Comment latest = issue.comments().post("@someoneelse, please check that...");
+    	issue.comments().post("@someoneelse, please check that...");
 
-    	GithubIssue gissue = new GithubIssue(
-    			"amihaiemil.github.io",
-    			issue.number(),
-    			latest.number(), 
-    			issue
-    	);
-    	LastComment lastComment = new LastComment(gissue, "charlesmike");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(agentCom.json().equals(jsonComment));
 	}
@@ -120,15 +102,9 @@ public class LastCommentTestCase {
 	public void agentNotMentionedAtAll() throws Exception {
     	Issue issue = this.mockIssue();
     	issue.comments().post("@someoneelse hello there, how are you?");
-    	Comment latest = issue.comments().post("@someoneelse, please check that...");
+    	issue.comments().post("@someoneelse, please check that...");
 
-    	GithubIssue gissue = new GithubIssue(
-    			"amihaiemil.github.io",
-    			issue.number(),
-    			latest.number(), 
-    			issue
-    	);
-    	LastComment lastComment = new LastComment(gissue, "charlesmike");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
     	JsonObject jsonComment = lastComment.json();
     	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
     	assertTrue(emptyMentionComment.equals(jsonComment));
@@ -149,16 +125,9 @@ public class LastCommentTestCase {
         Issue issueCharlesmike = charlesmike.repos().get(repoMihai.coordinates()).issues().get(issue.number());
         issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... ");
 
-    	Comment latest = issue.comments().post("@someoneelse, please check that...");
-
-        GithubIssue gissue = new GithubIssue(
-    		"amihaiemil.github.io",
-    		issue.number(),
-    		latest.number(), 
-    		issue
-    	);
+    	issue.comments().post("@someoneelse, please check that...");
         
-    	LastComment lastComment = new LastComment(gissue, "charlesmike");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
     	JsonObject jsonComment = lastComment.json();
     	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
     	assertTrue(emptyMentionComment.equals(jsonComment)); 
@@ -181,16 +150,9 @@ public class LastCommentTestCase {
         issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... "); //first reply
 
         Comment lastMention = issue.comments().post("@charlesmike hello again!!");//second mention
-    	Comment latest = issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
-
-        GithubIssue gissue = new GithubIssue(
-    		"amihaiemil.github.io",
-    		issue.number(),
-    		latest.number(), 
-    		issue
-    	);
+    	issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
         
-    	LastComment lastComment = new LastComment(gissue, "charlesmike");
+    	LastComment lastComment = new LastComment(issue, "charlesmike");
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(lastMention.json().equals(jsonComment)); 
 	}

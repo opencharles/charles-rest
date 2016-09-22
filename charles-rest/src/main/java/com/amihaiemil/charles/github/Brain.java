@@ -86,25 +86,23 @@ public class Brain {
     public Steps understand(Command com) throws IOException {
     	 String authorLogin = com.authorLogin();
 	     logger.info("Command author's login: " + authorLogin);
-    	 List<Step> steps = new LinkedList<Step>();
+    	 Step steps;
     	 CommandCategory category = this.categorizeCommand(com);
 
     	 switch (category.type()) {
     	 	case "hello":
     	 		String hello = String.format(category.language().response("hello.comment"), authorLogin);
     	 		logger.info("Prepared response: " + hello);
-    	 		steps.add(
-    	 			new SendReply(
+    	 		steps = new SendReply(
     	 				new TextReply(com, hello),
     	 				logger
-    	 			)
-    	 		);
+    	 	    );
     	 		break;
     	 	case "indexsite":
-    	 		steps.add(this.indexSteps(com, category, false));
+    	 		steps = this.indexSteps(com, category, false);
     	 		break;
     	 	case "indexpage":
-    	 		steps.add(this.indexSteps(com, category, true));
+    	 		steps = this.indexSteps(com, category, true);
     	 		break;
     	 	default:
     	 		logger.info("Unknwon command!");
@@ -112,12 +110,10 @@ public class Brain {
     	 			category.language().response("unknown.comment"),
     	 			authorLogin);
     	 		logger.info("Prepared response: " + unknown);
-    	 		steps.add(
-        	 		new SendReply(
+    	 		steps = new SendReply(
             	 		new TextReply(com, unknown),
             	 		this.logger
-            	 	)
-    	 		);
+            	);
     	 		break;
 		 }
     	 return new Steps(

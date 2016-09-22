@@ -33,6 +33,7 @@ import javax.json.JsonObject;
 
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
+import com.jcabi.github.Issue;
 
 /**
  * Last comment where the agent was mentioned.
@@ -43,24 +44,19 @@ import com.jcabi.github.Comment;
  */
 public class LastComment extends Command {
 	
-	public LastComment(GithubIssue issue, String agentlogin) throws IOException {
+	public LastComment(Issue issue, String agentlogin) throws IOException {
 		this.comment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-		this.issue = issue.getSelf();
-		JsonObject latestCommentJson = issue.getLatestComment().json();
-		if(latestCommentJson.getString("body").contains("@" + agentlogin)) {
-			this.comment = latestCommentJson;
-		} else {
-			List<Comment> comments = Lists.newArrayList(issue.getSelf().comments().iterate());
-			boolean agentFound = false;
-			for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
-				JsonObject currentJsonComment = comments.get(i).json();
-				if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
-					agentFound = true; //we found a reply of the agent, so stop looking.
-				} else {
-					if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
-						this.comment = currentJsonComment;
-						agentFound = true;
-					}
+		this.issue = issue;
+		List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
+		boolean agentFound = false;
+		for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
+			JsonObject currentJsonComment = comments.get(i).json();
+			if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
+				agentFound = true; //we found a reply of the agent, so stop looking.
+			} else {
+				if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
+					this.comment = currentJsonComment;
+					agentFound = true;
 				}
 			}
 		}
