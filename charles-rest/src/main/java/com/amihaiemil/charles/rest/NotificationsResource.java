@@ -98,7 +98,8 @@ public class NotificationsResource {
 		    if(token == null || token.isEmpty()) {
 			    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
 		    } else {
-		        if(token.equals("s3cr3t")) {
+		    	String key = System.getProperty("charles.rest.token");
+		        if(token.equals(key)) {
 		        	if(startedActionThreads() > 15) {
 		        		return Response.status(HttpURLConnection.HTTP_UNAVAILABLE).build();
 		        	}
@@ -109,6 +110,9 @@ public class NotificationsResource {
 		    	    	return Response.ok().build();
 		    	    }
 		        } else {
+		        	if(key == null || key.isEmpty()) {
+		        		LOG.error("Missing token charles.rest.token (system property)! Please specify it!");
+		        	}
 		    	    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
 		        }
 	     	}
