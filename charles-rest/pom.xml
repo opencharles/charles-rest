@@ -51,6 +51,11 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+                    <excludes>
+                        <exclude>**/com/amihaiemil/charles/rest/*</exclude>
+                    </excludes>
+                </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
