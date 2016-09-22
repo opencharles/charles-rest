@@ -110,7 +110,7 @@ public class Action implements Runnable {
 			logger.info("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException e) {
 			logger.error("Action failed with IOException: ",  e);
-			this.sendReply(
+	        this.sendReply(
 				new ErrorReply(logs.address(), this.issue)
 			);
 		}

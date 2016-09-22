@@ -26,16 +26,20 @@ package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
+import com.jcabi.github.Comments;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
@@ -98,6 +102,56 @@ public class ActionTestCase {
     	String expectedReply4 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"marius");
     	assertTrue(commentsWithReply4.get(1).json().getString("body")
     			.equals(expectedReply4)); //there should be only 2 comments - the command and the reply.
+		
+	}
+	
+	/**
+	 * Start 2 actions but each of them fail with IOException
+	 * when the comments are first listed (within LastComment(...))
+	 * @throws Exception If something goes wrong
+	 */
+	@Test
+	public void actionsFail() throws Exception {
+		Language english = (Language)new English();
+		Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike index");
+		Issue issue2 = this.githubIssue("jeff", "@charlesmike index");
+		
+		Comments comments = Mockito.mock(Comments.class);
+		Comment com = Mockito.mock(Comment.class);
+		Mockito.when(com.json()).thenThrow(new IOException("expected IOException..."));
+		Mockito.when(comments.iterate()).thenReturn(Arrays.asList(com));
+		
+		Issue mockedIssue1 = Mockito.mock(Issue.class);
+		Mockito.when(mockedIssue1.comments())
+		    .thenReturn(comments)
+		    .thenReturn(issue1.comments());
+
+		Issue mockedIssue2 = Mockito.mock(Issue.class);
+		Mockito.when(mockedIssue2.comments())
+	        .thenReturn(comments)
+	        .thenReturn(issue2.comments());
+		
+		Action ac1 = new Action(mockedIssue1, "charlesmike");
+		Action ac2 = new Action(mockedIssue2, "charlesmike");
+		
+		final ExecutorService executorService = Executors.newFixedThreadPool(5);
+		List<Future> futures = new ArrayList<Future>();
+		futures.add(executorService.submit(ac1));
+		futures.add(executorService.submit(ac2));
+
+		for(Future f : futures) {
+			assertTrue(f.get()==null);
+		}
+		
+    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
+    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
+
+    	String expectedStartsWith = "There was an error when processing your command. [Here](/Action_";
+    	assertTrue(commentsWithReply1.get(1).json().getString("body")
+    			.startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
+    	
+    	assertTrue(commentsWithReply2.get(1).json().getString("body")
+    			.startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
 		
 	}
 	/**
