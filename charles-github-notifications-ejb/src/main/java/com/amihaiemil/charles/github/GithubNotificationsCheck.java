@@ -83,7 +83,7 @@ public class GithubNotificationsCheck {
 				LOG.error("NumberFormatException when parsing interval " + checksInterval, ex);
 			}
 		}
-		timerService.createTimer(1000*intervalMinutes, 1000*intervalMinutes, null);
+		timerService.createTimer(1000*60*intervalMinutes, 1000*60*intervalMinutes, null);
 	}
 	
 	/**
@@ -105,7 +105,7 @@ public class GithubNotificationsCheck {
             		LOG.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
             	} else {
                     Request req = new ApacheRequest("https://api.github.com/notifications");
-                    req.header(
+                    req = req.header(
                         HttpHeaders.AUTHORIZATION, String.format("token %s", token)
                     );
                     try {
@@ -113,37 +113,38 @@ public class GithubNotificationsCheck {
 			                .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
 		                    .as(JsonResponse.class).json().readArray();
 			            LOG.info("Found " + notifications.size() + " new notifications!");
-			            
-			            List<JsonObject> validNotifications = new ArrayList<JsonObject>();
-			            for(int i=0; i<notifications.size(); i++) {
-			    	        JsonObject notification = notifications.getJsonObject(i);
-			    	        if(this.isNotificationValid(notification)) {
-			    		        validNotifications.add(notification);
+			            if(notifications.size() > 0) {
+			                List<JsonObject> validNotifications = new ArrayList<JsonObject>();
+			                for(int i=0; i<notifications.size(); i++) {
+			    	            JsonObject notification = notifications.getJsonObject(i);
+			    	            if(this.isNotificationValid(notification)) {
+			    		            validNotifications.add(notification);
+			                    }
 			                }
-			            }
-			            LOG.info("POST-ing " + validNotifications.size() + " valid notifications!");
+			                LOG.info("POST-ing " + validNotifications.size() + " valid notifications!");
 			            
-			            boolean posted = this.postNotifications(handlerEndpoint, handlerEndpointToken, validNotifications);
+			                boolean posted = this.postNotifications(handlerEndpoint, handlerEndpointToken, validNotifications);
 			            
-			            if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
-                            LOG.info("POST successful, marking notifications as read...");
-			            	req.uri()
-			            	    .queryParam(
-			        	            "last_read_at",
-			        				DateFormatUtils.formatUTC(
-			        			         new Date(System.currentTimeMillis()),
-			        					"yyyy-MM-dd'T'HH:mm:ss'Z'"
-			        			    )
-			        			).back()
-			        			.method(Request.PUT).body().set("{}").back().fetch()
-			        			.as(RestResponse.class)
-			        			.assertStatus(
-			        			    Matchers.isOneOf(
-			        		            HttpURLConnection.HTTP_OK,
-			        		            HttpURLConnection.HTTP_RESET
-			        		        )
-			        			);
-			            	LOG.info("Notifications marked as read!");
+			                if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
+                                LOG.info("POST successful, marking notifications as read...");
+			            	    req.uri()
+			            	        .queryParam(
+			        	                "last_read_at",
+			        				    DateFormatUtils.formatUTC(
+			        			            new Date(System.currentTimeMillis()),
+			        					    "yyyy-MM-dd'T'HH:mm:ss'Z'"
+			        			        )
+			        			    ).back()
+			        			    .method(Request.PUT).body().set("{}").back().fetch()
+			        			    .as(RestResponse.class)
+			        			    .assertStatus(
+			        			        Matchers.isOneOf(
+			        		                HttpURLConnection.HTTP_OK,
+			        		                HttpURLConnection.HTTP_RESET
+			        		            )
+			        			    );
+			            	    LOG.info("Notifications marked as read!");
+			                }
 			            }
         	        } catch (AssertionError aerr) {
         	            LOG.error("Unexpected status from https://api.github.com/notifications", aerr);
@@ -199,8 +200,8 @@ public class GithubNotificationsCheck {
     		);
     	}
         Request req = new ApacheRequest(endpoint);
-        req.header(
-            HttpHeaders.AUTHORIZATION, String.format("token %s", token)
+        req = req.header(
+            HttpHeaders.AUTHORIZATION, token
         );
         try {
 			int status = req.method(Request.POST).body().set(arrayBuilder.build()).back()
