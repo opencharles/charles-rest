@@ -54,7 +54,7 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  *
  */
 public class GithubNotificationsCheckTestCase {
-    
+
 	/**
 	 * GithubNotificationsCheck can tell if a Github notification is valid or not.
 	 */
