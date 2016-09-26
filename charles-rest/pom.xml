@@ -52,11 +52,11 @@
 					</execution>
 				</executions>
 				<configuration>
-                    <excludes>
-                        <exclude>**/com/amihaiemil/charles/filters/*</exclude>
-                        <exclude>**/com/amihaiemil/charles/rest/*</exclude>
-                    </excludes>
-                </configuration>
+					<excludes>
+						<exclude>**/com/amihaiemil/charles/filters/*</exclude>
+						<exclude>**/com/amihaiemil/charles/rest/*</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
@@ -68,7 +68,22 @@
 			</plugin>
 		</plugins>
 	</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-bom</artifactId>
+				<version>1.11.37</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-elasticsearch</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>

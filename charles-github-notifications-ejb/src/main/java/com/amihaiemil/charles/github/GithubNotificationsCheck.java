@@ -8,7 +8,7 @@
  *  2)Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *  3)Neither the name of charles-github-ejb nor the names of its
+ *  3)Neither the name of charles-github-notifications-ejb nor the names of its
  * contributors may be used to endorse or promote products derived from
  * this software without specific prior written permission.
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
@@ -62,25 +62,57 @@ import com.jcabi.http.response.RestResponse;
 @Singleton
 @Startup
 public class GithubNotificationsCheck {
-	private static final Logger LOG = LoggerFactory.getLogger(GithubNotificationsCheck.class.getName());
-	
-	@Resource
-	TimerService timerService;
 
 	/**
-	 * After this bean is constructed the checks are scheduled at a given interval (minutes),
-	 * which defaults to 2.
+	 * Logger. Assigned in ctor for leveraging unit testing.
 	 */
-	@PostConstruct
-	public void scheduleChecks() {
-		String checksInterval = System.getProperty("checks.interval.minutes");
-		int intervalMinutes = 2;
+	private Logger log;
+
+    /**
+     * Java EE timer service.
+     */
+	@Resource
+	private TimerService timerService;
+
+	/**
+	 * Http request used for checking Github Notifications API.
+	 */
+	private Request req;
+
+	/**
+	 * Default Ctor.
+	 */
+	public GithubNotificationsCheck() {
+        this(
+            "https://api.github.com/notifications",
+            LoggerFactory.getLogger(GithubNotificationsCheck.class.getName())
+        );
+    }
+
+	/**
+	 * Ctor.
+	 * @param logger - for leveraging unit testing.
+	 * @param notificationsEp - Endpoint for Github notifications' check
+	 */
+	public GithubNotificationsCheck(String notificationsEp, Logger logger) {
+	    this.log = logger;
+		this.req = new ApacheRequest(notificationsEp);
+	}
+
+    /**
+     * After this bean is constructed the checks are scheduled at a given interval (minutes),
+     * which defaults to 2.
+     */
+    @PostConstruct
+    public void scheduleChecks() {
+        String checksInterval = System.getProperty("checks.interval.minutes");
+        int intervalMinutes = 2;
 		if(checksInterval != null && !checksInterval.isEmpty()) {
 			try {
 				intervalMinutes = Integer.parseInt(checksInterval);
-				LOG.info("The check for Github notifications will be performed every " + intervalMinutes + " minutes!");
+				log.info("The check for Github notifications will be performed every " + intervalMinutes + " minutes!");
 			} catch (NumberFormatException ex) {
-				LOG.error("NumberFormatException when parsing interval " + checksInterval, ex);
+				log.error("NumberFormatException when parsing interval " + checksInterval, ex);
 			}
 		}
 		timerService.createTimer(1000*60*intervalMinutes, 1000*60*intervalMinutes, null);
@@ -96,23 +128,22 @@ public class GithubNotificationsCheck {
         String handlerEndpointToken = System.getProperty("charles.rest.token");
 
         if(token == null || token.isEmpty()) {
-            LOG.error("Missing github.auth.token system property! Please specify the Github's agent authorization token!");
+            log.error("Missing github.auth.token system property! Please specify the Github's agent authorization token!");
         } else {
             if(handlerEndpoint == null || handlerEndpoint.isEmpty()) {
-                LOG.error("Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!");
+                log.error("Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!");
             } else {
             	if(handlerEndpointToken == null || handlerEndpointToken.isEmpty()) {
-            		LOG.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
+            		log.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
             	} else {
-                    Request req = new ApacheRequest("https://api.github.com/notifications");
-                    req = req.header(
+                    this.req = this.req.header(
                         HttpHeaders.AUTHORIZATION, String.format("token %s", token)
                     );
                     try {
-			            JsonArray notifications = req.fetch()
+			            JsonArray notifications = this.req.fetch()
 			                .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
 		                    .as(JsonResponse.class).json().readArray();
-			            LOG.info("Found " + notifications.size() + " new notifications!");
+			            log.info("Found " + notifications.size() + " new notifications!");
 			            if(notifications.size() > 0) {
 			                List<JsonObject> validNotifications = new ArrayList<JsonObject>();
 			                for(int i=0; i<notifications.size(); i++) {
@@ -121,13 +152,13 @@ public class GithubNotificationsCheck {
 			    		            validNotifications.add(notification);
 			                    }
 			                }
-			                LOG.info("POST-ing " + validNotifications.size() + " valid notifications!");
+			                log.info("POST-ing " + validNotifications.size() + " valid notifications!");
 			            
 			                boolean posted = this.postNotifications(handlerEndpoint, handlerEndpointToken, validNotifications);
 			            
 			                if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
-                                LOG.info("POST successful, marking notifications as read...");
-			            	    req.uri()
+                                log.info("POST successful, marking notifications as read...");
+                                this.req.uri()
 			            	        .queryParam(
 			        	                "last_read_at",
 			        				    DateFormatUtils.formatUTC(
@@ -143,13 +174,13 @@ public class GithubNotificationsCheck {
 			        		                HttpURLConnection.HTTP_RESET
 			        		            )
 			        			    );
-			            	    LOG.info("Notifications marked as read!");
+			            	    log.info("Notifications marked as read!");
 			                }
 			            }
         	        } catch (AssertionError aerr) {
-        	            LOG.error("Unexpected status from https://api.github.com/notifications", aerr);
+        	            log.error("Unexpected HTTP status!", aerr);
 			        } catch (IOException e) {
-				        LOG.error("IOException when calling https://api.github.com/notifications", e);
+				        log.error("IOException when making HTTP call!", e);
 			        }
             	}
             }
@@ -199,12 +230,12 @@ public class GithubNotificationsCheck {
     		        .build()
     		);
     	}
-        Request req = new ApacheRequest(endpoint);
-        req = req.header(
+        Request postReq = new ApacheRequest(endpoint);
+        postReq = postReq.header(
             HttpHeaders.AUTHORIZATION, token
         );
         try {
-			int status = req.method(Request.POST).body().set(arrayBuilder.build()).back()
+			int status = postReq.method(Request.POST).body().set(arrayBuilder.build()).back()
                 .fetch()
                 .as(RestResponse.class)
                 .assertStatus(
@@ -218,9 +249,9 @@ public class GithubNotificationsCheck {
 				return true;
 			}
         } catch (AssertionError aerr) {
-            LOG.error("Unexpected status from " + endpoint, aerr);
+            log.error("Unexpected status from " + endpoint, aerr);
         } catch (IOException e) {
-	        LOG.error("IOException when calling " + endpoint, e);
+	        log.error("IOException when calling " + endpoint, e);
         }
 	    return false;
     }
