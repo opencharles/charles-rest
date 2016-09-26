@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
+package com.amihaiemil.charles.aws;
 
 import java.util.List;
 
@@ -41,7 +41,6 @@ public class AmazonEsRepository implements Repository {
 
 	@Override
 	public void export(List<WebPage> arg0) throws DataExportException {
-
 	}
 
 }
