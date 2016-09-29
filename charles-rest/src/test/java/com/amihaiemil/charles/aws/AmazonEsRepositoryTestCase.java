@@ -70,7 +70,7 @@ public class AmazonEsRepositoryTestCase {
 		System.setProperty("aws.es.region", "ro");
 		System.setProperty("aws.es.bulk.endpoint", "_bulk/api/path");
 		
-		AmazonEsRepository repo = new AmazonEsRepository();
+		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
 		} catch (IllegalStateException ex) {
@@ -91,7 +91,7 @@ public class AmazonEsRepositoryTestCase {
 		System.setProperty("aws.es.region", "ro");
 		System.setProperty("aws.es.bulk.endpoint", "_bulk/api/path");
 		
-		AmazonEsRepository repo = new AmazonEsRepository();
+		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
 		} catch (IllegalStateException ex) {
@@ -111,7 +111,7 @@ public class AmazonEsRepositoryTestCase {
 
 		System.setProperty("aws.es.bulk.endpoint", "_bulk/api/path");
 		
-		AmazonEsRepository repo = new AmazonEsRepository();
+		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
 		} catch (IllegalStateException ex) {
@@ -136,7 +136,7 @@ public class AmazonEsRepositoryTestCase {
 		int port = this.port();
 		System.setProperty("aws.es.bulk.endpoint", "http://localhost:" + port + "/es/_bulk/api/path");
 	
-		AmazonEsRepository repo = new AmazonEsRepository();
+		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		
 		MkContainer server = new MkGrizzlyContainer()
 		   .next(
@@ -167,7 +167,7 @@ public class AmazonEsRepositoryTestCase {
 		int port = this.port();
 		System.setProperty("aws.es.bulk.endpoint", "http://localhost:" + port + "/es/_bulk/api/path");
 	
-		AmazonEsRepository repo = new AmazonEsRepository();
+		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		
 		MkContainer server = new MkGrizzlyContainer()
 		   .next(

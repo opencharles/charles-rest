@@ -47,14 +47,21 @@ public class EsBulkJson {
 	private List<WebPage> pages;
 
 	/**
+	 * Index where the pages will be stored.
+	 */
+	private String index;
+
+	/**
 	 * Ctor.
+	 * @param index Index where the pages will be stored.
 	 * @param pages Given web pages.
 	 */
-	public EsBulkJson(List<WebPage> pages) {
+	public EsBulkJson(String index, List<WebPage> pages) {
 		if(pages == null || pages.size() == 0) {
 			throw new IllegalArgumentException("There must be at least 1 page!");
 		}
 		this.pages = pages;
+		this.index = index;
 	}
 
 	/**
@@ -70,9 +77,9 @@ public class EsBulkJson {
 			String id = doc.getString("id", "");
 			String action_and_meta_data;
 			if(id.isEmpty()) {
-			    action_and_meta_data = "{\"index\":{\"_type\":\"" + doc.getString("category") + "\"}}";
+			    action_and_meta_data = "{\"index\":{\"_index\":\"" + this.index + "\", \"_type\":\"" + doc.getString("category") + "\"}}";
 			} else {
-				action_and_meta_data = "{\"index\":{\"_type\":\"" + doc.getString("category") + "\", "
+				action_and_meta_data = "{\"index\":{\"_index\":\"" + this.index + "\", \"_type\":\"" + doc.getString("category") + "\", "
 						                + "\"_id\":\"" + id + "\"}}";
 			}
 			sb = sb.append(action_and_meta_data).append("\n");
