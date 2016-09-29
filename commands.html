@@ -65,19 +65,19 @@
 					    <tr><th>Type</th><th>RegEx</th><th>Example</th><th>Effect</th></tr>
 						<tr>
 						    <td>Hello</td>
-							<td>^%s[ ,]+(hi|hello|how are you|how do you do|who are you|what are you|hi there|hello there)[ \\?,\\.;!]*$</td>
+							<td>^@charlesmike[ ,]+(hi|hello|how are you|how do you do|who are you|what are you|hi there|hello there)[ \\?,\\.;!]*$</td>
 							<td>@charlesmike hi there!!</td>
 							<td>The bot will answer explaining what it can do for you.</td>
 					    </tr>
                         <tr>
 						    <td>Index site</td>
-							<td>^%s[ ,]+(please index|pls index|index please|index pls|index)[ \\?,\\.;!]*$</td>
+							<td>^@charlesmike[ ,]+(please index|pls index|index please|index pls|index)[ \\?,\\.;!]*$</td>
 							<td>@charlesmike pls index</td>
 							<td>The bot will crawl and <b>index the whole website</b> if you are the repo owner. See bellow a detailed explanation.</td>
 					    </tr>
                         <tr>
 						    <td>Index page</td>
-							<td>^%s[ ,]+(index \\[this\\] *\\(.+\\) page|please index \\[this\\] *\\(.+\\) page|pls index \\[this\\] *\\(.+\\) page)[ \\?,\\.;!]*$</td>
+							<td>^@charlesmike[ ,]+(index \\[this\\] *\\(.+\\) page|please index \\[this\\] *\\(.+\\) page|pls index \\[this\\] *\\(.+\\) page)[ \\?,\\.;!]*$</td>
 							<td>@charlesmike pls index [this](link/to/page) page</td>
 							<td>Notice the Markdown styling - it's mandatory. The bot will crawl and <b>index the specified page</b> if you are the repo owner. See bellow a detailed explanation.</td>
 					    </tr>						
