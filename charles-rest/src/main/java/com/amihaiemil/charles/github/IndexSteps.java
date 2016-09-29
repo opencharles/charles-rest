@@ -26,11 +26,14 @@
 package com.amihaiemil.charles.github;
 
 import javax.json.JsonObject;
+
 import org.slf4j.Logger;
+
 import com.amihaiemil.charles.GraphCrawl;
 import com.amihaiemil.charles.IgnoredPatterns;
 import com.amihaiemil.charles.WebCrawl;
 import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.steps.IndexPage;
 import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.Step;
 
@@ -110,22 +113,27 @@ public class IndexSteps implements Step {
      * @return IndexSite instance.
      */
     Step indexStep(Command com, String repoName, boolean ghPages, boolean singlePage) {
+    	String phantomJsExecPath =  System.getProperty("phantomjsExec");
+	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
+	        phantomJsExecPath = "/usr/local/bin/phantomjs";
+	    }
     	if(!singlePage) {
             String url = "http://" + com.authorLogin() + ".github.io/";
-            if(!ghPages) {
-    	    	url = "http://" + repoName;
-    	    }
-            String phantomJsExecPath =  System.getProperty("phantomjsExec");
-    	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
-    	        phantomJsExecPath = "/usr/local/bin/phantomjs";
+            if(ghPages) {
+    	    	url += repoName;
     	    }
     	    WebCrawl siteCrawl = new GraphCrawl(
     	        url, phantomJsExecPath, new IgnoredPatterns(),
-    	        new AmazonEsRepository(), 20
+    	        new AmazonEsRepository(com.authorLogin() + "/" + repoName), 20
     	    );
     	    return new IndexSite(siteCrawl, logger);
     	}
-        return null; //here return IndexPage(...)
+        return new IndexPage(
+            com.json().getString("body"),
+            com.authorLogin() + "/" + repoName,
+            phantomJsExecPath,
+            logger
+        );
 
     }
 

@@ -54,7 +54,7 @@ public class EsBulkJsonTestCase {
 		pages.add(this.mockWebPage("http://amihaiemil.com/stuff/page.html", "mischelaneous"));
 		pages.add(this.mockWebPage("http://amihaiemil.com/stuff/more/page.html", "development"));
 
-		String bulkStrucure = new EsBulkJson(pages).structure();
+		String bulkStrucure = new EsBulkJson("testIndex", pages).structure();
 		
 		String expected = new String(
 		    IOUtils.toByteArray(
@@ -74,7 +74,7 @@ public class EsBulkJsonTestCase {
      */
     @Test(expected = IllegalArgumentException.class)
     public void throwsExceptionOnEmptyList() {
-        new EsBulkJson(new ArrayList<WebPage>());
+        new EsBulkJson("testIndex", new ArrayList<WebPage>());
     }
 	
 	/**
@@ -82,7 +82,7 @@ public class EsBulkJsonTestCase {
      */
 	@Test(expected = IllegalArgumentException.class)
 	public void throwsExceptionOnNullList() {
-		new EsBulkJson(null);
+		new EsBulkJson("testIndex", null);
 	}
 	
 	/**

@@ -26,19 +26,15 @@ package com.amihaiemil.charles.aws;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.URI;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
-import com.amazonaws.http.HttpResponse;
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.Repository;
 import com.amihaiemil.charles.WebPage;
@@ -53,12 +49,25 @@ import com.amihaiemil.charles.WebPage;
 public class AmazonEsRepository implements Repository {
     private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
 
+    /**
+     * Name of the Es index where the pages will be exported.
+     */
+    private String indexName;
+
+    /**
+     * ctor.
+     * @param indexName Name of the Es index where the pages will be exported.
+     */
+    public AmazonEsRepository(String indexName) {
+        this.indexName = indexName;
+    }
+
 	@Override
 	public void export(List<WebPage> pages) throws DataExportException {
 		try {
 			SignedRequest sr = new SignedRequest(
 			    this.buildAwsRequest(
-			        new EsBulkJson(pages).structure()
+			        new EsBulkJson(this.indexName, pages).structure()
 			    )
 			);
 			sr.sendRequest();
