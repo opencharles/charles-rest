@@ -24,13 +24,14 @@
  */
 package com.amihaiemil.charles.aws;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.AmazonWebServiceResponse;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
 
 /**
- * A simple aws response handler which returns the bare {@link com.amazonaws.http.HttpResponse}
- * without doing anything to it beforehand.
+ * A simple aws response handler that only checks that the http status is within the 200 range.
+ * If not, {@link AmazonServiceException} is thrown.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
@@ -55,9 +56,19 @@ public class SimpleAwsResponseHandler implements
 	@Override
 	public AmazonWebServiceResponse<HttpResponse> handle(HttpResponse response)
 			throws Exception {
-		AmazonWebServiceResponse<HttpResponse> awsResponse = new AmazonWebServiceResponse<HttpResponse>();
-		awsResponse.setResult(response);
-		return awsResponse;
+
+		int status = response.getStatusCode();
+		if(status < 200 || status >= 300) {
+			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
+			ase.setStatusCode(status);
+			throw ase;
+		}
+
+        AmazonWebServiceResponse<HttpResponse> awsResponse = new AmazonWebServiceResponse<HttpResponse>();
+        awsResponse.setResult(response);
+        return awsResponse;
+		
+		
 	}
 
 	@Override

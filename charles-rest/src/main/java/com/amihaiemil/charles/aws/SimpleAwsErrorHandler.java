@@ -53,10 +53,10 @@ public class SimpleAwsErrorHandler implements HttpResponseHandler<AmazonServiceE
 	@Override
 	public AmazonServiceException handle(HttpResponse response)
 			throws Exception {
-		AmazonServiceException ase = new AmazonServiceException("AWS service exception.");
+		AmazonServiceException ase = new AmazonServiceException("Caught in handler: unexpected status: " + response.getStatusCode());
         ase.setStatusCode(response.getStatusCode());
         ase.setErrorCode(response.getStatusText());
-        return null;
+        return ase;
 	}
 
 	@Override

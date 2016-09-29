@@ -24,23 +24,56 @@
  */
 package com.amihaiemil.charles.aws;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URI;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazonaws.DefaultRequest;
+import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
+import com.amazonaws.http.HttpResponse;
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.Repository;
 import com.amihaiemil.charles.WebPage;
 
 /**
- * AWS ElasticSearch repository that sends the webpages contents to the
+ * AWS ElasticSearch repository that sends the webpages to the
  * Amazon ElasticSearch service, using the AWS sdk (for ease of request signing)
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  */
 public class AmazonEsRepository implements Repository {
+    private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
 
 	@Override
-	public void export(List<WebPage> arg0) throws DataExportException {
+	public void export(List<WebPage> pages) throws DataExportException {
+		try {
+			SignedRequest sr = new SignedRequest(
+			    this.buildAwsRequest(
+			        new EsBulkJson(pages).structure()
+			    )
+			);
+			sr.sendRequest();
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+            throw new DataExportException(e.getMessage());
+		}
+	}
+	
+	public Request<?> buildAwsRequest(String data) {
+		Request<?> request = new DefaultRequest<Void>("es");
+	    request.setContent(new ByteArrayInputStream(data.getBytes()));
+	    request.setEndpoint(URI.create(System.getProperty("aws.es.bulk.endpoint")));
+	    request.setHttpMethod(HttpMethodName.POST);
+	    return request;
 	}
 
 }

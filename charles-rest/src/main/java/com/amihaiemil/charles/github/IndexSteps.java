@@ -25,18 +25,12 @@
 
 package com.amihaiemil.charles.github;
 
-import java.util.List;
-
 import javax.json.JsonObject;
-
 import org.slf4j.Logger;
-
-import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.GraphCrawl;
 import com.amihaiemil.charles.IgnoredPatterns;
-import com.amihaiemil.charles.Repository;
 import com.amihaiemil.charles.WebCrawl;
-import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.aws.AmazonEsRepository;
 import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.Step;
 
@@ -127,12 +121,7 @@ public class IndexSteps implements Step {
     	    }
     	    WebCrawl siteCrawl = new GraphCrawl(
     	        url, phantomJsExecPath, new IgnoredPatterns(),
-    	        new Repository() {
-    	            @Override
-    	            public void export(List<WebPage> arg0) throws DataExportException {
-    			        // TODO to be replaced with AmazonEsRepository once it's implemented.
-    	            }
-    	        }, 20
+    	        new AmazonEsRepository(), 20
     	    );
     	    return new IndexSite(siteCrawl, logger);
     	}

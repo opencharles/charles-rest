@@ -26,12 +26,10 @@ package com.amihaiemil.charles.aws;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Request;
-import com.amazonaws.Response;
 import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.http.ExecutionContext;
-import com.amazonaws.http.HttpResponse;
 
 /**
  * A request made to AWS which is 
@@ -63,23 +61,19 @@ public class SignedRequest {
 	    this.request = req;
 	}
 
-	/**
-	 * Send it.
-	 */
-	public void sendRequest() {
-
-	    AmazonHttpClient client = new AmazonHttpClient(new ClientConfiguration());
-
-	    Response<HttpResponse> response =
-	        new AmazonHttpClient(new ClientConfiguration())
-	            .execute(
-	                this.request,
-	                new SimpleAwsResponseHandler(false),
-	                new SimpleAwsErrorHandler(false),
-	                new ExecutionContext(true)
-	            );
-	    response.getHttpResponse();
-	}
+    /**
+     * Send it.
+     * The Response is handled in the specified response handler.
+     */
+    public void sendRequest() {
+        new AmazonHttpClient(new ClientConfiguration())
+            .execute(
+                this.request,
+                new SimpleAwsResponseHandler(false),
+                new SimpleAwsErrorHandler(false),
+                new ExecutionContext(true)
+            );
+    }
 	
 	/**
 	 * AWS credentials (aws access key id and aws secret key from the system properties).
