@@ -23,60 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.amihaiemil.charles.github;
-
-import java.io.IOException;
-
 /**
- * Reply with a text message to a given command.
- * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 1.0.0
- * 
+ * Classes related to Amazon Web Services.
  */
-public class TextReply implements Reply {
-
-	/**
-	 * Command to which this reply goes.
-	 */
-    private Command command;
-
-    /**
-     * The agent's response.
-     */
-    private String response;
-
-    /**
-     * Logs location, used if specified.
-     */
-    private LogsLocation logs;
-    
-    public TextReply(Command com, String response) {
-        this.command = com;
-        this.response = response;
-    }
-    
-    public TextReply(Command com, String response, LogsLocation logs) {
-        this.command = com;
-        this.response = response;
-        this.logs = logs;
-    }
-
-    /**
-     * Send the reply comment to the Github issue.
-     * @throws IOException 
-     */
-    @Override
-    public void send() throws IOException {
-    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
-
-    	if(this.logs != null) {
-    		this.response = String.format(this.response, logs.address());
-    	}
-    	
-        command.issue().comments().post(
-            cmdPreview + this.response
-        );	
-    }
-
-}
+package com.amihaiemil.charles.aws;

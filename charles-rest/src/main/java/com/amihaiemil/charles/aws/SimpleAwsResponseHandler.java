@@ -22,61 +22,58 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.amihaiemil.charles.aws;
 
-package com.amihaiemil.charles.github;
-
-import java.io.IOException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.AmazonWebServiceResponse;
+import com.amazonaws.http.HttpResponse;
+import com.amazonaws.http.HttpResponseHandler;
 
 /**
- * Reply with a text message to a given command.
+ * A simple aws response handler that only checks that the http status is within the 200 range.
+ * If not, {@link AmazonServiceException} is thrown.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class TextReply implements Reply {
+public class SimpleAwsResponseHandler implements
+    HttpResponseHandler<AmazonWebServiceResponse<HttpResponse>> {
 
 	/**
-	 * Command to which this reply goes.
+	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
 	 */
-    private Command command;
+	private boolean needsConnectionLeftOpen;
 
-    /**
-     * The agent's response.
-     */
-    private String response;
+	/**
+	 * Ctor.
+	 * @param connectionLeftOpen Should the connection be closed immediately or not?
+	 */
+	public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
+		this.needsConnectionLeftOpen = connectionLeftOpen;
+	}
 
-    /**
-     * Logs location, used if specified.
-     */
-    private LogsLocation logs;
-    
-    public TextReply(Command com, String response) {
-        this.command = com;
-        this.response = response;
-    }
-    
-    public TextReply(Command com, String response, LogsLocation logs) {
-        this.command = com;
-        this.response = response;
-        this.logs = logs;
-    }
+	@Override
+	public AmazonWebServiceResponse<HttpResponse> handle(HttpResponse response)
+			throws Exception {
 
-    /**
-     * Send the reply comment to the Github issue.
-     * @throws IOException 
-     */
-    @Override
-    public void send() throws IOException {
-    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
+		int status = response.getStatusCode();
+		if(status < 200 || status >= 300) {
+			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
+			ase.setStatusCode(status);
+			throw ase;
+		}
 
-    	if(this.logs != null) {
-    		this.response = String.format(this.response, logs.address());
-    	}
-    	
-        command.issue().comments().post(
-            cmdPreview + this.response
-        );	
-    }
+        AmazonWebServiceResponse<HttpResponse> awsResponse = new AmazonWebServiceResponse<HttpResponse>();
+        awsResponse.setResult(response);
+        return awsResponse;
+		
+		
+	}
+
+	@Override
+	public boolean needsConnectionLeftOpen() {
+		return this.needsConnectionLeftOpen;
+	}
 
 }

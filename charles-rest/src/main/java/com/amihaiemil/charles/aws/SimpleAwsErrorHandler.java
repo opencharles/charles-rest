@@ -22,61 +22,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.amihaiemil.charles.aws;
 
-package com.amihaiemil.charles.github;
-
-import java.io.IOException;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.http.HttpResponse;
+import com.amazonaws.http.HttpResponseHandler;
 
 /**
- * Reply with a text message to a given command.
+ * Simple exception handler that returns an {@link AmazonServiceException}
+ * containing the HTTP status code and status text.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
  */
-public class TextReply implements Reply {
+public class SimpleAwsErrorHandler implements HttpResponseHandler<AmazonServiceException> {
 
 	/**
-	 * Command to which this reply goes.
+	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
 	 */
-    private Command command;
+	private boolean needsConnectionLeftOpen;
 
-    /**
-     * The agent's response.
-     */
-    private String response;
+	/**
+	 * Ctor.
+	 * @param connectionLeftOpen Should the connection be closed immediately or not?
+	 */
+	public SimpleAwsErrorHandler(boolean connectionLeftOpen) {
+		this.needsConnectionLeftOpen = connectionLeftOpen;
+	}
+	
+	@Override
+	public AmazonServiceException handle(HttpResponse response)
+			throws Exception {
+		AmazonServiceException ase = new AmazonServiceException("Caught in handler: unexpected status: " + response.getStatusCode());
+        ase.setStatusCode(response.getStatusCode());
+        ase.setErrorCode(response.getStatusText());
+        return ase;
+	}
 
-    /**
-     * Logs location, used if specified.
-     */
-    private LogsLocation logs;
-    
-    public TextReply(Command com, String response) {
-        this.command = com;
-        this.response = response;
-    }
-    
-    public TextReply(Command com, String response, LogsLocation logs) {
-        this.command = com;
-        this.response = response;
-        this.logs = logs;
-    }
-
-    /**
-     * Send the reply comment to the Github issue.
-     * @throws IOException 
-     */
-    @Override
-    public void send() throws IOException {
-    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
-
-    	if(this.logs != null) {
-    		this.response = String.format(this.response, logs.address());
-    	}
-    	
-        command.issue().comments().post(
-            cmdPreview + this.response
-        );	
-    }
+	@Override
+	public boolean needsConnectionLeftOpen() {
+		return this.needsConnectionLeftOpen;
+	}
 
 }

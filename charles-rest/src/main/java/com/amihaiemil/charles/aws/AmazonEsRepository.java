@@ -22,61 +22,58 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.amihaiemil.charles.aws;
 
-package com.amihaiemil.charles.github;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.net.URI;
+import java.util.List;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.amazonaws.DefaultRequest;
+import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
+import com.amazonaws.http.HttpResponse;
+import com.amihaiemil.charles.DataExportException;
+import com.amihaiemil.charles.Repository;
+import com.amihaiemil.charles.WebPage;
 
 /**
- * Reply with a text message to a given command.
+ * AWS ElasticSearch repository that sends the webpages to the
+ * Amazon ElasticSearch service, using the AWS sdk (for ease of request signing)
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
  */
-public class TextReply implements Reply {
+public class AmazonEsRepository implements Repository {
+    private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
 
-	/**
-	 * Command to which this reply goes.
-	 */
-    private Command command;
-
-    /**
-     * The agent's response.
-     */
-    private String response;
-
-    /**
-     * Logs location, used if specified.
-     */
-    private LogsLocation logs;
-    
-    public TextReply(Command com, String response) {
-        this.command = com;
-        this.response = response;
-    }
-    
-    public TextReply(Command com, String response, LogsLocation logs) {
-        this.command = com;
-        this.response = response;
-        this.logs = logs;
-    }
-
-    /**
-     * Send the reply comment to the Github issue.
-     * @throws IOException 
-     */
-    @Override
-    public void send() throws IOException {
-    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
-
-    	if(this.logs != null) {
-    		this.response = String.format(this.response, logs.address());
-    	}
-    	
-        command.issue().comments().post(
-            cmdPreview + this.response
-        );	
-    }
+	@Override
+	public void export(List<WebPage> pages) throws DataExportException {
+		try {
+			SignedRequest sr = new SignedRequest(
+			    this.buildAwsRequest(
+			        new EsBulkJson(pages).structure()
+			    )
+			);
+			sr.sendRequest();
+		} catch (IOException e) {
+			LOG.error(e.getMessage(), e);
+            throw new DataExportException(e.getMessage());
+		}
+	}
+	
+	public Request<?> buildAwsRequest(String data) {
+		Request<?> request = new DefaultRequest<Void>("es");
+	    request.setContent(new ByteArrayInputStream(data.getBytes()));
+	    request.setEndpoint(URI.create(System.getProperty("aws.es.bulk.endpoint")));
+	    request.setHttpMethod(HttpMethodName.POST);
+	    return request;
+	}
 
 }
