@@ -265,6 +265,52 @@ public class IndexWithPreconditionCheckTestCase {
     	    deniedMessage.contains("The repository is a fork!")
         );
     }
+
+    /**
+     * A link is given (e.g. in an index-page command) which does not point
+     * to a page hosted in the repo.
+     * @throws Exception If something goes worng.
+     */
+    @Test
+    public void pageHostedOnGithubCheckFails() throws Exception {
+    	RepoForkCheck rfc = Mockito.mock(RepoForkCheck.class);
+    	Mockito.when(rfc.perform()).thenReturn(true);
+
+    	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
+    	Mockito.when(aoc.perform()).thenReturn(true);
+
+    	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
+    	Mockito.when(rnc.perform()).thenReturn(true);
+
+    	PageHostedOnGithubCheck phgc = Mockito.mock(PageHostedOnGithubCheck.class);
+    	Mockito.when(phgc.perform()).thenReturn(false);
+    	
+    	GhPagesBranchCheck ghc = Mockito.mock(GhPagesBranchCheck.class);
+    	Mockito.when(ghc.perform()).thenReturn(false);
+
+    	
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	
+    	Language lang = Mockito.mock(Language.class);
+    	Mockito.when(lang.response("denied.badlink.comment")).thenReturn(
+    		"The link is not from this repo!"
+        );
+    	
+    	IndexWithPreconditionCheck ipc = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
+            com, com.issue().repo().json(), lang, Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class)
+        )
+    	.repoForkCheck(rfc)
+    	.authorOwnerCheck(aoc)
+    	.repoNameCheck(rnc)
+    	.ghPagesBranchCheck(ghc)
+    	.pageOnGithubCheck(phgc)
+        .build();
+    	assertTrue(ipc.perform());
+    	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
+    	assertTrue(
+    	    deniedMessage.contains("The link is not from this repo!")
+        );
+    }
     
     /**
      * The repository is a fork.

@@ -35,4 +35,17 @@ package com.amihaiemil.charles.steps;
  */
 public interface Step {
     boolean perform();
+
+    /**
+     * A step that hasn't been specified. It always performs true in order
+     * to not block the action where it's found.
+     */
+    public static class MissingStep implements Step {
+
+		@Override
+		public boolean perform() {
+			return true;
+		}
+    	
+    }
 }

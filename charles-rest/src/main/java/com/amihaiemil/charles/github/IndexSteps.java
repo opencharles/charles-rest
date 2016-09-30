@@ -38,7 +38,7 @@ import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.Step;
 
 /**
- * Step taken by the Github agent when receiving an index command. 
+ * Step taken by the Github agent to perform an index command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
@@ -60,12 +60,15 @@ public class IndexSteps implements Step {
 	 * Action's logger.
 	 */
 	private Logger logger;
-	
+
     /**
      * To perform after the index command has been executed successfully.
      */
     private Step followup;
 
+    /**
+     * Was the index command given for a single page or the whole website?
+     */
     private boolean singlePage;
 
     /**
@@ -81,46 +84,37 @@ public class IndexSteps implements Step {
     }
 
     /**
-     * Perform the steps necessary to fulfill an indexsite command.<br><br>
-     * 1) Check the preconditions.
-     * 2) Perform he index if the preconditions are met.
-     * 3) Perform the followup steps.
+     * Perform the step.
      */
     @Override
     public boolean perform() {    	
-        String expectedName = this.repoJson.getJsonObject("owner").getString("login") + ".github.io";
-        boolean indexed = false;
-        if(expectedName.equals(this.repoJson.getString("name"))) {
-        	indexed = this.indexStep(
-        	    this.com, repoJson.getString("name"), false, this.singlePage
-            ).perform();
-        } else {
-        	indexed = this.indexStep(
-        	    this.com, repoJson.getString("name"), true, this.singlePage
-        	).perform();
-        }
-        if(indexed) {
+        if(this.indexStep(this.com).perform()) {
             return followup.perform();
         }
-		return true;
+        return false;
 	}
 
     /**
      * Return an IndexSite Step for the given repo.
      * @param ownerLogin Username of the repo's owner.
-     * @param repoName Repository name.
-     * @param ghPages true if the Repo is not a site repository (owner.github.io) but has a gh-pages branch; false otherwise.
      * @return IndexSite instance.
      */
-    Step indexStep(Command com, String repoName, boolean ghPages, boolean singlePage) {
+    Step indexStep(Command com) {
+    	String repoName = repoJson.getString("name");
     	String phantomJsExecPath =  System.getProperty("phantomjsExec");
 	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
 	        phantomJsExecPath = "/usr/local/bin/phantomjs";
 	    }
-    	if(!singlePage) {
-            String url = "http://" + com.authorLogin() + ".github.io/";
-            if(ghPages) {
-    	    	url += repoName;
+
+    	if(!this.singlePage) {
+    		String repoSiteName = com.authorLogin() + ".github.io/";
+            String url;
+            
+            
+            if(repoSiteName.equals(repoName)) {//if the repo is a site on its own, named owner.github.io
+    	    	url = "http://" + repoName;
+    	    } else {//the repo has a gh-pages branch
+    	    	url = "http://" + repoSiteName + repoName;
     	    }
     	    WebCrawl siteCrawl = new GraphCrawl(
     	        url, phantomJsExecPath, new IgnoredPatterns(),
