@@ -78,7 +78,10 @@ public class IndexWithPreconditionCheckTestCase {
     	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
     	Mockito.when(aoc.perform()).thenReturn(false);
 
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "other");
+    	OrganizationAdminCheck oac = Mockito.mock(OrganizationAdminCheck.class);
+    	Mockito.when(aoc.perform()).thenReturn(false);
+
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "other", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.commander.comment")).thenReturn("Expected repo owner!");
@@ -88,6 +91,7 @@ public class IndexWithPreconditionCheckTestCase {
         )
     	.repoNameCheck(rnc)
     	.authorOwnerCheck(aoc)
+    	.orgAdminCheck(oac)
         .build();
     	assertTrue(ipc.perform());
     	String deniedMessage = com.issue().comments().iterate().iterator().next().json().getString("body");
@@ -113,7 +117,7 @@ public class IndexWithPreconditionCheckTestCase {
     	Mockito.when(ghc.perform()).thenReturn(false);
 
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.name.comment")).thenReturn(
@@ -158,7 +162,7 @@ public class IndexWithPreconditionCheckTestCase {
     	IndexSteps index = Mockito.mock(IndexSteps.class);
     	Mockito.when(index.perform()).thenReturn(true);
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("index.start.comment")).thenReturn(
@@ -194,6 +198,9 @@ public class IndexWithPreconditionCheckTestCase {
     	AuthorOwnerCheck aoc = Mockito.mock(AuthorOwnerCheck.class);
     	Mockito.when(aoc.perform()).thenReturn(false);
 
+    	OrganizationAdminCheck oac = Mockito.mock(OrganizationAdminCheck.class);
+    	Mockito.when(aoc.perform()).thenReturn(false);
+    	
     	RepoNameCheck rnc = Mockito.mock(RepoNameCheck.class);
     	Mockito.when(rnc.perform()).thenReturn(false);
 
@@ -201,7 +208,7 @@ public class IndexWithPreconditionCheckTestCase {
     	Mockito.when(ghc.perform()).thenReturn(true);
 
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.commander.comment")).thenReturn(
@@ -213,6 +220,7 @@ public class IndexWithPreconditionCheckTestCase {
         )
     	.repoForkCheck(rfc)
     	.authorOwnerCheck(aoc)
+    	.orgAdminCheck(oac)
     	.repoNameCheck(rnc)
     	.ghPagesBranchCheck(ghc)
         .build();
@@ -244,7 +252,7 @@ public class IndexWithPreconditionCheckTestCase {
     	Mockito.when(ghc.perform()).thenReturn(false);
 
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.fork.comment")).thenReturn(
@@ -289,7 +297,7 @@ public class IndexWithPreconditionCheckTestCase {
     	Mockito.when(ghc.perform()).thenReturn(false);
 
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.badlink.comment")).thenReturn(
@@ -331,7 +339,7 @@ public class IndexWithPreconditionCheckTestCase {
     	Mockito.when(ghc.perform()).thenReturn(true);
 
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("denied.fork.comment")).thenReturn(
@@ -374,7 +382,7 @@ public class IndexWithPreconditionCheckTestCase {
     	IndexSteps index = Mockito.mock(IndexSteps.class);
     	Mockito.when(index.perform()).thenReturn(true);
     	
-    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil");
+    	Command com = this.mockCommand("amihaiemil", "amihaiemil@gmail.com", "amihaiemil", "repo");
     	
     	Language lang = Mockito.mock(Language.class);
     	Mockito.when(lang.response("index.start.comment")).thenReturn(
@@ -403,13 +411,23 @@ public class IndexWithPreconditionCheckTestCase {
 	 * @param author Author of the command.
 	 * @param repoOwner Repository owner.
 	 * @param authorEmail Command author's email.
-	 * @param fork is the repo a fork or not?
+	 * @param ownerType - Organization or not.
 	 * @return Command mock.
 	 * @throws IOException If something goes wrong.
 	 */
-	private Command mockCommand(String author, String authorEmail, String repoSowner) throws IOException {
-		MkGithub gh = new MkGithub(repoSowner);
+	private Command mockCommand(String author, String authorEmail, String repoOwner, String ownerType) throws IOException {
+		MkGithub gh = new MkGithub(repoOwner);
 		Issue issue = gh.randomRepo().issues().create("title", "body");
+		
+		JsonObject repoJson = Json.createObjectBuilder()
+		    .add(
+			    "owner",
+			    Json.createObjectBuilder()
+				    .add("login", repoOwner)
+				    .add("type", ownerType)
+					.build()
+			    ).build();
+		
 		Command command = Mockito.mock(Command.class);
 		Mockito.when(command.authorLogin()).thenReturn(author);
 		Mockito.when(command.authorEmail()).thenReturn(authorEmail);
@@ -417,6 +435,7 @@ public class IndexWithPreconditionCheckTestCase {
 		Mockito.when(command.json()).thenReturn(
 		    Json.createObjectBuilder().add("body", "@charlesmike index pls").build()
         );
+		Mockito.when(command.repo()).thenReturn(repoJson);
 		return command;
 	}
 }

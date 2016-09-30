@@ -22,83 +22,64 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
 import javax.json.JsonObject;
 
-import org.hamcrest.Matchers;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.steps.Step;
-import com.jcabi.http.Request;
-import com.jcabi.http.request.ApacheRequest;
-import com.jcabi.http.response.RestResponse;
 
 /**
- * Step where it is checked if a repo has the gh-pages branch or not.
+ * Step where it's checked if the repo is under an organization in which the
+ * author is an active admin.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $id$
  * @since 1.0.0
  *
  */
-public class GhPagesBranchCheck implements Step {
+public class OrganizationAdminCheck implements Step {
 
 	/**
-	 * Repository json as returned by the Github API.
+	 * The command.
 	 */
-	private JsonObject repo;
+	private Command com;
 	
 	/**
-	 * Logger.
+	 * Logger of the action.
 	 */
 	private Logger logger;
+
+	/**
+	 * Ctor.
+	 * @param com The Command that triggered the whole action.
+	 * @param logger The Action's logger.
+	 */
+	public OrganizationAdminCheck(Command com, Logger logger) {
+		this.com = com;
+		this.logger = logger;
+	}
 	
-    /**
-     * Constructor.
-     * @param repo Given repository json.
-     * @param logger Action logger.
-     */
-    public GhPagesBranchCheck(JsonObject repo, Logger logger) {
-        this.repo = repo;
-        this.logger = logger;
-    }
-
-    /**
-     * Perform this step.
-     */
-    @Override
-    public boolean perform() { 
-    	logger.info("Checking whether the repository has a gh-pages branch...");
-    	String branchesUrlPattern = this.repo.getString("branches_url");
-    	String ghPagesUrl = branchesUrlPattern.substring(0, branchesUrlPattern.indexOf("{")) + "/gh-pages";
-    	Request req = new ApacheRequest(ghPagesUrl);
-    	try {
-    		boolean hasGhPagesBranch = req.fetch().as(RestResponse.class)
-		        .assertStatus(
-		            Matchers.isOneOf(
-		                HttpURLConnection.HTTP_OK,
-		                HttpURLConnection.HTTP_NOT_FOUND
-		        )
-		    ).status() == HttpURLConnection.HTTP_OK;
-    		
-    		if (hasGhPagesBranch) {
-    			logger.info("The repo does NOT have a gh-pages branch");
-    		} else {
-    			logger.info("The repo hask a gh-pages branch");
-    		}
-    		
-			return hasGhPagesBranch;
+	@Override
+	public boolean perform() {
+		try {
+			logger.info("Checking if the author is an active admin of the organization ...");
+		    JsonObject membership = com.authorOrgMembership();
+		    String state = membership.getString("state", "statenotfound");
+            String role = membership.getString("role", "adminnotfound");
+            boolean passed = state.equals("active") && role.equals("admin");
+            if(!passed) {
+                logger.warn("The author is NOT an active admin: [state: " + state + ", role: " + role +"]");
+            } else {
+            	logger.info("The author is an active admin, ok");
+            }
+            return passed;
 		} catch (IOException e) {
-			logger.error("Exception when checking if gh-pages branch exists", e);
-			throw new IllegalStateException("Exception when checking if gh-pages branch exists", e);
-		} catch (AssertionError err) {
-			logger.error("Unexpected HTTP status response!", err);
-			throw new IllegalStateException("Unexpected HTTP status response!", err);
+			logger.error("IOException when getting the organization membership!", e);
+			throw new IllegalStateException("IOException when getting the organization membership!", e);
 		}
-    }
-
+	}
+	
 }

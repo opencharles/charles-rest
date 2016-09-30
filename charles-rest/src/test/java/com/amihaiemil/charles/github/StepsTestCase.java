@@ -53,7 +53,6 @@ import com.jcabi.github.mock.MkGithub;
  * @since 1.0.0
  */
 public class StepsTestCase {
-
 	/**
 	 * Steps can perform 1 single step.
 	 */

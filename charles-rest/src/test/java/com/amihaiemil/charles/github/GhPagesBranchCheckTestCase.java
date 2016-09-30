@@ -116,7 +116,12 @@ public class GhPagesBranchCheckTestCase {
 			);
 
 			GhPagesBranchCheck gpc = new GhPagesBranchCheck(repo, logger);
-			assertFalse(gpc.perform());
+			try {
+			    gpc.perform();
+			    fail();
+			} catch (IllegalStateException ex) {
+				assertTrue(ex.getMessage().equals("Unexpected HTTP status response!"));
+			}
 		} finally {
 			server.stop();
 		}

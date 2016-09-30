@@ -92,7 +92,6 @@ public class Brain {
     	 switch (category.type()) {
     	 	case "hello":
     	 		String hello = String.format(category.language().response("hello.comment"), authorLogin);
-    	 		logger.info("Prepared response: " + hello);
     	 		steps = new SendReply(
     	 				new TextReply(com, hello),
     	 				logger
@@ -109,7 +108,6 @@ public class Brain {
     	 		String unknown = String.format(
     	 			category.language().response("unknown.comment"),
     	 			authorLogin);
-    	 		logger.info("Prepared response: " + unknown);
     	 		steps = new SendReply(
             	 		new TextReply(com, unknown),
             	 		this.logger
@@ -181,7 +179,8 @@ public class Brain {
     		    com, repo, category.language(), this.logger, this.logsLoc
     		)
     		.repoForkCheck(new RepoForkCheck(repo, this.logger))
-    		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, this.logger))
+    		.authorOwnerCheck(new AuthorOwnerCheck(com, this.logger))
+    		.orgAdminCheck(new OrganizationAdminCheck(com, this.logger))
     		.repoNameCheck(new RepoNameCheck(repo, this.logger))
     		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
     		.indexSteps(new IndexSteps(com, repo, followup, this.logger, singlePage));
@@ -191,7 +190,8 @@ public class Brain {
         	indexWithPreconditions.pageOnGithubCheck(
         	    new PageHostedOnGithubCheck(
         	        repo,
-        	        comment.substring(comment.indexOf('('), comment.indexOf(')'))
+        	        comment.substring(comment.indexOf('('), comment.indexOf(')')),
+        	        this.logger
         	    )
         	);
         }

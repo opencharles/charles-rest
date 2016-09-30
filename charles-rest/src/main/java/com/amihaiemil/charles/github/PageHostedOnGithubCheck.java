@@ -25,7 +25,7 @@
 package com.amihaiemil.charles.github;
 
 import javax.json.JsonObject;
-
+import org.slf4j.Logger;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -47,9 +47,21 @@ public class PageHostedOnGithubCheck implements Step {
 	 */
 	private String link;
 	
-	public PageHostedOnGithubCheck(JsonObject repo, String link) {
+	/**
+	 * Action's logger;
+	 */
+	private Logger logger;
+	
+	/**
+	 * Ctor
+	 * @param repo Json repo.
+	 * @param link Page link.
+	 * @param logger Logger.
+	 */
+	public PageHostedOnGithubCheck(JsonObject repo, String link, Logger logger) {
 		this.repo = repo;
 		this.link = link;
+		this.logger = logger;
 	}
 
 	@Override
@@ -57,14 +69,21 @@ public class PageHostedOnGithubCheck implements Step {
 		String owner = this.repo.getJsonObject("owner").getString("login");
 		String expDomain;
 		String repoName = this.repo.getString("name");
+		logger.info("Checking if the page belongs to the repo " + owner + "/" + repoName);
+		logger.info("Page link: " + this.link);
 		boolean reposite = repoName.equals(owner + "github.io");
 		if (reposite) {//the repo is a site by its own, with name owner.github.io
 			expDomain = owner + ".github.io";
+	        logger.info("The repo is a website repo so the page link has to start with " + expDomain);
 		} else {//the repo has a gh-pages branch
 			expDomain = owner + ".github.io/" + this.repo.getString("name");
+			logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
 		}
-		
-		return this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
+		boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
+		if(!passed) {
+			logger.warn("The given webpage is not part of this repository!");
+		}
+		return passed;
 	}
 
 }
