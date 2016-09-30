@@ -22,74 +22,92 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
-
 import javax.json.Json;
 import javax.json.JsonObject;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
 import com.jcabi.github.Repo;
 
 /**
- * Unit tests for {@link AuthorOwnerCheck}
+ * Unit tests for {@link OrganizationAdminCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AuthorOwnerCheckTestCase {
-
-    /**
-     * AuthorOwnerCheck can tell when the command author is owner of the repo.
-     * @throws Exception If something goes wrong.
-     */
-	@Test
-	public void authorIsRepoOwner() throws Exception {
-        Command com = this.mockCommand("amihaiemil", "amihaiemil", 0);
-    	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    	    com, Mockito.mock(Logger.class)
-    	);
-    	assertTrue(aoc.perform());
-    }
+public class OrganizationAdminCheckTestCase {
 
 	/**
-	 * AuthorOwnerCheck can tell when the command author is NOT owner of the repo.
+	 * OrganizationAdminCheck can tell when the command author is NOT owner of the repo but is admin
+	 * of the organization that holds the repo.
 	 * @throws Exception If something goes wrong.
 	 */
 	@Test
-	public void authorIsNotRepoOwner() throws Exception {
-        Command com  = this.mockCommand("someone", "amihaiemil", 0);
-    	AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		com, Mockito.mock(Logger.class)
-    	);
-    	assertFalse(aoc.perform());
+	public void authorOrganizationAdmin() throws Exception {
+	    JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "admin").build();
+	    Command com  = this.mockCommand("someone", "orgName");
+	    Mockito.when(com.authorOrgMembership()).thenReturn(membership);
+		OrganizationAdminCheck aoc = new OrganizationAdminCheck(
+	    	com, Mockito.mock(Logger.class)
+	    );
+	    assertTrue(aoc.perform());
+	}
+	
+	/**
+	 * OrganizationAdminCheck throws IllegalStateException if the membership endpoint didn't work.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test (expected = IllegalStateException.class)
+	public void membershipEndpointThrowsIOException() throws Exception {
+	    Command com  = this.mockCommand("someone", "orgName");
+	    Mockito.when(com.authorOrgMembership()).thenThrow(new IOException());
+		OrganizationAdminCheck aoc = new OrganizationAdminCheck(
+	    	com, Mockito.mock(Logger.class)
+	    );
+	    aoc.perform();
 	}
 
+	/**
+	 * OrganizationAdminCheck can tell when the command author is neither repo owner nor admin of
+	 * the organization under which the repo is registered.
+	 * @throws Exception If something goes wrong.
+	 */
+	@Test
+	public void authorNotOrganizationAdmin() throws Exception {
+		JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "member").build();
+		Command com  = this.mockCommand("someone", "orgName");
+	    Mockito.when(com.authorOrgMembership()).thenReturn(membership);
+	    OrganizationAdminCheck aoc = new OrganizationAdminCheck(
+	    	com, Mockito.mock(Logger.class)
+	    );
+	    assertFalse(aoc.perform());
+	}
 	/**
 	 * Mock a command for the unit tests.
 	 * @param author Author of the command.
 	 * @param repoOwner Repository owner.
+	 * @param fork Is the repository a fork or not?
+	 * @param organization Is the repo under an organization or not?
 	 * @param port Port on which the organization membership goes.
 	 * @return Command mock. 
 	 * @throws IOException If something goes wrong.
 	 */
-	private Command mockCommand(String author, String repoOwner, int port) throws IOException {
+	private Command mockCommand(String author, String repoOwner) throws IOException {
 		JsonObject repoJson = Json.createObjectBuilder()
 			.add(
 				"owner",
 				Json.createObjectBuilder()
 				.add("login", repoOwner)
+				.add("type", "Organization")
 				.build()
-		    ).build();
+			)
+			.build();
 		Command command = Mockito.mock(Command.class);
 		Mockito.when(command.authorLogin()).thenReturn(author);
 		Mockito.when(command.repo()).thenReturn(repoJson);

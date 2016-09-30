@@ -24,6 +24,8 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+
 import javax.json.JsonObject;
 
 import org.slf4j.Logger;
@@ -49,6 +51,11 @@ class IndexWithPreconditionCheck implements Step {
 	 */
 	private Step authorOwnerStep;
 
+	/**
+	 * The command's author is one of the organization's active admins.
+	 */
+	private Step orgAdminCheck;
+	
 	/**
 	 * Checks if the repo is a fork or not.
 	 */
@@ -85,6 +92,7 @@ class IndexWithPreconditionCheck implements Step {
 	    this.lang = builder.lang;
 	    this.logger = builder.logger;
 	    this.authorOwnerStep = builder.authorOwnerStep;
+	    this.orgAdminCheck = builder.orgAdminCheck;
 	    this.repoForkCheck = builder.repoForkCheck;
 	    this.repoNameCheck = builder.repoNameCheck;
 	    this.ghPagesBranchCheck = builder.ghPagesBranchCheck;
@@ -96,6 +104,7 @@ class IndexWithPreconditionCheck implements Step {
 	public boolean perform() {
 	    boolean success;
 	    boolean repoBlogOrGhPages = false;
+	    boolean owner = false;
 		if (this.repoNameCheck.perform()) {
 			repoBlogOrGhPages = true;
         } else {
@@ -106,10 +115,19 @@ class IndexWithPreconditionCheck implements Step {
         }
 		if(repoBlogOrGhPages) {
 		    if(this.authorOwnerStep.perform()) {
-		        if(this.repoForkCheck.perform()) {
+		    	owner = true;
+		    } else {
+		    	boolean ownedByOrg = repoIsOwnedByOrganization();
+		    	if(ownedByOrg) {
+		    		if(this.orgAdminCheck.perform()) {
+		    			owner = true;	
+		    		}
+		    	}
+		    }
+		    if(owner) {
+		    	if(this.repoForkCheck.perform()) {
 		        	if(this.pageHostedOnGithubCheck.perform()) {
-		    	        startIndexComment().perform();//ignore this result, it is not critical to let the user know
-		    	                              //that the index action has started (the following steps might work ok)
+		    	        startIndexComment().perform();
 		    	        success = this.index.perform();
 		        	} else {
 		                success = this.denialReply("denied.badlink.comment").perform();
@@ -118,7 +136,7 @@ class IndexWithPreconditionCheck implements Step {
 		    	    success = this.denialReply("denied.fork.comment").perform();
 		        }
 		    } else {
-			    success = denialReply("denied.commander.comment").perform();
+		    	success = denialReply("denied.commander.comment").perform();
 		    }
 		} else {
         	success = this.denialReply("denied.name.comment").perform();
@@ -157,6 +175,18 @@ class IndexWithPreconditionCheck implements Step {
         );
         return new SendReply(rep, this.logger);
     }
+    
+    /**
+     * Is the repo owned by an organization?
+     * @return True if the repo owner has type Organization, false otherwise.
+     */
+    boolean repoIsOwnedByOrganization() {
+    	try {
+			return com.repo().getJsonObject("owner").getString("type").equalsIgnoreCase("organization");
+		} catch (IOException e) {
+			throw new IllegalStateException("Error when checking repo owner type!", e);
+		}
+    }
 	
 	/**
      * Builder for {@link IndexWithPreconditionCheck}. All the steps have default values which
@@ -169,7 +199,7 @@ class IndexWithPreconditionCheck implements Step {
     	private Language lang;
     	private Logger logger;
     	private Step authorOwnerStep = new Step.MissingStep();
-
+        private Step orgAdminCheck = new Step.MissingStep();
     	private Step repoForkCheck = new Step.MissingStep();
     	private Step repoNameCheck = new Step.MissingStep();
     	private Step ghPagesBranchCheck = new Step.MissingStep();
@@ -200,6 +230,16 @@ class IndexWithPreconditionCheck implements Step {
     	 */
     	public IndexWithPreconditionCheckBuilder authorOwnerCheck(AuthorOwnerCheck aoc) {
     		this.authorOwnerStep = aoc;
+    		return this;
+    	}
+    	
+    	/**
+    	 * Specify the organization admin check for this builder.
+    	 * @param oac Given organization admin check.
+    	 * @return This builder.
+    	 */
+    	public IndexWithPreconditionCheckBuilder orgAdminCheck(OrganizationAdminCheck oac) {
+    		this.orgAdminCheck = oac;
     		return this;
     	}
     	

@@ -24,16 +24,14 @@
  */
 package com.amihaiemil.charles.aws;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import javax.validation.constraints.AssertTrue;
 
 import org.junit.After;
 import org.junit.Test;
@@ -45,7 +43,6 @@ import com.amihaiemil.charles.WebPage;
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
-import com.jcabi.http.mock.MkQuery;
 
 /**
  * Unit tests for {@link AmazonEsRepository}
@@ -73,6 +70,7 @@ public class AmazonEsRepositoryTestCase {
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
+		    fail();
 		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("Mandatory sys property aws.secretKey"));
 		}
@@ -94,6 +92,7 @@ public class AmazonEsRepositoryTestCase {
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
+		    fail();
 		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("Mandatory sys property aws.accessKeyId"));
 		}
@@ -114,6 +113,7 @@ public class AmazonEsRepositoryTestCase {
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
+		    fail();
 		} catch (IllegalStateException ex) {
 			assertTrue(ex.getMessage().contains("Mandatory sys property aws.es.region"));
 		}

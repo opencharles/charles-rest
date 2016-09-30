@@ -25,12 +25,16 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Iterator;
-
 import javax.json.JsonObject;
-
+import org.hamcrest.Matchers;
 import com.jcabi.github.Issue;
 import com.jcabi.github.User;
+import com.jcabi.http.Request;
+import com.jcabi.http.request.ApacheRequest;
+import com.jcabi.http.response.JsonResponse;
+import com.jcabi.http.response.RestResponse;
 
 /**
  * Command for the github agent.
@@ -40,10 +44,21 @@ import com.jcabi.github.User;
  * 
  */
 public abstract class Command {
+	
+	/**
+	 * Cacged json representation of the Github repo.
+	 */
+	private JsonObject repo;
+
+	/**
+	 * Cached value.
+	 */
+	private Boolean ghPagesBranch;
+	
 	protected JsonObject comment;
 	protected Issue issue;
 	protected String agentLogin;
-	
+
 	/**
 	 * The json comment.
 	 * @return Json Object representing the comment on Github issue.
@@ -51,7 +66,7 @@ public abstract class Command {
     public JsonObject json() {
     	return this.comment;
     }
-    
+
     /**
      * Parent issue.
      * @return com.jcabi.github.Issue
@@ -59,7 +74,7 @@ public abstract class Command {
     public Issue issue() {
     	return this.issue;
     }
-    
+
     /**
      * Username of the Github agent.
      * @return Github agent's String username.
@@ -67,7 +82,7 @@ public abstract class Command {
     public String agentLogin() {
     	return this.agentLogin;
     }
-    
+
     /**
      * Username of this command's author.
      * @return String Github username.
@@ -91,4 +106,57 @@ public abstract class Command {
 			return "";
 		}
 	}
+
+    public JsonObject authorOrgMembership() throws IOException {
+    	JsonObject repo = this.repo();
+    	if(repo.getJsonObject("owner").getString("type").equalsIgnoreCase("organization")) {
+            Request req = this.issue.repo().github().entry()
+                .uri().path("/orgs/").path(
+                    repo.getJsonObject("owner"
+                 ).getString("login")).path("/").path(this.authorLogin()).back();
+            return req.fetch().as(JsonResponse.class).json().readObject();
+        } else {
+        	throw new IllegalStateException("The owner of the repo is not an organization!");
+        }
+        	
+    }
+
+    /**
+     * Returns the json representation of the repo in which this command was given.
+     * The result is <b>cached</b> and so the http call to Github API is performed only at the first call.
+     * @return
+     */
+    public JsonObject repo() throws IOException {
+    	if(this.repo != null) {
+    		return this.repo;
+    	}
+    	this.repo = this.issue.repo().json();
+    	return this.repo;
+    }
+
+    /**
+     * Returns true if the repository has a gh-pages branch, false otherwise.
+     * The result is <b>cached</b> and so the http call to Github API is performed only at the first call.
+     * @return true if there is a gh-pages branch, false otherwise.
+     */
+    public boolean hasGhPagesBranch() throws IOException {
+    	try {
+    	    if(this.ghPagesBranch != null) {
+    	        String branchesUrlPattern = this.repo().getString("branches_url");
+        	    String ghPagesUrl = branchesUrlPattern.substring(0, branchesUrlPattern.indexOf("{")) + "/gh-pages";
+        	    Request req = new ApacheRequest(ghPagesUrl);
+        	    this.ghPagesBranch = req.fetch().as(RestResponse.class)
+    		        .assertStatus(
+    		            Matchers.isOneOf(
+    		                HttpURLConnection.HTTP_OK,
+    		                HttpURLConnection.HTTP_NOT_FOUND
+    		            )
+    		        ).status() == HttpURLConnection.HTTP_OK;
+        	    return this.ghPagesBranch;
+    	    }
+    	    return this.ghPagesBranch;
+    	} catch (AssertionError aerr) {
+    		throw new IOException ("Unexpected HTTP status response.", aerr);
+    	}
+    }
 }

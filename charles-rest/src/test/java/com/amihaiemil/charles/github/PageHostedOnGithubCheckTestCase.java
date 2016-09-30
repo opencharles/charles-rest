@@ -25,9 +25,13 @@
 package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.*;
+
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 /**
  * Unit tests for {@link PageHostedOnGithubCheck}
@@ -46,13 +50,15 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsValidLinkGhPages() {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "http://amihaiemil.github.io/myrepo/stuff/page.html"
+            "http://amihaiemil.github.io/myrepo/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertTrue(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-                this.mockRepo("amihaiemil", "myrepo"),
-                "https://amihaiemil.github.io/myrepo/stuff/page.html"
+            this.mockRepo("amihaiemil", "myrepo"),
+            "https://amihaiemil.github.io/myrepo/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertTrue(phgc2.perform());
     }
@@ -65,13 +71,15 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsInvalidLinkGhPages() {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "http://domain.io/stuff/page.html"
+            "http://domain.io/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertFalse(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "ftp://amihaiemil.github.io/folder/stuff/page.html"
+            "ftp://amihaiemil.github.io/folder/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertFalse(phgc2.perform());
     }
@@ -84,13 +92,15 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsValidLink() {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "http://amihaiemil.github.io/myrepo/stuff/page.html"
+            "http://amihaiemil.github.io/myrepo/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertTrue(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "https://amihaiemil.github.io/myrepo/stuff/page.html"
+            "https://amihaiemil.github.io/myrepo/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertTrue(phgc2.perform());
     }
@@ -103,13 +113,15 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsInvalidLink() {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "http://amihaiemil.github.io/stuff/page.html"
+            "http://amihaiemil.github.io/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertFalse(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockRepo("amihaiemil", "myrepo"),
-            "ftp://amihaiemil.github.io/myrepo/stuff/page.html"
+            "ftp://amihaiemil.github.io/myrepo/stuff/page.html",
+            Mockito.mock(Logger.class)
         );
         assertFalse(phgc2.perform());
     }
