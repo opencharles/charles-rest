@@ -177,16 +177,25 @@ public class Brain {
 	    )
 	    .build();
 		
-        IndexWithPreconditionCheck indexWithPreconditions = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
+        IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder indexWithPreconditions = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
     		    com, repo, category.language(), this.logger, this.logsLoc
     		)
     		.repoForkCheck(new RepoForkCheck(repo, this.logger))
     		.authorOwnerCheck(new AuthorOwnerCheck(com, repo, this.logger))
     		.repoNameCheck(new RepoNameCheck(repo, this.logger))
     		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
-    		.indexSteps(new IndexSteps(com, repo, followup, this.logger, singlePage))
-    		.build();
-
-		return indexWithPreconditions;
+    		.indexSteps(new IndexSteps(com, repo, followup, this.logger, singlePage));
+        
+        if(singlePage) { //if it's an index-page command add the precondition that the page link should belong to the repo
+        	String comment = com.json().getString("body");
+        	indexWithPreconditions.pageOnGithubCheck(
+        	    new PageHostedOnGithubCheck(
+        	        repo,
+        	        comment.substring(comment.indexOf('('), comment.indexOf(')'))
+        	    )
+        	);
+        }
+        
+		return indexWithPreconditions.build();
      }
 }

@@ -24,6 +24,10 @@
  */
 package com.amihaiemil.charles.github;
 
+import javax.json.JsonObject;
+
+import com.amihaiemil.charles.steps.Step;
+
 /**
  * Checks that a given page is hosted on Github (has the right domain)
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -31,6 +35,36 @@ package com.amihaiemil.charles.github;
  * @since 1.0.0
  *
  */
-public class PageHostedOnGithubCheck {
+public class PageHostedOnGithubCheck implements Step {
+
+	/**
+	 * Repository.
+	 */
+	private JsonObject repo;
+
+	/**
+	 * Link to the page.
+	 */
+	private String link;
+	
+	public PageHostedOnGithubCheck(JsonObject repo, String link) {
+		this.repo = repo;
+		this.link = link;
+	}
+
+	@Override
+	public boolean perform() {
+		String owner = this.repo.getJsonObject("owner").getString("login");
+		String expDomain;
+		String repoName = this.repo.getString("name");
+		boolean reposite = repoName.equals(owner + "github.io");
+		if (reposite) {//the repo is a site by its own, with name owner.github.io
+			expDomain = owner + ".github.io";
+		} else {//the repo has a gh-pages branch
+			expDomain = owner + ".github.io/" + this.repo.getString("name");
+		}
+		
+		return this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
+	}
 
 }

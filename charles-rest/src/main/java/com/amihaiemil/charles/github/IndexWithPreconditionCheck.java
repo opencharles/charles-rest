@@ -45,35 +45,31 @@ class IndexWithPreconditionCheck implements Step {
 	private Logger logger;
 
 	/**
-	 * Checks that can be performed as a precondition.
+	 * The command's author is the repo owner (the repo is under their name).
 	 */
-	private Step authorOwnerStep = new Step() {
-		@Override
-		public boolean perform() {
-			return true;
-		}
-	};
-	
-	private Step repoForkCheck = new Step() {
-		@Override
-		public boolean perform() {
-			return true;
-		}
-	};
-	
-	private Step repoNameCheck = new Step() {
-		@Override
-		public boolean perform() {
-			return true;
-		}
-	};
-	
-	private Step ghPagesBranchCheck = new Step() {
-		@Override
-		public boolean perform() {
-			return true;
-		}
-	};
+	private Step authorOwnerStep;
+
+	/**
+	 * Checks if the repo is a fork or not.
+	 */
+	private Step repoForkCheck;
+
+	/**
+	 * Checks the repo name format. If it doesn't match,
+	 * the gh-pages check has to be performed triggered.
+	 */
+	private Step repoNameCheck;
+
+	/**
+	 * Checks if the repo has a gh-pages branch
+	 */
+	private Step ghPagesBranchCheck;
+
+	/**
+	 * Used when indexing a single page, to check if the given link is from
+	 * a github-hosted website.
+	 */
+	private Step pageHostedOnGithubCheck;
 
 	/**
 	 * Index steps;
@@ -92,41 +88,40 @@ class IndexWithPreconditionCheck implements Step {
 	    this.repoForkCheck = builder.repoForkCheck;
 	    this.repoNameCheck = builder.repoNameCheck;
 	    this.ghPagesBranchCheck = builder.ghPagesBranchCheck;
+	    this.pageHostedOnGithubCheck = builder.pageOnGithub;
 	    this.index = builder.index;
 	}
 
 	@Override
 	public boolean perform() {
 	    boolean success;
+	    boolean repoBlogOrGhPages = false;
 		if (this.repoNameCheck.perform()) {
-			if(this.authorOwnerStep.perform()) {
-			    if(this.repoForkCheck.perform()) {
-			    	startIndexComment().perform();//ignore this result, it is not critical to let the user know
-			    	                              //that the index action has started (the following steps might work ok)
-			    	success = this.index.perform();
-			    } else {
-			    	success = this.denialReply("denied.fork.comment").perform();
-			    }
-			} else {
-				success = denialReply("denied.commander.comment").perform();
-			}
+			repoBlogOrGhPages = true;
         } else {
             boolean ghPagesBranch = this.ghPagesBranchCheck.perform();
             if(ghPagesBranch) {
-            	if(this.authorOwnerStep.perform()) {
-    			    if(this.repoForkCheck.perform()) {
-    			    	startIndexComment().perform();//ignore this result, it is not critical to let the user know
-    		                                          //that the index action has started (the following steps might work ok)
-    			    	success = this.index.perform();
-    			    } else {
-    			    	success = this.denialReply("denied.fork.comment").perform();
-    			    }
-    			} else {
-    				success = this.denialReply("denied.commander.comment").perform();
-    			}
-            } else {
-            	success = this.denialReply("denied.name.comment").perform();
+            	repoBlogOrGhPages = true;
             }
+        }
+		if(repoBlogOrGhPages) {
+		    if(this.authorOwnerStep.perform()) {
+		        if(this.repoForkCheck.perform()) {
+		        	if(this.pageHostedOnGithubCheck.perform()) {
+		    	        startIndexComment().perform();//ignore this result, it is not critical to let the user know
+		    	                              //that the index action has started (the following steps might work ok)
+		    	        success = this.index.perform();
+		        	} else {
+		                success = this.denialReply("denied.badlink.comment").perform();
+		        	}
+		        } else {
+		    	    success = this.denialReply("denied.fork.comment").perform();
+		        }
+		    } else {
+			    success = denialReply("denied.commander.comment").perform();
+		    }
+		} else {
+        	success = this.denialReply("denied.name.comment").perform();
         }
 		return success;
 	}
@@ -164,16 +159,22 @@ class IndexWithPreconditionCheck implements Step {
     }
 	
 	/**
-     * Builder for {@link IndexWithPreconditionCheck}
+     * Builder for {@link IndexWithPreconditionCheck}. All the steps have default values which
+     * always perform true, in order to not be blockers if they are not specified in the builder.
+     * 
+     * An unspecified step should not be included in the precondition
      */
     public static class IndexWithPreconditionCheckBuilder {
     	private Command com;
     	private Language lang;
     	private Logger logger;
-    	private Step authorOwnerStep;
-    	private Step repoForkCheck;
-    	private Step repoNameCheck;
-    	private Step ghPagesBranchCheck;
+    	private Step authorOwnerStep = new Step.MissingStep();
+
+    	private Step repoForkCheck = new Step.MissingStep();
+    	private Step repoNameCheck = new Step.MissingStep();
+    	private Step ghPagesBranchCheck = new Step.MissingStep();
+    	private Step pageOnGithub = new Step.MissingStep();
+
     	private IndexSteps index;
 
     	/**
@@ -229,6 +230,16 @@ class IndexWithPreconditionCheck implements Step {
     	 */
     	public IndexWithPreconditionCheckBuilder ghPagesBranchCheck(GhPagesBranchCheck gpc) {
     		this.ghPagesBranchCheck = gpc;
+    		return this;
+    	}
+    	
+    	/**
+    	 * Specify the page-on-github check to this builder.
+    	 * @param gpc Given Github pages branch check.
+    	 * @return This builder.
+    	 */
+    	public IndexWithPreconditionCheckBuilder pageOnGithubCheck(PageHostedOnGithubCheck phgc) {
+    		this.pageOnGithub = phgc;
     		return this;
     	}
     	
