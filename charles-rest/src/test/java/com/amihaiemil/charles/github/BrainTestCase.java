@@ -143,7 +143,7 @@ public class BrainTestCase {
     	Issue issue = gh.repos().get(
     					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
     				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike mock command for you!");
+    	Comment c = issue.comments().post("@charlesmike mock command for you (http://amihaiemil.github.io/folder/page.html)!");
     	
     	Command com = Mockito.mock(Command.class);
     

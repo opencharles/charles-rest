@@ -187,7 +187,7 @@ public class Brain {
     		.indexSteps(new IndexSteps(com, repo, followup, this.logger, singlePage));
         
         if(singlePage) { //if it's an index-page command add the precondition that the page link should belong to the repo
-        	String comment = com.comment.getString("body");
+        	String comment = com.json().getString("body");
         	indexWithPreconditions.pageOnGithubCheck(
         	    new PageHostedOnGithubCheck(
         	        repo,
