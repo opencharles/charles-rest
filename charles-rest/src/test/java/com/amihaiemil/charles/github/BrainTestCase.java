@@ -150,6 +150,11 @@ public class BrainTestCase {
      	Mockito.when(com.json()).thenReturn(c.json());
      	Mockito.when(com.issue()).thenReturn(issue);
      	
+     	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+		Mockito.when(crepo.json()).thenReturn(issue.repo().json());
+     	
+     	Mockito.when(com.repo()).thenReturn(crepo);
+
      	return com;
     }
 }

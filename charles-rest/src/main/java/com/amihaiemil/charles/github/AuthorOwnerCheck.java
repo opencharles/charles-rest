@@ -67,7 +67,7 @@ public class AuthorOwnerCheck implements Step {
 	public boolean perform() {
         logger.info("Checking ownership of the repo");
         try {
-            String repoOwner = this.com.repo().getJsonObject("owner").getString("login");
+            String repoOwner = this.com.repo().json().getJsonObject("owner").getString("login");
             String author = this.com.authorLogin();
             if(repoOwner.equals(author)) {
                 logger.info("Commander is repo owner - OK");

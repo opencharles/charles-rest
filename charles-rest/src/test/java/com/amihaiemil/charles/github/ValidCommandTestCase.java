@@ -27,6 +27,7 @@ package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import javax.json.Json;
@@ -110,15 +111,18 @@ public class ValidCommandTestCase {
 	}
 	
 	@Test
-	public void getsAgentLogin() {
+	public void getsAgentLogin() throws IOException {
 		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.agentLogin()).thenReturn("chalesmike");
 		JsonObject json = Json.createObjectBuilder()
 			.add("body", "test text")
 		    .add("id", 2)
 		    .build();
 		Mockito.when(comm.json()).thenReturn(json);
+		
+		MkGithub gh = new MkGithub("charlesmike");
+		Issue issue = gh.randomRepo().issues().create("test issue", "body");
+		Mockito.when(comm.issue()).thenReturn(issue);
 		ValidCommand vc = new ValidCommand(comm);
-		assertTrue(vc.agentLogin().equals("chalesmike"));
+		assertTrue(vc.agentLogin().equals("charlesmike"));
 	}
 }

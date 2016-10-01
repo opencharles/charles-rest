@@ -26,17 +26,10 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 
-import javax.json.JsonObject;
-
-import org.hamcrest.Matchers;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.steps.Step;
-import com.jcabi.http.Request;
-import com.jcabi.http.request.ApacheRequest;
-import com.jcabi.http.response.RestResponse;
 
 /**
  * Step where it is checked if a repo has the gh-pages branch or not.
@@ -50,7 +43,7 @@ public class GhPagesBranchCheck implements Step {
 	/**
 	 * Repository json as returned by the Github API.
 	 */
-	private JsonObject repo;
+	private Command com;
 	
 	/**
 	 * Logger.
@@ -59,11 +52,11 @@ public class GhPagesBranchCheck implements Step {
 	
     /**
      * Constructor.
-     * @param repo Given repository json.
+     * @param com Given command.
      * @param logger Action logger.
      */
-    public GhPagesBranchCheck(JsonObject repo, Logger logger) {
-        this.repo = repo;
+    public GhPagesBranchCheck(Command com, Logger logger) {
+        this.com = com;
         this.logger = logger;
     }
 
@@ -73,31 +66,18 @@ public class GhPagesBranchCheck implements Step {
     @Override
     public boolean perform() { 
     	logger.info("Checking whether the repository has a gh-pages branch...");
-    	String branchesUrlPattern = this.repo.getString("branches_url");
-    	String ghPagesUrl = branchesUrlPattern.substring(0, branchesUrlPattern.indexOf("{")) + "/gh-pages";
-    	Request req = new ApacheRequest(ghPagesUrl);
     	try {
-    		boolean hasGhPagesBranch = req.fetch().as(RestResponse.class)
-		        .assertStatus(
-		            Matchers.isOneOf(
-		                HttpURLConnection.HTTP_OK,
-		                HttpURLConnection.HTTP_NOT_FOUND
-		        )
-		    ).status() == HttpURLConnection.HTTP_OK;
     		
-    		if (hasGhPagesBranch) {
+    		if (com.repo().hasGhPagesBranch()) {
     			logger.info("The repo does NOT have a gh-pages branch");
     		} else {
     			logger.info("The repo hask a gh-pages branch");
     		}
     		
-			return hasGhPagesBranch;
+			return com.repo().hasGhPagesBranch();
 		} catch (IOException e) {
 			logger.error("Exception when checking if gh-pages branch exists", e);
 			throw new IllegalStateException("Exception when checking if gh-pages branch exists", e);
-		} catch (AssertionError err) {
-			logger.error("Unexpected HTTP status response!", err);
-			throw new IllegalStateException("Unexpected HTTP status response!", err);
 		}
     }
 

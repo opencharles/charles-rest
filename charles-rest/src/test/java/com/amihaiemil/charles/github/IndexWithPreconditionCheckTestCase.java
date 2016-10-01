@@ -435,7 +435,11 @@ public class IndexWithPreconditionCheckTestCase {
 		Mockito.when(command.json()).thenReturn(
 		    Json.createObjectBuilder().add("body", "@charlesmike index pls").build()
         );
-		Mockito.when(command.repo()).thenReturn(repoJson);
+		
+		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(repoJson);
+        
+		Mockito.when(command.repo()).thenReturn(crepo);
 		return command;
 	}
 }

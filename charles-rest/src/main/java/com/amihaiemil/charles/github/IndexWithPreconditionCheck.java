@@ -182,7 +182,7 @@ class IndexWithPreconditionCheck implements Step {
      */
     boolean repoIsOwnedByOrganization() {
     	try {
-			return com.repo().getJsonObject("owner").getString("type").equalsIgnoreCase("organization");
+			return com.repo().json().getJsonObject("owner").getString("type").equalsIgnoreCase("organization");
 		} catch (IOException e) {
 			throw new IllegalStateException("Error when checking repo owner type!", e);
 		}

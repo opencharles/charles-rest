@@ -69,7 +69,7 @@ abstract class Language {
 		}
 	}
 	
-    CommandCategory categorize(Command command) {
+    CommandCategory categorize(Command command) throws IOException {
     	Set<Object> keys = this.commandsPatterns.keySet();
 		for(Object key : keys) {
 			String keyString = (String) key;

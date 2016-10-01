@@ -52,9 +52,9 @@ public class LastCommentTestCase {
 	 */
 	@Test
     public void latestCommentMentionsTheAgent() throws Exception {
-    	Issue issue = this.mockIssue();
-    	Comment com = issue.comments().post("@charlesmike hello there, how are you?");
-    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	Issue[] issues = this.mockIssue();
+    	Comment com = issues[0].comments().post("@charlesmike hello there, how are you?");
+    	LastComment lastComment = new LastComment(issues[1]);
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(com.json().equals(jsonComment));
     }
@@ -65,11 +65,13 @@ public class LastCommentTestCase {
 	 */
 	@Test
 	public void agentMentionedInOtherComment() throws Exception {
-    	Issue issue = this.mockIssue();
-    	Comment agentcom = issue.comments().post("@charlesmike hello there, how are you?");
-    	issue.comments().post("@someoneelse, please check that...");
+    	Issue[] issues = this.mockIssue();
+    	Issue commander = issues[0];
+    	
+    	Comment agentcom = commander.comments().post("@charlesmike hello there, how are you?");
+    	commander.comments().post("@someoneelse, please check that...");
 
-    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	LastComment lastComment = new LastComment(issues[1]);
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(agentcom.json().equals(jsonComment));
 	}
@@ -80,15 +82,17 @@ public class LastCommentTestCase {
 	 */
 	@Test
 	public void mentionedInMoreComments() throws Exception {
-    	Issue issue = this.mockIssue();
-    	issue.comments().post("@charlesmike hello there, how are you?");
-    	issue.comments().post("@charlesmike hello? Please answer?");
-    	Comment agentCom = issue.comments().post("@charlesmike why won't you answer?");
+    	Issue[] issues = this.mockIssue();
+    	Issue commander = issues[0];
+    	
+    	commander.comments().post("@charlesmike hello there, how are you?");
+    	commander.comments().post("@charlesmike hello? Please answer?");
+    	Comment agentCom = commander.comments().post("@charlesmike why won't you answer?");
 
-    	issue.comments().post("@someoneelse, please do something...");
-    	issue.comments().post("@someoneelse, please check that...");
+    	commander.comments().post("@someoneelse, please do something...");
+    	commander.comments().post("@someoneelse, please check that...");
 
-    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	LastComment lastComment = new LastComment(issues[1]);
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(agentCom.json().equals(jsonComment));
 	}
@@ -100,11 +104,12 @@ public class LastCommentTestCase {
 	 */
 	@Test
 	public void agentNotMentionedAtAll() throws Exception {
-    	Issue issue = this.mockIssue();
-    	issue.comments().post("@someoneelse hello there, how are you?");
-    	issue.comments().post("@someoneelse, please check that...");
+    	Issue[] issues = this.mockIssue();
+    	Issue commander = issues[0];
+    	commander.comments().post("@someoneelse hello there, how are you?");
+    	commander.comments().post("@someoneelse, please check that...");
 
-    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	LastComment lastComment = new LastComment(issues[1]);
     	JsonObject jsonComment = lastComment.json();
     	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
     	assertTrue(emptyMentionComment.equals(jsonComment));
@@ -127,7 +132,7 @@ public class LastCommentTestCase {
 
     	issue.comments().post("@someoneelse, please check that...");
         
-    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	LastComment lastComment = new LastComment(issueCharlesmike);
     	JsonObject jsonComment = lastComment.json();
     	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
     	assertTrue(emptyMentionComment.equals(jsonComment)); 
@@ -152,20 +157,33 @@ public class LastCommentTestCase {
         Comment lastMention = issue.comments().post("@charlesmike hello again!!");//second mention
     	issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
         
-    	LastComment lastComment = new LastComment(issue, "charlesmike");
+    	LastComment lastComment = new LastComment(issueCharlesmike);
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(lastMention.json().equals(jsonComment)); 
 	}
 	
     /**
      * Mock an issue on Github.
-     * @return The created MkIssue.
+     * @return 2 Issues: 1 from the commander's Github (where the comments
+     * are posted) and 1 from the agent's Github (where comments are checked)
      * @throws IOException If something goes wrong.
      */
-    public Issue mockIssue() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
+    public Issue[] mockIssue() throws IOException {
+    	MkStorage storage = new MkStorage.InFile();
+    	Github commanderGithub = new MkGithub(storage, "amihaiemil");
+    	Github agentGithub = new MkGithub(storage, "charlesmike");
+    	
     	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	return gh.repos().get(new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")).issues().create("Test issue for commands", "test body");
+    	commanderGithub.repos().create(repoCreate);
+    	Issue[] issues = new Issue[2];
+    	Coordinates repoCoordinates = new Coordinates.Simple("amihaiemil", "amihaiemil.github.io");
+    	Issue authorsIssue = commanderGithub.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
+    	Issue agentsIssue = agentGithub.repos().get(repoCoordinates).issues().get(authorsIssue.number());
+    	issues[0] = authorsIssue;
+    	issues[1] = agentsIssue;
+    	
+    	return issues;
+    	
+    	
     }
 }

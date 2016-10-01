@@ -51,7 +51,6 @@ public class ValidCommand extends Command {
 		}
 		this.issue = com.issue();
 		this.comment = com.json();
-		this.agentLogin = com.agentLogin();
 	}
 
 }

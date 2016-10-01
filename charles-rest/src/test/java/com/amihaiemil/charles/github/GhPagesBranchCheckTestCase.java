@@ -25,22 +25,12 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.net.ServerSocket;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-
-import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
-import com.jcabi.http.mock.MkAnswer;
-import com.jcabi.http.mock.MkContainer;
-import com.jcabi.http.mock.MkGrizzlyContainer;
 
 /**
  * Unit tests for {@link GhPagesBranchCheck}
@@ -57,104 +47,28 @@ public class GhPagesBranchCheckTestCase {
 	 */
 	@Test
 	public void ghpagesBranchExists() throws Exception {
-		int port = this.port();
-		MkContainer server = new MkGrizzlyContainer().next(new MkAnswer.Simple(HttpStatus.SC_OK)).start(port);
-		String branchesUrl = "http://localhost:" + port + "/path/to/branches{/branch}";
-		try {
-			JsonObject repo = Json.createObjectBuilder().add("branches_url", branchesUrl).build();
-			Logger logger = Mockito.mock(Logger.class);
-			Mockito.doNothing().when(logger).info(Mockito.anyString());
-			Mockito.doNothing().when(logger).warn(Mockito.anyString());
-			Mockito.doNothing().when(logger).error(Mockito.anyString());
-
-			GhPagesBranchCheck gpc = new GhPagesBranchCheck(repo, logger);
-			assertTrue(gpc.perform());
-		} finally {
-			server.stop();
-		}
+		Command com = Mockito.mock(Command.class);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.hasGhPagesBranch()).thenReturn(true);
+        
+		Mockito.when(com.repo()).thenReturn(crepo);
+        GhPagesBranchCheck gpc = new GhPagesBranchCheck(com, Mockito.mock(Logger.class));
+        assertTrue(gpc.perform());
 	}
-	
+
 	/**
 	 * GhPagesBranchCheck can tell if the gh-pages branch does not exist in the repo.
 	 * @throws Exception If something goes wrong.
 	 */
 	@Test
 	public void ghpagesBranchDoesntExist() throws Exception {
-		int port = this.port();
-		MkContainer server = new MkGrizzlyContainer().next(new MkAnswer.Simple(HttpStatus.SC_NOT_FOUND)).start(port);
-		String branchesUrl = "http://localhost:" + port + "/path/to/branches{/branch}";
-		try {
-			JsonObject repo = Json.createObjectBuilder().add("branches_url", branchesUrl).build();
-			Logger logger = Mockito.mock(Logger.class);
-			Mockito.doNothing().when(logger).info(Mockito.anyString());
-			Mockito.doNothing().when(logger).warn(Mockito.anyString());
-			Mockito.doNothing().when(logger).error(Mockito.anyString());
-
-			GhPagesBranchCheck gpc = new GhPagesBranchCheck(repo, logger);
-			assertFalse(gpc.perform());
-		} finally {
-			server.stop();
-		}
-	}
-	
-	/**
-	 * GhPagesBranchCheck.perform returns false on Github server error.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void performsFalseOnGithubServerError() throws Exception {
-		int port = this.port();
-		MkContainer server = new MkGrizzlyContainer().next(new MkAnswer.Simple(HttpStatus.SC_INTERNAL_SERVER_ERROR)).start(port);
-		String branchesUrl = "http://localhost:" + port + "/path/to/branches{/branch}";
-		try {
-			JsonObject repo = Json.createObjectBuilder().add("branches_url", branchesUrl).build();
-			Logger logger = Mockito.mock(Logger.class);
-			Mockito.doNothing().when(logger).info(Mockito.anyString());
-			Mockito.doNothing().when(logger).warn(Mockito.anyString());
-			Mockito.doThrow(new IllegalStateException("Unexpected IOException...")).when(logger).error(
-			    Mockito.anyString(), Mockito.isA(IOException.class)
-			);
-
-			GhPagesBranchCheck gpc = new GhPagesBranchCheck(repo, logger);
-			try {
-			    gpc.perform();
-			    fail();
-			} catch (IllegalStateException ex) {
-				assertTrue(ex.getMessage().equals("Unexpected HTTP status response!"));
-			}
-		} finally {
-			server.stop();
-		}
-	}
-	
-	/**
-	 * GhPagesBranchCheck.perform throws IOException because the http request cannot be fulfilled.
-	 * This tests excepts an RuntimeException (we mock the logger in such a way) because it's the easies way
-	 * to see that the flow entered in the catch IOException block.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test (expected = RuntimeException.class)
-	public void requestFetchFails() throws Exception {
-	    int port = this.port();
-		String branchesUrl = "http://localhost:" + port + "/path/to/branches{/branch}";
-		JsonObject repo = Json.createObjectBuilder().add("branches_url", branchesUrl).build();
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).warn(Mockito.anyString());
-		Mockito.doThrow(new RuntimeException("This is expected, everything is ok!")).when(logger).error(
-		    Mockito.anyString(), Mockito.any(IOException.class)
-	    );
-		new GhPagesBranchCheck(repo, logger).perform();
+		Command com = Mockito.mock(Command.class);
+		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.hasGhPagesBranch()).thenReturn(false);
+        Mockito.when(com.repo()).thenReturn(crepo);
+		
+		GhPagesBranchCheck gpc = new GhPagesBranchCheck(com, Mockito.mock(Logger.class));
+        assertFalse(gpc.perform());
 	}
 
-	/**
-     * Find a free port.
-     * @return A free port.
-     * @throws IOException If something goes wrong.
-     */
-    private int port() throws IOException {
-        try (ServerSocket socket = new ServerSocket(0)) {
-            return socket.getLocalPort();
-        }
-    }
 }

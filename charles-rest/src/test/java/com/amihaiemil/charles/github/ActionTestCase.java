@@ -67,10 +67,10 @@ public class ActionTestCase {
 		Issue issue2 = this.githubIssue("jeff", "@charlesmike hello");
 		Issue issue3 = this.githubIssue("vlad", "@charlesmike hi");
 		Issue issue4 = this.githubIssue("marius", "@charlesmike hello");
-		Action ac1 = new Action(issue1, "charlesmike");
-		Action ac2 = new Action(issue2, "charlesmike");
-		Action ac3 = new Action(issue3, "charlesmike");
-		Action ac4 = new Action(issue4, "charlesmike");
+		Action ac1 = new Action(issue1);
+		Action ac2 = new Action(issue2);
+		Action ac3 = new Action(issue3);
+		Action ac4 = new Action(issue4);
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(5);
 		List<Future> futures = new ArrayList<Future>();
@@ -131,8 +131,8 @@ public class ActionTestCase {
 	        .thenReturn(comments)
 	        .thenReturn(issue2.comments());
 		
-		Action ac1 = new Action(mockedIssue1, "charlesmike");
-		Action ac2 = new Action(mockedIssue2, "charlesmike");
+		Action ac1 = new Action(mockedIssue1);
+		Action ac2 = new Action(mockedIssue2);
 		
 		final ExecutorService executorService = Executors.newFixedThreadPool(5);
 		List<Future> futures = new ArrayList<Future>();
@@ -165,12 +165,11 @@ public class ActionTestCase {
 		Github commanderGh = new MkGithub(storage, commander);
     	RepoCreate repoCreate = new RepoCreate(commander + ".github.io", false);
     	commanderGh.repos().create(repoCreate);
-    	Issue issue = commanderGh.repos().get(
-    					  new Coordinates.Simple(commander, commander + ".github.io")
-    				  ).issues().create("Test issue for commands", "test body");
+    	Coordinates repoCoordinates = new Coordinates.Simple(commander, commander + ".github.io");
+    	Issue issue = commanderGh.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
     	issue.comments().post(command);
-    	
-    	return issue;
+    	Github agentGh = new MkGithub(storage, "charlesmike");
+    	return agentGh.repos().get(repoCoordinates).issues().get(issue.number());
     	
 	}
 
