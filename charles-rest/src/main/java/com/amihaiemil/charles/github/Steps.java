@@ -55,24 +55,25 @@ public class Steps implements Step {
     	this.failureMessage = fm;
     }
 
-	/**
-	 * Return the steps to perform.
-	 * @return
-	 */
-	public Step getStepsToPerform() {
-		return this.steps;
-	}
+    /**
+     * Return the steps to perform.
+     * @return
+     */
+    public Step getStepsToPerform() {
+        return this.steps;
+    }
 	
     /**
-	 * Perform all the given steps.
-	 */
-	@Override
-	public boolean perform() {
-		if(steps.perform()) {
-			return true;
-		}
-		failureMessage.perform();
-		return false;
-	}
+     * Perform all the given steps.
+     */
+    @Override
+    public boolean perform() {
+        try {
+            this.steps.perform();
+        } catch (IllegalStateException ex) {
+            this.failureMessage.perform();
+        }
+         return true;
+    }
 
 }

@@ -87,14 +87,14 @@ public class IndexPage implements Step {
 		WebPage snapshot = new SnapshotWebPage(
 		    new LiveWebPage(this.phantomJsDriver(), link)
 		);
-		try {
-			new AmazonEsRepository(this.index).export(Arrays.asList(snapshot));
-		} catch (DataExportException e) {
-			logger.error("Exception while indexing the page " + link, e);
-			return false;
+        try {
+            new AmazonEsRepository(this.index).export(Arrays.asList(snapshot));
+        } catch (DataExportException e) {
+            logger.error("Exception while indexing the page " + link, e);
+            throw new IllegalStateException("Exception while indexing the page" + link, e);
 		}
-		return true;
-	}
+        return true;
+    }
 
 	private String getLink() {
 		return this.commandBody.substring(commandBody.indexOf('('), commandBody.indexOf(')'));

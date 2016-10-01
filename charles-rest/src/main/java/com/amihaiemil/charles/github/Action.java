@@ -102,7 +102,7 @@ public class Action implements Runnable {
 			}
 		} catch (IllegalArgumentException e) {
 			logger.info("No command found in the issue or the agent has already replied to the last command!");
-		} catch (IOException e) {
+		} catch (IOException | IllegalStateException e) {
 			logger.error("Action failed with IOException: ",  e);
 	        this.sendReply(
 				new ErrorReply(logs.address(), this.issue)

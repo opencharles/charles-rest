@@ -73,6 +73,8 @@ public class StarRepo implements Step {
     		this.logger.info("Repository starred!");
 		} catch (IOException e) {
 			this.logger.error("Error when starring repository: " + e.getMessage(), e);
+		    //We do not throw IllegalStateException here since starring the repo is not
+			//a critical matter
 		}
     	return true;
     }

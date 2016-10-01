@@ -25,8 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -38,19 +36,17 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class ValidCommand extends Command {
 
-	/**
+    /**
 	 * Constructor.
-	 * @param Given Comment.
-	 * @throws IllegalArgumentException if the comment (command) is not valid..
-	 * @throws IOException
-	 */
-	public ValidCommand(Command com) throws IllegalArgumentException {
-		String body = com.json().getString("body");
-		if(StringUtils.isEmpty(body)) {
-			throw new IllegalArgumentException("Invalid command!");
-		}
-		this.issue = com.issue();
-		this.comment = com.json();
-	}
+     * @param Given Comment.
+     * @throws IllegalArgumentException if the comment (command) is not valid..
+     */
+    public ValidCommand(Command com) throws IllegalArgumentException {
+        super(com.issue(), com.json());
+    	String body = com.json().getString("body");
+        if(StringUtils.isEmpty(body)) {
+            throw new IllegalArgumentException("Invalid command!");
+        }
+    }
 
 }

@@ -189,7 +189,7 @@ public class Brain {
         	String comment = com.json().getString("body");
         	indexWithPreconditions.pageOnGithubCheck(
         	    new PageHostedOnGithubCheck(
-        	    	com.repo().json(),
+        	    	com,
         	        comment.substring(comment.indexOf('('), comment.indexOf(')')),
         	        this.logger
         	    )

@@ -62,10 +62,10 @@ public class IndexSite implements Step {
 	public boolean perform() {
         try {
             this.siteCrawl.crawl();
-		} catch (DataExportException e) {
-			logger.error("Exception while crawling the website: " + e.getMessage(), e);
-			return false;
-		}
+        } catch (DataExportException e) {
+            logger.error("Exception while indexing the website!", e);
+            throw new IllegalStateException("Exception while indexing the website", e);
+        }
 		return true;
 	}
 

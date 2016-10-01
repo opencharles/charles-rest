@@ -45,8 +45,10 @@ import com.jcabi.github.Issue;
 public class LastComment extends Command {
 	
 	public LastComment(Issue issue) throws IOException {
-		this.comment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-		this.issue = issue;
+		super(
+		    issue,
+		    Json.createObjectBuilder().add("id", "-1").add("body", "").build()
+	    );
 		List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
 		boolean agentFound = false;
 		for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
@@ -55,7 +57,7 @@ public class LastComment extends Command {
 				agentFound = true; //we found a reply of the agent, so stop looking.
 			} else {
 				if(currentJsonComment.getString("body").contains("@" + agentLogin())) {
-					this.comment = currentJsonComment;
+					this.comment(currentJsonComment);
 					agentFound = true;
 				}
 			}

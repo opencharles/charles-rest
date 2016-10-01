@@ -26,9 +26,7 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 import java.util.Iterator;
-
 import javax.json.JsonObject;
-
 import com.jcabi.github.Issue;
 import com.jcabi.github.User;
 import com.jcabi.http.Request;
@@ -42,7 +40,7 @@ import com.jcabi.http.response.JsonResponse;
  * 
  */
 public abstract class Command {
-	
+
     /**
      * Cached Github repo.
      */
@@ -53,8 +51,30 @@ public abstract class Command {
      */
     private String agentLogin;
 
-    protected JsonObject comment;
-    protected Issue issue;
+    /**
+     * Cached author email address.
+     */
+    private String authorEmail;
+
+    /**
+     * Comment json.
+     */
+    private JsonObject comment;
+
+    /**
+     * Github issue.
+     */
+    private Issue issue;
+
+    /**
+     * Ctor.
+     * @param issue
+     * @param comment
+     */
+    public Command(Issue issue, JsonObject comment) {
+        this.issue = issue;
+        this.comment = comment;
+    }
 
     /**
      * The json comment.
@@ -64,6 +84,14 @@ public abstract class Command {
         return this.comment;
     }
 
+    /**
+     * Specify the comment json of this command.
+     * @param com
+     */
+    protected void comment(JsonObject com) {
+    	this.comment = com;
+    }
+    
     /**
      * Parent issue.
      * @return com.jcabi.github.Issue
@@ -100,13 +128,16 @@ public abstract class Command {
      * to get the author's email address.
      */
     public String authorEmail() throws IOException {
-		User author = this.issue.repo().github().users().get(this.authorLogin());
-		Iterator<String> addresses = author.emails().iterate().iterator();
-		if(addresses.hasNext()) {
-			return addresses.next();
-		} else {
-			return "";
+		if(this.authorEmail == null){
+            User author = this.issue.repo().github().users().get(this.authorLogin());
+		    Iterator<String> addresses = author.emails().iterate().iterator();
+		    if(addresses.hasNext()) {
+			    this.authorEmail = addresses.next();
+	        } else {
+			    this.authorEmail = "";
+		    }
 		}
+		return this.authorEmail;
 	}
 
     public JsonObject authorOrgMembership() throws IOException {

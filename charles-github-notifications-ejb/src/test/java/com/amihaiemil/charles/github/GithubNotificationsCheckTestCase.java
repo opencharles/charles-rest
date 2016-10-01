@@ -25,23 +25,16 @@
 package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.*;
-
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.json.Json;
 import javax.json.JsonObject;
-
-import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
