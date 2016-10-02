@@ -147,7 +147,7 @@ public class Action implements Runnable {
 		logFile.getParentFile().mkdirs();
 		logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
 
-		FileAppender fa = new FileAppender(new PatternLayout("%d %c{1} - %m%n"), logFilePath);
+		FileAppender fa = new FileAppender(new PatternLayout("%d - %m%n"), logFilePath);
 		fa.setName(this.tr.getName() + "_appender");
 		fa.setThreshold(Level.DEBUG);
 		log4jLogger.addAppender(fa);

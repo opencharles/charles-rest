@@ -69,9 +69,9 @@ public class GhPagesBranchCheck implements Step {
     	try {
     		
     		if (com.repo().hasGhPagesBranch()) {
-    			logger.info("The repo does NOT have a gh-pages branch");
+    			logger.info("The repo has a gh-pages branch - OK!");
     		} else {
-    			logger.info("The repo hask a gh-pages branch");
+    			logger.info("The repo does NOT have a gh-pages branch");
     		}
     		
 			return com.repo().hasGhPagesBranch();
