@@ -102,7 +102,6 @@ class IndexWithPreconditionCheck implements Step {
 
 	@Override
 	public boolean perform() {
-	    boolean success;
 	    boolean repoBlogOrGhPages = false;
 	    boolean owner = false;
 		if (this.repoNameCheck.perform()) {
@@ -127,21 +126,29 @@ class IndexWithPreconditionCheck implements Step {
 		    if(owner) {
 		    	if(this.repoForkCheck.perform()) {
 		        	if(this.pageHostedOnGithubCheck.perform()) {
-		    	        startIndexComment().perform();
-		    	        success = this.index.perform();
+		    	        try {
+		        		    startIndexComment().perform();
+		    	        } catch (IllegalStateException ex) {//this step is not critical, so catch a possible error and log it
+		    	            this.logger.error(
+		    	                "Failed to send start-index comment. "
+		    	              + "However, the flow wasn't stopped since this is not "
+		    	              + "a critical matter.", ex
+		    	            );
+		    	        }
+		    	        this.index.perform();
 		        	} else {
-		                success = this.denialReply("denied.badlink.comment").perform();
+		                this.denialReply("denied.badlink.comment").perform();
 		        	}
 		        } else {
-		    	    success = this.denialReply("denied.fork.comment").perform();
+		    	    this.denialReply("denied.fork.comment").perform();
 		        }
 		    } else {
-		    	success = denialReply("denied.commander.comment").perform();
+		    	denialReply("denied.commander.comment").perform();
 		    }
 		} else {
-        	success = this.denialReply("denied.name.comment").perform();
+        	this.denialReply("denied.name.comment").perform();
         }
-		return success;
+		return true;
 	}
 
 	/**
