@@ -75,9 +75,9 @@ public class GithubNotificationsCheck {
 	private TimerService timerService;
 
 	/**
-	 * Http request used for checking Github Notifications API.
+	 * Notifications' API endpoint.
 	 */
-	private Request req;
+	private String napiEndpoint;
 
 	/**
 	 * Default Ctor.
@@ -96,7 +96,7 @@ public class GithubNotificationsCheck {
 	 */
 	public GithubNotificationsCheck(String notificationsEp, Logger logger) {
 	    this.log = logger;
-		this.req = new ApacheRequest(notificationsEp);
+		this.napiEndpoint = notificationsEp;
 	}
 
     /**
@@ -136,11 +136,12 @@ public class GithubNotificationsCheck {
             	if(handlerEndpointToken == null || handlerEndpointToken.isEmpty()) {
             		log.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
             	} else {
-                    this.req = this.req.header(
+            		Request req = new ApacheRequest(this.napiEndpoint);
+                    req = req.header(
                         HttpHeaders.AUTHORIZATION, String.format("token %s", token)
                     );
                     try {
-			            JsonArray notifications = this.req.fetch()
+			            JsonArray notifications = req.fetch()
 			                .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
 		                    .as(JsonResponse.class).json().readArray();
 			            log.info("Found " + notifications.size() + " new notifications!");
@@ -158,7 +159,7 @@ public class GithubNotificationsCheck {
 			            
 			                if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
                                 log.info("POST successful, marking notifications as read...");
-                                this.req.uri()
+                                req.uri()
 			            	        .queryParam(
 			        	                "last_read_at",
 			        				    DateFormatUtils.formatUTC(

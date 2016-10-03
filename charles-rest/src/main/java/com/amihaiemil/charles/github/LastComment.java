@@ -44,23 +44,24 @@ import com.jcabi.github.Issue;
  */
 public class LastComment extends Command {
 	
-	public LastComment(Issue issue, String agentlogin) throws IOException {
-		this.comment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-		this.issue = issue;
+	public LastComment(Issue issue) throws IOException {
+		super(
+		    issue,
+		    Json.createObjectBuilder().add("id", "-1").add("body", "").build()
+	    );
 		List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
 		boolean agentFound = false;
 		for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
 			JsonObject currentJsonComment = comments.get(i).json();
-			if(currentJsonComment.getJsonObject("user").getString("login").equals(agentlogin)) {
+			if(currentJsonComment.getJsonObject("user").getString("login").equals(agentLogin())) {
 				agentFound = true; //we found a reply of the agent, so stop looking.
 			} else {
-				if(currentJsonComment.getString("body").contains("@" + agentlogin)) {
-					this.comment = currentJsonComment;
+				if(currentJsonComment.getString("body").contains("@" + agentLogin())) {
+					this.comment(currentJsonComment);
 					agentFound = true;
 				}
 			}
 		}
-		this.agentLogin = agentlogin;
 	}
 
 }

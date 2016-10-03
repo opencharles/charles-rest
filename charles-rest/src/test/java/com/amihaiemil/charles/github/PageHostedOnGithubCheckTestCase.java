@@ -26,6 +26,8 @@ package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 
@@ -45,18 +47,19 @@ public class PageHostedOnGithubCheckTestCase {
     /**
      * PageHostedOnGithubCheck can tell when a link is valid in a repo
      * with gh-pages branch.
+     * @throws IOException 
      */
     @Test
-    public void tellsValidLinkGhPages() {
+    public void tellsValidLinkGhPages() throws IOException {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", true),
             "http://amihaiemil.github.io/myrepo/stuff/page.html",
             Mockito.mock(Logger.class)
         );
         assertTrue(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", true),
             "https://amihaiemil.github.io/myrepo/stuff/page.html",
             Mockito.mock(Logger.class)
         );
@@ -66,18 +69,19 @@ public class PageHostedOnGithubCheckTestCase {
     /**
      * PageHostedOnGithubCheck can tell when a link is not valid in a repo
      * with gh-pages branch.
+     * @throws IOException 
      */
     @Test
-    public void tellsInvalidLinkGhPages() {
+    public void tellsInvalidLinkGhPages() throws IOException {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", true),
             "http://domain.io/stuff/page.html",
             Mockito.mock(Logger.class)
         );
         assertFalse(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", true),
             "ftp://amihaiemil.github.io/folder/stuff/page.html",
             Mockito.mock(Logger.class)
         );
@@ -87,18 +91,19 @@ public class PageHostedOnGithubCheckTestCase {
     /**
      * PageHostedOnGithubCheck can tell when a link is valid in a repo
      * without gh-pages branch.
+     * @throws IOException 
      */
     @Test
-    public void tellsValidLink() {
+    public void tellsValidLink() throws IOException {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", false),
             "http://amihaiemil.github.io/myrepo/stuff/page.html",
             Mockito.mock(Logger.class)
         );
         assertTrue(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", false),
             "https://amihaiemil.github.io/myrepo/stuff/page.html",
             Mockito.mock(Logger.class)
         );
@@ -108,18 +113,19 @@ public class PageHostedOnGithubCheckTestCase {
     /**
      * PageHostedOnGithubCheck can tell when a link is not valid in a repo
      * without gh-pages branch.
+     * @throws IOException 
      */
     @Test
-    public void tellsInvalidLink() {
+    public void tellsInvalidLink() throws IOException {
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", false),
             "http://amihaiemil.github.io/stuff/page.html",
             Mockito.mock(Logger.class)
         );
-        assertFalse(phgc.perform());
+        assertTrue(phgc.perform());
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockRepo("amihaiemil", "myrepo"),
+            this.mockCommand("amihaiemil", "myrepo", false),
             "ftp://amihaiemil.github.io/myrepo/stuff/page.html",
             Mockito.mock(Logger.class)
         );
@@ -130,14 +136,26 @@ public class PageHostedOnGithubCheckTestCase {
      * Create a mock json repo for tests.
      * @param owner Login of the owner.
      * @param name Name of the repo.
-     * @return JsonObject repo.
+     * @param hasGhPages Does the repo have gh-pages branchor not?
+     * @return Commadn com.
+     * @throws IOException 
      */
-    public JsonObject mockRepo(String owner, String name) {
-    	return Json.createObjectBuilder()
-    	    .add("name", name)
-    	    .add(
-    	        "owner",
-    	        Json.createObjectBuilder().add("login", owner).build()
-    	    ).build();
+    public Command mockCommand(String owner, String name, boolean hasGhPages) throws IOException {
+    	JsonObject repoJson = Json.createObjectBuilder()
+            .add("name", name)
+        	.add(
+        	    "owner",
+        	    Json.createObjectBuilder().add("login", owner).build()
+        	).build();
+    	
+    	Command com = Mockito.mock(Command.class);
+    	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+    	Mockito.when(crepo.json()).thenReturn(repoJson);
+    	Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);
+    	
+    	Mockito.when(com.repo()).thenReturn(crepo);
+    	
+    	
+    	return com;
     }
 }

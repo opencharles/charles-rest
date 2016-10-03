@@ -24,6 +24,8 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+
 import javax.json.JsonObject;
 import org.slf4j.Logger;
 import com.amihaiemil.charles.steps.Step;
@@ -38,9 +40,9 @@ import com.amihaiemil.charles.steps.Step;
 public class PageHostedOnGithubCheck implements Step {
 
 	/**
-	 * Repository.
+	 * Command.
 	 */
-	private JsonObject repo;
+	private Command com;
 
 	/**
 	 * Link to the page.
@@ -58,32 +60,37 @@ public class PageHostedOnGithubCheck implements Step {
 	 * @param link Page link.
 	 * @param logger Logger.
 	 */
-	public PageHostedOnGithubCheck(JsonObject repo, String link, Logger logger) {
-		this.repo = repo;
+	public PageHostedOnGithubCheck(Command com, String link, Logger logger) {
+		this.com = com;
 		this.link = link;
 		this.logger = logger;
 	}
 
 	@Override
 	public boolean perform() {
-		String owner = this.repo.getJsonObject("owner").getString("login");
-		String expDomain;
-		String repoName = this.repo.getString("name");
-		logger.info("Checking if the page belongs to the repo " + owner + "/" + repoName);
-		logger.info("Page link: " + this.link);
-		boolean reposite = repoName.equals(owner + "github.io");
-		if (reposite) {//the repo is a site by its own, with name owner.github.io
-			expDomain = owner + ".github.io";
-	        logger.info("The repo is a website repo so the page link has to start with " + expDomain);
-		} else {//the repo has a gh-pages branch
-			expDomain = owner + ".github.io/" + this.repo.getString("name");
-			logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
-		}
-		boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
-		if(!passed) {
-			logger.warn("The given webpage is not part of this repository!");
-		}
-		return passed;
-	}
+		try {
+		    JsonObject repo = com.repo().json();
+		    String owner = repo.getJsonObject("owner").getString("login");
+		    String expDomain;
+		    logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.getString("name"));
+		    logger.info("Page link: " + this.link);
+		    boolean ghPagesBranch = com.repo().hasGhPagesBranch();
+		    if (ghPagesBranch) {
+			    expDomain = owner + ".github.io/" + repo.getString("name");
+			    logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
+		    } else {
+			    expDomain = owner + ".github.io";
+	            logger.info("The repo is a website repo so the page link has to start with " + expDomain);
+		    }
+		    boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
+		    if(!passed) {
+			    logger.warn("The given webpage is not part of this repository!");
+		    }
+            return passed;
+		} catch (IOException ex) {
+            logger.error("IOException when calling the Github API", ex);
+            throw new IllegalStateException("IOException when calling the Github API", ex);
+        }
+    }
 
 }

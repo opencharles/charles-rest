@@ -25,16 +25,12 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.Iterator;
 import javax.json.JsonObject;
-import org.hamcrest.Matchers;
 import com.jcabi.github.Issue;
 import com.jcabi.github.User;
 import com.jcabi.http.Request;
-import com.jcabi.http.request.ApacheRequest;
 import com.jcabi.http.response.JsonResponse;
-import com.jcabi.http.response.RestResponse;
 
 /**
  * Command for the github agent.
@@ -44,29 +40,58 @@ import com.jcabi.http.response.RestResponse;
  * 
  */
 public abstract class Command {
-	
-	/**
-	 * Cacged json representation of the Github repo.
-	 */
-	private JsonObject repo;
 
-	/**
-	 * Cached value.
-	 */
-	private Boolean ghPagesBranch;
-	
-	protected JsonObject comment;
-	protected Issue issue;
-	protected String agentLogin;
+    /**
+     * Cached Github repo.
+     */
+    private CommandedRepo crepo;
 
-	/**
-	 * The json comment.
-	 * @return Json Object representing the comment on Github issue.
-	 */
-    public JsonObject json() {
-    	return this.comment;
+    /**
+     * Cached agentLogin.
+     */
+    private String agentLogin;
+
+    /**
+     * Cached author email address.
+     */
+    private String authorEmail;
+
+    /**
+     * Comment json.
+     */
+    private JsonObject comment;
+
+    /**
+     * Github issue.
+     */
+    private Issue issue;
+
+    /**
+     * Ctor.
+     * @param issue
+     * @param comment
+     */
+    public Command(Issue issue, JsonObject comment) {
+        this.issue = issue;
+        this.comment = comment;
     }
 
+    /**
+     * The json comment.
+     * @return Json Object representing the comment on Github issue.
+     */
+    public JsonObject json() {
+        return this.comment;
+    }
+
+    /**
+     * Specify the comment json of this command.
+     * @param com
+     */
+    protected void comment(JsonObject com) {
+    	this.comment = com;
+    }
+    
     /**
      * Parent issue.
      * @return com.jcabi.github.Issue
@@ -78,8 +103,13 @@ public abstract class Command {
     /**
      * Username of the Github agent.
      * @return Github agent's String username.
+     * @throws IOException 
      */
-    public String agentLogin() {
+    public String agentLogin() throws IOException {
+        if(this.agentLogin == null) {
+    	    this.agentLogin = this.issue.repo()
+                .github().users().self().login();
+        }
     	return this.agentLogin;
     }
 
@@ -98,17 +128,20 @@ public abstract class Command {
      * to get the author's email address.
      */
     public String authorEmail() throws IOException {
-		User author = this.issue.repo().github().users().get(this.authorLogin());
-		Iterator<String> addresses = author.emails().iterate().iterator();
-		if(addresses.hasNext()) {
-			return addresses.next();
-		} else {
-			return "";
+		if(this.authorEmail == null){
+            User author = this.issue.repo().github().users().get(this.authorLogin());
+		    Iterator<String> addresses = author.emails().iterate().iterator();
+		    if(addresses.hasNext()) {
+			    this.authorEmail = addresses.next();
+	        } else {
+			    this.authorEmail = "";
+		    }
 		}
+		return this.authorEmail;
 	}
 
     public JsonObject authorOrgMembership() throws IOException {
-    	JsonObject repo = this.repo();
+    	JsonObject repo = this.repo().json();
     	if(repo.getJsonObject("owner").getString("type").equalsIgnoreCase("organization")) {
             Request req = this.issue.repo().github().entry()
                 .uri().path("/orgs/").path(
@@ -122,41 +155,15 @@ public abstract class Command {
     }
 
     /**
-     * Returns the json representation of the repo in which this command was given.
+     * Returns the commanded repository.
      * The result is <b>cached</b> and so the http call to Github API is performed only at the first call.
      * @return
      */
-    public JsonObject repo() throws IOException {
-    	if(this.repo != null) {
-    		return this.repo;
+    public CommandedRepo repo() throws IOException {
+    	if(this.crepo == null) {
+    		this.crepo = new CommandedRepo(this.issue().repo());
     	}
-    	this.repo = this.issue.repo().json();
-    	return this.repo;
+    	return this.crepo;
     }
 
-    /**
-     * Returns true if the repository has a gh-pages branch, false otherwise.
-     * The result is <b>cached</b> and so the http call to Github API is performed only at the first call.
-     * @return true if there is a gh-pages branch, false otherwise.
-     */
-    public boolean hasGhPagesBranch() throws IOException {
-    	try {
-    	    if(this.ghPagesBranch != null) {
-    	        String branchesUrlPattern = this.repo().getString("branches_url");
-        	    String ghPagesUrl = branchesUrlPattern.substring(0, branchesUrlPattern.indexOf("{")) + "/gh-pages";
-        	    Request req = new ApacheRequest(ghPagesUrl);
-        	    this.ghPagesBranch = req.fetch().as(RestResponse.class)
-    		        .assertStatus(
-    		            Matchers.isOneOf(
-    		                HttpURLConnection.HTTP_OK,
-    		                HttpURLConnection.HTTP_NOT_FOUND
-    		            )
-    		        ).status() == HttpURLConnection.HTTP_OK;
-        	    return this.ghPagesBranch;
-    	    }
-    	    return this.ghPagesBranch;
-    	} catch (AssertionError aerr) {
-    		throw new IOException ("Unexpected HTTP status response.", aerr);
-    	}
-    }
 }

@@ -44,7 +44,7 @@ public class EnglishTestCase {
 	 * A 'hello' command is understood.
 	 */
 	@Test
-    public void recognizesHelloCommands() {
+    public void recognizesHelloCommands() throws Exception {
     	Command hello1 = this.mockCommand("@charlesmike, hello there!");
     	Command hello2 = this.mockCommand("@charlesmike, hello?!");
     	Command hello3 = this.mockCommand("@charlesmike hi");
@@ -63,7 +63,7 @@ public class EnglishTestCase {
 	 * A 'indexsite' command is understood.
 	 */
 	@Test
-	public void recognizezIndexSiteCommands() {
+	public void recognizezIndexSiteCommands() throws Exception{
 		Command index1 = this.mockCommand("@charlesmike, please index!");
     	Command index2 = this.mockCommand("@charlesmike, index pls");
     	Command index3 = this.mockCommand("@charlesmike index...");
@@ -82,7 +82,7 @@ public class EnglishTestCase {
 	 * A 'indexpage' command is understood.
 	 */
 	@Test
-	public void recognizesIndexPageCommands() {
+	public void recognizesIndexPageCommands() throws Exception{
 		Command indexPage1 = this.mockCommand("@charlesmike, please index [this](http://www.amihaiemil.com) page");
     	Command indexPage2 = this.mockCommand("@charlesmike index [this] (test.com) page!");
     	Command indexPage3 = this.mockCommand("@charlesmike, pls index [this] (eva.amihaiemil.com) page!!!");
@@ -101,7 +101,7 @@ public class EnglishTestCase {
 	 * A command can be categorized as unknown.
 	 */
 	@Test
-	public void unknownCommands() {
+	public void unknownCommands() throws Exception{
 		Command unknown1 = this.mockCommand("@charlesmike I don't think you understand");
     	Command unknown2 = this.mockCommand("@charlesmike Why don't you respond?");
     	Command unknown3 = this.mockCommand("@charlesmike how many languages do you speak?");
@@ -126,7 +126,7 @@ public class EnglishTestCase {
      * Mock a command.
      * @return The created Command.
      */
-    public Command mockCommand(String message) {
+    public Command mockCommand(String message) throws Exception{
     	JsonObject body = Json.createObjectBuilder().add("body", message).build();
     	Command com = Mockito.mock(Command.class);
     	Mockito.when(com.json()).thenReturn(body);

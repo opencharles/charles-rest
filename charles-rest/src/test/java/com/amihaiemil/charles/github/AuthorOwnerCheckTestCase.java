@@ -92,7 +92,9 @@ public class AuthorOwnerCheckTestCase {
 		    ).build();
 		Command command = Mockito.mock(Command.class);
 		Mockito.when(command.authorLogin()).thenReturn(author);
-		Mockito.when(command.repo()).thenReturn(repoJson);
+		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+		Mockito.when(crepo.json()).thenReturn(repoJson);
+		Mockito.when(command.repo()).thenReturn(crepo);
 		return command;
 	}
 	

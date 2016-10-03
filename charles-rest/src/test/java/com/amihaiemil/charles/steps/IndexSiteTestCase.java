@@ -61,6 +61,11 @@ public class IndexSiteTestCase {
 		WebCrawl crawl = Mockito.mock(WebCrawl.class);
 		Mockito.doThrow(new DataExportException("Expected exception; it's ok")).when(crawl).crawl();
     	IndexSite is = new IndexSite(crawl, Mockito.mock(Logger.class));
-    	assertFalse(is.perform());
+    	try {
+    	    is.perform();
+    	    fail("Expected ISE here, but it was not thrown!");
+    	} catch (IllegalStateException ex){
+	    	assertTrue(ex.getMessage().equals("Exception while indexing the website"));
+    	}
     }
 }

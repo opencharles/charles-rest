@@ -24,6 +24,7 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
 
 /**
  * The Github agent speaks English.
@@ -39,7 +40,7 @@ public class English extends Language {
 	}
 
 	@Override
-	public CommandCategory categorize(Command com) {
+	public CommandCategory categorize(Command com) throws IOException {
 		return super.categorize(com);
 	}
 

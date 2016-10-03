@@ -25,7 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -61,7 +60,7 @@ public class StepsTestCase {
     	Step s = Mockito.mock(Step.class);
     	Mockito.when(s.perform()).thenReturn(true);
 
-    	Steps steps = new Steps(s, Mockito.mock(SendReply.class));
+    	Steps steps = new Steps(s, Mockito.mock(SendReply.class), Mockito.mock(Logger.class));
     	assertTrue(steps.perform());
     }
 	
@@ -76,10 +75,10 @@ public class StepsTestCase {
     	SendReply sr = new SendReply(rep, Mockito.mock(Logger.class));
 
     	Step s = Mockito.mock(Step.class);
-    	Mockito.when(s.perform()).thenReturn(false);
+    	Mockito.when(s.perform()).thenThrow(new IllegalStateException("for test"));
 
-    	Steps steps = new Steps(s, sr);
-    	assertFalse(steps.perform());
+    	Steps steps = new Steps(s, sr, Mockito.mock(Logger.class));
+    	assertTrue(steps.perform());
 
     	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(comments.size() == 1);

@@ -58,17 +58,17 @@ public class SendReply implements Step {
 		this.logger = logger;
 	}
 	
-	@Override
-	public boolean perform() {
-		try {
-			logger.info("Sending comment...");
-			rep.send();
-			logger.info("Comment sent successfully!");
-		} catch (IOException e) {
-			logger.error("Error when sending the reply: " + e.getMessage(), e);
-			return false;
-		}
+    @Override
+    public boolean perform() {
+        try {
+            logger.info("Sending comment...");
+            rep.send();
+            logger.info("Comment sent successfully!");
+        } catch (IOException e) {
+            logger.error("IOException when sending the reply!", e);
+            throw new IllegalStateException("IOException when sending the reply!" , e);
+        }
 		return true;
-	}
+    }
 
 }

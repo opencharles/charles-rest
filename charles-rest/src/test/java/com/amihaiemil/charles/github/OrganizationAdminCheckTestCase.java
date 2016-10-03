@@ -26,13 +26,15 @@ package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
+
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-import com.jcabi.github.Repo;
 
 /**
  * Unit tests for {@link OrganizationAdminCheck}
@@ -110,7 +112,10 @@ public class OrganizationAdminCheckTestCase {
 			.build();
 		Command command = Mockito.mock(Command.class);
 		Mockito.when(command.authorLogin()).thenReturn(author);
-		Mockito.when(command.repo()).thenReturn(repoJson);
+		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(repoJson);
+        
+		Mockito.when(command.repo()).thenReturn(crepo);
 		return command;
 	}
 	

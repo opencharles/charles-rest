@@ -139,14 +139,11 @@ public class NotificationsResource {
 		        ).entry().through(RetryWire.class)
 	        );
 		    try {
-		        String agentLogin = gh.users().self().login();
 		        for(Notification notification : notifications) {
 		            new Action(
 		                gh.repos().get(
 					        new Coordinates.Simple(notification.getRepoFullName())
-					    ).issues().get(notification.getIssueNumber()),
-				 	    agentLogin
-		            ).take();
+					    ).issues().get(notification.getIssueNumber())		            ).take();
 		        }
 		        LOG.info("Started " + notifications.size() + " actions, to handle each notification!");
 		        return true;

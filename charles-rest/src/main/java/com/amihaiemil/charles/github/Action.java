@@ -58,11 +58,6 @@ public class Action implements Runnable {
 	private Issue issue;
 
 	/**
-	 * Github agent login;
-	 */
-	private String agentLogin;
-	
-	/**
 	 * Brain of the github agent.
 	 */
 	private Brain br;	
@@ -78,10 +73,9 @@ public class Action implements Runnable {
      * @param agentLogin - the Github agent's login (which is the same for all actions), to save http calls.
      * @throws IOException If the file appender cannot be instantiated.
      */
-    public Action(Issue issue, String agentLogin) throws IOException {
+    public Action(Issue issue) throws IOException {
         this.tr = new Thread(this, "Action_" + UUID.randomUUID().toString());
         this.issue = issue;
-        this.agentLogin = agentLogin;
         this.setupLog4jForAction();
         this.logs = new LogsOnServer(
             System.getProperty("charles.rest.logs.endpoint"), this.tr.getName() + ".log"
@@ -95,7 +89,7 @@ public class Action implements Runnable {
 		ValidCommand command;
 		try {
 			logger.info("Started action " + this.tr.getName());
-			LastComment lc = new LastComment(issue, agentLogin);
+			LastComment lc = new LastComment(issue);
 			command = new ValidCommand(lc);
 			String commandBody = command.json().getString("body");
 			logger.info("Received command: " + commandBody);
@@ -107,9 +101,9 @@ public class Action implements Runnable {
 				logger.error("Some steps did not execute successfully! Check above for details.");
 			}
 		} catch (IllegalArgumentException e) {
-			logger.info("No command found in the issue or the agent has already replied to the last command!");
-		} catch (IOException e) {
-			logger.error("Action failed with IOException: ",  e);
+			logger.warn("No command found in the issue or the agent has already replied to the last command!");
+		} catch (IOException | IllegalStateException e) {
+			logger.error("Action failed with exception: ",  e);
 	        this.sendReply(
 				new ErrorReply(logs.address(), this.issue)
 			);
@@ -153,7 +147,7 @@ public class Action implements Runnable {
 		logFile.getParentFile().mkdirs();
 		logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
 
-		FileAppender fa = new FileAppender(new PatternLayout("%d %c{1} - %m%n"), logFilePath);
+		FileAppender fa = new FileAppender(new PatternLayout("%d %p - %m%n"), logFilePath);
 		fa.setName(this.tr.getName() + "_appender");
 		fa.setThreshold(Level.DEBUG);
 		log4jLogger.addAppender(fa);

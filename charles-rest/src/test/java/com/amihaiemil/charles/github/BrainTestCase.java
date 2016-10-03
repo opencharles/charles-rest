@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.GraphCrawl;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -150,6 +151,11 @@ public class BrainTestCase {
      	Mockito.when(com.json()).thenReturn(c.json());
      	Mockito.when(com.issue()).thenReturn(issue);
      	
+     	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+		Mockito.when(crepo.json()).thenReturn(issue.repo().json());
+     	
+     	Mockito.when(com.repo()).thenReturn(crepo);
+
      	return com;
     }
 }

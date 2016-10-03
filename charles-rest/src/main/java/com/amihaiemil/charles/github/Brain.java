@@ -29,8 +29,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import javax.json.JsonObject;
+
 import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -125,7 +126,8 @@ public class Brain {
     	             ), this.logsLoc
     	         ),
     	         this.logger
-    	     )
+    	     ),
+    	     this.logger
     	 );
     }
 
@@ -135,13 +137,14 @@ public class Brain {
      * @param logger Logger to use.
      * @return CommandCategory, which defaults to unknown command and
      *  first language in the agent's languages list (this.languages)
+     * @throws IOException 
      */
-    private CommandCategory categorizeCommand(Command com) {
+    private CommandCategory categorizeCommand(Command com) throws IOException {
         CommandCategory category = new CommandCategory("unknown", languages.get(0));
    	    for(Language l : languages) {
    		    category = l.categorize(com);
    		    if(category.isUnderstood()) {
-   		    	this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
+   		    	this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getSimpleName());
    			    break;
    		    }
    	    }
@@ -157,8 +160,6 @@ public class Brain {
      */
     private Step indexSteps(Command com, CommandCategory category, boolean singlePage
         ) throws IOException {
-		JsonObject repo = com.issue().repo().json();
-
         FollowupSteps followup = new FollowupSteps.FollowupStepsBuilder()
         .starRepo(new StarRepo(com.issue().repo(), this.logger))
         .confirmationReply(
@@ -167,7 +168,7 @@ public class Brain {
         		    com,
         			String.format(
         			    category.language().response("index.finished.comment"),
-        				com.authorLogin(), repo.getString("name"), "%s"
+        				com.authorLogin(), com.repo().json().getString("name"), "%s"
                     ),
                     this.logsLoc
                 ), this.logger
@@ -176,20 +177,20 @@ public class Brain {
 	    .build();
 		
         IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder indexWithPreconditions = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
-    		    com, repo, category.language(), this.logger, this.logsLoc
+    		    com, com.repo().json(), category.language(), this.logger, this.logsLoc
     		)
-    		.repoForkCheck(new RepoForkCheck(repo, this.logger))
+    		.repoForkCheck(new RepoForkCheck(com.repo().json(), this.logger))
     		.authorOwnerCheck(new AuthorOwnerCheck(com, this.logger))
     		.orgAdminCheck(new OrganizationAdminCheck(com, this.logger))
-    		.repoNameCheck(new RepoNameCheck(repo, this.logger))
-    		.ghPagesBranchCheck(new GhPagesBranchCheck(repo, this.logger))
-    		.indexSteps(new IndexSteps(com, repo, followup, this.logger, singlePage));
+    		.repoNameCheck(new RepoNameCheck(com.repo().json(), this.logger))
+    		.ghPagesBranchCheck(new GhPagesBranchCheck(com, this.logger))
+    		.indexSteps(new IndexSteps(com, com.repo().json(), followup, this.logger, singlePage));
         
         if(singlePage) { //if it's an index-page command add the precondition that the page link should belong to the repo
         	String comment = com.json().getString("body");
         	indexWithPreconditions.pageOnGithubCheck(
         	    new PageHostedOnGithubCheck(
-        	        repo,
+        	    	com,
         	        comment.substring(comment.indexOf('('), comment.indexOf(')')),
         	        this.logger
         	    )

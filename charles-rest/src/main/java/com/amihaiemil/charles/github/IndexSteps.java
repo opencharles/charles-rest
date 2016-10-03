@@ -87,7 +87,7 @@ public class IndexSteps implements Step {
      * Perform the step.
      */
     @Override
-    public boolean perform() {    	
+    public boolean perform() {
         if(this.indexStep(this.com).perform()) {
             return followup.perform();
         }
