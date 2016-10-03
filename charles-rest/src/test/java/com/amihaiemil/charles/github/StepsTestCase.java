@@ -60,7 +60,7 @@ public class StepsTestCase {
     	Step s = Mockito.mock(Step.class);
     	Mockito.when(s.perform()).thenReturn(true);
 
-    	Steps steps = new Steps(s, Mockito.mock(SendReply.class));
+    	Steps steps = new Steps(s, Mockito.mock(SendReply.class), Mockito.mock(Logger.class));
     	assertTrue(steps.perform());
     }
 	
@@ -77,7 +77,7 @@ public class StepsTestCase {
     	Step s = Mockito.mock(Step.class);
     	Mockito.when(s.perform()).thenThrow(new IllegalStateException("for test"));
 
-    	Steps steps = new Steps(s, sr);
+    	Steps steps = new Steps(s, sr, Mockito.mock(Logger.class));
     	assertTrue(steps.perform());
 
     	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());

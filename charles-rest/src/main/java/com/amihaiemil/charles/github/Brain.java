@@ -126,7 +126,8 @@ public class Brain {
     	             ), this.logsLoc
     	         ),
     	         this.logger
-    	     )
+    	     ),
+    	     this.logger
     	 );
     }
 
@@ -143,7 +144,7 @@ public class Brain {
    	    for(Language l : languages) {
    		    category = l.categorize(com);
    		    if(category.isUnderstood()) {
-   		    	this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getName());
+   		    	this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getSimpleName());
    			    break;
    		    }
    	    }

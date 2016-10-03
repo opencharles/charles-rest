@@ -101,9 +101,9 @@ public class Action implements Runnable {
 				logger.error("Some steps did not execute successfully! Check above for details.");
 			}
 		} catch (IllegalArgumentException e) {
-			logger.info("No command found in the issue or the agent has already replied to the last command!");
+			logger.warn("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException | IllegalStateException e) {
-			logger.error("Action failed with IOException: ",  e);
+			logger.error("Action failed with exception: ",  e);
 	        this.sendReply(
 				new ErrorReply(logs.address(), this.issue)
 			);
@@ -147,7 +147,7 @@ public class Action implements Runnable {
 		logFile.getParentFile().mkdirs();
 		logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
 
-		FileAppender fa = new FileAppender(new PatternLayout("%d - %m%n"), logFilePath);
+		FileAppender fa = new FileAppender(new PatternLayout("%d %p - %m%n"), logFilePath);
 		fa.setName(this.tr.getName() + "_appender");
 		fa.setThreshold(Level.DEBUG);
 		log4jLogger.addAppender(fa);
