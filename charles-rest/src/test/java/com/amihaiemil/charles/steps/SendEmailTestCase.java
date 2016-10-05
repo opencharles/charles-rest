@@ -9,6 +9,7 @@ import javax.mail.internet.MimeMessage;
 
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
@@ -59,7 +60,7 @@ public class SendEmailTestCase {
         );
 
         try {
-            assertTrue(se.perform());
+            se.perform();
             final MimeMessage[] messages = server.getReceivedMessages();
             assertTrue(messages.length == 1);
             for (final Message msg : messages) {
@@ -90,7 +91,7 @@ public class SendEmailTestCase {
         SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
 
         try {
-            assertTrue(se.perform());
+            se.perform();
             final MimeMessage[] messages = server.getReceivedMessages();
             assertTrue(messages.length == 1);
             for (final Message msg : messages) {
@@ -106,10 +107,10 @@ public class SendEmailTestCase {
      * SendEmail does not send any email if username and/or password are not specified.
      * @throws Exception If something goes wrong.
      */
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void uninitializedPostman() {
         SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
-        assertFalse(se.perform());
+        se.perform();
     }
 
     /**

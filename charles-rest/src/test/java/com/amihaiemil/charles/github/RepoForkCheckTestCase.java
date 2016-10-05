@@ -27,12 +27,10 @@ package com.amihaiemil.charles.github;
 
 import javax.json.Json;
 import javax.json.JsonObject;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
-import static org.junit.Assert.*;
+import com.amihaiemil.charles.steps.Step;
 
 /**
  * Unit tests for {@link RepoForkCheck}
@@ -49,8 +47,16 @@ public class RepoForkCheckTestCase {
     @Test
 	public void recognizesFork() {
         JsonObject repo = Json.createObjectBuilder().add("fork", true).build();
-        RepoForkCheck rfc = new RepoForkCheck(repo, Mockito.mock(Logger.class));
-        assertFalse(rfc.perform());
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onTrue).perform();
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+
+        
+        RepoForkCheck rfc = new RepoForkCheck(
+            repo, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        rfc.perform();
     }
     
     /**
@@ -59,7 +65,14 @@ public class RepoForkCheckTestCase {
     @Test
 	public void recognizesNotFork() {
         JsonObject repo = Json.createObjectBuilder().add("fork", false).build();
-        RepoForkCheck rfc = new RepoForkCheck(repo, Mockito.mock(Logger.class));
-        assertTrue(rfc.perform());
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onFalse).perform();
+
+        RepoForkCheck rfc = new RepoForkCheck(
+            repo, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        rfc.perform();
     }
 }

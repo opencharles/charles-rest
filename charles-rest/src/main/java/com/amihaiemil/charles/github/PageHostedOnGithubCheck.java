@@ -28,6 +28,8 @@ import java.io.IOException;
 
 import javax.json.JsonObject;
 import org.slf4j.Logger;
+
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -37,7 +39,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class PageHostedOnGithubCheck implements Step {
+public class PageHostedOnGithubCheck extends PreconditionCheckStep {
 
 	/**
 	 * Command.
@@ -56,18 +58,43 @@ public class PageHostedOnGithubCheck implements Step {
 	
 	/**
 	 * Ctor
-	 * @param repo Json repo.
+	 * @param com Command.
 	 * @param link Page link.
 	 * @param logger Logger.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
 	 */
-	public PageHostedOnGithubCheck(Command com, String link, Logger logger) {
+	public PageHostedOnGithubCheck(
+	    Command com, Logger logger,
+	    Step onTrue, Step onFalse
+	) {
+		super(onTrue, onFalse);
+		this.com = com;
+		String comment = com.json().getString("body");
+		this.link = comment.substring(comment.indexOf('('), comment.indexOf(')'));
+		this.logger = logger;
+	}
+	
+	/**
+	 * Ctor (for ease of unit testing)
+	 * @param com Command.
+	 * @param link Page link.
+	 * @param logger Logger.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
+	 */
+	public PageHostedOnGithubCheck(
+	    Command com, String link, Logger logger,
+	    Step onTrue, Step onFalse
+	) {
+		super(onTrue, onFalse);
 		this.com = com;
 		this.link = link;
 		this.logger = logger;
 	}
 
 	@Override
-	public boolean perform() {
+	public void perform() {
 		try {
 		    JsonObject repo = com.repo().json();
 		    String owner = repo.getJsonObject("owner").getString("login");
@@ -84,9 +111,12 @@ public class PageHostedOnGithubCheck implements Step {
 		    }
 		    boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
 		    if(!passed) {
-			    logger.warn("The given webpage is not part of this repository!");
+			    logger.warn("The given webpage is NOT part of this repository!");
+			    this.onFalse().perform();
+		    } else {
+			    logger.info("The given webpage is part of this repository - Ok!");
+		        this.onTrue().perform();
 		    }
-            return passed;
 		} catch (IOException ex) {
             logger.error("IOException when calling the Github API", ex);
             throw new IllegalStateException("IOException when calling the Github API", ex);

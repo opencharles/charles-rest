@@ -22,60 +22,53 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package com.amihaiemil.charles.github;
-
-import java.io.IOException;
-
-import org.slf4j.Logger;
-
-import com.amihaiemil.charles.steps.IntermediaryStep;
-import com.amihaiemil.charles.steps.Step;
+package com.amihaiemil.charles.steps;
 
 /**
- * Step where the agent sends a text reply.
+ * A step which validates a condition and splits the path
+ * in two. One in case the condition is met, one in case the
+ * condition is not met.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class SendReply extends IntermediaryStep {
+public abstract class PreconditionCheckStep implements Step {
+    /**
+     * Next step if the check is true.
+     */
+    private Step onTrue;
 
     /**
-     * Reply to send.
+     * Next step if the check is false.
      */
-    private Reply rep;
+    private Step onFalse;
 
     /**
-     * Logger of the action.
-     */
-    private Logger logger;
-
-    /**
-     * Constructor
-     * @param rep The reply to be sent.
-     * @param logger Action's logger.
-     * @param next The next step to perform.
-     */
-    public SendReply(
-        Reply rep, Logger logger, Step next
-    ) { 
-    	super(next);
-        this.rep = rep;
-        this.logger = logger;
+	 * Ctor
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
+	 */
+    public PreconditionCheckStep(Step onTrue, Step onFalse) {
+    	this.onTrue = onTrue;
+    	this.onFalse = onFalse;
     }
+
+	public abstract void perform();
 	
-    @Override
-    public void perform() {
-        try {
-            logger.info("Sending comment...");
-            rep.send();
-            logger.info("Comment sent successfully!");
-        } catch (IOException e) {
-            logger.error("IOException when sending the reply!", e);
-            throw new IllegalStateException("IOException when sending the reply!" , e);
-        }
-        this.next().perform();
-    }
-
+	/**
+	 * Step to perform on successful check
+	 * @return Step
+	 */
+	public Step onTrue() {
+		return this.onTrue;
+	}
+	
+	/**
+	 * Step to perform on failed check.
+	 * @return Step
+	 */
+	public Step onFalse() {
+		return this.onFalse;
+	}
 }

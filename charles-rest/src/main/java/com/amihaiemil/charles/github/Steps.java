@@ -25,8 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -37,11 +35,6 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class Steps implements Step {
 
-	/**
-	 * Action's logger.
-	 */
-	private Logger logger;
-	
     /**
      * Steps to be performed.
      */
@@ -56,12 +49,10 @@ public class Steps implements Step {
 	 * Constructor.
 	 * @param steps Given steps.
 	 * @param fm failure message in case any step fails.
-	 * @param logger Logger of the action that executes there steps.
 	 */
-	public Steps(Step steps, SendReply fm, Logger logger) {
+	public Steps(Step steps, SendReply fm) {
     	this.steps = steps;
     	this.failureMessage = fm;
-    	this.logger = logger;
     }
 
     /**
@@ -76,14 +67,12 @@ public class Steps implements Step {
      * Perform all the given steps.
      */
     @Override
-    public boolean perform() {
+    public void perform() {
         try {
             this.steps.perform();
         } catch (IllegalStateException ex) {
-        	logger.error("Some step didn't execute properly...", ex);
             this.failureMessage.perform();
         }
-         return true;
     }
 
 }

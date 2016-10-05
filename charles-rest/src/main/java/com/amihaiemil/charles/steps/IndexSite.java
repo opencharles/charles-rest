@@ -37,7 +37,7 @@ import com.amihaiemil.charles.WebCrawl;
  * @since 1.0.0
  *
  */
-public class IndexSite implements Step {
+public class IndexSite extends IntermediaryStep {
 
 	/**
 	 * Action's logger.
@@ -51,22 +51,27 @@ public class IndexSite implements Step {
 
     /**
      * Constructor.
-     * @param url The website's url.
+     * @param crawl The web crawl to fetch the website content
+     * @param logger The action's logger
+     * @param next The next step to take
      */
-    public IndexSite(WebCrawl crawl, Logger logger) {
+    public IndexSite(
+        WebCrawl crawl, Logger logger, Step next
+    ) {
+    	super(next);
         this.logger = logger;
         this.siteCrawl = crawl;
     }
 
 	@Override
-	public boolean perform() {
+	public void perform() {
         try {
             this.siteCrawl.crawl();
         } catch (DataExportException e) {
             logger.error("Exception while indexing the website!", e);
             throw new IllegalStateException("Exception while indexing the website", e);
         }
-		return true;
+        this.next().perform();
 	}
 
 }

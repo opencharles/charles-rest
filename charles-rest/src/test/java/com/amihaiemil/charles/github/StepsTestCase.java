@@ -52,33 +52,35 @@ import com.jcabi.github.mock.MkGithub;
  * @since 1.0.0
  */
 public class StepsTestCase {
+
 	/**
-	 * Steps can perform 1 single step.
+	 * Steps can perform without throwing exceptions.
 	 */
 	@Test
     public void stepsPerformOk() {
-    	Step s = Mockito.mock(Step.class);
-    	Mockito.when(s.perform()).thenReturn(true);
-
-    	Steps steps = new Steps(s, Mockito.mock(SendReply.class), Mockito.mock(Logger.class));
-    	assertTrue(steps.perform());
+    	Steps steps = new Steps(Mockito.mock(Step.class), Mockito.mock(SendReply.class));
+    	steps.perform();
     }
 	
 	/**
-	 * Steps can perform more steps.
+	 * Steps' execution fail and the failure comment is sent.
 	 * @throws Exception if something goes wrong.
 	 */
 	@Test
     public void stepsFail() throws Exception {
-		Command com = this.mockCommand();
-    	Reply rep = new TextReply(com, "Error whene executig steps!");
-    	SendReply sr = new SendReply(rep, Mockito.mock(Logger.class));
+	    Command com = this.mockCommand();
+        Reply rep = new TextReply(com, "Error whene executig steps!");
+        SendReply sr = new SendReply(
+            rep, Mockito.mock(Logger.class),
+            Mockito.mock(Step.class)
+        );
 
-    	Step s = Mockito.mock(Step.class);
-    	Mockito.when(s.perform()).thenThrow(new IllegalStateException("for test"));
+        Step s = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("for test"))
+    	    .when(s).perform();
 
-    	Steps steps = new Steps(s, sr, Mockito.mock(Logger.class));
-    	assertTrue(steps.perform());
+    	Steps steps = new Steps(s, sr);
+    	steps.perform();
 
     	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
     	assertTrue(comments.size() == 1);
@@ -94,7 +96,7 @@ public class StepsTestCase {
      * @return The created Command.
      * @throws IOException If something goes wrong.
      */
-    public Command mockCommand() throws IOException {
+    private Command mockCommand() throws IOException {
     	Github gh = new MkGithub("amihaiemil");
     	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
     	gh.repos().create(repoCreate);

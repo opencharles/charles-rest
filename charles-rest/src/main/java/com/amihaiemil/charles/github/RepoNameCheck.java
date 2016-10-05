@@ -29,6 +29,7 @@ import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -38,7 +39,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class RepoNameCheck implements Step{
+public class RepoNameCheck extends PreconditionCheckStep {
 
     /**
      * Json repository as returned by the Github API.
@@ -50,16 +51,7 @@ public class RepoNameCheck implements Step{
      */
     private Logger logger;
 
-    /**
-     * Next step if the check is true.
-     */
-    private Step onTrue;
-    
-    /**
-     * Next step if the check is false.
-     */
-    private Step onFalse;
-    
+
     /**
      * Constructor.
      * @param repo Json repo.
@@ -68,10 +60,9 @@ public class RepoNameCheck implements Step{
      * @param onFalse Step that should be performed next if the check is false.
      */
     public RepoNameCheck(JsonObject repo, Logger logger, Step onTrue, Step onFalse) {
-        this.repo = repo;
+        super(onTrue, onFalse);
+    	this.repo = repo;
         this.logger = logger;
-        this.onTrue = onTrue;
-        this.onFalse = onFalse;
     }
 
     /**
@@ -88,10 +79,10 @@ public class RepoNameCheck implements Step{
         logger.info("Actual name: " + name);
         if(expectedName.equals(name)) {
             logger.info("Repository name matchers - Ok");
-            onTrue.perform();
+            this.onTrue().perform();
         } else {
             logger.warn("Repository name does not match the expected name");
-            onFalse.perform();
+            this.onFalse().perform();
         }
     }
 }

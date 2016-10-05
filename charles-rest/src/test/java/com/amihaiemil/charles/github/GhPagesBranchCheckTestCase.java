@@ -25,12 +25,11 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+
+import com.amihaiemil.charles.steps.Step;
 
 /**
  * Unit tests for {@link GhPagesBranchCheck}
@@ -50,10 +49,16 @@ public class GhPagesBranchCheckTestCase {
 		Command com = Mockito.mock(Command.class);
         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(true);
-        
-		Mockito.when(com.repo()).thenReturn(crepo);
-        GhPagesBranchCheck gpc = new GhPagesBranchCheck(com, Mockito.mock(Logger.class));
-        assertTrue(gpc.perform());
+        Mockito.when(com.repo()).thenReturn(crepo);
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+
+        GhPagesBranchCheck gpc = new GhPagesBranchCheck(
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        gpc.perform();
 	}
 
 	/**
@@ -66,9 +71,15 @@ public class GhPagesBranchCheckTestCase {
 		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(false);
         Mockito.when(com.repo()).thenReturn(crepo);
-		
-		GhPagesBranchCheck gpc = new GhPagesBranchCheck(com, Mockito.mock(Logger.class));
-        assertFalse(gpc.perform());
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onFalse).perform();
+
+		GhPagesBranchCheck gpc = new GhPagesBranchCheck(
+		    com, Mockito.mock(Logger.class), onTrue, onFalse
+		);
+        gpc.perform();
 	}
 
 }

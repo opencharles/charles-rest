@@ -22,60 +22,38 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package com.amihaiemil.charles.github;
-
-import java.io.IOException;
-
-import org.slf4j.Logger;
-
-import com.amihaiemil.charles.steps.IntermediaryStep;
-import com.amihaiemil.charles.steps.Step;
+package com.amihaiemil.charles.steps;
 
 /**
- * Step where the agent sends a text reply.
+ * A step that is not final in the chain of steps
+ * performed by an action; it has a next step. 
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class SendReply extends IntermediaryStep {
+public abstract class IntermediaryStep implements Step {
+
+	/**
+	 * Next step in line.
+	 */
+    private Step nextStep;
 
     /**
-     * Reply to send.
-     */
-    private Reply rep;
-
-    /**
-     * Logger of the action.
-     */
-    private Logger logger;
-
-    /**
-     * Constructor
-     * @param rep The reply to be sent.
-     * @param logger Action's logger.
+     * Ctor.
      * @param next The next step to perform.
      */
-    public SendReply(
-        Reply rep, Logger logger, Step next
-    ) { 
-    	super(next);
-        this.rep = rep;
-        this.logger = logger;
-    }
-	
-    @Override
-    public void perform() {
-        try {
-            logger.info("Sending comment...");
-            rep.send();
-            logger.info("Comment sent successfully!");
-        } catch (IOException e) {
-            logger.error("IOException when sending the reply!", e);
-            throw new IllegalStateException("IOException when sending the reply!" , e);
-        }
-        this.next().perform();
-    }
+    public IntermediaryStep(Step next) {
+		this.nextStep = next;
+	}
 
+	public abstract void perform();
+
+	/**
+	 * Get the next step to perform.
+	 * @return Step.
+	 */
+    public Step next() {
+    	return this.nextStep;
+    }
 }

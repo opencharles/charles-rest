@@ -32,6 +32,12 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.GraphCrawl;
+import com.amihaiemil.charles.IgnoredPatterns;
+import com.amihaiemil.charles.WebCrawl;
+import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.steps.IndexSite;
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -94,15 +100,16 @@ public class Brain {
     	 	case "hello":
     	 		String hello = String.format(category.language().response("hello.comment"), authorLogin);
     	 		steps = new SendReply(
-    	 				new TextReply(com, hello),
-    	 				logger
-    	 	    );
+    	 				    new TextReply(com, hello),
+    	 				    this.logger,
+    	 				    new Step.FinalStep(this.logger)
+    	 	            );
     	 		break;
     	 	case "indexsite":
-    	 		steps = this.indexSteps(com, category, false);
+    	 		steps = this.stepsForIndex(com, category.language(), false);
     	 		break;
     	 	case "indexpage":
-    	 		steps = this.indexSteps(com, category, true);
+    	 		steps = this.stepsForIndex(com, category.language(), true);
     	 		break;
     	 	default:
     	 		logger.info("Unknwon command!");
@@ -110,9 +117,10 @@ public class Brain {
     	 			category.language().response("unknown.comment"),
     	 			authorLogin);
     	 		steps = new SendReply(
-            	 		new TextReply(com, unknown),
-            	 		this.logger
-            	);
+            	            new TextReply(com, unknown),
+            	            this.logger,
+            	            new Step.FinalStep(this.logger)
+            	        );
     	 		break;
 		 }
     	 return new Steps(
@@ -125,9 +133,12 @@ public class Brain {
     	                 com.authorLogin(), "%s"
     	             ), this.logsLoc
     	         ),
-    	         this.logger
-    	     ),
-    	     this.logger
+    	         this.logger,
+    	         new Step.FinalStep(
+    	             this.logger,
+    	             "[ERROR] Some step didn't execute properly."
+    	         )
+    	     )
     	 );
     }
 
@@ -150,53 +161,150 @@ public class Brain {
    	    }
    	    return category;
     }
-    
+
     /**
-     * Build the list of steps that need to be taken when receiving an index command.
+     * Build and return the steps tree for an index command
      * @param com Received Command, 
-     * @param category Command category, containing language and type.
+     * @param lang Spoken language.
+     * @param singlePage is it an index-page or an index-site command?
      * @return Steps that have to be followed to fulfill an index command.
      * @throws IOException If something goes wrong.
      */
-    private Step indexSteps(Command com, CommandCategory category, boolean singlePage
-        ) throws IOException {
-        FollowupSteps followup = new FollowupSteps.FollowupStepsBuilder()
-        .starRepo(new StarRepo(com.issue().repo(), this.logger))
-        .confirmationReply(
-            new SendReply(
-                new TextReply(
-        		    com,
-        			String.format(
-        			    category.language().response("index.finished.comment"),
-        				com.authorLogin(), com.repo().json().getString("name"), "%s"
-                    ),
-                    this.logsLoc
-                ), this.logger
-            )		
-	    )
-	    .build();
-		
-        IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder indexWithPreconditions = new IndexWithPreconditionCheck.IndexWithPreconditionCheckBuilder(
-    		    com, com.repo().json(), category.language(), this.logger, this.logsLoc
-    		)
-    		.repoForkCheck(new RepoForkCheck(com.repo().json(), this.logger))
-    		.authorOwnerCheck(new AuthorOwnerCheck(com, this.logger))
-    		.orgAdminCheck(new OrganizationAdminCheck(com, this.logger))
-    		.repoNameCheck(new RepoNameCheck(com.repo().json(), this.logger))
-    		.ghPagesBranchCheck(new GhPagesBranchCheck(com, this.logger))
-    		.indexSteps(new IndexSteps(com, com.repo().json(), followup, this.logger, singlePage));
-        
-        if(singlePage) { //if it's an index-page command add the precondition that the page link should belong to the repo
-        	String comment = com.json().getString("body");
-        	indexWithPreconditions.pageOnGithubCheck(
-        	    new PageHostedOnGithubCheck(
-        	    	com,
-        	        comment.substring(comment.indexOf('('), comment.indexOf(')')),
-        	        this.logger
-        	    )
-        	);
+    private Step stepsForIndex(Command com, Language lang, boolean singlePage) throws IOException {
+        PreconditionCheckStep repoForkCheck;
+        if(!singlePage) {
+        	repoForkCheck = new RepoForkCheck(
+                com.repo().json(), this.logger,
+                this.indexSiteStep(com, lang),
+                this.denialReplyStep(com, lang, "denied.fork.comment")
+            );
+        } else {
+        	repoForkCheck = new RepoForkCheck(
+                com.repo().json(), this.logger,
+                new PageHostedOnGithubCheck(
+                    com, this.logger,
+                    this.indexPageStep(com, lang),
+                    this.denialReplyStep(com, lang, "denied.badlink.comment")
+                ),
+                this.denialReplyStep(com, lang, "denied.fork.comment")
+            );
         }
-        
-		return indexWithPreconditions.build();
-     }
+        PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
+            com, this.logger,
+            repoForkCheck,
+            new OrganizationAdminCheck(
+                com, this.logger,
+                repoForkCheck,
+                this.denialReplyStep(com, lang, "denied.commander.comment")
+            )
+        );
+    	PreconditionCheckStep repoNameCheck = new RepoNameCheck(
+            com.repo().json(), this.logger, authorOwnerCheck,
+            new GhPagesBranchCheck(
+                com, this.logger, authorOwnerCheck,
+                this.denialReplyStep(com, lang, "denied.name.comment")
+            )
+        );        
+		return repoNameCheck;
+    }
+
+    /**
+     * Builds the reply to send to a command that did not 
+     * pass a precondition.
+     * @return SendReply step.
+     */
+    private SendReply denialReplyStep(
+        Command com, Language lang, String messagekey
+    ) {
+        Reply rep = new TextReply(
+            com,
+            String.format(
+         	    lang.response(messagekey),
+                com.authorLogin()
+         	)
+        );
+        return
+            new SendReply(
+                rep, this.logger,
+                new Step.FinalStep(
+                    this.logger,
+                    "Action finished successfully after command denial."
+                )
+            );
+    }
+
+    /**
+     * Builds and returns the IndexPage step.
+     * @param com Command
+     * @param lang Language
+     * @return Step
+     */
+    private Step indexPageStep(Command com, Language lang) {
+    	return null;
+    }
+    
+    /**
+     * Builds and returns the IndexSite step.
+     * @param com Command
+     * @param lang Language
+     * @return Step
+     * @throws IOException 
+     */
+    private Step indexSiteStep(Command com, Language lang) throws IOException {
+    	String phantomJsExecPath =  System.getProperty("phantomjsExec");
+	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
+	        phantomJsExecPath = "/usr/local/bin/phantomjs";
+	    }
+        String siteIndexUrl;
+        String repoName = com.repo().json().getString("name");
+        if(com.repo().hasGhPagesBranch()) {
+        	siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
+	    } else {
+	    	siteIndexUrl = "http://" + repoName;
+	    }
+	    WebCrawl siteCrawl = new GraphCrawl(
+	        siteIndexUrl, phantomJsExecPath, new IgnoredPatterns(),
+	        new AmazonEsRepository(com.authorLogin() + "/" + repoName), 20
+	    );
+    	return new SendReply(
+            new TextReply(
+        	    com,
+        		String.format(
+        		    lang.response("index.start.comment"),
+        		    com.authorLogin()
+        		)
+            ), this.logger,
+            new IndexSite(
+        	    siteCrawl, logger,
+        	    this.indexFollowupStep(com, lang)
+            )
+        );
+    }
+    
+    /**
+     * Builds and returns the steps that need to be performed
+     * after an index command.
+     * @param com
+     * @param lang
+     * @return
+     * @throws IOException 
+     */
+    private Step indexFollowupStep(Command com, Language lang) throws IOException{
+        Step followUp =
+            new StarRepo(
+                com.issue().repo(), this.logger,
+                new SendReply(
+                    new TextReply(
+                	    com,
+                        String.format(
+                		    lang.response("index.finished.comment"),
+                			com.authorLogin(), com.repo().json().getString("name"), "%s"
+                        ),
+                        this.logsLoc
+                    ), this.logger,
+                    new Step.FinalStep(this.logger)
+               )
+            );
+        return followUp;
+    }
 }

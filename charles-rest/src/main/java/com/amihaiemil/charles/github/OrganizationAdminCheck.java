@@ -28,6 +28,8 @@ import java.io.IOException;
 
 import javax.json.JsonObject;
 import org.slf4j.Logger;
+
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -38,7 +40,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class OrganizationAdminCheck implements Step {
+public class OrganizationAdminCheck extends PreconditionCheckStep {
 
 	/**
 	 * The command.
@@ -51,17 +53,23 @@ public class OrganizationAdminCheck implements Step {
 	private Logger logger;
 
 	/**
-	 * Ctor.
-	 * @param com The Command that triggered the whole action.
-	 * @param logger The Action's logger.
+	 * Constructor.
+	 * @param com Command.
+	 * @param logger Action logger.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
 	 */
-	public OrganizationAdminCheck(Command com, Logger logger) {
+	public OrganizationAdminCheck(
+	    Command com, Logger logger,
+	    Step onTrue, Step onFalse
+	) {
+		super(onTrue, onFalse);
 		this.com = com;
 		this.logger = logger;
 	}
 	
 	@Override
-	public boolean perform() {
+	public void perform() {
 		try {
 			logger.info("Checking if the author is an active admin of the organization ...");
 		    JsonObject membership = com.authorOrgMembership();
@@ -70,10 +78,11 @@ public class OrganizationAdminCheck implements Step {
             boolean passed = state.equals("active") && role.equals("admin");
             if(!passed) {
                 logger.warn("The author is NOT an active admin: [state: " + state + ", role: " + role +"]");
+                this.onFalse().perform();
             } else {
             	logger.info("The author is an active admin, ok");
+            	this.onTrue().perform();
             }
-            return passed;
 		} catch (IOException e) {
 			logger.error("IOException when getting the organization membership!", e);
 			throw new IllegalStateException("IOException when getting the organization membership!", e);

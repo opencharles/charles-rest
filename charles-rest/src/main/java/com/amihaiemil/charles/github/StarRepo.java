@@ -26,9 +26,8 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-
 import org.slf4j.Logger;
-
+import com.amihaiemil.charles.steps.IntermediaryStep;
 import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Repo;
 
@@ -39,7 +38,7 @@ import com.jcabi.github.Repo;
  * @since 1.0.0
  *
  */
-public class StarRepo implements Step {
+public class StarRepo extends IntermediaryStep {
 
 	/**
 	 * Repository to be starred.
@@ -54,9 +53,12 @@ public class StarRepo implements Step {
     /**
 	 * Constructor.
 	 * @param repo Given repo.
+	 * @param logger Action's logger.
+	 * @param next Next step to perform.
 	 */
-    public StarRepo(Repo repo, Logger logger) {
-        this.repo = repo;
+    public StarRepo(Repo repo, Logger logger, Step next) {
+        super(next);
+    	this.repo = repo;
         this.logger = logger;
     }
     
@@ -64,18 +66,18 @@ public class StarRepo implements Step {
      * Star the repository.
      * @return Always returns true, since it's not a critical step.
      */
-    public boolean perform() {
-    	try {
-    		this.logger.info("Starring repository...");
-    		if(!this.repo.stars().starred()) {
-			    this.repo.stars().star();
-    		}
-    		this.logger.info("Repository starred!");
-		} catch (IOException e) {
+    public void perform() {
+        try {
+            this.logger.info("Starring repository...");
+            if(!this.repo.stars().starred()) {
+                this.repo.stars().star();
+            }
+            this.logger.info("Repository starred!");
+        } catch (IOException e) {
 			this.logger.error("Error when starring repository: " + e.getMessage(), e);
 		    //We do not throw IllegalStateException here since starring the repo is not
 			//a critical matter
-		}
-    	return true;
+        }
+        this.next().perform();
     }
 }

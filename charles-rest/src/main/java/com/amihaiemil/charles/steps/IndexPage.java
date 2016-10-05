@@ -45,7 +45,7 @@ import com.amihaiemil.charles.aws.AmazonEsRepository;
  * @since 1.0.0
  *
  */
-public class IndexPage implements Step {
+public class IndexPage extends IntermediaryStep {
 
     /**
      * Action's logger.
@@ -73,8 +73,14 @@ public class IndexPage implements Step {
 	 * @param indexName Name of the Es index where the page will go.
 	 * @param phantomjs Path to the phantomJS executable.
 	 * @param logger Logger.
+	 * @param next Next step to take.
 	 */
-    public IndexPage(String commandBody, String indexName, String phantomjs, Logger logger) {
+    public IndexPage(
+        String commandBody, String indexName,
+        String phantomjs, Logger logger,
+        Step next
+    ) {
+    	super(next);
         this.commandBody = commandBody;
         this.index = indexName;
         this.phantomPath = phantomjs;
@@ -82,7 +88,7 @@ public class IndexPage implements Step {
     }
 
 	@Override
-	public boolean perform() {
+	public void perform() {
 		String link = this.getLink();
 		WebPage snapshot = new SnapshotWebPage(
 		    new LiveWebPage(this.phantomJsDriver(), link)
@@ -93,7 +99,7 @@ public class IndexPage implements Step {
             logger.error("Exception while indexing the page " + link, e);
             throw new IllegalStateException("Exception while indexing the page" + link, e);
 		}
-        return true;
+        this.next().perform();
     }
 
 	private String getLink() {

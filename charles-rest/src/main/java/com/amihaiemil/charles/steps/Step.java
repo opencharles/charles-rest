@@ -25,6 +25,8 @@
 
 package com.amihaiemil.charles.steps;
 
+import org.slf4j.Logger;
+
 /**
  * One step that has to be performed to
  * fulfill a command/request.
@@ -34,5 +36,43 @@ package com.amihaiemil.charles.steps;
  * 
  */
 public interface Step {
-    void perform();    
+    void perform();
+    
+    /**
+     * Final step of the action. Just logs a line
+     * saying the action was successful.
+     */
+    public static class FinalStep implements Step {
+
+        /**
+         * Action's logger.
+         */
+        private Logger logger;
+
+        /**
+         * Message to log
+         */
+        private String message;
+        
+        /**
+         * Ctor without message for successful ending.
+         * @param logger Logger
+         */
+        public FinalStep(Logger logger) {
+            this(logger, "Finished action successfully!");
+        }
+        
+        /**
+         * Ctor.
+         * @param logger Logger.
+         * @param message Message to log at the end of the action.
+         */
+        public FinalStep(Logger logger, String message) {
+            this.logger = logger;
+        }
+
+    	public void perform() {
+    		this.logger.info(message);
+    	}
+    }
 }

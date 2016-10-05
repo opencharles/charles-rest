@@ -34,12 +34,11 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.github.StarRepo;
 import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Github;
 import com.jcabi.github.Repo;
-import com.jcabi.github.Stars;
 import com.jcabi.github.Repos.RepoCreate;
+import com.jcabi.github.Stars;
 import com.jcabi.github.mock.MkGithub;
 
 /**
@@ -62,9 +61,9 @@ public class StarRepoTestCase {
 		Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
 		Repo repo = this.mockGithubRepo();
-        Step sr = new StarRepo(repo, logger);
+        Step sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
         assertFalse(repo.stars().starred());
-        assertTrue(sr.perform());
+        sr.perform();
         assertTrue(repo.stars().starred());
     }
 	
@@ -79,10 +78,10 @@ public class StarRepoTestCase {
 		Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
 		Repo repo = this.mockGithubRepo();
-        Step sr = new StarRepo(repo, logger);
+        Step sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
         assertFalse(repo.stars().starred());
-        assertTrue(sr.perform());
-        assertTrue(sr.perform());
+        sr.perform();
+        sr.perform();
         assertTrue(repo.stars().starred());
     }
 
@@ -109,7 +108,7 @@ public class StarRepoTestCase {
 		Mockito.doThrow(new IOException()).when(stars).star();
 		Mockito.when(repo.stars()).thenReturn(stars);
 		
-		StarRepo sr = new StarRepo(repo, logger);
+		StarRepo sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
 		sr.perform();
 	}
 	/**

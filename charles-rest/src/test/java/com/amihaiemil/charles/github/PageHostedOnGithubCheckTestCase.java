@@ -24,16 +24,13 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
-
 import javax.json.Json;
 import javax.json.JsonObject;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+import com.amihaiemil.charles.steps.Step;
 
 /**
  * Unit tests for {@link PageHostedOnGithubCheck}
@@ -51,19 +48,24 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsValidLinkGhPages() throws IOException {
-        PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+    	Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+
+    	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", true),
             "http://amihaiemil.github.io/myrepo/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertTrue(phgc.perform());
+        phgc.perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", true),
             "https://amihaiemil.github.io/myrepo/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertTrue(phgc2.perform());
+        phgc2.perform();
     }
     
     /**
@@ -73,19 +75,24 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsInvalidLinkGhPages() throws IOException {
-        PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onFalse).perform();
+
+    	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", true),
             "http://domain.io/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertFalse(phgc.perform());
+        phgc.perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", true),
             "ftp://amihaiemil.github.io/folder/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertFalse(phgc2.perform());
+        phgc2.perform();
     }
 
     /**
@@ -95,19 +102,24 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsValidLink() throws IOException {
+    	Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", false),
             "http://amihaiemil.github.io/myrepo/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertTrue(phgc.perform());
+        phgc.perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", false),
             "https://amihaiemil.github.io/myrepo/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertTrue(phgc2.perform());
+        phgc2.perform();
     }
     
     /**
@@ -117,19 +129,29 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsInvalidLink() throws IOException {
-        PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+    	Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+
+    	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", false),
             "http://amihaiemil.github.io/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue, onFalse
         );
-        assertTrue(phgc.perform());
+        phgc.perform();
+
+		Step onTrue2 = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+		Step onFalse2 = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onFalse).perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", false),
             "ftp://amihaiemil.github.io/myrepo/stuff/page.html",
-            Mockito.mock(Logger.class)
+            Mockito.mock(Logger.class), onTrue2, onFalse2
         );
-        assertFalse(phgc2.perform());
+        phgc2.perform();
     }
 
     /**

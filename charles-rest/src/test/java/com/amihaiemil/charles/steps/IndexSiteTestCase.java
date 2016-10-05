@@ -48,8 +48,11 @@ public class IndexSiteTestCase {
 	 */
 	@Test
     public void performsOk() {
-    	IndexSite is = new IndexSite( Mockito.mock(WebCrawl.class), Mockito.mock(Logger.class));
-    	assertTrue(is.perform());
+    	IndexSite is = new IndexSite(
+            Mockito.mock(WebCrawl.class), Mockito.mock(Logger.class),
+            Mockito.mock(Step.class)
+        );
+    	is.perform();
     }
 	
 	/**
@@ -60,7 +63,10 @@ public class IndexSiteTestCase {
     public void webCrawlThrowsException() throws Exception {
 		WebCrawl crawl = Mockito.mock(WebCrawl.class);
 		Mockito.doThrow(new DataExportException("Expected exception; it's ok")).when(crawl).crawl();
-    	IndexSite is = new IndexSite(crawl, Mockito.mock(Logger.class));
+    	IndexSite is = new IndexSite(
+    	    crawl, Mockito.mock(Logger.class),
+    	    Mockito.mock(Step.class)
+    	);
     	try {
     	    is.perform();
     	    fail("Expected ISE here, but it was not thrown!");

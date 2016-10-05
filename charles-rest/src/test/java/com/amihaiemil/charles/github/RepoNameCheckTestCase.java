@@ -59,8 +59,7 @@ public class RepoNameCheckTestCase {
 		
 		Step onFalse = Mockito.mock(Step.class);
 		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
-    	
-		
+
 		RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
     		Mockito.mock(Logger.class),
@@ -81,7 +80,7 @@ public class RepoNameCheckTestCase {
 		
 		Step onFalse = Mockito.mock(Step.class);
 		Mockito.doNothing().when(onFalse).perform();
-		
+
     	RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
     		Mockito.mock(Logger.class),
