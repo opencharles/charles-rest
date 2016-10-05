@@ -51,13 +51,27 @@ public class RepoNameCheck implements Step{
     private Logger logger;
 
     /**
+     * Next step if the check is true.
+     */
+    private Step onTrue;
+    
+    /**
+     * Next step if the check is false.
+     */
+    private Step onFalse;
+    
+    /**
      * Constructor.
      * @param repo Json repo.
      * @param message For the commander in case this check fails.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
      */
-    public RepoNameCheck(JsonObject repo, Logger logger) {
+    public RepoNameCheck(JsonObject repo, Logger logger, Step onTrue, Step onFalse) {
         this.repo = repo;
         this.logger = logger;
+        this.onTrue = onTrue;
+        this.onFalse = onFalse;
     }
 
     /**
@@ -65,7 +79,7 @@ public class RepoNameCheck implements Step{
      * @return true if the check is successful, false otherwise
      */
     @Override
-    public boolean perform() {
+    public void perform() {
         logger.info("Checking repository name... ");
         String  owner = this.repo.getJsonObject("owner").getString("login");
         String expectedName = owner + ".github.io";
@@ -74,9 +88,10 @@ public class RepoNameCheck implements Step{
         logger.info("Actual name: " + name);
         if(expectedName.equals(name)) {
             logger.info("Repository name matchers - Ok");
-            return true;
+            onTrue.perform();
+        } else {
+            logger.warn("Repository name does not match the expected name");
+            onFalse.perform();
         }
-        logger.warn("Repository name does not match the expected name");
-        return false;
     }
 }

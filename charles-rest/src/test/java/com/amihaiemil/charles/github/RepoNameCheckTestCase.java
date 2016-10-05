@@ -25,9 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
 import javax.json.Json;
@@ -37,6 +34,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
 
@@ -55,16 +53,21 @@ public class RepoNameCheckTestCase {
 	 */
 	@Test
 	public void repoNameMatches() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).warn(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
 
-    	RepoNameCheck rnc = new RepoNameCheck(
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onTrue).perform();
+		
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+    	
+		
+		RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
-    		logger
+    		Mockito.mock(Logger.class),
+    		onTrue,
+    		onFalse
     	);
-    	assertTrue(rnc.perform());
+    	rnc.perform();
     }
 	
 	/**
@@ -73,16 +76,19 @@ public class RepoNameCheckTestCase {
 	 */
 	@Test
 	public void repoNameDoesntMatch() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doNothing().when(logger).warn(Mockito.anyString());
-		Mockito.doNothing().when(logger).error(Mockito.anyString());
-
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+		
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onFalse).perform();
+		
     	RepoNameCheck rnc = new RepoNameCheck(
     		this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
-    		logger
+    		Mockito.mock(Logger.class),
+    		onTrue,
+    		onFalse
     	);
-    	assertFalse(rnc.perform());
+        rnc.perform();
 	}
 	
 	/**
