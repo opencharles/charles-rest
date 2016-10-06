@@ -32,10 +32,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.GraphCrawl;
-import com.amihaiemil.charles.IgnoredPatterns;
-import com.amihaiemil.charles.WebCrawl;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.steps.IndexPage;
 import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
@@ -238,9 +235,15 @@ public class Brain {
      * @param com Command
      * @param lang Language
      * @return Step
+     * @throws IOException 
      */
-    private Step indexPageStep(Command com, Language lang) {
-    	return null;
+    private Step indexPageStep(Command com, Language lang) throws IOException {
+	    String repoName = com.repo().json().getString("name");
+    	IndexPage ip = new IndexPage(
+            com.json().getString("body"), com.authorLogin() + "/" + repoName,
+            this.logger, this.indexFollowupStep(com, lang)
+        );
+    	return ip;
     }
     
     /**
@@ -251,21 +254,6 @@ public class Brain {
      * @throws IOException 
      */
     private Step indexSiteStep(Command com, Language lang) throws IOException {
-    	String phantomJsExecPath =  System.getProperty("phantomjsExec");
-	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
-	        phantomJsExecPath = "/usr/local/bin/phantomjs";
-	    }
-        String siteIndexUrl;
-        String repoName = com.repo().json().getString("name");
-        if(com.repo().hasGhPagesBranch()) {
-        	siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
-	    } else {
-	    	siteIndexUrl = "http://" + repoName;
-	    }
-	    WebCrawl siteCrawl = new GraphCrawl(
-	        siteIndexUrl, phantomJsExecPath, new IgnoredPatterns(),
-	        new AmazonEsRepository(com.authorLogin() + "/" + repoName), 20
-	    );
     	return new SendReply(
             new TextReply(
         	    com,
@@ -275,7 +263,7 @@ public class Brain {
         		)
             ), this.logger,
             new IndexSite(
-        	    siteCrawl, logger,
+                com, logger,
         	    this.indexFollowupStep(com, lang)
             )
         );

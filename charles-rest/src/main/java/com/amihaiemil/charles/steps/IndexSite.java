@@ -25,10 +25,14 @@
 
 package com.amihaiemil.charles.steps;
 
+import java.io.IOException;
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.DataExportException;
+import com.amihaiemil.charles.GraphCrawl;
+import com.amihaiemil.charles.IgnoredPatterns;
 import com.amihaiemil.charles.WebCrawl;
+import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.github.Command;
 
 /**
  * Step to index a website.
@@ -37,41 +41,55 @@ import com.amihaiemil.charles.WebCrawl;
  * @since 1.0.0
  *
  */
-public class IndexSite extends IntermediaryStep {
+public class IndexSite extends IndexStep {
 
-	/**
+    /**
+     * Command.
+     */
+    private Command com;
+
+    /**
 	 * Action's logger.
 	 */
 	private Logger logger;
 
-	/**
-	 * The Web crawl used.
-	 */
-	private WebCrawl siteCrawl;
 
     /**
      * Constructor.
-     * @param crawl The web crawl to fetch the website content
+     * @param com Command
      * @param logger The action's logger
      * @param next The next step to take
      */
     public IndexSite(
-        WebCrawl crawl, Logger logger, Step next
+        Command com, Logger logger, Step next
     ) {
     	super(next);
         this.logger = logger;
-        this.siteCrawl = crawl;
     }
 
 	@Override
 	public void perform() {
         try {
-            this.siteCrawl.crawl();
-        } catch (DataExportException e) {
+            this.grapghCrawl().crawl();
+        } catch (DataExportException | IOException e ) {
             logger.error("Exception while indexing the website!", e);
             throw new IllegalStateException("Exception while indexing the website", e);
         }
         this.next().perform();
+	}
+	public WebCrawl grapghCrawl() throws IOException {
+		String repoName = com.repo().json().getString("name");
+		String siteIndexUrl;
+	    if(com.repo().hasGhPagesBranch()) {
+	        siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
+	    } else {
+	        siteIndexUrl = "http://" + repoName;
+		}
+		WebCrawl siteCrawl = new GraphCrawl(
+		    siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
+		    new AmazonEsRepository(com.authorLogin() + "/" + repoName), 20
+		);
+		return siteCrawl;
 	}
 
 }
