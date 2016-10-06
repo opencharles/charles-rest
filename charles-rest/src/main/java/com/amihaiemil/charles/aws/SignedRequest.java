@@ -24,12 +24,16 @@
  */
 package com.amihaiemil.charles.aws;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Request;
+import com.amazonaws.Response;
 import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.http.ExecutionContext;
+import com.amazonaws.http.HttpResponse;
+import com.amazonaws.http.HttpResponseHandler;
 
 /**
  * A request made to AWS which is 
@@ -42,13 +46,21 @@ import com.amazonaws.http.ExecutionContext;
  */
 public class SignedRequest {
 
-	private Request<?> request;
+	private Request<Void> request;
+    private HttpResponseHandler<HttpResponse> respHandler;
+    private HttpResponseHandler<AmazonServiceException> errHandler;
 
 	/**
 	 * Ctor.
 	 * @param req Request made to AWS.
+	 * @param respHandler Response handler.
+	 * @param errHandler Error handler.
 	 */
-	public SignedRequest(Request<?> req) {
+	public SignedRequest(
+	    Request<Void> req,
+	    HttpResponseHandler<HttpResponse> respHandler,
+	    HttpResponseHandler<AmazonServiceException> errHandler
+	) {
 		AWS4Signer signer = new AWS4Signer();
 	    signer.setServiceName("es");
 	    String region = System.getProperty("aws.es.region");
@@ -59,6 +71,8 @@ public class SignedRequest {
 	    signer.sign(req, new AwsCredentialsFromSystem());
 	    
 	    this.request = req;
+	    this.respHandler = respHandler;
+	    this.errHandler = errHandler;
 	}
 
     /**
@@ -66,13 +80,11 @@ public class SignedRequest {
      * The Response is handled in the specified response handler.
      */
     public void sendRequest() {
-        new AmazonHttpClient(new ClientConfiguration())
+        Response<HttpResponse> r = new AmazonHttpClient(new ClientConfiguration())
             .execute(
-                this.request,
-                new SimpleAwsResponseHandler(false),
-                new SimpleAwsErrorHandler(false),
-                new ExecutionContext(true)
+                this.request, new ExecutionContext(true), this.respHandler, this.errHandler
             );
+        r.getAwsResponse().getStatusCode();
     }
 	
 	/**

@@ -68,7 +68,9 @@ public class AmazonEsRepository implements Repository {
 			SignedRequest sr = new SignedRequest(
 			    this.buildAwsRequest(
 			        new EsBulkJson(this.indexName, pages).structure()
-			    )
+			    ),
+			    new SimpleAwsResponseHandler(false),
+			    new SimpleAwsErrorHandler(false)
 			);
 			sr.sendRequest();
 		} catch (IOException e) {
@@ -77,8 +79,8 @@ public class AmazonEsRepository implements Repository {
 		}
 	}
 	
-	public Request<?> buildAwsRequest(String data) {
-		Request<?> request = new DefaultRequest<Void>("es");
+	public Request<Void> buildAwsRequest(String data) {
+		Request<Void> request = new DefaultRequest<Void>("es");
 	    request.setContent(new ByteArrayInputStream(data.getBytes()));
 	    request.setEndpoint(URI.create(System.getProperty("aws.es.bulk.endpoint")));
 	    request.setHttpMethod(HttpMethodName.POST);

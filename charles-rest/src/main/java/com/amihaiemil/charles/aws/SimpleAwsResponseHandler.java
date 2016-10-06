@@ -38,7 +38,7 @@ import com.amazonaws.http.HttpResponseHandler;
  *
  */
 public class SimpleAwsResponseHandler implements
-    HttpResponseHandler<AmazonWebServiceResponse<HttpResponse>> {
+    HttpResponseHandler<HttpResponse> {
 
 	/**
 	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
@@ -54,7 +54,7 @@ public class SimpleAwsResponseHandler implements
 	}
 
 	@Override
-	public AmazonWebServiceResponse<HttpResponse> handle(HttpResponse response)
+	public HttpResponse handle(HttpResponse response)
 			throws Exception {
 
 		int status = response.getStatusCode();
@@ -64,10 +64,7 @@ public class SimpleAwsResponseHandler implements
 			throw ase;
 		}
 
-        AmazonWebServiceResponse<HttpResponse> awsResponse = new AmazonWebServiceResponse<HttpResponse>();
-        awsResponse.setResult(response);
-        return awsResponse;
-		
+        return response;
 		
 	}
 
