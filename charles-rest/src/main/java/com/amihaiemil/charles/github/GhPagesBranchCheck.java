@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -38,7 +39,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class GhPagesBranchCheck implements Step {
+public class GhPagesBranchCheck extends PreconditionCheckStep {
 
 	/**
 	 * Repository json as returned by the Github API.
@@ -49,13 +50,19 @@ public class GhPagesBranchCheck implements Step {
 	 * Logger.
 	 */
 	private Logger logger;
-	
+
     /**
      * Constructor.
      * @param com Given command.
      * @param logger Action logger.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
      */
-    public GhPagesBranchCheck(Command com, Logger logger) {
+    public GhPagesBranchCheck(
+        Command com, Logger logger,
+        Step onTrue, Step onFalse
+    ) {
+    	super(onTrue, onFalse);
         this.com = com;
         this.logger = logger;
     }
@@ -64,17 +71,17 @@ public class GhPagesBranchCheck implements Step {
      * Perform this step.
      */
     @Override
-    public boolean perform() { 
+    public void perform() { 
     	logger.info("Checking whether the repository has a gh-pages branch...");
     	try {
     		
     		if (com.repo().hasGhPagesBranch()) {
     			logger.info("The repo has a gh-pages branch - OK!");
+    			this.onTrue().perform();
     		} else {
     			logger.info("The repo does NOT have a gh-pages branch");
+    			this.onFalse().perform();
     		}
-    		
-			return com.repo().hasGhPagesBranch();
 		} catch (IOException e) {
 			logger.error("Exception when checking if gh-pages branch exists", e);
 			throw new IllegalStateException("Exception when checking if gh-pages branch exists", e);

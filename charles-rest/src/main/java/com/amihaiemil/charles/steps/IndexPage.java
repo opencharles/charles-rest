@@ -25,13 +25,7 @@
 package com.amihaiemil.charles.steps;
 
 import java.util.Arrays;
-
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.LiveWebPage;
 import com.amihaiemil.charles.SnapshotWebPage;
@@ -45,7 +39,7 @@ import com.amihaiemil.charles.aws.AmazonEsRepository;
  * @since 1.0.0
  *
  */
-public class IndexPage implements Step {
+public class IndexPage extends IndexStep {
 
     /**
      * Action's logger.
@@ -58,11 +52,6 @@ public class IndexPage implements Step {
 	private String commandBody;
 
 	/**
-	 * Path to phantomJS.
-	 */
-	private String phantomPath;
-
-	/**
 	 * Es index.
 	 */
 	private String index;
@@ -71,18 +60,20 @@ public class IndexPage implements Step {
 	 * Ctor.
 	 * @param commandBody Text of the index-page command.
 	 * @param indexName Name of the Es index where the page will go.
-	 * @param phantomjs Path to the phantomJS executable.
 	 * @param logger Logger.
+	 * @param next Next step to take.
 	 */
-    public IndexPage(String commandBody, String indexName, String phantomjs, Logger logger) {
+    public IndexPage(
+        String commandBody, String indexName, Logger logger, Step next
+    ) {
+    	super(next);
         this.commandBody = commandBody;
         this.index = indexName;
-        this.phantomPath = phantomjs;
         this.logger = logger;
     }
 
 	@Override
-	public boolean perform() {
+	public void perform() {
 		String link = this.getLink();
 		WebPage snapshot = new SnapshotWebPage(
 		    new LiveWebPage(this.phantomJsDriver(), link)
@@ -93,20 +84,11 @@ public class IndexPage implements Step {
             logger.error("Exception while indexing the page " + link, e);
             throw new IllegalStateException("Exception while indexing the page" + link, e);
 		}
-        return true;
+        this.next().perform();
     }
 
 	private String getLink() {
 		return this.commandBody.substring(commandBody.indexOf('('), commandBody.indexOf(')'));
 	}
 
-	public WebDriver phantomJsDriver() {
-		DesiredCapabilities dc = new DesiredCapabilities();
-        dc.setJavascriptEnabled(true);
-        dc.setCapability(
-            PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-            this.phantomPath
-        );
-        return new PhantomJSDriver(dc);
-	}
 }

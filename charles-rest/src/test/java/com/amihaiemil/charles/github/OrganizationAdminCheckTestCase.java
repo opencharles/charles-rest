@@ -24,9 +24,6 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 
 import javax.json.Json;
@@ -35,6 +32,8 @@ import javax.json.JsonObject;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+
+import com.amihaiemil.charles.steps.Step;
 
 /**
  * Unit tests for {@link OrganizationAdminCheck}
@@ -55,10 +54,15 @@ public class OrganizationAdminCheckTestCase {
 	    JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "admin").build();
 	    Command com  = this.mockCommand("someone", "orgName");
 	    Mockito.when(com.authorOrgMembership()).thenReturn(membership);
-		OrganizationAdminCheck aoc = new OrganizationAdminCheck(
-	    	com, Mockito.mock(Logger.class)
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onTrue).perform();
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+
+	    OrganizationAdminCheck oac = new OrganizationAdminCheck(
+	    	com, Mockito.mock(Logger.class), onTrue, onFalse
 	    );
-	    assertTrue(aoc.perform());
+	    oac.perform();
 	}
 	
 	/**
@@ -69,11 +73,12 @@ public class OrganizationAdminCheckTestCase {
 	public void membershipEndpointThrowsIOException() throws Exception {
 	    Command com  = this.mockCommand("someone", "orgName");
 	    Mockito.when(com.authorOrgMembership()).thenThrow(new IOException());
-		OrganizationAdminCheck aoc = new OrganizationAdminCheck(
-	    	com, Mockito.mock(Logger.class)
-	    );
-	    aoc.perform();
-	}
+
+	    OrganizationAdminCheck oac = new OrganizationAdminCheck(
+            com, Mockito.mock(Logger.class), Mockito.mock(Step.class), Mockito.mock(Step.class)
+        );
+        oac.perform();
+    }
 
 	/**
 	 * OrganizationAdminCheck can tell when the command author is neither repo owner nor admin of
@@ -85,10 +90,15 @@ public class OrganizationAdminCheckTestCase {
 		JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "member").build();
 		Command com  = this.mockCommand("someone", "orgName");
 	    Mockito.when(com.authorOrgMembership()).thenReturn(membership);
-	    OrganizationAdminCheck aoc = new OrganizationAdminCheck(
-	    	com, Mockito.mock(Logger.class)
+		Step onTrue = Mockito.mock(Step.class);
+		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+		Step onFalse = Mockito.mock(Step.class);
+		Mockito.doNothing().when(onFalse).perform();
+
+	    OrganizationAdminCheck oac = new OrganizationAdminCheck(
+	    	com, Mockito.mock(Logger.class), onTrue, onFalse
 	    );
-	    assertFalse(aoc.perform());
+	    oac.perform();
 	}
 	/**
 	 * Mock a command for the unit tests.

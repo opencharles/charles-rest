@@ -29,6 +29,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.IntermediaryStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -38,28 +39,34 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  * 
  */
-public class SendReply implements Step {
-	/**
-	 * Reply to send.
-	 */
-	private Reply rep;
-	
-	/**
-	 * Logger of the action.
-	 */
-	private Logger logger;
-	
-	/**
-	 * Constructor
-	 * @param rep The reply to be sent.
-	 */
-	public SendReply(Reply rep, Logger logger) { 
-		this.rep = rep;
-		this.logger = logger;
-	}
+public class SendReply extends IntermediaryStep {
+
+    /**
+     * Reply to send.
+     */
+    private Reply rep;
+
+    /**
+     * Logger of the action.
+     */
+    private Logger logger;
+
+    /**
+     * Constructor
+     * @param rep The reply to be sent.
+     * @param logger Action's logger.
+     * @param next The next step to perform.
+     */
+    public SendReply(
+        Reply rep, Logger logger, Step next
+    ) { 
+    	super(next);
+        this.rep = rep;
+        this.logger = logger;
+    }
 	
     @Override
-    public boolean perform() {
+    public void perform() {
         try {
             logger.info("Sending comment...");
             rep.send();
@@ -68,7 +75,7 @@ public class SendReply implements Step {
             logger.error("IOException when sending the reply!", e);
             throw new IllegalStateException("IOException when sending the reply!" , e);
         }
-		return true;
+        this.next().perform();
     }
 
 }

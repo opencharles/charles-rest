@@ -29,6 +29,7 @@ import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -38,7 +39,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class RepoNameCheck implements Step{
+public class RepoNameCheck extends PreconditionCheckStep {
 
     /**
      * Json repository as returned by the Github API.
@@ -50,13 +51,17 @@ public class RepoNameCheck implements Step{
      */
     private Logger logger;
 
+
     /**
      * Constructor.
      * @param repo Json repo.
      * @param message For the commander in case this check fails.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
      */
-    public RepoNameCheck(JsonObject repo, Logger logger) {
-        this.repo = repo;
+    public RepoNameCheck(JsonObject repo, Logger logger, Step onTrue, Step onFalse) {
+        super(onTrue, onFalse);
+    	this.repo = repo;
         this.logger = logger;
     }
 
@@ -65,7 +70,7 @@ public class RepoNameCheck implements Step{
      * @return true if the check is successful, false otherwise
      */
     @Override
-    public boolean perform() {
+    public void perform() {
         logger.info("Checking repository name... ");
         String  owner = this.repo.getJsonObject("owner").getString("login");
         String expectedName = owner + ".github.io";
@@ -74,9 +79,10 @@ public class RepoNameCheck implements Step{
         logger.info("Actual name: " + name);
         if(expectedName.equals(name)) {
             logger.info("Repository name matchers - Ok");
-            return true;
+            this.onTrue().perform();
+        } else {
+            logger.warn("Repository name does not match the expected name");
+            this.onFalse().perform();
         }
-        logger.warn("Repository name does not match the expected name");
-        return false;
     }
 }

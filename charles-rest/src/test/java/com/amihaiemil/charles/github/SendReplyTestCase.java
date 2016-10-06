@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.Step;
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
@@ -57,19 +58,22 @@ public class SendReplyTestCase {
 	 */
 	@Test
     public void sendsComment() throws Exception {
-    	Command com = this.mockCommand();
-    	Reply rep = new TextReply(com, "Hello there!");
-    	SendReply sr = new SendReply(rep, Mockito.mock(Logger.class));
+        Command com = this.mockCommand();
+        Reply rep = new TextReply(com, "Hello there!");
+        SendReply sr = new SendReply(
+            rep, Mockito.mock(Logger.class),
+            Mockito.mock(Step.class)
+        );
 
-    	assertTrue(sr.perform());
-    	
-    	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
-    	assertTrue(comments.size() == 1);
-    	assertTrue(
-    		comments.get(0).json().getString("body").equals(
-    			"> @charlesmike hello\n\nHello there!"
-    		)
-    	);
+    	sr.perform();
+
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        assertTrue(comments.size() == 1);
+        assertTrue(
+            comments.get(0).json().getString("body").equals(
+                "> @charlesmike hello\n\nHello there!"
+            )
+        );
 
     }
 	
@@ -82,7 +86,10 @@ public class SendReplyTestCase {
 	    Reply rep = Mockito.mock(Reply.class);
 	    Mockito.doThrow(new IOException("This is expected, it's ok!")).when(rep).send();
 	    try {
-	        new SendReply(rep, Mockito.mock(Logger.class)).perform();
+	        new SendReply(
+	            rep, Mockito.mock(Logger.class),
+	            Mockito.mock(Step.class)
+	        ).perform();
 	        fail("Expected ISE here, but was not thrown");
 	    } catch (IllegalStateException ex) {
 	    	assertTrue(ex.getMessage().equals("IOException when sending the reply!"));

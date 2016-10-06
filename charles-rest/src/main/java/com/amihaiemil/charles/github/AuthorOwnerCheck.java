@@ -27,6 +27,8 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 import org.slf4j.Logger;
+
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -36,7 +38,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class AuthorOwnerCheck implements Step {
+public class AuthorOwnerCheck extends PreconditionCheckStep {
 
 	/**
 	 * Given command;
@@ -47,14 +49,19 @@ public class AuthorOwnerCheck implements Step {
 	 * Logger of the action.
 	 */
 	private Logger logger;
-	
+
 	/**
 	 * Constructor.
-	 * @param authorLogin Username of the command's author.
-	 * @param repo Json repo object.
+	 * @param com Command.
 	 * @param logger Action logger.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
 	 */
-	public AuthorOwnerCheck(Command com, Logger logger) {
+	public AuthorOwnerCheck(
+	    Command com, Logger logger,
+	    Step onTrue, Step onFalse
+	) {
+		super(onTrue, onFalse);
 		this.com = com;
 		this.logger = logger;
 	}
@@ -64,18 +71,18 @@ public class AuthorOwnerCheck implements Step {
 	 * @return true if the check is successful, false otherwise
 	 */
 	@Override
-	public boolean perform() {
+	public void perform() {
         logger.info("Checking ownership of the repo");
         try {
             String repoOwner = this.com.repo().json().getJsonObject("owner").getString("login");
             String author = this.com.authorLogin();
             if(repoOwner.equals(author)) {
                 logger.info("Commander is repo owner - OK");
-                return true;
+                this.onTrue().perform();
             } else {
                 logger.warn("Commander is NOT repo owner");
+                this.onFalse().perform();
             }
-            return false;
         } catch (IOException ex) {
             logger.error("IOException when fetching repo owner from Github API", ex);
             throw new IllegalStateException("IOException when fetching repo owner!", ex);

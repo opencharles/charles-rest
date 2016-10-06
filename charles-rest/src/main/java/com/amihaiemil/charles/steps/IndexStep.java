@@ -22,31 +22,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
+package com.amihaiemil.charles.steps;
 
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
-import static org.junit.Assert.*;
 /**
- * Unit tests for {@link FollowupSteps}
+ * Base class for index steps.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
+ *
  */
-public class FollowupStepsTestCase {
-    
+public abstract class IndexStep extends IntermediaryStep{
+
 	/**
-	 * FollowupSteps is built and performs ok.
+	 * Ctor.
+	 * @param next Next step to take.
 	 */
-	@Test
-	public void performsOk() {
-	    StarRepo sr = Mockito.mock(StarRepo.class);
-	    Mockito.when(sr.perform()).thenReturn(true);
-	    SendReply reply = Mockito.mock(SendReply.class);
-	    Mockito.when(reply.perform()).thenReturn(true);
-        FollowupSteps fs = new FollowupSteps.FollowupStepsBuilder()
-            .confirmationReply(reply).starRepo(sr).build();
-        assertTrue(fs.perform());
-    }
+	public IndexStep(Step next) {
+		super(next);
+	}
+
+	/**
+	 * Use phantomjs to fetch the web content.
+	 * @return
+	 */
+	protected WebDriver phantomJsDriver() {
+		String phantomJsExecPath =  System.getProperty("phantomjsExec");
+	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
+	        phantomJsExecPath = "/usr/local/bin/phantomjs";
+	    }
+		DesiredCapabilities dc = new DesiredCapabilities();
+        dc.setJavascriptEnabled(true);
+        dc.setCapability(
+            PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
+            phantomJsExecPath
+        );
+        return new PhantomJSDriver(dc);
+	}
+
 }

@@ -94,19 +94,14 @@ public class Action implements Runnable {
 			String commandBody = command.json().getString("body");
 			logger.info("Received command: " + commandBody);
 			Steps steps = br.understand(command);
-			boolean success = steps.perform();
-			if(success){
-				logger.info("Finished action " + this.tr.getName());
-			} else {
-				logger.error("Some steps did not execute successfully! Check above for details.");
-			}
+			steps.perform();
 		} catch (IllegalArgumentException e) {
 			logger.warn("No command found in the issue or the agent has already replied to the last command!");
 		} catch (IOException | IllegalStateException e) {
-			logger.error("Action failed with exception: ",  e);
+			logger.error("Action failed entirely with exception: ",  e);
 	        this.sendReply(
-				new ErrorReply(logs.address(), this.issue)
-			);
+                new ErrorReply(logs.address(), this.issue)
+            );
 		}
 	}
 	

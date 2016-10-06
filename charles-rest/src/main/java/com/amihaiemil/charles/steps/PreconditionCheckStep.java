@@ -22,87 +22,53 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
-
-import com.amihaiemil.charles.steps.Step;
+package com.amihaiemil.charles.steps;
 
 /**
- * Step that performs command follow up actions, like sending a confirmation comment and starring the repo.
+ * A step which validates a condition and splits the path
+ * in two. One in case the condition is met, one in case the
+ * condition is not met.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-class FollowupSteps implements Step {
-
-	private Step starRepo = new Step() {
-		@Override
-		public boolean perform() {
-			return true;
-		}
-	};
-
-	private Step sendConfirmationReply = new Step() {
-		@Override
-		public boolean perform() {
-			return true;
-		}
-	};
-
-	/**
-	 * Ctor for builder pattern.
-	 * @param builder IndexFollowupStepsBuilder
-	 */
-	private FollowupSteps(FollowupStepsBuilder builder) {
-	    this.starRepo = builder.sr;
-	    this.sendConfirmationReply = builder.cr;
-	}
+public abstract class PreconditionCheckStep implements Step {
+    /**
+     * Next step if the check is true.
+     */
+    private Step onTrue;
 
     /**
-     * Perform this step.
+     * Next step if the check is false.
      */
-    @Override
-    public boolean perform() {
-        this.starRepo.perform();
-        return this.sendConfirmationReply.perform();
+    private Step onFalse;
+
+    /**
+	 * Ctor
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
+	 */
+    public PreconditionCheckStep(Step onTrue, Step onFalse) {
+    	this.onTrue = onTrue;
+    	this.onFalse = onFalse;
     }
 
-    public static class FollowupStepsBuilder {
-
-		/**
-		 * Star repo step.
-		 */
-    	private Step sr;
-
-    	/**
-    	 * Confirmation reply step.
-    	 */
-    	private Step cr;
-
-    	/**
-    	 * Specify star repo step to this builder.
-    	 * @param sr Given star repo step.
-    	 * @return This builder.
-    	 */
-    	public FollowupStepsBuilder starRepo(StarRepo sr) {
-    		this.sr = sr;
-    		return this;
-    	}
-    	
-    	/**
-    	 * Specify the confirmation reply step.
-    	 * @param cr Given confirmation reply.
-    	 * @return This builder.
-    	 */
-    	public FollowupStepsBuilder confirmationReply(SendReply cr) {
-    		this.cr = cr;
-    		return this;
-    	}
-
-    	public FollowupSteps build() {
-			return new FollowupSteps(this);
-		}
-    	
-    }
-
+	public abstract void perform();
+	
+	/**
+	 * Step to perform on successful check
+	 * @return Step
+	 */
+	public Step onTrue() {
+		return this.onTrue;
+	}
+	
+	/**
+	 * Step to perform on failed check.
+	 * @return Step
+	 */
+	public Step onFalse() {
+		return this.onFalse;
+	}
 }

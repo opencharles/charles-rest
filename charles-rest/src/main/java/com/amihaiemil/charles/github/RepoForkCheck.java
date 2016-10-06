@@ -28,6 +28,7 @@ import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
 /**
@@ -37,7 +38,7 @@ import com.amihaiemil.charles.steps.Step;
  * @since 1.0.0
  *
  */
-public class RepoForkCheck implements Step {
+public class RepoForkCheck extends PreconditionCheckStep {
 
     /**
      * Repository json as returned by the Github API.
@@ -53,8 +54,13 @@ public class RepoForkCheck implements Step {
      * Constructor.
      * @param repo Given repository json.
      * @param logger Action logger.
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
      */
-    public RepoForkCheck(JsonObject repo, Logger logger) {
+    public RepoForkCheck(
+        JsonObject repo, Logger logger, Step onTrue, Step onFalse
+    ) {
+    	super(onTrue, onFalse);
         this.repo = repo;
         this.logger = logger;
     }
@@ -63,15 +69,16 @@ public class RepoForkCheck implements Step {
      * Check whether the repo is a fork or not.
      * @returns true if the repo is NOT a fork, false otherwise.
      */
-	@Override
-	public boolean perform() {
+    @Override
+    public void perform() {
 		logger.info("Checking whether the repository is a fork...");
 		boolean fork = repo.getBoolean("fork");
 		if(fork) {
-			logger.warn("Repository should NOT be a fork!");
+            logger.warn("Repository should NOT be a fork!");
+            this.onTrue().perform();
 		} else {
-			logger.info("Repository is NOT a fort - Ok!");
-		}
-		return !fork;
-	}
+            logger.info("Repository is NOT a fort - Ok!");
+            this.onFalse().perform();
+        }
+    }
 }

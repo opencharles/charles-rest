@@ -24,48 +24,36 @@
  */
 package com.amihaiemil.charles.steps;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import org.mockito.Mockito;
-import org.slf4j.Logger;
-
-import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.WebCrawl;
-
 /**
- * Unit tests for {@link IndexSite}
+ * A step that is not final in the chain of steps
+ * performed by an action; it has a next step. 
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexSiteTestCase {
-	
+public abstract class IntermediaryStep implements Step {
+
 	/**
-	 * IndexSite can perform ok.
+	 * Next step in line.
 	 */
-	@Test
-    public void performsOk() {
-    	IndexSite is = new IndexSite( Mockito.mock(WebCrawl.class), Mockito.mock(Logger.class));
-    	assertTrue(is.perform());
-    }
-	
+    private Step nextStep;
+
+    /**
+     * Ctor.
+     * @param next The next step to perform.
+     */
+    public IntermediaryStep(Step next) {
+		this.nextStep = next;
+	}
+
+	public abstract void perform();
+
 	/**
-	 * IndexSite can perform ok.
-	 * @throws Exception - If something goes wrong.
+	 * Get the next step to perform.
+	 * @return Step.
 	 */
-	@Test
-    public void webCrawlThrowsException() throws Exception {
-		WebCrawl crawl = Mockito.mock(WebCrawl.class);
-		Mockito.doThrow(new DataExportException("Expected exception; it's ok")).when(crawl).crawl();
-    	IndexSite is = new IndexSite(crawl, Mockito.mock(Logger.class));
-    	try {
-    	    is.perform();
-    	    fail("Expected ISE here, but it was not thrown!");
-    	} catch (IllegalStateException ex){
-	    	assertTrue(ex.getMessage().equals("Exception while indexing the website"));
-    	}
+    public Step next() {
+    	return this.nextStep;
     }
 }

@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.GraphCrawl;
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -82,13 +83,19 @@ public class BrainTestCase {
 		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
 		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
 		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+		Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
+		Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
+		Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
 		Mockito.when(english.categorize(com)
 		).thenReturn(new CommandCategory("indexsite", english));
 		
 		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+		Brain spied = Mockito.spy(br);
+//		Mockito.when(spied.i)
+		
 		Steps steps = br.understand(com);
 		assertTrue(steps != null);
-		assertTrue(steps.getStepsToPerform() instanceof IndexWithPreconditionCheck);
+		assertTrue(steps.getStepsToPerform() instanceof PreconditionCheckStep);
 	}
 	
 	/**
@@ -103,13 +110,18 @@ public class BrainTestCase {
 		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
 		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
 		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+		Mockito.when(english.response("denied.badlink.comment")).thenReturn("bad link!");
+		Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
+		Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
+		Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
+		
 		Mockito.when(english.categorize(com)
 		).thenReturn(new CommandCategory("indexpage", english));
 		
 		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
 		Steps steps = br.understand(com);
 		assertTrue(steps != null);
-		assertTrue(steps.getStepsToPerform() instanceof IndexWithPreconditionCheck);
+		assertTrue(steps.getStepsToPerform() instanceof PreconditionCheckStep);
 	}
 	
 	/**
