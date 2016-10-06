@@ -71,25 +71,7 @@ public class PageHostedOnGithubCheck extends PreconditionCheckStep {
 		super(onTrue, onFalse);
 		this.com = com;
 		String comment = com.json().getString("body");
-		this.link = comment.substring(comment.indexOf('('), comment.indexOf(')'));
-		this.logger = logger;
-	}
-	
-	/**
-	 * Ctor (for ease of unit testing)
-	 * @param com Command.
-	 * @param link Page link.
-	 * @param logger Logger.
-     * @param onTrue Step that should be performed next if the check is true.
-     * @param onFalse Step that should be performed next if the check is false.
-	 */
-	public PageHostedOnGithubCheck(
-	    Command com, String link, Logger logger,
-	    Step onTrue, Step onFalse
-	) {
-		super(onTrue, onFalse);
-		this.com = com;
-		this.link = link;
+		this.link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
 		this.logger = logger;
 	}
 

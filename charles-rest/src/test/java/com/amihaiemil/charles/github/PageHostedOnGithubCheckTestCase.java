@@ -54,15 +54,13 @@ public class PageHostedOnGithubCheckTestCase {
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
     	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true),
-            "http://amihaiemil.github.io/myrepo/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", true, "http://amihaiemil.github.io/myrepo/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc.perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true),
-            "https://amihaiemil.github.io/myrepo/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", true, "https://amihaiemil.github.io/myrepo/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc2.perform();
@@ -81,15 +79,13 @@ public class PageHostedOnGithubCheckTestCase {
 		Mockito.doNothing().when(onFalse).perform();
 
     	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true),
-            "http://domain.io/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", true, "http://domain.io/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc.perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true),
-            "ftp://amihaiemil.github.io/folder/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", true, "ftp://amihaiemil.github.io/folder/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc2.perform();
@@ -108,15 +104,13 @@ public class PageHostedOnGithubCheckTestCase {
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false),
-            "http://amihaiemil.github.io/myrepo/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", false, "http://amihaiemil.github.io/myrepo/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc.perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false),
-            "https://amihaiemil.github.io/myrepo/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", false, "https://amihaiemil.github.io/myrepo/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc2.perform();
@@ -135,8 +129,7 @@ public class PageHostedOnGithubCheckTestCase {
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
     	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false),
-            "http://amihaiemil.github.io/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", false, "http://amihaiemil.github.io/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc.perform();
@@ -147,8 +140,7 @@ public class PageHostedOnGithubCheckTestCase {
 		Mockito.doNothing().when(onFalse).perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false),
-            "ftp://amihaiemil.github.io/myrepo/stuff/page.html",
+            this.mockCommand("amihaiemil", "myrepo", false, "ftp://amihaiemil.github.io/myrepo/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue2, onFalse2
         );
         phgc2.perform();
@@ -159,10 +151,13 @@ public class PageHostedOnGithubCheckTestCase {
      * @param owner Login of the owner.
      * @param name Name of the repo.
      * @param hasGhPages Does the repo have gh-pages branchor not?
+     * @param link Link to the the checked page.
      * @return Commadn com.
      * @throws IOException 
      */
-    public Command mockCommand(String owner, String name, boolean hasGhPages) throws IOException {
+    public Command mockCommand(
+        String owner, String name, boolean hasGhPages, String link
+    ) throws IOException {
     	JsonObject repoJson = Json.createObjectBuilder()
             .add("name", name)
         	.add(
@@ -175,9 +170,11 @@ public class PageHostedOnGithubCheckTestCase {
     	Mockito.when(crepo.json()).thenReturn(repoJson);
     	Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);
     	
+    	
     	Mockito.when(com.repo()).thenReturn(crepo);
     	
-    	
+    	JsonObject comBody = Json.createObjectBuilder().add("body", "[link](" + link + ")").build();
+    	Mockito.when(com.json()).thenReturn(comBody);
     	return com;
     }
 }
