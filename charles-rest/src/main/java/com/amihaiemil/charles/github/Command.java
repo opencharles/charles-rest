@@ -26,7 +26,10 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 import java.util.Iterator;
+
+import javax.json.Json;
 import javax.json.JsonObject;
+
 import com.jcabi.github.Issue;
 import com.jcabi.github.User;
 import com.jcabi.http.Request;
@@ -149,7 +152,7 @@ public abstract class Command {
                  ).getString("login")).path("/").path(this.authorLogin()).back();
             return req.fetch().as(JsonResponse.class).json().readObject();
         } else {
-        	throw new IllegalStateException("The owner of the repo is not an organization!");
+            return Json.createObjectBuilder().build();
         }
         	
     }

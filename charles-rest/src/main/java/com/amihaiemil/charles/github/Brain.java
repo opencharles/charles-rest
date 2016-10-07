@@ -237,7 +237,7 @@ public class Brain {
      * @return Step
      * @throws IOException 
      */
-    private Step indexPageStep(Command com, Language lang) throws IOException {
+    public Step indexPageStep(Command com, Language lang) throws IOException {
 	    String repoName = com.repo().json().getString("name");
     	IndexPage ip = new IndexPage(
             com.json().getString("body"), com.authorLogin() + "/" + repoName,
@@ -253,7 +253,7 @@ public class Brain {
      * @return Step
      * @throws IOException 
      */
-    private Step indexSiteStep(Command com, Language lang) throws IOException {
+    public Step indexSiteStep(Command com, Language lang) throws IOException {
     	return new SendReply(
             new TextReply(
         	    com,

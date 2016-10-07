@@ -70,14 +70,14 @@ public class IndexSite extends IndexStep {
 	@Override
 	public void perform() {
         try {
-            this.grapghCrawl().crawl();
+            this.graphCrawl().crawl();
         } catch (DataExportException | IOException e ) {
             logger.error("Exception while indexing the website!", e);
             throw new IllegalStateException("Exception while indexing the website", e);
         }
         this.next().perform();
 	}
-	public WebCrawl grapghCrawl() throws IOException {
+	public WebCrawl graphCrawl() throws IOException {
 		String repoName = com.repo().json().getString("name");
 		String siteIndexUrl;
 	    if(com.repo().hasGhPagesBranch()) {
