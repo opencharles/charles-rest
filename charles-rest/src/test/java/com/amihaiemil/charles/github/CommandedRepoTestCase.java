@@ -24,20 +24,19 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
 
 import com.jcabi.github.Repo;
 import com.jcabi.github.Repos.RepoCreate;

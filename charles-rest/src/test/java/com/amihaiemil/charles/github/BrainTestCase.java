@@ -28,12 +28,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
-import com.amihaiemil.charles.GraphCrawl;
 import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
@@ -90,8 +87,6 @@ public class BrainTestCase {
 		).thenReturn(new CommandCategory("indexsite", english));
 		
 		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
-		Brain spied = Mockito.spy(br);
-//		Mockito.when(spied.i)
 		
 		Steps steps = br.understand(com);
 		assertTrue(steps != null);

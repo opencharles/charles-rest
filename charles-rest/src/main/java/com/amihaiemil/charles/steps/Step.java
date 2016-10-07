@@ -69,6 +69,7 @@ public interface Step {
          */
         public FinalStep(Logger logger, String message) {
             this.logger = logger;
+            this.message = message;
         }
 
     	public void perform() {
