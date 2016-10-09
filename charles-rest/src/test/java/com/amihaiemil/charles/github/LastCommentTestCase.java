@@ -286,8 +286,8 @@ public class LastCommentTestCase {
                 ).build()
             );
             JsonObject mem = lastComment.authorOrgMembership();
-            assertTrue(mem.get("state").equals("snowlake"));
-            assertTrue(mem.get("role").equals("special_test_admin"));
+            assertTrue(mem.getString("state").equals("snowflake"));
+            assertTrue(mem.getString("role").equals("special_test_admin"));
 		} finally {
 			server.stop();
 		}
