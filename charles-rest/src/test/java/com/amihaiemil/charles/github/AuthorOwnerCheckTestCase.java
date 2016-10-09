@@ -70,12 +70,10 @@ public class AuthorOwnerCheckTestCase {
 	@Test
 	public void authorIsNotRepoOwner() throws Exception {
         Command com  = this.mockCommand("someone", "amihaiemil", 0);
-		Step onTrue = Mockito.mock(Step.class);
+        Step onTrue = Mockito.mock(Step.class);
 		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
 		Step onFalse = Mockito.mock(Step.class);
 		Mockito.doNothing().when(onFalse).perform();
-
-        
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
     		com, Mockito.mock(Logger.class), onTrue, onFalse
     	);

@@ -27,9 +27,6 @@
 					<warSourceDirectory>webapp</warSourceDirectory>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<archive>
-						<manifest>
-							<addClasspath>true</addClasspath>
-						</manifest>
 						<manifestEntries>
 							<JCabi-Version>0.28</JCabi-Version>
 							<JCabi-Date>2016-06-05 07:16</JCabi-Date>

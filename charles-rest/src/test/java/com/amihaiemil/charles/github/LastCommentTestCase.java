@@ -25,11 +25,20 @@
 package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.junit.Test;
+import org.mockito.Mockito;
+
 import com.jcabi.github.Comment;
+import com.jcabi.github.Comments;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
 import com.jcabi.github.Issue;
@@ -37,6 +46,10 @@ import com.jcabi.github.Repo;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.github.mock.MkGithub;
 import com.jcabi.github.mock.MkStorage;
+import com.jcabi.http.mock.MkAnswer;
+import com.jcabi.http.mock.MkContainer;
+import com.jcabi.http.mock.MkGrizzlyContainer;
+import com.jcabi.http.request.ApacheRequest;
 
 /**
  * Unit tests for {@link LastComment}
@@ -57,6 +70,42 @@ public class LastCommentTestCase {
     	LastComment lastComment = new LastComment(issues[1]);
     	JsonObject jsonComment = lastComment.json();
     	assertTrue(com.json().equals(jsonComment));
+    }
+	
+	/**
+	 * Command can fetch the agent's login.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+    public void getsAgentLogin() throws Exception {
+    	Issue[] issues = this.mockIssue();
+    	issues[0].comments().post("@charlesmike hello there, how are you?");
+    	LastComment lastComment = new LastComment(issues[1]);
+    	assertTrue(lastComment.agentLogin().equals("charlesmike"));
+    }
+	
+	/**
+	 * Command can fetch the author's login.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+    public void getsAuthorLogin() throws Exception {
+    	Issue[] issues = this.mockIssue();
+    	issues[0].comments().post("@charlesmike hello there, how are you?");
+    	LastComment lastComment = new LastComment(issues[1]);
+    	assertTrue(lastComment.authorLogin().equals("amihaiemil"));
+    }
+	
+	/**
+	 * Command can fetch the author's email.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+    public void getsAuthorEmail() throws Exception {
+        Issue[] issues = this.mockIssue();
+        issues[0].comments().post("@charlesmike hello there, how are you?");
+        LastComment lastComment = new LastComment(issues[1]);
+        assertTrue(lastComment.authorEmail().equals("amihaiemil@gmail.com"));
     }
 	
 	/**
@@ -168,9 +217,10 @@ public class LastCommentTestCase {
      * are posted) and 1 from the agent's Github (where comments are checked)
      * @throws IOException If something goes wrong.
      */
-    public Issue[] mockIssue() throws IOException {
+    private Issue[] mockIssue() throws IOException {
     	MkStorage storage = new MkStorage.InFile();
     	Github commanderGithub = new MkGithub(storage, "amihaiemil");
+    	commanderGithub.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
     	Github agentGithub = new MkGithub(storage, "charlesmike");
     	
     	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
@@ -183,7 +233,74 @@ public class LastCommentTestCase {
     	issues[1] = agentsIssue;
     	
     	return issues;
-    	
-    	
+    }
+
+	/**
+	 * Command can fetch the author's organization membership.
+	 * @throws Exception if something goes wrong.
+	 */
+	@Test
+    public void getsOrganizationMembership() throws Exception {
+		int port = this.port();
+        MkContainer server = new MkGrizzlyContainer()
+		    .next(
+		        new MkAnswer.Simple(
+		            Json.createObjectBuilder()
+			            .add("state", "snowflake")
+			            .add("role", "special_test_admin")
+			            .build().toString()
+		        )
+		    ).start(port);
+		try {
+		    Github gh = Mockito.mock(Github.class);
+            Mockito.when(gh.entry()).thenReturn(
+                new ApacheRequest("http://localhost:" + port + "/")		
+            );
+		    Repo repo = Mockito.mock(Repo.class);
+            Mockito.when(repo.json()).thenReturn(
+                Json.createObjectBuilder().add(
+                    "owner",
+                    Json.createObjectBuilder().add(
+                        "type", "organization"		
+                    ).add(
+                        "login", "someorganization"
+                    ).build()
+                ).build()
+            );
+            Mockito.when(repo.github()).thenReturn(gh);
+		    
+            Comments comments = Mockito.mock(Comments.class);
+            Mockito.when(comments.iterate()).thenReturn(new ArrayList<Comment>());
+            
+            Issue issue = Mockito.mock(Issue.class);
+		    Mockito.when(issue.repo()).thenReturn(repo);
+		    Mockito.when(issue.comments()).thenReturn(comments);
+
+            LastComment lastComment = new LastComment(issue);
+            lastComment.comment(
+                Json.createObjectBuilder().add(
+                    "user",
+                    Json.createObjectBuilder()
+                        .add("login", "amihaiemil")
+                        .build()
+                ).build()
+            );
+            JsonObject mem = lastComment.authorOrgMembership();
+            assertTrue(mem.getString("state").equals("snowflake"));
+            assertTrue(mem.getString("role").equals("special_test_admin"));
+		} finally {
+			server.stop();
+		}
+    }
+
+    /**
+     * Find a free port.
+     * @return A free port.
+     * @throws IOException If something goes wrong.
+     */
+    private int port() throws IOException {
+        try (ServerSocket socket = new ServerSocket(0)) {
+            return socket.getLocalPort();
+        }
     }
 }
