@@ -64,6 +64,7 @@ public class IndexSite extends IndexStep {
         Command com, Logger logger, Step next
     ) {
     	super(next);
+    	this.com = com;
         this.logger = logger;
     }
 
