@@ -22,54 +22,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
-
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.http.HttpResponse;
-import com.amazonaws.http.HttpResponseHandler;
-
 /**
- * A simple aws response handler that only checks that the http status is within the 200 range.
- * If not, {@link AmazonServiceException} is thrown.
+ * This package contains model classes used by the
+ * REST services to represent data.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
- * @since 1.0.0
- *
  */
-public class SimpleAwsResponseHandler implements
-    HttpResponseHandler<HttpResponse> {
-
-	/**
-	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
-	 */
-	private boolean needsConnectionLeftOpen;
-
-	/**
-	 * Ctor.
-	 * @param connectionLeftOpen Should the connection be closed immediately or not?
-	 */
-	public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
-		this.needsConnectionLeftOpen = connectionLeftOpen;
-	}
-
-	@Override
-	public HttpResponse handle(HttpResponse response)
-			throws Exception {
-
-		int status = response.getStatusCode();
-		if(status < 200 || status >= 300) {
-			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
-			ase.setStatusCode(status);
-			throw ase;
-		}
-
-        return response;
-		
-	}
-
-	@Override
-	public boolean needsConnectionLeftOpen() {
-		return this.needsConnectionLeftOpen;
-	}
-
-}
+package com.amihaiemil.charles.rest.model;

@@ -88,7 +88,7 @@ public class IndexSite extends IndexStep {
 		}
 		WebCrawl siteCrawl = new GraphCrawl(
 		    siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
-		    new AmazonEsRepository(com.authorLogin() + "/" + repoName), 20
+		    new AmazonEsRepository(com.authorLogin() + "X" + repoName), 20
 		);
 		return siteCrawl;
 	}

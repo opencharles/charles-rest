@@ -22,54 +22,55 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
-
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.http.HttpResponse;
-import com.amazonaws.http.HttpResponseHandler;
+package com.amihaiemil.charles.rest.model;
 
 /**
- * A simple aws response handler that only checks that the http status is within the 200 range.
- * If not, {@link AmazonServiceException} is thrown.
+ * A search result.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class SimpleAwsResponseHandler implements
-    HttpResponseHandler<HttpResponse> {
+public class SearchResult {
 
 	/**
-	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
+	 * Link to the page.
 	 */
-	private boolean needsConnectionLeftOpen;
+    private String link;
 
-	/**
-	 * Ctor.
-	 * @param connectionLeftOpen Should the connection be closed immediately or not?
-	 */
-	public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
-		this.needsConnectionLeftOpen = connectionLeftOpen;
+    /**
+     * Preview text.
+     */
+    private String preview;
+
+    /**
+     * Category.
+     */
+    private String category;
+
+	public String getLink() {
+		return link;
 	}
 
-	@Override
-	public HttpResponse handle(HttpResponse response)
-			throws Exception {
-
-		int status = response.getStatusCode();
-		if(status < 200 || status >= 300) {
-			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
-			ase.setStatusCode(status);
-			throw ase;
-		}
-
-        return response;
-		
+	public void setLink(String link) {
+		this.link = link;
 	}
 
-	@Override
-	public boolean needsConnectionLeftOpen() {
-		return this.needsConnectionLeftOpen;
+	public String getPreview() {
+		return preview;
 	}
 
+	public void setPreview(String preview) {
+		this.preview = preview;
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+    
+    
 }

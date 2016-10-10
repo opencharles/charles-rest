@@ -25,84 +25,78 @@
 package com.amihaiemil.charles.aws;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.net.URI;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
-import com.amazonaws.http.HttpResponse;
-import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.Repository;
-import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.rest.model.EsQuery;
+import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
- * AWS ElasticSearch repository that sends the webpages to the
- * Amazon ElasticSearch service, using the AWS sdk (for ease of request signing)
+ * Perform a search in the Amazon ElasticSerch service
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
+ *
  */
-public class AmazonEsRepository implements Repository {
-    private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
-
-    /**
-     * Name of the Es index where the pages will be exported.
-     */
-    private String indexName;
-
-    /**
-     * ctor.
-     * @param indexName Name of the Es index where the pages will be exported.
-     */
-    public AmazonEsRepository(String indexName) {
-        this.indexName = indexName;
-    }
-
-	@Override
-	public void export(List<WebPage> pages) throws DataExportException {
-		try {
-			SignedRequest<HttpResponse> sr = new SignedRequest<>(
-			    this.buildAwsIndexRequest(
-			        new EsBulkJson(this.indexName, pages).structure()
-			    ),
-			    new SimpleAwsResponseHandler(false),
-			    new SimpleAwsErrorHandler(false)
-			);
-			sr.sendRequest();
-		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
-            throw new DataExportException(e.getMessage());
-		}
-	}
+public class AmazonEsSearch {
 
 	/**
-	 * Builds the POST request to send to the
-	 * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">
-	 * Es Bulk API
+	 * ElasticSearch  query.
+	 */
+	private EsQuery query;
+
+	/**
+	 * Index to search into.
+	 */
+	private String indexName;
+
+	/**
+	 * Ctor.
+	 * @param qry
+	 * @param idxName
+	 */
+	public AmazonEsSearch(EsQuery qry, String idxName) {
+		this.query = qry;
+		this.indexName = idxName;
+	}
+
+	public SearchResultsPage search() {
+	    SignedRequest<SearchResultsPage> sr = new SignedRequest<>(
+	        this.buildAwsSearchRequest(),
+			    new SearchResponseHandler(),
+			    new SimpleAwsErrorHandler(false)
+	    );
+		return sr.sendRequest();
+	}
+	/**
+	 * Builds the GET request to send to the
+	 * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">
+	 * Es Search API
 	 * </a>
 	 * @param data Json structure expected by the bulk api.
 	 * @return Aws request.
 	 */
-    public Request<Void> buildAwsIndexRequest(String data) {
+    public Request<Void> buildAwsSearchRequest() {
         Request<Void> request = new DefaultRequest<Void>("es");
-	    request.setContent(new ByteArrayInputStream(data.getBytes()));
 	    String esEndpoint = System.getProperty("aws.es.endpoint");
 	    if(esEndpoint == null || esEndpoint.isEmpty()) {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
         }
+	    String search = "_search/"
+            + indexName + "/" 
+	    	+ query.getCategory() + "?q=textContent="
+            + query.getContent() + "&from="
+            + query.getIndex() + "&size="
+            + query.getNr();
 	    if(esEndpoint.endsWith("/")) {
-	    	esEndpoint += "_bulk?pretty";
+	    	esEndpoint += search;
 	    } else {
-	    	esEndpoint += "/_bulk?pretty";
+	    	esEndpoint += "/" + search;
 	    }
 	    request.setEndpoint(URI.create(esEndpoint));
-	    request.setHttpMethod(HttpMethodName.POST);
+	    request.setHttpMethod(HttpMethodName.GET);
 	    return request;
 	}
-
 }

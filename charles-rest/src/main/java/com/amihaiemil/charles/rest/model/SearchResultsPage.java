@@ -22,54 +22,95 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.rest.model;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.http.HttpResponse;
-import com.amazonaws.http.HttpResponseHandler;
+import java.util.List;
 
 /**
- * A simple aws response handler that only checks that the http status is within the 200 range.
- * If not, {@link AmazonServiceException} is thrown.
+ * A page of search results.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class SimpleAwsResponseHandler implements
-    HttpResponseHandler<HttpResponse> {
+public class SearchResultsPage {
 
 	/**
-	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
+	 * Search results on this page.
 	 */
-	private boolean needsConnectionLeftOpen;
+    private List<SearchResult> results;
 
-	/**
-	 * Ctor.
-	 * @param connectionLeftOpen Should the connection be closed immediately or not?
-	 */
-	public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
-		this.needsConnectionLeftOpen = connectionLeftOpen;
+    /**
+     * Total of results found.
+     */
+    private int totalHits;
+
+    /**
+     * Page number - what page we're on?
+     */
+    private int pageNr;
+
+    /**
+     * Link to the previosus results page.
+     */
+    private String previousPage;
+
+    /**
+     * Link to the next results page.
+     */
+    private String nextPage;
+
+    /**
+     * List of links to all the found pages.
+     */
+    private List<String> pages;
+
+	public List<SearchResult> getResults() {
+		return results;
 	}
 
-	@Override
-	public HttpResponse handle(HttpResponse response)
-			throws Exception {
-
-		int status = response.getStatusCode();
-		if(status < 200 || status >= 300) {
-			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
-			ase.setStatusCode(status);
-			throw ase;
-		}
-
-        return response;
-		
+	public void setResults(List<SearchResult> results) {
+		this.results = results;
 	}
 
-	@Override
-	public boolean needsConnectionLeftOpen() {
-		return this.needsConnectionLeftOpen;
+	public int getTotalHits() {
+		return totalHits;
 	}
 
+	public void setTotalHits(int totalHits) {
+		this.totalHits = totalHits;
+	}
+
+	public int getPageNr() {
+		return pageNr;
+	}
+
+	public void setPageNr(int pageNr) {
+		this.pageNr = pageNr;
+	}
+
+	public String getPreviousPage() {
+		return previousPage;
+	}
+
+	public void setPreviousPage(String previousPage) {
+		this.previousPage = previousPage;
+	}
+
+	public String getNextPage() {
+		return nextPage;
+	}
+
+	public void setNextPage(String nextPage) {
+		this.nextPage = nextPage;
+	}
+
+	public List<String> getPages() {
+		return pages;
+	}
+
+	public void setPages(List<String> pages) {
+		this.pages = pages;
+	}
+    
 }

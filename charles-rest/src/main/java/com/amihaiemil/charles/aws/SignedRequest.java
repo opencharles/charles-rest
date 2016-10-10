@@ -32,11 +32,11 @@ import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.http.ExecutionContext;
-import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
 
 /**
- * A request made to AWS which is 
+ * A request made to AWS.
+ * @param <T> Response type.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
@@ -44,10 +44,10 @@ import com.amazonaws.http.HttpResponseHandler;
  * @see <a href="https://blogs.aws.amazon.com/security/post/Tx3VP208IBVASUQ/How-to-Control-Access-to-Your-Amazon-Elasticsearch-Service-Domain">Aws blog post</a>
  *
  */
-public class SignedRequest {
+public class SignedRequest<T> {
 
 	private Request<Void> request;
-    private HttpResponseHandler<HttpResponse> respHandler;
+    private HttpResponseHandler<T> respHandler;
     private HttpResponseHandler<AmazonServiceException> errHandler;
 
 	/**
@@ -58,7 +58,7 @@ public class SignedRequest {
 	 */
 	public SignedRequest(
 	    Request<Void> req,
-	    HttpResponseHandler<HttpResponse> respHandler,
+	    HttpResponseHandler<T> respHandler,
 	    HttpResponseHandler<AmazonServiceException> errHandler
 	) {
 		AWS4Signer signer = new AWS4Signer();
@@ -79,14 +79,14 @@ public class SignedRequest {
      * Send it.
      * The Response is handled in the specified response handler.
      */
-    public void sendRequest() {
-        Response<HttpResponse> r = new AmazonHttpClient(new ClientConfiguration())
+    public T sendRequest() {
+        Response<T> r = new AmazonHttpClient(new ClientConfiguration())
             .execute(
                 this.request, new ExecutionContext(true), this.respHandler, this.errHandler
             );
-        r.getAwsResponse().getStatusCode();
+        return r.getAwsResponse();
     }
-	
+
 	/**
 	 * AWS credentials (aws access key id and aws secret key from the system properties).
 	 */
@@ -111,5 +111,5 @@ public class SignedRequest {
 		}
 		
 	}
-	
+
 }
