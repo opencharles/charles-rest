@@ -25,14 +25,18 @@
 package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+
 import com.amihaiemil.charles.steps.IndexStep;
 import com.amihaiemil.charles.steps.Step;
 import com.google.common.collect.Lists;
