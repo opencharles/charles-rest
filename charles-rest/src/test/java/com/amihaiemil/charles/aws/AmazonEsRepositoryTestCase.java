@@ -65,8 +65,8 @@ public class AmazonEsRepositoryTestCase {
 
 		System.setProperty("aws.accessKeyId", "access_key");
 		System.setProperty("aws.es.region", "ro");
-		System.setProperty("aws.es.bulk.endpoint", "_bulk/api/path");
-		
+		System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
+
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
@@ -87,8 +87,8 @@ public class AmazonEsRepositoryTestCase {
 		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
 		System.setProperty("aws.es.region", "ro");
-		System.setProperty("aws.es.bulk.endpoint", "_bulk/api/path");
-		
+		System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
+
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
@@ -108,8 +108,8 @@ public class AmazonEsRepositoryTestCase {
 		pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
 		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
-		System.setProperty("aws.es.bulk.endpoint", "_bulk/api/path");
-		
+		System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
+
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		try {
 		    repo.export(pages);
@@ -134,7 +134,7 @@ public class AmazonEsRepositoryTestCase {
 		System.setProperty("aws.es.region", "ro");
 		
 		int port = this.port();
-		System.setProperty("aws.es.bulk.endpoint", "http://localhost:" + port + "/es/_bulk/api/path");
+		System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
 	
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		
@@ -163,9 +163,8 @@ public class AmazonEsRepositoryTestCase {
 		System.setProperty("aws.accessKeyId", "access_key");
 		System.setProperty("aws.secretKey", "secret_key");
 		System.setProperty("aws.es.region", "ro");
-		
 		int port = this.port();
-		System.setProperty("aws.es.bulk.endpoint", "http://localhost:" + port + "/es/_bulk/api/path");
+		System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es/");
 	
 		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
 		
@@ -177,7 +176,7 @@ public class AmazonEsRepositoryTestCase {
 		try {
 		    repo.export(pages);
 		} catch (AmazonServiceException ase) {
-		    assertTrue(ase.getMessage().contains("Caught in handler: unexpected status: 412"));
+		    assertTrue(ase.getErrorMessage().contains("Precondition Failed"));
 		}finally {
 			server.stop();
 		}
@@ -192,6 +191,7 @@ public class AmazonEsRepositoryTestCase {
 		System.clearProperty("aws.es.region");
 		System.clearProperty("aws.accessKeyId");
 		System.clearProperty("aws.secretKey");
+		System.clearProperty("aws.es.endpoint");
 	}
 	
 	/**

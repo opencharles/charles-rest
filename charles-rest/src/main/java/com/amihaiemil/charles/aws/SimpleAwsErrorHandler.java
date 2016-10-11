@@ -49,15 +49,13 @@ public class SimpleAwsErrorHandler implements HttpResponseHandler<AmazonServiceE
 	public SimpleAwsErrorHandler(boolean connectionLeftOpen) {
 		this.needsConnectionLeftOpen = connectionLeftOpen;
 	}
-	
-	@Override
-	public AmazonServiceException handle(HttpResponse response)
-			throws Exception {
-		AmazonServiceException ase = new AmazonServiceException("Caught in handler: unexpected status: " + response.getStatusCode());
+
+    @Override
+    public AmazonServiceException handle(HttpResponse response) {
+		AmazonServiceException ase = new AmazonServiceException(response.getStatusText());
         ase.setStatusCode(response.getStatusCode());
-        ase.setErrorCode(response.getStatusText());
         return ase;
-	}
+    }
 
 	@Override
 	public boolean needsConnectionLeftOpen() {

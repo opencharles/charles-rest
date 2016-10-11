@@ -1,0 +1,154 @@
+{
+  "took" : 3,
+  "timed_out" : false,
+  "_shards" : {
+    "total" : 15,
+    "successful" : 15,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 27,
+    "max_score" : 1.0,
+    "hits" : [ {
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "tech",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page2.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page2.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "tech",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "development",
+      "_id" : "http://amihaiemil.com/stuff/more/page2.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/stuff/more/page2.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/stuff/more/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "development",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "mischelaneous",
+      "_id" : "http://amihaiemil.com/stuff/page4.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/stuff/page4.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/stuff/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "mischelaneous",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page3.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page3.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "tech",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "mischelaneous",
+      "_id" : "http://amihaiemil.com/stuff/page3.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/stuff/page3.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/stuff/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "mischelaneous",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page5.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page5.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "tech",
+        "links" : [ ]
+      }
+    }, {
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page1.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page1.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "tech",
+        "links" : [ ]
+      }
+    },{
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page56.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page1.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "tech",
+        "links" : [ ]
+      }
+    },{
+      "_index" : "testindex",
+      "_type" : "tech",
+      "_id" : "http://amihaiemil.com/page34.html",
+      "_score" : 1.0,
+      "_source" : {
+        "id" : "http://amihaiemil.com/page1.html",
+        "name" : "page.html",
+        "url" : "http://amihaiemil.com/some/other/page.html",
+        "title" : "page | title",
+        "textContent" : "text content...",
+        "category" : "mischelaneous",
+        "links" : [ ]
+      }
+    } ]
+  }
+}

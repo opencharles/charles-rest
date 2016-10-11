@@ -24,9 +24,7 @@
  */
 package com.amihaiemil.charles.aws;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
-
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
@@ -70,6 +68,7 @@ public class AmazonEsSearch {
 	    );
 		return sr.sendRequest();
 	}
+
 	/**
 	 * Builds the GET request to send to the
 	 * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">

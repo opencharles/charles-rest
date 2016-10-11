@@ -24,6 +24,7 @@
  */
 package com.amihaiemil.charles.rest.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +39,7 @@ public class SearchResultsPage {
 	/**
 	 * Search results on this page.
 	 */
-    private List<SearchResult> results;
+    private List<SearchResult> results = new ArrayList<SearchResult>();
 
     /**
      * Total of results found.
@@ -48,22 +49,22 @@ public class SearchResultsPage {
     /**
      * Page number - what page we're on?
      */
-    private int pageNr;
+    private int pageNr = 1;
 
     /**
      * Link to the previosus results page.
      */
-    private String previousPage;
+    private String previousPage = "-";
 
     /**
      * Link to the next results page.
      */
-    private String nextPage;
+    private String nextPage = "-";
 
     /**
      * List of links to all the found pages.
      */
-    private List<String> pages;
+    private List<String> pages = new ArrayList<String>();
 
 	public List<SearchResult> getResults() {
 		return results;

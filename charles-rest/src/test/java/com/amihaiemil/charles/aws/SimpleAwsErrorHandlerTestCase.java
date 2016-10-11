@@ -22,74 +22,38 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.rest.model;
+package com.amihaiemil.charles.aws;
+
+import static org.junit.Assert.*;
+import java.net.HttpURLConnection;
+import org.junit.Test;
+import org.mockito.Mockito;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.http.HttpResponse;
 
 /**
- * A search result.
+ * Test cases for {@link SimpleAwsErrorHandler}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class SearchResult {
+public class SimpleAwsErrorHandlerTestCase {
 
 	/**
-	 * Link to the page.
+	 * SimpleAwsErrorHandler returns an {@link AmazonServiceException}
+	 * from an {@link HttpResponse}.
 	 */
-    private String link;
-
-    /**
-     * Preview text.
-     */
-    private String highlight;
-
-    /**
-     * Category.
-     */
-    private String category;
-
-    /**
-     * Default ctor.
-     */
-    public SearchResult() {
-    	this("", "", "");
+	@Test
+	public void returnsAwsException() {
+    	HttpResponse resp = Mockito.mock(HttpResponse.class);
+    	Mockito.when(resp.getStatusCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+    	Mockito.when(resp.getStatusText()).thenReturn("Test not-found response");
+    	SimpleAwsErrorHandler handler = new SimpleAwsErrorHandler(false);
+    	assertFalse(handler.needsConnectionLeftOpen());
+    	
+    	AmazonServiceException aes = handler.handle(resp);
+    	assertTrue(aes.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND);
+    	assertTrue(aes.getErrorMessage().equals("Test not-found response"));
     }
-
-    /**
-     * Ctor.
-     * @param link
-     * @param highlight
-     * @param category
-     */
-    public SearchResult(String link, String highlight, String category) {
-        this.link = link;
-        this.highlight = highlight;
-        this.category = category;
-    }
-    
-	public String getLink() {
-		return link;
-	}
-
-	public void setLink(String link) {
-		this.link = link;
-	}
-
-	public String getHighlight() {
-		return highlight;
-	}
-
-	public void setHighlight(String highlight) {
-		this.highlight = highlight;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-    
-    
 }

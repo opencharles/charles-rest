@@ -53,8 +53,7 @@ public class SimpleAwsResponseHandler implements
 	}
 
 	@Override
-	public HttpResponse handle(HttpResponse response)
-			throws Exception {
+	public HttpResponse handle(HttpResponse response) {
 
 		int status = response.getStatusCode();
 		if(status < 200 || status >= 300) {
