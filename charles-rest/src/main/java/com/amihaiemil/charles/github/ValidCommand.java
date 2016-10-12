@@ -37,13 +37,13 @@ import org.apache.commons.lang3.StringUtils;
 public class ValidCommand extends Command {
 
     /**
-	 * Constructor.
+     * Constructor.
      * @param Given Comment.
      * @throws IllegalArgumentException if the comment (command) is not valid..
      */
     public ValidCommand(Command com) throws IllegalArgumentException {
         super(com.issue(), com.json());
-    	String body = com.json().getString("body");
+        String body = com.json().getString("body");
         if(StringUtils.isEmpty(body)) {
             throw new IllegalArgumentException("Invalid command!");
         }

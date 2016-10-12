@@ -61,7 +61,7 @@ public class RepoNameCheck extends PreconditionCheckStep {
      */
     public RepoNameCheck(JsonObject repo, Logger logger, Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
-    	this.repo = repo;
+        this.repo = repo;
         this.logger = logger;
     }
 

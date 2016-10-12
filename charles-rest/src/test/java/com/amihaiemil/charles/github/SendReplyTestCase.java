@@ -52,11 +52,11 @@ import com.jcabi.github.mock.MkGithub;
  * 
  */
 public class SendReplyTestCase {
-	/**
-	 * {@link SendReply} can send a comment to a Github issue.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
+    /**
+     * {@link SendReply} can send a comment to a Github issue.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
     public void sendsComment() throws Exception {
         Command com = this.mockCommand();
         Reply rep = new TextReply(com, "Hello there!");
@@ -65,7 +65,7 @@ public class SendReplyTestCase {
             Mockito.mock(Step.class)
         );
 
-    	sr.perform();
+        sr.perform();
 
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 1);
@@ -76,25 +76,25 @@ public class SendReplyTestCase {
         );
 
     }
-	
-	/**
-	 * {@link SendReply} returns false if the reply send fails.
-	 * @throws Exception If something goes worng.
-	 */
-	@Test
-	public void replySendFails() throws Exception {
-	    Reply rep = Mockito.mock(Reply.class);
-	    Mockito.doThrow(new IOException("This is expected, it's ok!")).when(rep).send();
-	    try {
-	        new SendReply(
-	            rep, Mockito.mock(Logger.class),
-	            Mockito.mock(Step.class)
-	        ).perform();
-	        fail("Expected ISE here, but was not thrown");
-	    } catch (IllegalStateException ex) {
-	    	assertTrue(ex.getMessage().equals("IOException when sending the reply!"));
-	    }
-	}
+    
+    /**
+     * {@link SendReply} returns false if the reply send fails.
+     * @throws Exception If something goes worng.
+     */
+    @Test
+    public void replySendFails() throws Exception {
+        Reply rep = Mockito.mock(Reply.class);
+        Mockito.doThrow(new IOException("This is expected, it's ok!")).when(rep).send();
+        try {
+            new SendReply(
+                rep, Mockito.mock(Logger.class),
+                Mockito.mock(Step.class)
+            ).perform();
+            fail("Expected ISE here, but was not thrown");
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().equals("IOException when sending the reply!"));
+        }
+    }
     
     /**
      * Mock a command.
@@ -102,16 +102,16 @@ public class SendReplyTestCase {
      * @throws IOException If something goes wrong.
      */
     public Command mockCommand() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
-    	Command com = Mockito.mock(Command.class);
-    	Mockito.when(com.issue()).thenReturn(issue);
-    	Mockito.when(com.json()).thenReturn(Json.createObjectBuilder().add("body", "@charlesmike hello").build());
-    	return com;
+        Github gh = new MkGithub("amihaiemil");
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        gh.repos().create(repoCreate);
+        Issue issue = gh.repos().get(
+                          new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+                      ).issues().create("Test issue for commands", "test body");
+        Command com = Mockito.mock(Command.class);
+        Mockito.when(com.issue()).thenReturn(issue);
+        Mockito.when(com.json()).thenReturn(Json.createObjectBuilder().add("body", "@charlesmike hello").build());
+        return com;
     }
 
 }

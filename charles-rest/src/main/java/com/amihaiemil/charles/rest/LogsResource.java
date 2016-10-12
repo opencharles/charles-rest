@@ -39,22 +39,22 @@ import javax.ws.rs.core.Response;
 @Path("/logs")
 public class LogsResource {
 
-	/**
-	 * Fetch the log file of an Action by name.
-	 * @return HTTP Response.
-	 */
-	@Path("/{name}")
-	@GET
+    /**
+     * Fetch the log file of an Action by name.
+     * @return HTTP Response.
+     */
+    @Path("/{name}")
+    @GET
     public Response getActionLogs(@PathParam("name") String name) {
-		String logroot = System.getProperty("LOG_ROOT");
-		if(logroot != null) {
-			File log = new File(logroot + "/Charles-Github-Ejb/ActionsLogs/" + name);
-			if(log.exists()) {
-				return Response.ok()
-					.entity(log)
-					.header("Content-Type", "text/plain; charset=UTF-8").build();
-			}
-		}
-		return Response.noContent().build();
+        String logroot = System.getProperty("LOG_ROOT");
+        if(logroot != null) {
+            File log = new File(logroot + "/Charles-Github-Ejb/ActionsLogs/" + name);
+            if(log.exists()) {
+                return Response.ok()
+                    .entity(log)
+                    .header("Content-Type", "text/plain; charset=UTF-8").build();
+            }
+        }
+        return Response.noContent().build();
     }
 }

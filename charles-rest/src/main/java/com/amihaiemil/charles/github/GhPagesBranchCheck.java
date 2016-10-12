@@ -41,15 +41,15 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class GhPagesBranchCheck extends PreconditionCheckStep {
 
-	/**
-	 * Repository json as returned by the Github API.
-	 */
-	private Command com;
-	
-	/**
-	 * Logger.
-	 */
-	private Logger logger;
+    /**
+     * Repository json as returned by the Github API.
+     */
+    private Command com;
+    
+    /**
+     * Logger.
+     */
+    private Logger logger;
 
     /**
      * Constructor.
@@ -62,7 +62,7 @@ public class GhPagesBranchCheck extends PreconditionCheckStep {
         Command com, Logger logger,
         Step onTrue, Step onFalse
     ) {
-    	super(onTrue, onFalse);
+        super(onTrue, onFalse);
         this.com = com;
         this.logger = logger;
     }
@@ -72,20 +72,20 @@ public class GhPagesBranchCheck extends PreconditionCheckStep {
      */
     @Override
     public void perform() { 
-    	logger.info("Checking whether the repository has a gh-pages branch...");
-    	try {
-    		
-    		if (com.repo().hasGhPagesBranch()) {
-    			logger.info("The repo has a gh-pages branch - OK!");
-    			this.onTrue().perform();
-    		} else {
-    			logger.info("The repo does NOT have a gh-pages branch");
-    			this.onFalse().perform();
-    		}
-		} catch (IOException e) {
-			logger.error("Exception when checking if gh-pages branch exists", e);
-			throw new IllegalStateException("Exception when checking if gh-pages branch exists", e);
-		}
+        logger.info("Checking whether the repository has a gh-pages branch...");
+        try {
+            
+            if (com.repo().hasGhPagesBranch()) {
+                logger.info("The repo has a gh-pages branch - OK!");
+                this.onTrue().perform();
+            } else {
+                logger.info("The repo does NOT have a gh-pages branch");
+                this.onFalse().perform();
+            }
+        } catch (IOException e) {
+            logger.error("Exception when checking if gh-pages branch exists", e);
+            throw new IllegalStateException("Exception when checking if gh-pages branch exists", e);
+        }
     }
 
 }

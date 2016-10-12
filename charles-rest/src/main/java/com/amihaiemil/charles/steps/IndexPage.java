@@ -46,49 +46,49 @@ public class IndexPage extends IndexStep {
      */
     private Logger logger;
 
-	/**
-	 * Command text.
-	 */
-	private String commandBody;
+    /**
+     * Command text.
+     */
+    private String commandBody;
 
-	/**
-	 * Es index.
-	 */
-	private String index;
+    /**
+     * Es index.
+     */
+    private String index;
 
-	/**
-	 * Ctor.
-	 * @param commandBody Text of the index-page command.
-	 * @param indexName Name of the Es index where the page will go.
-	 * @param logger Logger.
-	 * @param next Next step to take.
-	 */
+    /**
+     * Ctor.
+     * @param commandBody Text of the index-page command.
+     * @param indexName Name of the Es index where the page will go.
+     * @param logger Logger.
+     * @param next Next step to take.
+     */
     public IndexPage(
         String commandBody, String indexName, Logger logger, Step next
     ) {
-    	super(next);
+        super(next);
         this.commandBody = commandBody;
         this.index = indexName;
         this.logger = logger;
     }
 
-	@Override
-	public void perform() {
-		String link = this.getLink();
-		WebPage snapshot = new SnapshotWebPage(
-		    new LiveWebPage(this.phantomJsDriver(), link)
-		);
+    @Override
+    public void perform() {
+        String link = this.getLink();
+        WebPage snapshot = new SnapshotWebPage(
+            new LiveWebPage(this.phantomJsDriver(), link)
+        );
         try {
             new AmazonEsRepository(this.index).export(Arrays.asList(snapshot));
         } catch (DataExportException e) {
             logger.error("Exception while indexing the page " + link, e);
             throw new IllegalStateException("Exception while indexing the page" + link, e);
-		}
+        }
         this.next().perform();
     }
 
-	private String getLink() {
-		return this.commandBody.substring(commandBody.indexOf('('), commandBody.indexOf(')'));
-	}
+    private String getLink() {
+        return this.commandBody.substring(commandBody.indexOf('('), commandBody.indexOf(')'));
+    }
 
 }

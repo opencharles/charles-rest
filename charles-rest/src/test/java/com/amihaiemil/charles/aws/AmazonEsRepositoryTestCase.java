@@ -53,166 +53,166 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  */
 public class AmazonEsRepositoryTestCase {
 
-	/**
-	 * IllegalStateException is thrown on missing secret key property.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void illegalStateOnMissingSecretKey() throws Exception {
-		List<WebPage> pages = new ArrayList<WebPage>();
-		pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+    /**
+     * IllegalStateException is thrown on missing secret key property.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void illegalStateOnMissingSecretKey() throws Exception {
+        List<WebPage> pages = new ArrayList<WebPage>();
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
-		System.setProperty("aws.accessKeyId", "access_key");
-		System.setProperty("aws.es.region", "ro");
-		System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
+        System.setProperty("aws.accessKeyId", "access_key");
+        System.setProperty("aws.es.region", "ro");
+        System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
 
-		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
-		try {
-		    repo.export(pages);
-		    fail();
-		} catch (IllegalStateException ex) {
-			assertTrue(ex.getMessage().contains("Mandatory sys property aws.secretKey"));
-		}
-	}
-	
-	/**
-	 * IllegalStateException is thrown on missing access key property.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void illegalStateOnMissingAccessKey() throws Exception {
-		List<WebPage> pages = new ArrayList<WebPage>();
-		pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        try {
+            repo.export(pages);
+            fail();
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().contains("Mandatory sys property aws.secretKey"));
+        }
+    }
+    
+    /**
+     * IllegalStateException is thrown on missing access key property.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void illegalStateOnMissingAccessKey() throws Exception {
+        List<WebPage> pages = new ArrayList<WebPage>();
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
-		System.setProperty("aws.es.region", "ro");
-		System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
+        System.setProperty("aws.es.region", "ro");
+        System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
 
-		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
-		try {
-		    repo.export(pages);
-		    fail();
-		} catch (IllegalStateException ex) {
-			assertTrue(ex.getMessage().contains("Mandatory sys property aws.accessKeyId"));
-		}
-	}
-	
-	/**
-	 * IllegalStateException is thrown on missing region property.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void illegalStateOnMissingRegion() throws Exception {
-		List<WebPage> pages = new ArrayList<WebPage>();
-		pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        try {
+            repo.export(pages);
+            fail();
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().contains("Mandatory sys property aws.accessKeyId"));
+        }
+    }
+    
+    /**
+     * IllegalStateException is thrown on missing region property.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void illegalStateOnMissingRegion() throws Exception {
+        List<WebPage> pages = new ArrayList<WebPage>();
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
-		System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
+        System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
 
-		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
-		try {
-		    repo.export(pages);
-		    fail();
-		} catch (IllegalStateException ex) {
-			assertTrue(ex.getMessage().contains("Mandatory sys property aws.es.region"));
-		}
-	}
-	
-	/**
-	 * A request is send to the AWS Es service.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void sendsRequestToAwsEs() throws Exception {
-		List<WebPage> pages = new ArrayList<WebPage>();
-		pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        try {
+            repo.export(pages);
+            fail();
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().contains("Mandatory sys property aws.es.region"));
+        }
+    }
+    
+    /**
+     * A request is send to the AWS Es service.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void sendsRequestToAwsEs() throws Exception {
+        List<WebPage> pages = new ArrayList<WebPage>();
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
-		System.setProperty("aws.accessKeyId", "access_key");
-		System.setProperty("aws.secretKey", "secret_key");
-		System.setProperty("aws.es.region", "ro");
-		
-		int port = this.port();
-		System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
-	
-		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
-		
-		MkContainer server = new MkGrizzlyContainer()
-		   .next(
-		       new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}")
-		   )
-		   .start(port);
-		try {
-		    repo.export(pages);
-		} finally {
-			server.stop();
-		}
-	}
-	
-	/**
-	 * A request is send to the AWS Es service.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void sendsRequestToAwsEsWithError() throws Exception {
-		List<WebPage> pages = new ArrayList<WebPage>();
-		pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-		pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        System.setProperty("aws.accessKeyId", "access_key");
+        System.setProperty("aws.secretKey", "secret_key");
+        System.setProperty("aws.es.region", "ro");
+        
+        int port = this.port();
+        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
+    
+        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        
+        MkContainer server = new MkGrizzlyContainer()
+           .next(
+               new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}")
+           )
+           .start(port);
+        try {
+            repo.export(pages);
+        } finally {
+            server.stop();
+        }
+    }
+    
+    /**
+     * A request is send to the AWS Es service.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void sendsRequestToAwsEsWithError() throws Exception {
+        List<WebPage> pages = new ArrayList<WebPage>();
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
 
-		System.setProperty("aws.accessKeyId", "access_key");
-		System.setProperty("aws.secretKey", "secret_key");
-		System.setProperty("aws.es.region", "ro");
-		int port = this.port();
-		System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es/");
-	
-		AmazonEsRepository repo = new AmazonEsRepository("testIndex");
-		
-		MkContainer server = new MkGrizzlyContainer()
-		   .next(
-		       new MkAnswer.Simple(412)
-		   )
-		   .start(port);
-		try {
-		    repo.export(pages);
-		} catch (AmazonServiceException ase) {
-		    assertTrue(ase.getErrorMessage().contains("Precondition Failed"));
-		}finally {
-			server.stop();
-		}
-	}
-	
-	/**
-	 * Clear system properties after each test.
-	 */
-	@After
-	public void clear() {
-		System.clearProperty("aws.es.bulk.endpoint");
-		System.clearProperty("aws.es.region");
-		System.clearProperty("aws.accessKeyId");
-		System.clearProperty("aws.secretKey");
-		System.clearProperty("aws.es.endpoint");
-	}
-	
-	/**
-	 * Mock a WebPage for test.
-	 * @param url
-	 * @param category
-	 * @return Webpage instance.
-	 */
-	private WebPage mockWebPage(String url, String category) {
-		WebPage page = new SnapshotWebPage();
-		page.setUrl(url);
-		page.setCategory(category);
+        System.setProperty("aws.accessKeyId", "access_key");
+        System.setProperty("aws.secretKey", "secret_key");
+        System.setProperty("aws.es.region", "ro");
+        int port = this.port();
+        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es/");
+    
+        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        
+        MkContainer server = new MkGrizzlyContainer()
+           .next(
+               new MkAnswer.Simple(412)
+           )
+           .start(port);
+        try {
+            repo.export(pages);
+        } catch (AmazonServiceException ase) {
+            assertTrue(ase.getErrorMessage().contains("Precondition Failed"));
+        }finally {
+            server.stop();
+        }
+    }
+    
+    /**
+     * Clear system properties after each test.
+     */
+    @After
+    public void clear() {
+        System.clearProperty("aws.es.bulk.endpoint");
+        System.clearProperty("aws.es.region");
+        System.clearProperty("aws.accessKeyId");
+        System.clearProperty("aws.secretKey");
+        System.clearProperty("aws.es.endpoint");
+    }
+    
+    /**
+     * Mock a WebPage for test.
+     * @param url
+     * @param category
+     * @return Webpage instance.
+     */
+    private WebPage mockWebPage(String url, String category) {
+        WebPage page = new SnapshotWebPage();
+        page.setUrl(url);
+        page.setCategory(category);
 
-		page.setLinks(new HashSet<Link>());
-		page.setTextContent("some content");
-		page.setName("crawledpage.html");
-		page.setTitle("crawledpage | title");
-		return page;
-	}
-	
-	/**
+        page.setLinks(new HashSet<Link>());
+        page.setTextContent("some content");
+        page.setName("crawledpage.html");
+        page.setTitle("crawledpage | title");
+        return page;
+    }
+    
+    /**
      * Find a free port.
      * @return A free port.
      * @throws IOException If something goes wrong.

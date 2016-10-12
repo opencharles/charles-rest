@@ -40,62 +40,62 @@ import com.amihaiemil.charles.rest.model.SearchResultsPage;
  */
 public class AmazonEsSearch {
 
-	/**
-	 * ElasticSearch  query.
-	 */
-	private EsQuery query;
+    /**
+     * ElasticSearch  query.
+     */
+    private EsQuery query;
 
-	/**
-	 * Index to search into.
-	 */
-	private String indexName;
+    /**
+     * Index to search into.
+     */
+    private String indexName;
 
-	/**
-	 * Ctor.
-	 * @param qry
-	 * @param idxName
-	 */
-	public AmazonEsSearch(EsQuery qry, String idxName) {
-		this.query = qry;
-		this.indexName = idxName;
-	}
+    /**
+     * Ctor.
+     * @param qry
+     * @param idxName
+     */
+    public AmazonEsSearch(EsQuery qry, String idxName) {
+        this.query = qry;
+        this.indexName = idxName;
+    }
 
-	public SearchResultsPage search() {
-	    SignedRequest<SearchResultsPage> sr = new SignedRequest<>(
-	        this.buildAwsSearchRequest(),
-			    new SearchResponseHandler(),
-			    new SimpleAwsErrorHandler(false)
-	    );
-		return sr.sendRequest();
-	}
+    public SearchResultsPage search() {
+        SignedRequest<SearchResultsPage> sr = new SignedRequest<>(
+            this.buildAwsSearchRequest(),
+                new SearchResponseHandler(),
+                new SimpleAwsErrorHandler(false)
+        );
+        return sr.sendRequest();
+    }
 
-	/**
-	 * Builds the GET request to send to the
-	 * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">
-	 * Es Search API
-	 * </a>
-	 * @param data Json structure expected by the bulk api.
-	 * @return Aws request.
-	 */
+    /**
+     * Builds the GET request to send to the
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/search-search.html">
+     * Es Search API
+     * </a>
+     * @param data Json structure expected by the bulk api.
+     * @return Aws request.
+     */
     public Request<Void> buildAwsSearchRequest() {
         Request<Void> request = new DefaultRequest<Void>("es");
-	    String esEndpoint = System.getProperty("aws.es.endpoint");
-	    if(esEndpoint == null || esEndpoint.isEmpty()) {
+        String esEndpoint = System.getProperty("aws.es.endpoint");
+        if(esEndpoint == null || esEndpoint.isEmpty()) {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
         }
-	    String search = "_search/"
+        String search = "_search/"
             + indexName + "/" 
-	    	+ query.getCategory() + "?q=textContent="
+            + query.getCategory() + "?q=textContent="
             + query.getContent() + "&from="
             + query.getIndex() + "&size="
             + query.getNr();
-	    if(esEndpoint.endsWith("/")) {
-	    	esEndpoint += search;
-	    } else {
-	    	esEndpoint += "/" + search;
-	    }
-	    request.setEndpoint(URI.create(esEndpoint));
-	    request.setHttpMethod(HttpMethodName.GET);
-	    return request;
-	}
+        if(esEndpoint.endsWith("/")) {
+            esEndpoint += search;
+        } else {
+            esEndpoint += "/" + search;
+        }
+        request.setEndpoint(URI.create(esEndpoint));
+        request.setHttpMethod(HttpMethodName.GET);
+        return request;
+    }
 }

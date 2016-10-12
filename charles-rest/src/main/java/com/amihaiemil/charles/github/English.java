@@ -35,13 +35,13 @@ import java.io.IOException;
  */
 public class English extends Language {
 
-	public English() {
-		super("commands_en.properties", "responses_en.properties");
-	}
+    public English() {
+        super("commands_en.properties", "responses_en.properties");
+    }
 
-	@Override
-	public CommandCategory categorize(Command com) throws IOException {
-		return super.categorize(com);
-	}
+    @Override
+    public CommandCategory categorize(Command com) throws IOException {
+        return super.categorize(com);
+    }
 
 }

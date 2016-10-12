@@ -39,36 +39,36 @@ import com.amazonaws.http.HttpResponseHandler;
 public class SimpleAwsResponseHandler implements
     HttpResponseHandler<HttpResponse> {
 
-	/**
-	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
-	 */
-	private boolean needsConnectionLeftOpen;
+    /**
+     * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
+     */
+    private boolean needsConnectionLeftOpen;
 
-	/**
-	 * Ctor.
-	 * @param connectionLeftOpen Should the connection be closed immediately or not?
-	 */
-	public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
-		this.needsConnectionLeftOpen = connectionLeftOpen;
-	}
+    /**
+     * Ctor.
+     * @param connectionLeftOpen Should the connection be closed immediately or not?
+     */
+    public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
+        this.needsConnectionLeftOpen = connectionLeftOpen;
+    }
 
-	@Override
-	public HttpResponse handle(HttpResponse response) {
+    @Override
+    public HttpResponse handle(HttpResponse response) {
 
-		int status = response.getStatusCode();
-		if(status < 200 || status >= 300) {
-			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
-			ase.setStatusCode(status);
-			throw ase;
-		}
+        int status = response.getStatusCode();
+        if(status < 200 || status >= 300) {
+            AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
+            ase.setStatusCode(status);
+            throw ase;
+        }
 
         return response;
-		
-	}
+        
+    }
 
-	@Override
-	public boolean needsConnectionLeftOpen() {
-		return this.needsConnectionLeftOpen;
-	}
+    @Override
+    public boolean needsConnectionLeftOpen() {
+        return this.needsConnectionLeftOpen;
+    }
 
 }

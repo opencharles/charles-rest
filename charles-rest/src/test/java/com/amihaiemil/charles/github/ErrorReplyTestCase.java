@@ -48,37 +48,37 @@ import com.jcabi.github.mock.MkGithub;
  */
 public class ErrorReplyTestCase {
 
-	/**
-	 * {@link ErrorReply} can send the error message to a Github issue.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void sendsReply() throws Exception {
-		LogsLocation logs = new LogsOnServer("www.example.com/rest/endpoint/", "test.log");
-		Issue issue = this.mockIssue();
-		ErrorReply er = new ErrorReply(logs.address(), issue);
-		er.send();
-		List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
-		assertTrue(comments.size() == 1);
-		assertTrue(
-			comments.get(0).json().getString("body").equals(
-				"There was an error when processing your command. [Here](www.example.com/rest/endpoint/test.log) are the logs."
-			)
-		);
-	}
+    /**
+     * {@link ErrorReply} can send the error message to a Github issue.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void sendsReply() throws Exception {
+        LogsLocation logs = new LogsOnServer("www.example.com/rest/endpoint/", "test.log");
+        Issue issue = this.mockIssue();
+        ErrorReply er = new ErrorReply(logs.address(), issue);
+        er.send();
+        List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
+        assertTrue(comments.size() == 1);
+        assertTrue(
+            comments.get(0).json().getString("body").equals(
+                "There was an error when processing your command. [Here](www.example.com/rest/endpoint/test.log) are the logs."
+            )
+        );
+    }
 
-	/**
+    /**
      * Mock a Github issue.
      * @return The created Issue.
      * @throws IOException If something goes wrong.
      */
     public Issue mockIssue() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	return gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
+        Github gh = new MkGithub("amihaiemil");
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        gh.repos().create(repoCreate);
+        return gh.repos().get(
+                          new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+                      ).issues().create("Test issue for commands", "test body");
     }
-	
+    
 }

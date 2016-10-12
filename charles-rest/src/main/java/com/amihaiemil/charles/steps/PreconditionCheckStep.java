@@ -45,30 +45,30 @@ public abstract class PreconditionCheckStep implements Step {
     private Step onFalse;
 
     /**
-	 * Ctor
+     * Ctor
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
-	 */
+     */
     public PreconditionCheckStep(Step onTrue, Step onFalse) {
-    	this.onTrue = onTrue;
-    	this.onFalse = onFalse;
+        this.onTrue = onTrue;
+        this.onFalse = onFalse;
     }
 
-	public abstract void perform();
-	
-	/**
-	 * Step to perform on successful check
-	 * @return Step
-	 */
-	public Step onTrue() {
-		return this.onTrue;
-	}
-	
-	/**
-	 * Step to perform on failed check.
-	 * @return Step
-	 */
-	public Step onFalse() {
-		return this.onFalse;
-	}
+    public abstract void perform();
+    
+    /**
+     * Step to perform on successful check
+     * @return Step
+     */
+    public Step onTrue() {
+        return this.onTrue;
+    }
+    
+    /**
+     * Step to perform on failed check.
+     * @return Step
+     */
+    public Step onFalse() {
+        return this.onFalse;
+    }
 }

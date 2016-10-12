@@ -49,70 +49,70 @@ import com.jcabi.email.wire.SMTP;
  */
 public class SendEmail extends IntermediaryStep {
 
-	/**
-	 * Delivery system.
-	 */
-	private Postman postman;
-	
-	/**
-	 * Email.
-	 */
-	private Envelope env;
-	
-	/**
-	 * Logger.
-	 */
-	private Logger logger;
-	
-	/**
-	 * Constructor.
-	 * @param to Recipient of this mail.
-	 * @param subject Mail subject.
-	 * @param message Contents of the mail.
-	 * @param next Next step to take.
-	 */
-	public SendEmail(String to,  String subject, String message) {
-		this(
-		    to, subject, message,
-		    LoggerFactory.getLogger(SendEmail.class),
-		    new Step() {
-				
-				@Override
-				public void perform() {
-				   //does nothing
-				}
-			}
-		);
-	}
-	
-	/**
-	 * Constructor.
-	 * @param to Recipient of this mail.
-	 * @param subject Mail subject.
-	 * @param message Contents of the mail.
-	 * @param logger Action logger.
-	 * @param next Next step to take.
-	 */
-	public SendEmail(
-	    String to,  String subject, String message,
-	    Logger logger, Step next
-	) {
-		super(next);
-		String username = System.getProperty("charles.smtp.username");
-		String pwd = System.getProperty("charles.smtp.password");
-		if(username != null && pwd != null) {
+    /**
+     * Delivery system.
+     */
+    private Postman postman;
+    
+    /**
+     * Email.
+     */
+    private Envelope env;
+    
+    /**
+     * Logger.
+     */
+    private Logger logger;
+    
+    /**
+     * Constructor.
+     * @param to Recipient of this mail.
+     * @param subject Mail subject.
+     * @param message Contents of the mail.
+     * @param next Next step to take.
+     */
+    public SendEmail(String to,  String subject, String message) {
+        this(
+            to, subject, message,
+            LoggerFactory.getLogger(SendEmail.class),
+            new Step() {
+                
+                @Override
+                public void perform() {
+                   //does nothing
+                }
+            }
+        );
+    }
+    
+    /**
+     * Constructor.
+     * @param to Recipient of this mail.
+     * @param subject Mail subject.
+     * @param message Contents of the mail.
+     * @param logger Action logger.
+     * @param next Next step to take.
+     */
+    public SendEmail(
+        String to,  String subject, String message,
+        Logger logger, Step next
+    ) {
+        super(next);
+        String username = System.getProperty("charles.smtp.username");
+        String pwd = System.getProperty("charles.smtp.password");
+        if(username != null && pwd != null) {
             String host = System.getProperty("charles.smtp.host");
             String port = System.getProperty("charles.smtp.port");
             if(!StringUtils.isEmpty(host) && !StringUtils.isEmpty(port)) {
-            	Protocol prot = new Protocol.SMTP(host, Integer.valueOf(port));
-            	if(Boolean.valueOf(System.getProperty("charles.smtp.secure"))) {
-            		prot = new Protocol.SMTPS(host, Integer.valueOf(port));
-            	}
-            	this.postman = new Postman.Default(
+                Protocol prot = new Protocol.SMTP(host, Integer.valueOf(port));
+                if(Boolean.valueOf(System.getProperty("charles.smtp.secure"))) {
+                    prot = new Protocol.SMTPS(host, Integer.valueOf(port));
+                }
+                this.postman = new Postman.Default(
                     new SMTP(new Token(username, pwd).access(prot))
                 );
             } else {
-            	this.postman = new Postman.Default(
+                this.postman = new Postman.Default(
                     new SMTP(
                         new Token(username, pwd)
                             .access(new Protocol.SMTPS("smtp.gmail.com", 465))
@@ -124,64 +124,64 @@ public class SendEmail extends IntermediaryStep {
                 .with(new StRecipient(to))
                 .with(new StSubject(subject))
                 .with(new EnPlain(message));
-		}
-		this.logger = logger;
-	}
-	
-	/**
-	 * Constructor.
-	 * @param postman "postman" that delivers the email.
-	 * @param env Email data in an envelope.
-	 * @param next Next step to take.
-	 */
-	public SendEmail(Postman postman, Envelope env) {
-		this(
-		    postman, env, LoggerFactory.getLogger(SendEmail.class),
-		    new Step() {
-				@Override
-				public void perform() {
+        }
+        this.logger = logger;
+    }
+    
+    /**
+     * Constructor.
+     * @param postman "postman" that delivers the email.
+     * @param env Email data in an envelope.
+     * @param next Next step to take.
+     */
+    public SendEmail(Postman postman, Envelope env) {
+        this(
+            postman, env, LoggerFactory.getLogger(SendEmail.class),
+            new Step() {
+                @Override
+                public void perform() {
                     //does nothing next
-				}
-			}
-	    );
-	}
+                }
+            }
+        );
+    }
 
-	/**
-	 * Constructor.
-	 * @param postman "postman" that delivers the email.
-	 * @param env Email data in an envelope.
-	 * @param logger Action logger.
-	 * @param next Next step to take.
-	 */
-	public SendEmail(
-	    Postman postman, Envelope env, Logger logger,
-	    Step next
-	) {
-		super(next);
-		this.postman = postman;
-		this.env = env;
-		this.logger = logger;
-	}
-	
-	/**
-	 * Send the email.
-	 */
-	@Override
-	public void perform() {
-		logger.info("Sending e-mail...");
-		if(this.postman == null) {
-			logger.warn("Uninitialized postman (username and/or password missing). Cannot send email!");
-		    throw new IllegalStateException();
-		} else {
-		    try {
-			    this.postman.send(env);
-			    logger.info("E-mail sent successfully!");
-			    this.next().perform();
-		    } catch (IOException e) {
-			    logger.error("Error when sending the email " + e.getMessage(), e);
-			    throw new IllegalStateException(e);
-		    }
-		}
-	}
+    /**
+     * Constructor.
+     * @param postman "postman" that delivers the email.
+     * @param env Email data in an envelope.
+     * @param logger Action logger.
+     * @param next Next step to take.
+     */
+    public SendEmail(
+        Postman postman, Envelope env, Logger logger,
+        Step next
+    ) {
+        super(next);
+        this.postman = postman;
+        this.env = env;
+        this.logger = logger;
+    }
+    
+    /**
+     * Send the email.
+     */
+    @Override
+    public void perform() {
+        logger.info("Sending e-mail...");
+        if(this.postman == null) {
+            logger.warn("Uninitialized postman (username and/or password missing). Cannot send email!");
+            throw new IllegalStateException();
+        } else {
+            try {
+                this.postman.send(env);
+                logger.info("E-mail sent successfully!");
+                this.next().perform();
+            } catch (IOException e) {
+                logger.error("Error when sending the email " + e.getMessage(), e);
+                throw new IllegalStateException(e);
+            }
+        }
+    }
 
 }

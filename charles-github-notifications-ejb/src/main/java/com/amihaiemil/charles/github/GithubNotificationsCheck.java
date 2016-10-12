@@ -63,41 +63,41 @@ import com.jcabi.http.response.RestResponse;
 @Startup
 public class GithubNotificationsCheck {
 
-	/**
-	 * Logger. Assigned in ctor for leveraging unit testing.
-	 */
-	private Logger log;
+    /**
+     * Logger. Assigned in ctor for leveraging unit testing.
+     */
+    private Logger log;
 
     /**
      * Java EE timer service.
      */
-	@Resource
-	private TimerService timerService;
+    @Resource
+    private TimerService timerService;
 
-	/**
-	 * Notifications' API endpoint.
-	 */
-	private String napiEndpoint;
+    /**
+     * Notifications' API endpoint.
+     */
+    private String napiEndpoint;
 
-	/**
-	 * Default Ctor.
-	 */
-	public GithubNotificationsCheck() {
+    /**
+     * Default Ctor.
+     */
+    public GithubNotificationsCheck() {
         this(
             "https://api.github.com/notifications",
             LoggerFactory.getLogger(GithubNotificationsCheck.class.getName())
         );
     }
 
-	/**
-	 * Ctor.
-	 * @param logger - for leveraging unit testing.
-	 * @param notificationsEp - Endpoint for Github notifications' check
-	 */
-	public GithubNotificationsCheck(String notificationsEp, Logger logger) {
-	    this.log = logger;
-		this.napiEndpoint = notificationsEp;
-	}
+    /**
+     * Ctor.
+     * @param logger - for leveraging unit testing.
+     * @param notificationsEp - Endpoint for Github notifications' check
+     */
+    public GithubNotificationsCheck(String notificationsEp, Logger logger) {
+        this.log = logger;
+        this.napiEndpoint = notificationsEp;
+    }
 
     /**
      * After this bean is constructed the checks are scheduled at a given interval (minutes),
@@ -107,22 +107,22 @@ public class GithubNotificationsCheck {
     public void scheduleChecks() {
         String checksInterval = System.getProperty("checks.interval.minutes");
         int intervalMinutes = 2;
-		if(checksInterval != null && !checksInterval.isEmpty()) {
-			try {
-				intervalMinutes = Integer.parseInt(checksInterval);
-				log.info("The check for Github notifications will be performed every " + intervalMinutes + " minutes!");
-			} catch (NumberFormatException ex) {
-				log.error("NumberFormatException when parsing interval " + checksInterval, ex);
-			}
-		}
-		timerService.createTimer(1000*60*intervalMinutes, 1000*60*intervalMinutes, null);
-	}
-	
-	/**
-	 * Read notifications from the Github API when the scheduler timeout occurs.
-	 */
-	@Timeout
-	public void readNotifications() {
+        if(checksInterval != null && !checksInterval.isEmpty()) {
+            try {
+                intervalMinutes = Integer.parseInt(checksInterval);
+                log.info("The check for Github notifications will be performed every " + intervalMinutes + " minutes!");
+            } catch (NumberFormatException ex) {
+                log.error("NumberFormatException when parsing interval " + checksInterval, ex);
+            }
+        }
+        timerService.createTimer(1000*60*intervalMinutes, 1000*60*intervalMinutes, null);
+    }
+    
+    /**
+     * Read notifications from the Github API when the scheduler timeout occurs.
+     */
+    @Timeout
+    public void readNotifications() {
         String token = System.getProperty("github.auth.token");
         String handlerEndpoint = System.getProperty("charles.rest.endpoint");
         String handlerEndpointToken = System.getProperty("charles.rest.token");
@@ -133,72 +133,72 @@ public class GithubNotificationsCheck {
             if(handlerEndpoint == null || handlerEndpoint.isEmpty()) {
                 log.error("Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!");
             } else {
-            	if(handlerEndpointToken == null || handlerEndpointToken.isEmpty()) {
-            		log.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
-            	} else {
-            		Request req = new ApacheRequest(this.napiEndpoint);
+                if(handlerEndpointToken == null || handlerEndpointToken.isEmpty()) {
+                    log.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
+                } else {
+                    Request req = new ApacheRequest(this.napiEndpoint);
                     req = req.header(
                         HttpHeaders.AUTHORIZATION, String.format("token %s", token)
                     );
                     try {
-			            JsonArray notifications = req.fetch()
-			                .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
-		                    .as(JsonResponse.class).json().readArray();
-			            log.info("Found " + notifications.size() + " new notifications!");
-			            if(notifications.size() > 0) {
-			                List<JsonObject> validNotifications = new ArrayList<JsonObject>();
-			                for(int i=0; i<notifications.size(); i++) {
-			    	            JsonObject notification = notifications.getJsonObject(i);
-			    	            if(this.isNotificationValid(notification)) {
-			    		            validNotifications.add(notification);
-			                    }
-			                }
-			                log.info("POST-ing " + validNotifications.size() + " valid notifications!");
-			            
-			                boolean posted = this.postNotifications(handlerEndpoint, handlerEndpointToken, validNotifications);
-			            
-			                if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
+                        JsonArray notifications = req.fetch()
+                            .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
+                            .as(JsonResponse.class).json().readArray();
+                        log.info("Found " + notifications.size() + " new notifications!");
+                        if(notifications.size() > 0) {
+                            List<JsonObject> validNotifications = new ArrayList<JsonObject>();
+                            for(int i=0; i<notifications.size(); i++) {
+                                JsonObject notification = notifications.getJsonObject(i);
+                                if(this.isNotificationValid(notification)) {
+                                    validNotifications.add(notification);
+                                }
+                            }
+                            log.info("POST-ing " + validNotifications.size() + " valid notifications!");
+                        
+                            boolean posted = this.postNotifications(handlerEndpoint, handlerEndpointToken, validNotifications);
+                        
+                            if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
                                 log.info("POST successful, marking notifications as read...");
                                 req.uri()
-			            	        .queryParam(
-			        	                "last_read_at",
-			        				    DateFormatUtils.formatUTC(
-			        			            new Date(System.currentTimeMillis()),
-			        					    "yyyy-MM-dd'T'HH:mm:ss'Z'"
-			        			        )
-			        			    ).back()
-			        			    .method(Request.PUT).body().set("{}").back().fetch()
-			        			    .as(RestResponse.class)
-			        			    .assertStatus(
-			        			        Matchers.isOneOf(
-			        		                HttpURLConnection.HTTP_OK,
-			        		                HttpURLConnection.HTTP_RESET
-			        		            )
-			        			    );
-			            	    log.info("Notifications marked as read!");
-			                }
-			            }
-        	        } catch (AssertionError aerr) {
-        	            log.error("Unexpected HTTP status!", aerr);
-			        } catch (IOException e) {
-				        log.error("IOException when making HTTP call!", e);
-			        }
-            	}
+                                    .queryParam(
+                                        "last_read_at",
+                                        DateFormatUtils.formatUTC(
+                                            new Date(System.currentTimeMillis()),
+                                            "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                        )
+                                    ).back()
+                                    .method(Request.PUT).body().set("{}").back().fetch()
+                                    .as(RestResponse.class)
+                                    .assertStatus(
+                                        Matchers.isOneOf(
+                                            HttpURLConnection.HTTP_OK,
+                                            HttpURLConnection.HTTP_RESET
+                                        )
+                                    );
+                                log.info("Notifications marked as read!");
+                            }
+                        }
+                    } catch (AssertionError aerr) {
+                        log.error("Unexpected HTTP status!", aerr);
+                    } catch (IOException e) {
+                        log.error("IOException when making HTTP call!", e);
+                    }
+                }
             }
         }
-	}
+    }
 
-	/**
-	 * Validates a Github notification.<br><br>
-	 * A notification is valid if the reson is "mention".<br> However, once
-	 * mentioned in an issue, all the notifications from that issue will have this
-	 * reason, so we also check if "url" and "last_comment_url" are the same or not. <br> 
-	 * If they are the same, them the notification is not about a comment, but about close/reopen issue.
-	 * 
-	 * @param notification Github notification json.
-	 * @return True if notification is valid; false otherwise.
-	 */
-	public boolean isNotificationValid(JsonObject notification) {
+    /**
+     * Validates a Github notification.<br><br>
+     * A notification is valid if the reson is "mention".<br> However, once
+     * mentioned in an issue, all the notifications from that issue will have this
+     * reason, so we also check if "url" and "last_comment_url" are the same or not. <br> 
+     * If they are the same, them the notification is not about a comment, but about close/reopen issue.
+     * 
+     * @param notification Github notification json.
+     * @return True if notification is valid; false otherwise.
+     */
+    public boolean isNotificationValid(JsonObject notification) {
         if("mention".equals(notification.getString("reason"))) {
             JsonObject subject = notification.getJsonObject("subject"); 
             if(!subject.getString("url").equals(subject.getString("latest_comment_url"))) {
@@ -206,8 +206,8 @@ public class GithubNotificationsCheck {
             }
         }
         return false;
-	}
-	
+    }
+    
     /**
      * Sends simplified notifications to the REST endpoint.
      * <br><br>
@@ -225,36 +225,36 @@ public class GithubNotificationsCheck {
             JsonObject subject = notification.getJsonObject("subject");
             String issueUrl = subject.getString("url");
             arrayBuilder.add(
-    		    Json.createObjectBuilder()
-    		        .add("repoFullName", notification.getJsonObject("repository").getString("full_name"))
-    		        .add("issueNumber", Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1)))
-    		        .build()
-    		);
-    	}
+                Json.createObjectBuilder()
+                    .add("repoFullName", notification.getJsonObject("repository").getString("full_name"))
+                    .add("issueNumber", Integer.parseInt(issueUrl.substring(issueUrl.lastIndexOf("/") + 1)))
+                    .build()
+            );
+        }
         Request postReq = new ApacheRequest(endpoint);
         postReq = postReq.header(
             HttpHeaders.AUTHORIZATION, token
         );
         try {
-			int status = postReq.method(Request.POST).body().set(arrayBuilder.build()).back()
+            int status = postReq.method(Request.POST).body().set(arrayBuilder.build()).back()
                 .fetch()
                 .as(RestResponse.class)
                 .assertStatus(
-			        Matchers.isOneOf(
-			            HttpURLConnection.HTTP_OK,
-			            HttpURLConnection.HTTP_UNAUTHORIZED,
-			            HttpURLConnection.HTTP_UNAVAILABLE
-			        )
-			    ).status();
-			if(status == HttpURLConnection.HTTP_OK) {
-				return true;
-			}
+                    Matchers.isOneOf(
+                        HttpURLConnection.HTTP_OK,
+                        HttpURLConnection.HTTP_UNAUTHORIZED,
+                        HttpURLConnection.HTTP_UNAVAILABLE
+                    )
+                ).status();
+            if(status == HttpURLConnection.HTTP_OK) {
+                return true;
+            }
         } catch (AssertionError aerr) {
             log.error("Unexpected status from " + endpoint, aerr);
         } catch (IOException e) {
-	        log.error("IOException when calling " + endpoint, e);
+            log.error("IOException when calling " + endpoint, e);
         }
-	    return false;
+        return false;
     }
     
 }

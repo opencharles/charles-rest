@@ -70,7 +70,7 @@ public class SearchResponseHandlerTestCase {
         assertTrue(last.getLink().equals("http://amihaiemil.com/some/other/page.html"));
         assertTrue(last.getCategory().equals("mischelaneous"));
     }
-	
+    
     /**
      * SearchResponseHandler can throw AmazonServiceException in case the response status is not
      * in the expected range.
@@ -80,11 +80,11 @@ public class SearchResponseHandlerTestCase {
         HttpResponse response = Mockito.mock(HttpResponse.class);
         Mockito.when(response.getStatusCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
         try {
-	        new SearchResponseHandler().handle(response);
+            new SearchResponseHandler().handle(response);
             fail("AmazonServiceException should have been thrown!");
         } catch (AmazonServiceException awsEx) {
-	   	    assertTrue(awsEx.getErrorMessage().equals("Unexpected status: 404"));
-	        assertTrue(awsEx.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND);
+               assertTrue(awsEx.getErrorMessage().equals("Unexpected status: 404"));
+            assertTrue(awsEx.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND);
         }
-	}
+    }
 }

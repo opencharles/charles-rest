@@ -92,7 +92,7 @@ public abstract class Command {
      * @param com
      */
     protected void comment(JsonObject com) {
-    	this.comment = com;
+        this.comment = com;
     }
     
     /**
@@ -100,7 +100,7 @@ public abstract class Command {
      * @return com.jcabi.github.Issue
      */
     public Issue issue() {
-    	return this.issue;
+        return this.issue;
     }
 
     /**
@@ -110,10 +110,10 @@ public abstract class Command {
      */
     public String agentLogin() throws IOException {
         if(this.agentLogin == null) {
-    	    this.agentLogin = this.issue.repo()
+            this.agentLogin = this.issue.repo()
                 .github().users().self().login();
         }
-    	return this.agentLogin;
+        return this.agentLogin;
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class Command {
      * @return String Github username.
      */
     public String authorLogin() {
-    	return comment.getJsonObject("user").getString("login");
+        return comment.getJsonObject("user").getString("login");
     }
 
     /**
@@ -131,21 +131,21 @@ public abstract class Command {
      * to get the author's email address.
      */
     public String authorEmail() throws IOException {
-		if(this.authorEmail == null){
+        if(this.authorEmail == null){
             User author = this.issue.repo().github().users().get(this.authorLogin());
-		    Iterator<String> addresses = author.emails().iterate().iterator();
-		    if(addresses.hasNext()) {
-			    this.authorEmail = addresses.next();
-	        } else {
-			    this.authorEmail = "";
-		    }
-		}
-		return this.authorEmail;
-	}
+            Iterator<String> addresses = author.emails().iterate().iterator();
+            if(addresses.hasNext()) {
+                this.authorEmail = addresses.next();
+            } else {
+                this.authorEmail = "";
+            }
+        }
+        return this.authorEmail;
+    }
 
     public JsonObject authorOrgMembership() throws IOException {
-    	JsonObject repo = this.repo().json();
-    	if(repo.getJsonObject("owner").getString("type").equalsIgnoreCase("organization")) {
+        JsonObject repo = this.repo().json();
+        if(repo.getJsonObject("owner").getString("type").equalsIgnoreCase("organization")) {
             Request req = this.issue.repo().github().entry()
                 .uri().path("/orgs/").path(
                     repo.getJsonObject("owner"
@@ -154,7 +154,7 @@ public abstract class Command {
         } else {
             return Json.createObjectBuilder().build();
         }
-        	
+            
     }
 
     /**
@@ -163,10 +163,10 @@ public abstract class Command {
      * @return
      */
     public CommandedRepo repo() throws IOException {
-    	if(this.crepo == null) {
-    		this.crepo = new CommandedRepo(this.issue().repo());
-    	}
-    	return this.crepo;
+        if(this.crepo == null) {
+            this.crepo = new CommandedRepo(this.issue().repo());
+        }
+        return this.crepo;
     }
 
 }

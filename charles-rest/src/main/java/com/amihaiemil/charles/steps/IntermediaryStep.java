@@ -34,9 +34,9 @@ package com.amihaiemil.charles.steps;
  */
 public abstract class IntermediaryStep implements Step {
 
-	/**
-	 * Next step in line.
-	 */
+    /**
+     * Next step in line.
+     */
     private Step nextStep;
 
     /**
@@ -44,16 +44,16 @@ public abstract class IntermediaryStep implements Step {
      * @param next The next step to perform.
      */
     public IntermediaryStep(Step next) {
-		this.nextStep = next;
-	}
+        this.nextStep = next;
+    }
 
-	public abstract void perform();
+    public abstract void perform();
 
-	/**
-	 * Get the next step to perform.
-	 * @return Step.
-	 */
+    /**
+     * Get the next step to perform.
+     * @return Step.
+     */
     public Step next() {
-    	return this.nextStep;
+        return this.nextStep;
     }
 }

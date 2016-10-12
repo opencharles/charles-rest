@@ -41,65 +41,65 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class PageHostedOnGithubCheck extends PreconditionCheckStep {
 
-	/**
-	 * Command.
-	 */
-	private Command com;
+    /**
+     * Command.
+     */
+    private Command com;
 
-	/**
-	 * Link to the page.
-	 */
-	private String link;
-	
-	/**
-	 * Action's logger;
-	 */
-	private Logger logger;
-	
-	/**
-	 * Ctor
-	 * @param com Command.
-	 * @param link Page link.
-	 * @param logger Logger.
+    /**
+     * Link to the page.
+     */
+    private String link;
+    
+    /**
+     * Action's logger;
+     */
+    private Logger logger;
+    
+    /**
+     * Ctor
+     * @param com Command.
+     * @param link Page link.
+     * @param logger Logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
-	 */
-	public PageHostedOnGithubCheck(
-	    Command com, Logger logger,
-	    Step onTrue, Step onFalse
-	) {
-		super(onTrue, onFalse);
-		this.com = com;
-		String comment = com.json().getString("body");
-		this.link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
-		this.logger = logger;
-	}
+     */
+    public PageHostedOnGithubCheck(
+        Command com, Logger logger,
+        Step onTrue, Step onFalse
+    ) {
+        super(onTrue, onFalse);
+        this.com = com;
+        String comment = com.json().getString("body");
+        this.link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
+        this.logger = logger;
+    }
 
-	@Override
-	public void perform() {
-		try {
-		    JsonObject repo = com.repo().json();
-		    String owner = repo.getJsonObject("owner").getString("login");
-		    String expDomain;
-		    logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.getString("name"));
-		    logger.info("Page link: " + this.link);
-		    boolean ghPagesBranch = com.repo().hasGhPagesBranch();
-		    if (ghPagesBranch) {
-			    expDomain = owner + ".github.io/" + repo.getString("name");
-			    logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
-		    } else {
-			    expDomain = owner + ".github.io";
-	            logger.info("The repo is a website repo so the page link has to start with " + expDomain);
-		    }
-		    boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
-		    if(!passed) {
-			    logger.warn("The given webpage is NOT part of this repository!");
-			    this.onFalse().perform();
-		    } else {
-			    logger.info("The given webpage is part of this repository - Ok!");
-		        this.onTrue().perform();
-		    }
-		} catch (IOException ex) {
+    @Override
+    public void perform() {
+        try {
+            JsonObject repo = com.repo().json();
+            String owner = repo.getJsonObject("owner").getString("login");
+            String expDomain;
+            logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.getString("name"));
+            logger.info("Page link: " + this.link);
+            boolean ghPagesBranch = com.repo().hasGhPagesBranch();
+            if (ghPagesBranch) {
+                expDomain = owner + ".github.io/" + repo.getString("name");
+                logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
+            } else {
+                expDomain = owner + ".github.io";
+                logger.info("The repo is a website repo so the page link has to start with " + expDomain);
+            }
+            boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
+            if(!passed) {
+                logger.warn("The given webpage is NOT part of this repository!");
+                this.onFalse().perform();
+            } else {
+                logger.info("The given webpage is part of this repository - Ok!");
+                this.onTrue().perform();
+            }
+        } catch (IOException ex) {
             logger.error("IOException when calling the Github API", ex);
             throw new IllegalStateException("IOException when calling the Github API", ex);
         }

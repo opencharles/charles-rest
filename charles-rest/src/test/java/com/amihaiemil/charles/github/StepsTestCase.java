@@ -53,22 +53,22 @@ import com.jcabi.github.mock.MkGithub;
  */
 public class StepsTestCase {
 
-	/**
-	 * Steps can perform without throwing exceptions.
-	 */
-	@Test
+    /**
+     * Steps can perform without throwing exceptions.
+     */
+    @Test
     public void stepsPerformOk() {
-    	Steps steps = new Steps(Mockito.mock(Step.class), Mockito.mock(SendReply.class));
-    	steps.perform();
+        Steps steps = new Steps(Mockito.mock(Step.class), Mockito.mock(SendReply.class));
+        steps.perform();
     }
-	
-	/**
-	 * Steps' execution fail and the failure comment is sent.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * Steps' execution fail and the failure comment is sent.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
     public void stepsFail() throws Exception {
-	    Command com = this.mockCommand();
+        Command com = this.mockCommand();
         Reply rep = new TextReply(com, "Error whene executig steps!");
         SendReply sr = new SendReply(
             rep, Mockito.mock(Logger.class),
@@ -77,36 +77,36 @@ public class StepsTestCase {
 
         Step s = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("for test"))
-    	    .when(s).perform();
+            .when(s).perform();
 
-    	Steps steps = new Steps(s, sr);
-    	steps.perform();
+        Steps steps = new Steps(s, sr);
+        steps.perform();
 
-    	List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
-    	assertTrue(comments.size() == 1);
-    	assertTrue(
-    		comments.get(0).json().getString("body").equals(
-    			"> @charlesmike mock command\n\nError whene executig steps!"
-    		)
-    	);
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        assertTrue(comments.size() == 1);
+        assertTrue(
+            comments.get(0).json().getString("body").equals(
+                "> @charlesmike mock command\n\nError whene executig steps!"
+            )
+        );
     }
-	
-	/**
+    
+    /**
      * Mock a command.
      * @return The created Command.
      * @throws IOException If something goes wrong.
      */
     private Command mockCommand() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
-    	Command com = Mockito.mock(Command.class);
-    	Mockito.when(com.issue()).thenReturn(issue);
-    	Mockito.when(com.json()).thenReturn(Json.createObjectBuilder().add("body", "@charlesmike mock command").build());
-    	return com;
+        Github gh = new MkGithub("amihaiemil");
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        gh.repos().create(repoCreate);
+        Issue issue = gh.repos().get(
+                          new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+                      ).issues().create("Test issue for commands", "test body");
+        Command com = Mockito.mock(Command.class);
+        Mockito.when(com.issue()).thenReturn(issue);
+        Mockito.when(com.json()).thenReturn(Json.createObjectBuilder().add("body", "@charlesmike mock command").build());
+        return com;
     }
 
 }

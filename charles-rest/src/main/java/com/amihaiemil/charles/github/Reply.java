@@ -35,5 +35,5 @@ import java.io.IOException;
  * 
  */
 public interface Reply {
-	void send() throws IOException;
+    void send() throws IOException;
 }

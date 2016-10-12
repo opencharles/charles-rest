@@ -36,9 +36,9 @@ import java.util.List;
  */
 public class SearchResultsPage {
 
-	/**
-	 * Search results on this page.
-	 */
+    /**
+     * Search results on this page.
+     */
     private List<SearchResult> results = new ArrayList<SearchResult>();
 
     /**
@@ -66,52 +66,52 @@ public class SearchResultsPage {
      */
     private List<String> pages = new ArrayList<String>();
 
-	public List<SearchResult> getResults() {
-		return results;
-	}
+    public List<SearchResult> getResults() {
+        return results;
+    }
 
-	public void setResults(List<SearchResult> results) {
-		this.results = results;
-	}
+    public void setResults(List<SearchResult> results) {
+        this.results = results;
+    }
 
-	public int getTotalHits() {
-		return totalHits;
-	}
+    public int getTotalHits() {
+        return totalHits;
+    }
 
-	public void setTotalHits(int totalHits) {
-		this.totalHits = totalHits;
-	}
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
+    }
 
-	public int getPageNr() {
-		return pageNr;
-	}
+    public int getPageNr() {
+        return pageNr;
+    }
 
-	public void setPageNr(int pageNr) {
-		this.pageNr = pageNr;
-	}
+    public void setPageNr(int pageNr) {
+        this.pageNr = pageNr;
+    }
 
-	public String getPreviousPage() {
-		return previousPage;
-	}
+    public String getPreviousPage() {
+        return previousPage;
+    }
 
-	public void setPreviousPage(String previousPage) {
-		this.previousPage = previousPage;
-	}
+    public void setPreviousPage(String previousPage) {
+        this.previousPage = previousPage;
+    }
 
-	public String getNextPage() {
-		return nextPage;
-	}
+    public String getNextPage() {
+        return nextPage;
+    }
 
-	public void setNextPage(String nextPage) {
-		this.nextPage = nextPage;
-	}
+    public void setNextPage(String nextPage) {
+        this.nextPage = nextPage;
+    }
 
-	public List<String> getPages() {
-		return pages;
-	}
+    public List<String> getPages() {
+        return pages;
+    }
 
-	public void setPages(List<String> pages) {
-		this.pages = pages;
-	}
+    public void setPages(List<String> pages) {
+        this.pages = pages;
+    }
     
 }

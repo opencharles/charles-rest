@@ -48,11 +48,11 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  */
 public class GithubNotificationsCheckTestCase {
 
-	/**
-	 * GithubNotificationsCheck can tell if a Github notification is valid or not.
-	 */
-	@Test
-	public void validatesNotification() {
+    /**
+     * GithubNotificationsCheck can tell if a Github notification is valid or not.
+     */
+    @Test
+    public void validatesNotification() {
         GithubNotificationsCheck ghnc = new GithubNotificationsCheck();
         
         assertTrue(
@@ -88,21 +88,21 @@ public class GithubNotificationsCheckTestCase {
     public void readsEmptyNotifications() throws Exception {
         int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
-		    .next(new MkAnswer.Simple("[]")).start(port);
-		try {
-			System.setProperty("github.auth.token", "githubtoken");
-		    System.setProperty("charles.rest.endpoint", "restendpointcharles");
-		    System.setProperty("charles.rest.token", "chalresresttoken");
-			Logger logger = Mockito.mock(Logger.class);
-			GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-		        "http://localhost:"+port+"/", logger
-		    );
-			ghnv.readNotifications();
-			Mockito.verify(logger).info("Found 0 new notifications!");
-		} finally {
-			server.stop();
-		}
-	}
+            .next(new MkAnswer.Simple("[]")).start(port);
+        try {
+            System.setProperty("github.auth.token", "githubtoken");
+            System.setProperty("charles.rest.endpoint", "restendpointcharles");
+            System.setProperty("charles.rest.token", "chalresresttoken");
+            Logger logger = Mockito.mock(Logger.class);
+            GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
+                "http://localhost:"+port+"/", logger
+            );
+            ghnv.readNotifications();
+            Mockito.verify(logger).info("Found 0 new notifications!");
+        } finally {
+            server.stop();
+        }
+    }
     
     /**
      * GithubNotificationsCheck can handle an notifications array.
@@ -115,34 +115,34 @@ public class GithubNotificationsCheckTestCase {
             .next(new MkAnswer.Simple("[{\"notification\":\"first\"},{\"notification\":\"second\"}]"))
             .next(new MkAnswer.Simple(200))
             .start(port);
-		try {
-			System.setProperty("github.auth.token", "githubtoken");
-		    System.setProperty("charles.rest.endpoint", "restendpointcharles");
-		    System.setProperty("charles.rest.token", "chalresresttoken");
-			Logger logger = Mockito.mock(Logger.class);
-			GithubNotificationsCheck ghnv = Mockito.spy(
-			    new GithubNotificationsCheck(
-		            "http://localhost:"+port+"/", logger
-		        )
-			);
-			Mockito.doReturn(true).when(ghnv).isNotificationValid(Mockito.any(JsonObject.class));
-			Mockito.doReturn(true).when(ghnv).postNotifications(
-			    Mockito.anyString(),
-			    Mockito.anyString(),
-			    Mockito.anyList()
-			);
-			Mockito.doCallRealMethod().when(ghnv).readNotifications();
-			
-			ghnv.readNotifications();
-			
-			Mockito.verify(logger).info("Found 2 new notifications!");
-			Mockito.verify(logger).info("POST-ing 2 valid notifications!");
-			Mockito.verify(logger).info("POST successful, marking notifications as read...");
-			Mockito.verify(logger).info("Notifications marked as read!");
-		} finally {
-			server.stop();
-		}
-	}
+        try {
+            System.setProperty("github.auth.token", "githubtoken");
+            System.setProperty("charles.rest.endpoint", "restendpointcharles");
+            System.setProperty("charles.rest.token", "chalresresttoken");
+            Logger logger = Mockito.mock(Logger.class);
+            GithubNotificationsCheck ghnv = Mockito.spy(
+                new GithubNotificationsCheck(
+                    "http://localhost:"+port+"/", logger
+                )
+            );
+            Mockito.doReturn(true).when(ghnv).isNotificationValid(Mockito.any(JsonObject.class));
+            Mockito.doReturn(true).when(ghnv).postNotifications(
+                Mockito.anyString(),
+                Mockito.anyString(),
+                Mockito.anyList()
+            );
+            Mockito.doCallRealMethod().when(ghnv).readNotifications();
+            
+            ghnv.readNotifications();
+            
+            Mockito.verify(logger).info("Found 2 new notifications!");
+            Mockito.verify(logger).info("POST-ing 2 valid notifications!");
+            Mockito.verify(logger).info("POST successful, marking notifications as read...");
+            Mockito.verify(logger).info("Notifications marked as read!");
+        } finally {
+            server.stop();
+        }
+    }
     
     /**
      * GithubNotificationsCheck can post notifications successfully.
@@ -150,35 +150,35 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void postsNotificationsOk() throws Exception {
-    	int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(200))
             .start(port);
-		try {
-			Logger logger = Mockito.mock(Logger.class);
-			Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
-		        .when(logger)
-		        .error(Mockito.anyString(), Mockito.any(AssertionError.class));
-		    Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
-	            .when(logger)
-	            .error(Mockito.anyString(), Mockito.any(IOException.class));
-			GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
-			
-			List<JsonObject> notifications = new ArrayList<>();
-			notifications.add(
-			    this.mockNotification("mentioned", "path/to/issue/1", "latest/comment/123", "amihaiemil/myrepo")
-			);
+        try {
+            Logger logger = Mockito.mock(Logger.class);
+            Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
+                .when(logger)
+                .error(Mockito.anyString(), Mockito.any(AssertionError.class));
+            Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
+                .when(logger)
+                .error(Mockito.anyString(), Mockito.any(IOException.class));
+            GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
+            
+            List<JsonObject> notifications = new ArrayList<>();
             notifications.add(
-			    this.mockNotification("mentioned", "path/to/issue/2", "latest/comment/124", "amihaiemil/myrepo2")
-			);
+                this.mockNotification("mentioned", "path/to/issue/1", "latest/comment/123", "amihaiemil/myrepo")
+            );
+            notifications.add(
+                this.mockNotification("mentioned", "path/to/issue/2", "latest/comment/124", "amihaiemil/myrepo2")
+            );
 
             assertTrue(
                 ghnv.postNotifications("http://localhost:"+port+"/", "token", notifications)
             );
-			
-		} finally {
-			server.stop();
-		}
+            
+        } finally {
+            server.stop();
+        }
     }
 
     /**
@@ -187,27 +187,27 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void postsNotificationsUnavailable() throws Exception {
-    	int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(503))
             .start(port);
-		try {
-			Logger logger = Mockito.mock(Logger.class);
-			Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
-		        .when(logger)
-		        .error(Mockito.anyString(), Mockito.any(AssertionError.class));
-		    Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
-	            .when(logger)
-	            .error(Mockito.anyString(), Mockito.any(IOException.class));
-			GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
+        try {
+            Logger logger = Mockito.mock(Logger.class);
+            Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
+                .when(logger)
+                .error(Mockito.anyString(), Mockito.any(AssertionError.class));
+            Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
+                .when(logger)
+                .error(Mockito.anyString(), Mockito.any(IOException.class));
+            GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
 
             assertFalse(
                 ghnv.postNotifications("http://localhost:"+port+"/", "token", new ArrayList<JsonObject>())
             );
-			
-		} finally {
-			server.stop();
-		}
+            
+        } finally {
+            server.stop();
+        }
     }
     
     /**
@@ -216,27 +216,27 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void postsNotificationsUnauthorized() throws Exception {
-    	int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(401))
             .start(port);
-		try {
-			Logger logger = Mockito.mock(Logger.class);
-			Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
-			    .when(logger)
-			    .error(Mockito.anyString(), Mockito.any(AssertionError.class));
-			Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
-		        .when(logger)
-		        .error(Mockito.anyString(), Mockito.any(IOException.class));
-			GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
-			
+        try {
+            Logger logger = Mockito.mock(Logger.class);
+            Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
+                .when(logger)
+                .error(Mockito.anyString(), Mockito.any(AssertionError.class));
+            Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
+                .when(logger)
+                .error(Mockito.anyString(), Mockito.any(IOException.class));
+            GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
+            
             assertFalse(
                 ghnv.postNotifications("http://localhost:"+port+"/", "token", new ArrayList<JsonObject>())
             );
-			
-		} finally {
-			server.stop();
-		}
+            
+        } finally {
+            server.stop();
+        }
     }
     
     /**
@@ -245,22 +245,22 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void postsNotificationsServerError() throws Exception {
-    	int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(500))
             .start(port);
-		try {
-			Logger logger = Mockito.mock(Logger.class);
-			GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
-			
+        try {
+            Logger logger = Mockito.mock(Logger.class);
+            GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
+            
             assertFalse(
                 ghnv.postNotifications("http://localhost:"+port+"/", "token", new ArrayList<JsonObject>())
             );
             Mockito.verify(logger).error(Mockito.anyString(), Mockito.any(AssertionError.class));
-			
-		} finally {
-			server.stop();
-		}
+            
+        } finally {
+            server.stop();
+        }
     }
     
     /**
@@ -269,10 +269,10 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void postsNotificationsIoException() throws Exception {
-    	int port = this.port();
-		Logger logger = Mockito.mock(Logger.class);
-		GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
-		assertFalse(
+        int port = this.port();
+        Logger logger = Mockito.mock(Logger.class);
+        GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
+        assertFalse(
             ghnv.postNotifications("http://localhost:"+this.port()+"/", "token", new ArrayList<JsonObject>())
         );
         Mockito.verify(logger).error(Mockito.anyString(), Mockito.any(IOException.class));
@@ -284,22 +284,22 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void serverErrorWhenCheckingNotifications() throws Exception {
-    	int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
-		    .next(new MkAnswer.Simple(500)).start(port);
-		try {
-			System.setProperty("github.auth.token", "githubtoken");
-		    System.setProperty("charles.rest.endpoint", "restendpointcharles");
-		    System.setProperty("charles.rest.token", "chalresresttoken");
-			Logger logger = Mockito.mock(Logger.class);
-			GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-		        "http://localhost:"+port+"/", logger
-		    );
-			ghnv.readNotifications();
-			Mockito.verify(logger).error(Mockito.anyString(), Mockito.any(AssertionError.class));
-		} finally {
-			server.stop();
-		}
+            .next(new MkAnswer.Simple(500)).start(port);
+        try {
+            System.setProperty("github.auth.token", "githubtoken");
+            System.setProperty("charles.rest.endpoint", "restendpointcharles");
+            System.setProperty("charles.rest.token", "chalresresttoken");
+            Logger logger = Mockito.mock(Logger.class);
+            GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
+                "http://localhost:"+port+"/", logger
+            );
+            ghnv.readNotifications();
+            Mockito.verify(logger).error(Mockito.anyString(), Mockito.any(AssertionError.class));
+        } finally {
+            server.stop();
+        }
     }
 
     /**
@@ -308,15 +308,15 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void ioExceptionWhenCheckingNotifications() throws Exception {
-		System.setProperty("github.auth.token", "githubtoken");
-		System.setProperty("charles.rest.endpoint", "restendpointcharles");
-		System.setProperty("charles.rest.token", "chalresresttoken");
-	    Logger logger = Mockito.mock(Logger.class);
-		GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-		    "http://localhost:"+this.port()+"/", logger
-		);
-		ghnv.readNotifications();
-		Mockito.verify(logger).error(Mockito.anyString(), Mockito.any(IOException.class));
+        System.setProperty("github.auth.token", "githubtoken");
+        System.setProperty("charles.rest.endpoint", "restendpointcharles");
+        System.setProperty("charles.rest.token", "chalresresttoken");
+        Logger logger = Mockito.mock(Logger.class);
+        GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
+            "http://localhost:"+this.port()+"/", logger
+        );
+        ghnv.readNotifications();
+        Mockito.verify(logger).error(Mockito.anyString(), Mockito.any(IOException.class));
     }
     
     /**
@@ -325,14 +325,14 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void missingGithubAuthToken() throws Exception {
-	    Logger logger = Mockito.mock(Logger.class);
-		GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-		    "http://localhost:8080/", logger
-		);
-		ghnv.readNotifications();
-		Mockito.verify(logger).error(
-		    "Missing github.auth.token system property! Please specify the Github's agent authorization token!"
-	   );
+        Logger logger = Mockito.mock(Logger.class);
+        GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
+            "http://localhost:8080/", logger
+        );
+        ghnv.readNotifications();
+        Mockito.verify(logger).error(
+            "Missing github.auth.token system property! Please specify the Github's agent authorization token!"
+       );
     }
     
     /**
@@ -341,15 +341,15 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void missingCharlesRestEndpoint() throws Exception {
-    	System.setProperty("github.auth.token", "githubtoken");
-	    Logger logger = Mockito.mock(Logger.class);
-		GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-		    "http://localhost:8080/", logger
-		);
-		ghnv.readNotifications();
-		Mockito.verify(logger).error(
-		    "Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!"
-	   );
+        System.setProperty("github.auth.token", "githubtoken");
+        Logger logger = Mockito.mock(Logger.class);
+        GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
+            "http://localhost:8080/", logger
+        );
+        ghnv.readNotifications();
+        Mockito.verify(logger).error(
+            "Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!"
+       );
     }
     
     /**
@@ -358,28 +358,28 @@ public class GithubNotificationsCheckTestCase {
      */
     @Test
     public void missingCharlesRestToken() throws Exception {
-    	System.setProperty("github.auth.token", "githubtoken");
-    	System.setProperty("charles.rest.endpoint", "restendpointcharles");
-	    Logger logger = Mockito.mock(Logger.class);
-		GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-		    "http://localhost:8080/", logger
-		);
-		ghnv.readNotifications();
-		Mockito.verify(logger).error(
-		    "Missing charles.rest.token system property! Please specify it so we can authenticate to restendpointcharles !"
-	   );
+        System.setProperty("github.auth.token", "githubtoken");
+        System.setProperty("charles.rest.endpoint", "restendpointcharles");
+        Logger logger = Mockito.mock(Logger.class);
+        GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
+            "http://localhost:8080/", logger
+        );
+        ghnv.readNotifications();
+        Mockito.verify(logger).error(
+            "Missing charles.rest.token system property! Please specify it so we can authenticate to restendpointcharles !"
+       );
     }
     
-	/**
-	 * Mock a notification json object returned by the Github API.
-	 * @param reason reson of the notification.
-	 * @param url Issue url.
-	 * @param latestCommendUrl Latest comment url.
-	 * @param repoFullName Repository's fullname (user/repo)
-	 * @return JsonObject
-	 */
-	private JsonObject mockNotification(String reason, String url, String latestCommendUrl, String repoFullName) {
-		return Json.createObjectBuilder()
+    /**
+     * Mock a notification json object returned by the Github API.
+     * @param reason reson of the notification.
+     * @param url Issue url.
+     * @param latestCommendUrl Latest comment url.
+     * @param repoFullName Repository's fullname (user/repo)
+     * @return JsonObject
+     */
+    private JsonObject mockNotification(String reason, String url, String latestCommendUrl, String repoFullName) {
+        return Json.createObjectBuilder()
         .add("reason", reason)
         .add(
             "subject",
@@ -395,9 +395,9 @@ public class GithubNotificationsCheckTestCase {
                 .build()
         )
         .build();
-	}
-	
-	/**
+    }
+    
+    /**
      * Find a free port.
      * @return A free port.
      * @throws IOException If something goes wrong.
@@ -414,8 +414,8 @@ public class GithubNotificationsCheckTestCase {
      */
     @After
     public void cleanupSysProps() {
-    	System.clearProperty("github.auth.token");
-		System.clearProperty("charles.rest.endpoint");
-		System.clearProperty("charles.rest.token");
+        System.clearProperty("github.auth.token");
+        System.clearProperty("charles.rest.endpoint");
+        System.clearProperty("charles.rest.token");
     }
 }

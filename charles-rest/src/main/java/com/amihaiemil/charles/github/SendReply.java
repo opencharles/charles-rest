@@ -60,11 +60,11 @@ public class SendReply extends IntermediaryStep {
     public SendReply(
         Reply rep, Logger logger, Step next
     ) { 
-    	super(next);
+        super(next);
         this.rep = rep;
         this.logger = logger;
     }
-	
+    
     @Override
     public void perform() {
         try {

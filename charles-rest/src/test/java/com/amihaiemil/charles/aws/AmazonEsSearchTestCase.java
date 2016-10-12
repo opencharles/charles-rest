@@ -51,11 +51,11 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  */
 public class AmazonEsSearchTestCase {
 
-	/**
-	 * AmazonEsSearch performs ok when there are search results.
-	 * @throws IOException If something goes wrong.
-	 */
-	@Test
+    /**
+     * AmazonEsSearch performs ok when there are search results.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
     public void searchWithResults() throws IOException {
         int port = this.port();
         MkContainer awsEs = new MkGrizzlyContainer().next(
@@ -82,15 +82,15 @@ public class AmazonEsSearchTestCase {
             assertTrue(last.getLink().equals("http://amihaiemil.com/some/other/page.html"));
             assertTrue(last.getCategory().equals("mischelaneous"));
         } finally {
-        	awsEs.stop();
+            awsEs.stop();
         }
     }
-	
-	/**
-	 * AmazonEsSearch performs ok when there are no search results.
-	 * @throws IOException If something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * AmazonEsSearch performs ok when there are no search results.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
     public void searchWithNoResults() throws IOException {
         int port = this.port();
         MkContainer awsEs = new MkGrizzlyContainer().next(
@@ -115,17 +115,22 @@ public class AmazonEsSearchTestCase {
             assertTrue(srp.getPreviousPage().equals("-"));
             
         } finally {
-        	awsEs.stop();
+            awsEs.stop();
         }
     }
-	
+    
     /**
      * AmazonEsSearch throws IllegalStateException if the elasticsearch endpoint
      * sys property is missing.
      */
     @Test
     public void missingEsEndpoint() {
-        AmazonEsSearch es = new AmazonEsSearch(null, null);
+        EsQuery query = new EsQuery();
+        query.setCategory("");
+        query.setContent("");
+        query.setIndex("0");
+        query.setNr("10");
+        AmazonEsSearch es = new AmazonEsSearch(query, "user/idx");
         try {
             es.search();
             fail("ISE was expected!");
@@ -140,21 +145,21 @@ public class AmazonEsSearchTestCase {
             assertTrue(ex.getMessage().equals("ElasticSearch endpoint needs to be specified!"));
         }
     }
-	
-	/**
-	 * Read resource for test.
-	 * @param resourceName
-	 * @return String content of the resource file.
-	 * @throws IOException If it goes wrong.
-	 */
-	private String readResource(String resourceName) throws IOException {
-		InputStream is = new FileInputStream(
+    
+    /**
+     * Read resource for test.
+     * @param resourceName
+     * @return String content of the resource file.
+     * @throws IOException If it goes wrong.
+     */
+    private String readResource(String resourceName) throws IOException {
+        InputStream is = new FileInputStream(
             new File("src/test/resources/" + resourceName)
         );
-		return new String(IOUtils.toByteArray(is));
-	}
-	
-	/**
+        return new String(IOUtils.toByteArray(is));
+    }
+    
+    /**
      * Find a free port.
      * @return A free port.
      * @throws IOException If something goes wrong.

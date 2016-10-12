@@ -46,34 +46,34 @@ import com.amazonaws.http.HttpResponseHandler;
  */
 public class SignedRequest<T> {
 
-	private Request<Void> request;
+    private Request<Void> request;
     private HttpResponseHandler<T> respHandler;
     private HttpResponseHandler<AmazonServiceException> errHandler;
 
-	/**
-	 * Ctor.
-	 * @param req Request made to AWS.
-	 * @param respHandler Response handler.
-	 * @param errHandler Error handler.
-	 */
-	public SignedRequest(
-	    Request<Void> req,
-	    HttpResponseHandler<T> respHandler,
-	    HttpResponseHandler<AmazonServiceException> errHandler
-	) {
-		AWS4Signer signer = new AWS4Signer();
-	    signer.setServiceName("es");
-	    String region = System.getProperty("aws.es.region");
-	    if(region == null || region.isEmpty()) {
-	    	throw new IllegalStateException("Mandatory sys property aws.es.region not specified!");
-	    }
-	    signer.setRegionName(region.trim());      
-	    signer.sign(req, new AwsCredentialsFromSystem());
-	    
-	    this.request = req;
-	    this.respHandler = respHandler;
-	    this.errHandler = errHandler;
-	}
+    /**
+     * Ctor.
+     * @param req Request made to AWS.
+     * @param respHandler Response handler.
+     * @param errHandler Error handler.
+     */
+    public SignedRequest(
+        Request<Void> req,
+        HttpResponseHandler<T> respHandler,
+        HttpResponseHandler<AmazonServiceException> errHandler
+    ) {
+        AWS4Signer signer = new AWS4Signer();
+        signer.setServiceName("es");
+        String region = System.getProperty("aws.es.region");
+        if(region == null || region.isEmpty()) {
+            throw new IllegalStateException("Mandatory sys property aws.es.region not specified!");
+        }
+        signer.setRegionName(region.trim());      
+        signer.sign(req, new AwsCredentialsFromSystem());
+        
+        this.request = req;
+        this.respHandler = respHandler;
+        this.errHandler = errHandler;
+    }
 
     /**
      * Send it.
@@ -87,29 +87,29 @@ public class SignedRequest<T> {
         return r.getAwsResponse();
     }
 
-	/**
-	 * AWS credentials (aws access key id and aws secret key from the system properties).
-	 */
-	private static class AwsCredentialsFromSystem implements AWSCredentials {
+    /**
+     * AWS credentials (aws access key id and aws secret key from the system properties).
+     */
+    private static class AwsCredentialsFromSystem implements AWSCredentials {
 
-		@Override
-		public String getAWSAccessKeyId() {
-			String accessKeyId = System.getProperty("aws.accessKeyId");
-		    if(accessKeyId == null || accessKeyId.isEmpty()) {
-		    	throw new IllegalStateException("Mandatory sys property aws.accessKeyId not specified!");
-		    }
-		    return accessKeyId.trim();
-		}
+        @Override
+        public String getAWSAccessKeyId() {
+            String accessKeyId = System.getProperty("aws.accessKeyId");
+            if(accessKeyId == null || accessKeyId.isEmpty()) {
+                throw new IllegalStateException("Mandatory sys property aws.accessKeyId not specified!");
+            }
+            return accessKeyId.trim();
+        }
 
-		@Override
-		public String getAWSSecretKey() {
-			String secretKey = System.getProperty("aws.secretKey");
-		    if(secretKey == null || secretKey.isEmpty()) {
-		    	throw new IllegalStateException("Mandatory sys property aws.secretKey not specified!");
-		    }
-		    return secretKey.trim();
-		}
-		
-	}
+        @Override
+        public String getAWSSecretKey() {
+            String secretKey = System.getProperty("aws.secretKey");
+            if(secretKey == null || secretKey.isEmpty()) {
+                throw new IllegalStateException("Mandatory sys property aws.secretKey not specified!");
+            }
+            return secretKey.trim();
+        }
+        
+    }
 
 }

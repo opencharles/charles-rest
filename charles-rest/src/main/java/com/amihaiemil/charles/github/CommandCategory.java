@@ -30,9 +30,9 @@ package com.amihaiemil.charles.github;
  *
  */
 public class CommandCategory {
-	/**
-	 * Type of the command.
-	 */
+    /**
+     * Type of the command.
+     */
     private String type;
     /**
      * Language of a command.
@@ -40,8 +40,8 @@ public class CommandCategory {
     private Language lang;
     
     public CommandCategory(String type, Language lang) {
-    	this.type = type;
-    	this.lang = lang;
+        this.type = type;
+        this.lang = lang;
     }
     
     /**
@@ -49,7 +49,7 @@ public class CommandCategory {
      * @return String type.
      */
     public String type() {
-    	return this.type;
+        return this.type;
     }
     
     /**
@@ -57,7 +57,7 @@ public class CommandCategory {
      * @return Language.
      */
     public Language language() {
-    	return this.lang;
+        return this.lang;
     }
     
     /**
@@ -66,6 +66,6 @@ public class CommandCategory {
      * @return True if understood, false otherwise.
      */
     public boolean isUnderstood() {
-    	return !this.type.equals("unkown");
+        return !this.type.equals("unkown");
     }
 }

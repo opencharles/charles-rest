@@ -63,46 +63,46 @@ public class AmazonEsRepository implements Repository {
         this.indexName = indexName;
     }
 
-	@Override
-	public void export(List<WebPage> pages) throws DataExportException {
-		try {
-			SignedRequest<HttpResponse> sr = new SignedRequest<>(
-			    this.buildAwsIndexRequest(
-			        new EsBulkJson(this.indexName, pages).structure()
-			    ),
-			    new SimpleAwsResponseHandler(false),
-			    new SimpleAwsErrorHandler(false)
-			);
-			sr.sendRequest();
-		} catch (IOException e) {
-			LOG.error(e.getMessage(), e);
+    @Override
+    public void export(List<WebPage> pages) throws DataExportException {
+        try {
+            SignedRequest<HttpResponse> sr = new SignedRequest<>(
+                this.buildAwsIndexRequest(
+                    new EsBulkJson(this.indexName, pages).structure()
+                ),
+                new SimpleAwsResponseHandler(false),
+                new SimpleAwsErrorHandler(false)
+            );
+            sr.sendRequest();
+        } catch (IOException e) {
+            LOG.error(e.getMessage(), e);
             throw new DataExportException(e.getMessage());
-		}
-	}
+        }
+    }
 
-	/**
-	 * Builds the POST request to send to the
-	 * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">
-	 * Es Bulk API
-	 * </a>
-	 * @param data Json structure expected by the bulk api.
-	 * @return Aws request.
-	 */
+    /**
+     * Builds the POST request to send to the
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">
+     * Es Bulk API
+     * </a>
+     * @param data Json structure expected by the bulk api.
+     * @return Aws request.
+     */
     public Request<Void> buildAwsIndexRequest(String data) {
         Request<Void> request = new DefaultRequest<Void>("es");
-	    request.setContent(new ByteArrayInputStream(data.getBytes()));
-	    String esEndpoint = System.getProperty("aws.es.endpoint");
-	    if(esEndpoint == null || esEndpoint.isEmpty()) {
+        request.setContent(new ByteArrayInputStream(data.getBytes()));
+        String esEndpoint = System.getProperty("aws.es.endpoint");
+        if(esEndpoint == null || esEndpoint.isEmpty()) {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
         }
-	    if(esEndpoint.endsWith("/")) {
-	    	esEndpoint += "_bulk?pretty";
-	    } else {
-	    	esEndpoint += "/_bulk?pretty";
-	    }
-	    request.setEndpoint(URI.create(esEndpoint));
-	    request.setHttpMethod(HttpMethodName.POST);
-	    return request;
-	}
+        if(esEndpoint.endsWith("/")) {
+            esEndpoint += "_bulk?pretty";
+        } else {
+            esEndpoint += "/_bulk?pretty";
+        }
+        request.setEndpoint(URI.create(esEndpoint));
+        request.setHttpMethod(HttpMethodName.POST);
+        return request;
+    }
 
 }

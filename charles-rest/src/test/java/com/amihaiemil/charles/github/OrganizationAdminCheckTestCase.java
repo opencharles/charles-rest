@@ -44,89 +44,89 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class OrganizationAdminCheckTestCase {
 
-	/**
-	 * OrganizationAdminCheck can tell when the command author is NOT owner of the repo but is admin
-	 * of the organization that holds the repo.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void authorOrganizationAdmin() throws Exception {
-	    JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "admin").build();
-	    Command com  = this.mockCommand("someone", "orgName");
-	    Mockito.when(com.authorOrgMembership()).thenReturn(membership);
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+    /**
+     * OrganizationAdminCheck can tell when the command author is NOT owner of the repo but is admin
+     * of the organization that holds the repo.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void authorOrganizationAdmin() throws Exception {
+        JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "admin").build();
+        Command com  = this.mockCommand("someone", "orgName");
+        Mockito.when(com.authorOrgMembership()).thenReturn(membership);
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
-	    OrganizationAdminCheck oac = new OrganizationAdminCheck(
-	    	com, Mockito.mock(Logger.class), onTrue, onFalse
-	    );
-	    oac.perform();
-	}
-	
-	/**
-	 * OrganizationAdminCheck throws IllegalStateException if the membership endpoint didn't work.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test (expected = IllegalStateException.class)
-	public void membershipEndpointThrowsIOException() throws Exception {
-	    Command com  = this.mockCommand("someone", "orgName");
-	    Mockito.when(com.authorOrgMembership()).thenThrow(new IOException());
+        OrganizationAdminCheck oac = new OrganizationAdminCheck(
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        oac.perform();
+    }
+    
+    /**
+     * OrganizationAdminCheck throws IllegalStateException if the membership endpoint didn't work.
+     * @throws Exception If something goes wrong.
+     */
+    @Test (expected = IllegalStateException.class)
+    public void membershipEndpointThrowsIOException() throws Exception {
+        Command com  = this.mockCommand("someone", "orgName");
+        Mockito.when(com.authorOrgMembership()).thenThrow(new IOException());
 
-	    OrganizationAdminCheck oac = new OrganizationAdminCheck(
+        OrganizationAdminCheck oac = new OrganizationAdminCheck(
             com, Mockito.mock(Logger.class), Mockito.mock(Step.class), Mockito.mock(Step.class)
         );
         oac.perform();
     }
 
-	/**
-	 * OrganizationAdminCheck can tell when the command author is neither repo owner nor admin of
-	 * the organization under which the repo is registered.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void authorNotOrganizationAdmin() throws Exception {
-		JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "member").build();
-		Command com  = this.mockCommand("someone", "orgName");
-	    Mockito.when(com.authorOrgMembership()).thenReturn(membership);
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
+    /**
+     * OrganizationAdminCheck can tell when the command author is neither repo owner nor admin of
+     * the organization under which the repo is registered.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void authorNotOrganizationAdmin() throws Exception {
+        JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "member").build();
+        Command com  = this.mockCommand("someone", "orgName");
+        Mockito.when(com.authorOrgMembership()).thenReturn(membership);
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
 
-	    OrganizationAdminCheck oac = new OrganizationAdminCheck(
-	    	com, Mockito.mock(Logger.class), onTrue, onFalse
-	    );
-	    oac.perform();
-	}
-	/**
-	 * Mock a command for the unit tests.
-	 * @param author Author of the command.
-	 * @param repoOwner Repository owner.
-	 * @param fork Is the repository a fork or not?
-	 * @param organization Is the repo under an organization or not?
-	 * @param port Port on which the organization membership goes.
-	 * @return Command mock. 
-	 * @throws IOException If something goes wrong.
-	 */
-	private Command mockCommand(String author, String repoOwner) throws IOException {
-		JsonObject repoJson = Json.createObjectBuilder()
-			.add(
-				"owner",
-				Json.createObjectBuilder()
-				.add("login", repoOwner)
-				.add("type", "Organization")
-				.build()
-			)
-			.build();
-		Command command = Mockito.mock(Command.class);
-		Mockito.when(command.authorLogin()).thenReturn(author);
-		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        OrganizationAdminCheck oac = new OrganizationAdminCheck(
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        oac.perform();
+    }
+    /**
+     * Mock a command for the unit tests.
+     * @param author Author of the command.
+     * @param repoOwner Repository owner.
+     * @param fork Is the repository a fork or not?
+     * @param organization Is the repo under an organization or not?
+     * @param port Port on which the organization membership goes.
+     * @return Command mock. 
+     * @throws IOException If something goes wrong.
+     */
+    private Command mockCommand(String author, String repoOwner) throws IOException {
+        JsonObject repoJson = Json.createObjectBuilder()
+            .add(
+                "owner",
+                Json.createObjectBuilder()
+                .add("login", repoOwner)
+                .add("type", "Organization")
+                .build()
+            )
+            .build();
+        Command command = Mockito.mock(Command.class);
+        Mockito.when(command.authorLogin()).thenReturn(author);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.json()).thenReturn(repoJson);
         
-		Mockito.when(command.repo()).thenReturn(crepo);
-		return command;
-	}
-	
+        Mockito.when(command.repo()).thenReturn(crepo);
+        return command;
+    }
+    
 }

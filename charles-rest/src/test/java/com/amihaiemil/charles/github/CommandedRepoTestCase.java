@@ -54,36 +54,36 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  */
 public class CommandedRepoTestCase {
     
-	/**
-	 * CommandedRepo can tell when the repo has a gh-pages branch.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
+    /**
+     * CommandedRepo can tell when the repo has a gh-pages branch.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
     public void repoHasGhPagesBranch() throws Exception {
-		int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_OK))
             .start(port);
-	    try {
-	        CommandedRepo crepo = Mockito.spy(
-	            new CommandedRepo(Mockito.mock(Repo.class))
-	        );
-	        Mockito.when(crepo.json()).thenReturn(Json
-	            .createObjectBuilder()
-	            .add(
-	                "branches_url",
-	                "http://localhost:" + port + "/branches{/branch}"
-	            ).build()
-	        );
-	        assertTrue(
-	            "Expected a gh-pages branch!",
-	            crepo.hasGhPagesBranch()
-	        );
-	    } finally {
-	    	server.stop();
+        try {
+            CommandedRepo crepo = Mockito.spy(
+                new CommandedRepo(Mockito.mock(Repo.class))
+            );
+            Mockito.when(crepo.json()).thenReturn(Json
+                .createObjectBuilder()
+                .add(
+                    "branches_url",
+                    "http://localhost:" + port + "/branches{/branch}"
+                ).build()
+            );
+            assertTrue(
+                "Expected a gh-pages branch!",
+                crepo.hasGhPagesBranch()
+            );
+        } finally {
+            server.stop();
         }
     }
-	
+    
     /**
      * CommandedRepo can tell when the repo doesn't
      * have a gh-pages branch.
@@ -95,23 +95,23 @@ public class CommandedRepoTestCase {
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_NOT_FOUND))
             .start(port);
-	    try {
-	        CommandedRepo crepo = Mockito.spy(
-	            new CommandedRepo(Mockito.mock(Repo.class))
-	        );
-	        Mockito.when(crepo.json()).thenReturn(Json
-	            .createObjectBuilder()
-	            .add(
-	                "branches_url",
-	                "http://localhost:" + port + "/branches{/branch}"
-	            ).build()
-	        );
-	        assertFalse(
-	            "Unexpected gh-pages branch!",
-	            crepo.hasGhPagesBranch()
-	        );
-	    } finally {
-	    	server.stop();
+        try {
+            CommandedRepo crepo = Mockito.spy(
+                new CommandedRepo(Mockito.mock(Repo.class))
+            );
+            Mockito.when(crepo.json()).thenReturn(Json
+                .createObjectBuilder()
+                .add(
+                    "branches_url",
+                    "http://localhost:" + port + "/branches{/branch}"
+                ).build()
+            );
+            assertFalse(
+                "Unexpected gh-pages branch!",
+                crepo.hasGhPagesBranch()
+            );
+        } finally {
+            server.stop();
         }
     }
     
@@ -122,33 +122,33 @@ public class CommandedRepoTestCase {
      */
     @Test
     public void unexpectedHttpStatusFromBranchesAPI() throws Exception {
-    	int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_BAD_REQUEST))
             .start(port);
-	    try {
-	        CommandedRepo crepo = Mockito.spy(
-	            new CommandedRepo(Mockito.mock(Repo.class))
-	        );
-	        Mockito.when(crepo.json()).thenReturn(Json
-	            .createObjectBuilder()
-	            .add(
-	                "branches_url",
-	                "http://localhost:" + port + "/branches{/branch}"
-	            ).build()
-	        );
-	        crepo.hasGhPagesBranch();
-	        fail("Expected an IOException here");
-	    } catch (IOException ex) {
-	    	assertTrue(
-	    	    ex.getMessage()
-	    	        .equals("Unexpected HTTP status response.")
-	    	);
-	    } finally {
-	    	server.stop();
+        try {
+            CommandedRepo crepo = Mockito.spy(
+                new CommandedRepo(Mockito.mock(Repo.class))
+            );
+            Mockito.when(crepo.json()).thenReturn(Json
+                .createObjectBuilder()
+                .add(
+                    "branches_url",
+                    "http://localhost:" + port + "/branches{/branch}"
+                ).build()
+            );
+            crepo.hasGhPagesBranch();
+            fail("Expected an IOException here");
+        } catch (IOException ex) {
+            assertTrue(
+                ex.getMessage()
+                    .equals("Unexpected HTTP status response.")
+            );
+        } finally {
+            server.stop();
         }
     }
-	
+    
     /**
      * CommandedRepo can represent itself in json format.
      * @throws Exception If something goes wrong.
@@ -167,7 +167,7 @@ public class CommandedRepoTestCase {
         assertTrue(repoJson == repoFromCache);
     }
     
-	/**
+    /**
      * Find a free port.
      * @return A free port.
      * @throws IOException If something goes wrong.

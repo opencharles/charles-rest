@@ -33,9 +33,9 @@ package com.amihaiemil.charles.rest.model;
  */
 public class SearchResult {
 
-	/**
-	 * Link to the page.
-	 */
+    /**
+     * Link to the page.
+     */
     private String link;
 
     /**
@@ -52,7 +52,7 @@ public class SearchResult {
      * Default ctor.
      */
     public SearchResult() {
-    	this("", "", "");
+        this("", "", "");
     }
 
     /**
@@ -67,29 +67,29 @@ public class SearchResult {
         this.category = category;
     }
     
-	public String getLink() {
-		return link;
-	}
+    public String getLink() {
+        return link;
+    }
 
-	public void setLink(String link) {
-		this.link = link;
-	}
+    public void setLink(String link) {
+        this.link = link;
+    }
 
-	public String getHighlight() {
-		return highlight;
-	}
+    public String getHighlight() {
+        return highlight;
+    }
 
-	public void setHighlight(String highlight) {
-		this.highlight = highlight;
-	}
+    public void setHighlight(String highlight) {
+        this.highlight = highlight;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
     
     
 }

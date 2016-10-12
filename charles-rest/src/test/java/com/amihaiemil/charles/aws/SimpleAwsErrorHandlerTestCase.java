@@ -40,20 +40,20 @@ import com.amazonaws.http.HttpResponse;
  */
 public class SimpleAwsErrorHandlerTestCase {
 
-	/**
-	 * SimpleAwsErrorHandler returns an {@link AmazonServiceException}
-	 * from an {@link HttpResponse}.
-	 */
-	@Test
-	public void returnsAwsException() {
-    	HttpResponse resp = Mockito.mock(HttpResponse.class);
-    	Mockito.when(resp.getStatusCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
-    	Mockito.when(resp.getStatusText()).thenReturn("Test not-found response");
-    	SimpleAwsErrorHandler handler = new SimpleAwsErrorHandler(false);
-    	assertFalse(handler.needsConnectionLeftOpen());
-    	
-    	AmazonServiceException aes = handler.handle(resp);
-    	assertTrue(aes.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND);
-    	assertTrue(aes.getErrorMessage().equals("Test not-found response"));
+    /**
+     * SimpleAwsErrorHandler returns an {@link AmazonServiceException}
+     * from an {@link HttpResponse}.
+     */
+    @Test
+    public void returnsAwsException() {
+        HttpResponse resp = Mockito.mock(HttpResponse.class);
+        Mockito.when(resp.getStatusCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+        Mockito.when(resp.getStatusText()).thenReturn("Test not-found response");
+        SimpleAwsErrorHandler handler = new SimpleAwsErrorHandler(false);
+        assertFalse(handler.needsConnectionLeftOpen());
+        
+        AmazonServiceException aes = handler.handle(resp);
+        assertTrue(aes.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND);
+        assertTrue(aes.getErrorMessage().equals("Test not-found response"));
     }
 }

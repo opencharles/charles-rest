@@ -41,19 +41,19 @@ public class LogsOnServerTestCase {
      * LogsOnServer formats the address correctly when
      * the endpoint is given without a final slash.
      */
-	@Test
-	public void formatsAddressWithoutSlash() {
-    	LogsLocation logs = new LogsOnServer("www.example.com/charles/api/logs", "action.log");
-    	assertTrue(logs.address().equals("www.example.com/charles/api/logs/action.log"));
+    @Test
+    public void formatsAddressWithoutSlash() {
+        LogsLocation logs = new LogsOnServer("www.example.com/charles/api/logs", "action.log");
+        assertTrue(logs.address().equals("www.example.com/charles/api/logs/action.log"));
     }
-	
-	/**
+    
+    /**
      * LogsOnServer formats the address correctly when
      * the endpoint is given with a final slash.
      */
-	@Test
-	public void formatsAddressWithSlash() {
-    	LogsLocation logs = new LogsOnServer("www.example.com/charles/api/logs/", "action.log");
-    	assertTrue(logs.address().equals("www.example.com/charles/api/logs/action.log"));
+    @Test
+    public void formatsAddressWithSlash() {
+        LogsLocation logs = new LogsOnServer("www.example.com/charles/api/logs/", "action.log");
+        assertTrue(logs.address().equals("www.example.com/charles/api/logs/action.log"));
     }
 }

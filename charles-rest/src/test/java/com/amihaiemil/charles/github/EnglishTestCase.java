@@ -40,97 +40,97 @@ import org.mockito.Mockito;
  * @since 1.0.0
  */
 public class EnglishTestCase {
-	/**
-	 * A 'hello' command is understood.
-	 */
-	@Test
+    /**
+     * A 'hello' command is understood.
+     */
+    @Test
     public void recognizesHelloCommands() throws Exception {
-    	Command hello1 = this.mockCommand("@charlesmike, hello there!");
-    	Command hello2 = this.mockCommand("@charlesmike, hello?!");
-    	Command hello3 = this.mockCommand("@charlesmike hi");
-    	Command hello4 = this.mockCommand("@charlesmike, how do you do??");
-    	Command hello5 = this.mockCommand("@charlesmike who are you?");
-    	
-    	Language english = new English();
-    	assertTrue(english.categorize(hello1).type().equals("hello"));
-    	assertTrue(english.categorize(hello2).type().equals("hello"));
-    	assertTrue(english.categorize(hello3).type().equals("hello"));
-    	assertTrue(english.categorize(hello4).type().equals("hello"));
-    	assertTrue(english.categorize(hello5).type().equals("hello"));
+        Command hello1 = this.mockCommand("@charlesmike, hello there!");
+        Command hello2 = this.mockCommand("@charlesmike, hello?!");
+        Command hello3 = this.mockCommand("@charlesmike hi");
+        Command hello4 = this.mockCommand("@charlesmike, how do you do??");
+        Command hello5 = this.mockCommand("@charlesmike who are you?");
+        
+        Language english = new English();
+        assertTrue(english.categorize(hello1).type().equals("hello"));
+        assertTrue(english.categorize(hello2).type().equals("hello"));
+        assertTrue(english.categorize(hello3).type().equals("hello"));
+        assertTrue(english.categorize(hello4).type().equals("hello"));
+        assertTrue(english.categorize(hello5).type().equals("hello"));
     }
-	
-	/**
-	 * A 'indexsite' command is understood.
-	 */
-	@Test
-	public void recognizezIndexSiteCommands() throws Exception{
-		Command index1 = this.mockCommand("@charlesmike, please index!");
-    	Command index2 = this.mockCommand("@charlesmike, index pls");
-    	Command index3 = this.mockCommand("@charlesmike index...");
-    	Command index4 = this.mockCommand("@charlesmike index please!!!");
-    	Command index5 = this.mockCommand("@charlesmike, pls index?");
-    	
-    	Language english = new English();
-    	assertTrue(english.categorize(index1).type().equals("indexsite"));
-    	assertTrue(english.categorize(index2).type().equals("indexsite"));
-    	assertTrue(english.categorize(index3).type().equals("indexsite"));
-    	assertTrue(english.categorize(index4).type().equals("indexsite"));
-    	assertTrue(english.categorize(index5).type().equals("indexsite"));
-	}
-	
-	/**
-	 * A 'indexpage' command is understood.
-	 */
-	@Test
-	public void recognizesIndexPageCommands() throws Exception{
-		Command indexPage1 = this.mockCommand("@charlesmike, please index [this](http://www.amihaiemil.com) page");
-    	Command indexPage2 = this.mockCommand("@charlesmike index [this] (test.com) page!");
-    	Command indexPage3 = this.mockCommand("@charlesmike, pls index [this] (eva.amihaiemil.com) page!!!");
-    	Command indexPage4 = this.mockCommand("@charlesmike index [this] (http://www.amihaiemil.com) page ...");
-    	Command indexPage5 = this.mockCommand("@charlesmike index [this]       (http://www.amihaiemil.com) page ...");
+    
+    /**
+     * A 'indexsite' command is understood.
+     */
+    @Test
+    public void recognizezIndexSiteCommands() throws Exception{
+        Command index1 = this.mockCommand("@charlesmike, please index!");
+        Command index2 = this.mockCommand("@charlesmike, index pls");
+        Command index3 = this.mockCommand("@charlesmike index...");
+        Command index4 = this.mockCommand("@charlesmike index please!!!");
+        Command index5 = this.mockCommand("@charlesmike, pls index?");
+        
+        Language english = new English();
+        assertTrue(english.categorize(index1).type().equals("indexsite"));
+        assertTrue(english.categorize(index2).type().equals("indexsite"));
+        assertTrue(english.categorize(index3).type().equals("indexsite"));
+        assertTrue(english.categorize(index4).type().equals("indexsite"));
+        assertTrue(english.categorize(index5).type().equals("indexsite"));
+    }
+    
+    /**
+     * A 'indexpage' command is understood.
+     */
+    @Test
+    public void recognizesIndexPageCommands() throws Exception{
+        Command indexPage1 = this.mockCommand("@charlesmike, please index [this](http://www.amihaiemil.com) page");
+        Command indexPage2 = this.mockCommand("@charlesmike index [this] (test.com) page!");
+        Command indexPage3 = this.mockCommand("@charlesmike, pls index [this] (eva.amihaiemil.com) page!!!");
+        Command indexPage4 = this.mockCommand("@charlesmike index [this] (http://www.amihaiemil.com) page ...");
+        Command indexPage5 = this.mockCommand("@charlesmike index [this]       (http://www.amihaiemil.com) page ...");
 
-    	Language english = new English();
-    	assertTrue(english.categorize(indexPage1).type().equals("indexpage"));
-    	assertTrue(english.categorize(indexPage2).type().equals("indexpage"));
-    	assertTrue(english.categorize(indexPage3).type().equals("indexpage"));
-    	assertTrue(english.categorize(indexPage4).type().equals("indexpage"));
-    	assertTrue(english.categorize(indexPage5).type().equals("indexpage"));
-	}
-	
-	/**
-	 * A command can be categorized as unknown.
-	 */
-	@Test
-	public void unknownCommands() throws Exception{
-		Command unknown1 = this.mockCommand("@charlesmike I don't think you understand");
-    	Command unknown2 = this.mockCommand("@charlesmike Why don't you respond?");
-    	Command unknown3 = this.mockCommand("@charlesmike how many languages do you speak?");
+        Language english = new English();
+        assertTrue(english.categorize(indexPage1).type().equals("indexpage"));
+        assertTrue(english.categorize(indexPage2).type().equals("indexpage"));
+        assertTrue(english.categorize(indexPage3).type().equals("indexpage"));
+        assertTrue(english.categorize(indexPage4).type().equals("indexpage"));
+        assertTrue(english.categorize(indexPage5).type().equals("indexpage"));
+    }
+    
+    /**
+     * A command can be categorized as unknown.
+     */
+    @Test
+    public void unknownCommands() throws Exception{
+        Command unknown1 = this.mockCommand("@charlesmike I don't think you understand");
+        Command unknown2 = this.mockCommand("@charlesmike Why don't you respond?");
+        Command unknown3 = this.mockCommand("@charlesmike how many languages do you speak?");
 
-    	Language english = new English();
-    	assertTrue(english.categorize(unknown1).type().equals("unknown"));
-    	assertTrue(english.categorize(unknown2).type().equals("unknown"));
-    	assertTrue(english.categorize(unknown3).type().equals("unknown"));
-	}
-	
-	/**
-	 * There is an English response for "hello".
-	 */
-	@Test
-	public void knowsTheHelloResponse() {
-		Language eng = new English();
-		String hi = eng.response("hello.comment");
-		assertTrue(hi.contains("Hi, @%s! I can help you index your Github"));
-	}
-	
-	/**
+        Language english = new English();
+        assertTrue(english.categorize(unknown1).type().equals("unknown"));
+        assertTrue(english.categorize(unknown2).type().equals("unknown"));
+        assertTrue(english.categorize(unknown3).type().equals("unknown"));
+    }
+    
+    /**
+     * There is an English response for "hello".
+     */
+    @Test
+    public void knowsTheHelloResponse() {
+        Language eng = new English();
+        String hi = eng.response("hello.comment");
+        assertTrue(hi.contains("Hi, @%s! I can help you index your Github"));
+    }
+    
+    /**
      * Mock a command.
      * @return The created Command.
      */
     public Command mockCommand(String message) throws Exception{
-    	JsonObject body = Json.createObjectBuilder().add("body", message).build();
-    	Command com = Mockito.mock(Command.class);
-    	Mockito.when(com.json()).thenReturn(body);
-    	Mockito.when(com.agentLogin()).thenReturn("charlesmike");
-    	return com;
+        JsonObject body = Json.createObjectBuilder().add("body", message).build();
+        Command com = Mockito.mock(Command.class);
+        Mockito.when(com.json()).thenReturn(body);
+        Mockito.when(com.agentLogin()).thenReturn("charlesmike");
+        return com;
     }
 }

@@ -38,21 +38,21 @@ import com.jcabi.github.Issue;
  */
 public class ErrorReply implements Reply {
 
-	private String logsAddress;
-	private Issue issue;
-	
-	public ErrorReply(String logsAddress, Issue issue) {
-		this.logsAddress = logsAddress;
-		this.issue = issue;
-	}
-	
-	@Override
-	public void send() throws IOException {
-		this.issue.comments().post(String.format(
-			"There was an error when processing your command. [Here](%s) are the logs.",
-			this.logsAddress
-		)
-	);
-	}
+    private String logsAddress;
+    private Issue issue;
+    
+    public ErrorReply(String logsAddress, Issue issue) {
+        this.logsAddress = logsAddress;
+        this.issue = issue;
+    }
+    
+    @Override
+    public void send() throws IOException {
+        this.issue.comments().post(String.format(
+            "There was an error when processing your command. [Here](%s) are the logs.",
+            this.logsAddress
+        )
+    );
+    }
 
 }

@@ -9,9 +9,9 @@ package com.amihaiemil.charles.rest.model;
  */
 public class EsQuery {
 
-	/**
-	 * Query the content field.
-	 */
+    /**
+     * Query the content field.
+     */
     private String content;
 
     /**
@@ -28,7 +28,13 @@ public class EsQuery {
      * Show nr of results on a page.
      */
     private String nr;
-
+    
+    /**
+     * Default ctor.
+     */
+    public EsQuery() {
+        this("", "", "", "");
+    }
     /**
      * Ctor.
      * @param content
@@ -37,42 +43,42 @@ public class EsQuery {
      * @param nr
      */
     public EsQuery(String content, String category, String index, String nr) {
-    	this.content = content;
-    	this.category = category;
-    	this.index = index;
-    	this.nr = nr;
+        this.content = content;
+        this.category = category;
+        this.index = index;
+        this.nr = nr;
     }
 
-	public String getContent() {
-		return content;
-	}
+    public String getContent() {
+        return content;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-	public String getIndex() {
-		return index;
-	}
+    public String getIndex() {
+        return index;
+    }
 
-	public void setIndex(String index) {
-		this.index = index;
-	}
+    public void setIndex(String index) {
+        this.index = index;
+    }
 
-	public String getNr() {
-		return nr;
-	}
+    public String getNr() {
+        return nr;
+    }
 
-	public void setNr(String nr) {
-		this.nr = nr;
-	}
+    public void setNr(String nr) {
+        this.nr = nr;
+    }
     
 }

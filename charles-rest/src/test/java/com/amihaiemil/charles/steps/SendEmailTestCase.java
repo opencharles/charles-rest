@@ -34,15 +34,15 @@ import static org.junit.Assert.*;
  */
 public class SendEmailTestCase {
 
-	/**
-	 * SendEmail can send an email envelope to the SMTP server.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
+    /**
+     * SendEmail can send an email envelope to the SMTP server.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
     public void sendsEmaiLToSmtpServer() throws Exception  {
-		String bind = "localhost";
-		int port = this.port();
-		GreenMail server = this.smtpServer(bind, port);
+        String bind = "localhost";
+        int port = this.port();
+        GreenMail server = this.smtpServer(bind, port);
         server.start();
 
         SendEmail se = new SendEmail(
@@ -71,16 +71,16 @@ public class SendEmailTestCase {
             server.stop();
         }
     }
-	
-	/**
-	 * SendEmail can send an email when username, password, host and port are specified.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void sendsEmailFromGivenUser() throws Exception {
-		String bind = "localhost";
-		int port = this.port();
-		GreenMail server = this.smtpServer(bind, port);
+    
+    /**
+     * SendEmail can send an email when username, password, host and port are specified.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void sendsEmailFromGivenUser() throws Exception {
+        String bind = "localhost";
+        int port = this.port();
+        GreenMail server = this.smtpServer(bind, port);
         server.start();
         
         System.setProperty("charles.smtp.username","mihai");
@@ -101,7 +101,7 @@ public class SendEmailTestCase {
         } finally {
             server.stop();
         }
-	}
+    }
 
     /**
      * SendEmail does not send any email if username and/or password are not specified.
@@ -121,13 +121,13 @@ public class SendEmailTestCase {
     public GreenMail smtpServer(String bind, int port) throws IOException {
         return new GreenMail(
             new ServerSetup(
-            	port, bind,
+                port, bind,
                 ServerSetup.PROTOCOL_SMTP
             )
         );
-	}
-	
-	/**
+    }
+    
+    /**
      * Find a free port.
      * @return A free port.
      * @throws IOException If something goes wrong.
@@ -140,7 +140,7 @@ public class SendEmailTestCase {
 
     @After
     public void clean() {
-    	System.clearProperty("charles.smtp.username");
+        System.clearProperty("charles.smtp.username");
         System.clearProperty("charles.smtp.password");
         System.clearProperty("charles.smtp.host");
         System.clearProperty("charles.smtp.port");

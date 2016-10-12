@@ -59,118 +59,118 @@ import com.jcabi.http.request.ApacheRequest;
  * 
  */
 public class LastCommentTestCase {
-	/**
-	 * The latest comment in the issue mentions the agent.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
+    /**
+     * The latest comment in the issue mentions the agent.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
     public void latestCommentMentionsTheAgent() throws Exception {
-    	Issue[] issues = this.mockIssue();
-    	Comment com = issues[0].comments().post("@charlesmike hello there, how are you?");
-    	LastComment lastComment = new LastComment(issues[1]);
-    	JsonObject jsonComment = lastComment.json();
-    	assertTrue(com.json().equals(jsonComment));
+        Issue[] issues = this.mockIssue();
+        Comment com = issues[0].comments().post("@charlesmike hello there, how are you?");
+        LastComment lastComment = new LastComment(issues[1]);
+        JsonObject jsonComment = lastComment.json();
+        assertTrue(com.json().equals(jsonComment));
     }
-	
-	/**
-	 * Command can fetch the agent's login.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * Command can fetch the agent's login.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
     public void getsAgentLogin() throws Exception {
-    	Issue[] issues = this.mockIssue();
-    	issues[0].comments().post("@charlesmike hello there, how are you?");
-    	LastComment lastComment = new LastComment(issues[1]);
-    	assertTrue(lastComment.agentLogin().equals("charlesmike"));
+        Issue[] issues = this.mockIssue();
+        issues[0].comments().post("@charlesmike hello there, how are you?");
+        LastComment lastComment = new LastComment(issues[1]);
+        assertTrue(lastComment.agentLogin().equals("charlesmike"));
     }
-	
-	/**
-	 * Command can fetch the author's login.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * Command can fetch the author's login.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
     public void getsAuthorLogin() throws Exception {
-    	Issue[] issues = this.mockIssue();
-    	issues[0].comments().post("@charlesmike hello there, how are you?");
-    	LastComment lastComment = new LastComment(issues[1]);
-    	assertTrue(lastComment.authorLogin().equals("amihaiemil"));
+        Issue[] issues = this.mockIssue();
+        issues[0].comments().post("@charlesmike hello there, how are you?");
+        LastComment lastComment = new LastComment(issues[1]);
+        assertTrue(lastComment.authorLogin().equals("amihaiemil"));
     }
-	
-	/**
-	 * Command can fetch the author's email.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * Command can fetch the author's email.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
     public void getsAuthorEmail() throws Exception {
         Issue[] issues = this.mockIssue();
         issues[0].comments().post("@charlesmike hello there, how are you?");
         LastComment lastComment = new LastComment(issues[1]);
         assertTrue(lastComment.authorEmail().equals("amihaiemil@gmail.com"));
     }
-	
-	/**
-	 * The agent is not mentioned in the latest comment but in a previous one.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void agentMentionedInOtherComment() throws Exception {
-    	Issue[] issues = this.mockIssue();
-    	Issue commander = issues[0];
-    	
-    	Comment agentcom = commander.comments().post("@charlesmike hello there, how are you?");
-    	commander.comments().post("@someoneelse, please check that...");
+    
+    /**
+     * The agent is not mentioned in the latest comment but in a previous one.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void agentMentionedInOtherComment() throws Exception {
+        Issue[] issues = this.mockIssue();
+        Issue commander = issues[0];
+        
+        Comment agentcom = commander.comments().post("@charlesmike hello there, how are you?");
+        commander.comments().post("@someoneelse, please check that...");
 
-    	LastComment lastComment = new LastComment(issues[1]);
-    	JsonObject jsonComment = lastComment.json();
-    	assertTrue(agentcom.json().equals(jsonComment));
-	}
-	
-	/**
-	 * The agent is mentioned in more previous comments and it should respond only to the last mention.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void mentionedInMoreComments() throws Exception {
-    	Issue[] issues = this.mockIssue();
-    	Issue commander = issues[0];
-    	
-    	commander.comments().post("@charlesmike hello there, how are you?");
-    	commander.comments().post("@charlesmike hello? Please answer?");
-    	Comment agentCom = commander.comments().post("@charlesmike why won't you answer?");
+        LastComment lastComment = new LastComment(issues[1]);
+        JsonObject jsonComment = lastComment.json();
+        assertTrue(agentcom.json().equals(jsonComment));
+    }
+    
+    /**
+     * The agent is mentioned in more previous comments and it should respond only to the last mention.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void mentionedInMoreComments() throws Exception {
+        Issue[] issues = this.mockIssue();
+        Issue commander = issues[0];
+        
+        commander.comments().post("@charlesmike hello there, how are you?");
+        commander.comments().post("@charlesmike hello? Please answer?");
+        Comment agentCom = commander.comments().post("@charlesmike why won't you answer?");
 
-    	commander.comments().post("@someoneelse, please do something...");
-    	commander.comments().post("@someoneelse, please check that...");
+        commander.comments().post("@someoneelse, please do something...");
+        commander.comments().post("@someoneelse, please check that...");
 
-    	LastComment lastComment = new LastComment(issues[1]);
-    	JsonObject jsonComment = lastComment.json();
-    	assertTrue(agentCom.json().equals(jsonComment));
-	}
-	
-	/**
-	 * If the agent is not mentioned at all in the issue (should happen rearely, only if the a mentioning comment was removed before it
-	 * checked the notifications) then LastComment should an "empty" one.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void agentNotMentionedAtAll() throws Exception {
-    	Issue[] issues = this.mockIssue();
-    	Issue commander = issues[0];
-    	commander.comments().post("@someoneelse hello there, how are you?");
-    	commander.comments().post("@someoneelse, please check that...");
+        LastComment lastComment = new LastComment(issues[1]);
+        JsonObject jsonComment = lastComment.json();
+        assertTrue(agentCom.json().equals(jsonComment));
+    }
+    
+    /**
+     * If the agent is not mentioned at all in the issue (should happen rearely, only if the a mentioning comment was removed before it
+     * checked the notifications) then LastComment should an "empty" one.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void agentNotMentionedAtAll() throws Exception {
+        Issue[] issues = this.mockIssue();
+        Issue commander = issues[0];
+        commander.comments().post("@someoneelse hello there, how are you?");
+        commander.comments().post("@someoneelse, please check that...");
 
-    	LastComment lastComment = new LastComment(issues[1]);
-    	JsonObject jsonComment = lastComment.json();
-    	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-    	assertTrue(emptyMentionComment.equals(jsonComment));
-	}
+        LastComment lastComment = new LastComment(issues[1]);
+        JsonObject jsonComment = lastComment.json();
+        JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
+        assertTrue(emptyMentionComment.equals(jsonComment));
+    }
 
-	/**
-	 * Agent already replied once to the last comment.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
-	public void agentRepliedAlreadyToTheLastComment() throws Exception {
-		final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
+    /**
+     * Agent already replied once to the last comment.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
+    public void agentRepliedAlreadyToTheLastComment() throws Exception {
+        final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
         final Repo repoMihai = new MkGithub(storage, "amihaiemil").repos().create( new RepoCreate("amihaiemil.github.io", false));
         final Issue issue = repoMihai.issues().create("test issue", "body");
         issue.comments().post("@charlesmike hello!");
@@ -179,22 +179,22 @@ public class LastCommentTestCase {
         Issue issueCharlesmike = charlesmike.repos().get(repoMihai.coordinates()).issues().get(issue.number());
         issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... ");
 
-    	issue.comments().post("@someoneelse, please check that...");
+        issue.comments().post("@someoneelse, please check that...");
         
-    	LastComment lastComment = new LastComment(issueCharlesmike);
-    	JsonObject jsonComment = lastComment.json();
-    	JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
-    	assertTrue(emptyMentionComment.equals(jsonComment)); 
-	}
-	
-	/**
-	 * There is more than 1 mention of the agent in the issue and it has already 
-	 * replied to others, but the last one is not replied to yet.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
-	public void agentRepliedToPreviousMention() throws Exception {
-		final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
+        LastComment lastComment = new LastComment(issueCharlesmike);
+        JsonObject jsonComment = lastComment.json();
+        JsonObject emptyMentionComment = Json.createObjectBuilder().add("id", "-1").add("body", "").build();
+        assertTrue(emptyMentionComment.equals(jsonComment)); 
+    }
+    
+    /**
+     * There is more than 1 mention of the agent in the issue and it has already 
+     * replied to others, but the last one is not replied to yet.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
+    public void agentRepliedToPreviousMention() throws Exception {
+        final MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
         final Repo repoMihai = new MkGithub(storage, "amihaiemil").repos().create( new RepoCreate("amihaiemil.github.io", false));
         final Issue issue = repoMihai.issues().create("test issue", "body");
         issue.comments().post("@charlesmike hello!");//first mention
@@ -204,13 +204,13 @@ public class LastCommentTestCase {
         issueCharlesmike.comments().post("@amihaiemil hi there, I can help you index... "); //first reply
 
         Comment lastMention = issue.comments().post("@charlesmike hello again!!");//second mention
-    	issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
+        issue.comments().post("@someoneelse, please check that..."); //some other comment that is the last on the ticket.
         
-    	LastComment lastComment = new LastComment(issueCharlesmike);
-    	JsonObject jsonComment = lastComment.json();
-    	assertTrue(lastMention.json().equals(jsonComment)); 
-	}
-	
+        LastComment lastComment = new LastComment(issueCharlesmike);
+        JsonObject jsonComment = lastComment.json();
+        assertTrue(lastMention.json().equals(jsonComment)); 
+    }
+    
     /**
      * Mock an issue on Github.
      * @return 2 Issues: 1 from the commander's Github (where the comments
@@ -218,63 +218,63 @@ public class LastCommentTestCase {
      * @throws IOException If something goes wrong.
      */
     private Issue[] mockIssue() throws IOException {
-    	MkStorage storage = new MkStorage.InFile();
-    	Github commanderGithub = new MkGithub(storage, "amihaiemil");
-    	commanderGithub.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
-    	Github agentGithub = new MkGithub(storage, "charlesmike");
-    	
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	commanderGithub.repos().create(repoCreate);
-    	Issue[] issues = new Issue[2];
-    	Coordinates repoCoordinates = new Coordinates.Simple("amihaiemil", "amihaiemil.github.io");
-    	Issue authorsIssue = commanderGithub.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
-    	Issue agentsIssue = agentGithub.repos().get(repoCoordinates).issues().get(authorsIssue.number());
-    	issues[0] = authorsIssue;
-    	issues[1] = agentsIssue;
-    	
-    	return issues;
+        MkStorage storage = new MkStorage.InFile();
+        Github commanderGithub = new MkGithub(storage, "amihaiemil");
+        commanderGithub.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
+        Github agentGithub = new MkGithub(storage, "charlesmike");
+        
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        commanderGithub.repos().create(repoCreate);
+        Issue[] issues = new Issue[2];
+        Coordinates repoCoordinates = new Coordinates.Simple("amihaiemil", "amihaiemil.github.io");
+        Issue authorsIssue = commanderGithub.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
+        Issue agentsIssue = agentGithub.repos().get(repoCoordinates).issues().get(authorsIssue.number());
+        issues[0] = authorsIssue;
+        issues[1] = agentsIssue;
+        
+        return issues;
     }
 
-	/**
-	 * Command can fetch the author's organization membership.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
+    /**
+     * Command can fetch the author's organization membership.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
     public void getsOrganizationMembership() throws Exception {
-		int port = this.port();
+        int port = this.port();
         MkContainer server = new MkGrizzlyContainer()
-		    .next(
-		        new MkAnswer.Simple(
-		            Json.createObjectBuilder()
-			            .add("state", "snowflake")
-			            .add("role", "special_test_admin")
-			            .build().toString()
-		        )
-		    ).start(port);
-		try {
-		    Github gh = Mockito.mock(Github.class);
+            .next(
+                new MkAnswer.Simple(
+                    Json.createObjectBuilder()
+                        .add("state", "snowflake")
+                        .add("role", "special_test_admin")
+                        .build().toString()
+                )
+            ).start(port);
+        try {
+            Github gh = Mockito.mock(Github.class);
             Mockito.when(gh.entry()).thenReturn(
-                new ApacheRequest("http://localhost:" + port + "/")		
+                new ApacheRequest("http://localhost:" + port + "/")        
             );
-		    Repo repo = Mockito.mock(Repo.class);
+            Repo repo = Mockito.mock(Repo.class);
             Mockito.when(repo.json()).thenReturn(
                 Json.createObjectBuilder().add(
                     "owner",
                     Json.createObjectBuilder().add(
-                        "type", "organization"		
+                        "type", "organization"        
                     ).add(
                         "login", "someorganization"
                     ).build()
                 ).build()
             );
             Mockito.when(repo.github()).thenReturn(gh);
-		    
+            
             Comments comments = Mockito.mock(Comments.class);
             Mockito.when(comments.iterate()).thenReturn(new ArrayList<Comment>());
             
             Issue issue = Mockito.mock(Issue.class);
-		    Mockito.when(issue.repo()).thenReturn(repo);
-		    Mockito.when(issue.comments()).thenReturn(comments);
+            Mockito.when(issue.repo()).thenReturn(repo);
+            Mockito.when(issue.comments()).thenReturn(comments);
 
             LastComment lastComment = new LastComment(issue);
             lastComment.comment(
@@ -288,9 +288,9 @@ public class LastCommentTestCase {
             JsonObject mem = lastComment.authorOrgMembership();
             assertTrue(mem.getString("state").equals("snowflake"));
             assertTrue(mem.getString("role").equals("special_test_admin"));
-		} finally {
-			server.stop();
-		}
+        } finally {
+            server.stop();
+        }
     }
 
     /**

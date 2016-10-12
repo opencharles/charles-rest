@@ -45,12 +45,12 @@ public class RepoForkCheckTestCase {
      * RepoNameCheck can tell if the repo is a fork. 
      */
     @Test
-	public void recognizesFork() {
+    public void recognizesFork() {
         JsonObject repo = Json.createObjectBuilder().add("fork", true).build();
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
         
         RepoForkCheck rfc = new RepoForkCheck(
             repo, Mockito.mock(Logger.class), onTrue, onFalse
@@ -62,12 +62,12 @@ public class RepoForkCheckTestCase {
      * RepoNameCheck can tell if the repo is NOT a fork. 
      */
     @Test
-	public void recognizesNotFork() {
+    public void recognizesNotFork() {
         JsonObject repo = Json.createObjectBuilder().add("fork", false).build();
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
         RepoForkCheck rfc = new RepoForkCheck(
             repo, Mockito.mock(Logger.class), onTrue, onFalse

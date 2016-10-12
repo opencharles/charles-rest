@@ -38,30 +38,30 @@ import org.openqa.selenium.remote.DesiredCapabilities;
  */
 public abstract class IndexStep extends IntermediaryStep{
 
-	/**
-	 * Ctor.
-	 * @param next Next step to take.
-	 */
-	public IndexStep(Step next) {
-		super(next);
-	}
+    /**
+     * Ctor.
+     * @param next Next step to take.
+     */
+    public IndexStep(Step next) {
+        super(next);
+    }
 
-	/**
-	 * Use phantomjs to fetch the web content.
-	 * @return
-	 */
-	protected WebDriver phantomJsDriver() {
-		String phantomJsExecPath =  System.getProperty("phantomjsExec");
-	    if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
-	        phantomJsExecPath = "/usr/local/bin/phantomjs";
-	    }
-		DesiredCapabilities dc = new DesiredCapabilities();
+    /**
+     * Use phantomjs to fetch the web content.
+     * @return
+     */
+    protected WebDriver phantomJsDriver() {
+        String phantomJsExecPath =  System.getProperty("phantomjsExec");
+        if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
+            phantomJsExecPath = "/usr/local/bin/phantomjs";
+        }
+        DesiredCapabilities dc = new DesiredCapabilities();
         dc.setJavascriptEnabled(true);
         dc.setCapability(
             PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
             phantomJsExecPath
         );
         return new PhantomJSDriver(dc);
-	}
+    }
 
 }

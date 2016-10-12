@@ -48,34 +48,34 @@ import com.amihaiemil.charles.rest.model.SearchResultsPage;
  */
 public class SearchResponseHandler implements HttpResponseHandler<SearchResultsPage>{
 
-	@Override
-	public SearchResultsPage handle(HttpResponse response) {
-		int status = response.getStatusCode();
-		if(status < 200 || status >= 300) {
-			AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
-			ase.setStatusCode(status);
-			throw ase;
-		}
-		return this.buildResultsPage(response);
-	}
+    @Override
+    public SearchResultsPage handle(HttpResponse response) {
+        int status = response.getStatusCode();
+        if(status < 200 || status >= 300) {
+            AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
+            ase.setStatusCode(status);
+            throw ase;
+        }
+        return this.buildResultsPage(response);
+    }
 
-	@Override
-	public boolean needsConnectionLeftOpen() {
-		return false;
-	}
+    @Override
+    public boolean needsConnectionLeftOpen() {
+        return false;
+    }
 
-	/**
-	 * Build the search results page
-	 * @param response
-	 * @return
-	 */
-	private SearchResultsPage buildResultsPage(HttpResponse response) {
-		SearchResultsPage page = new SearchResultsPage();
+    /**
+     * Build the search results page
+     * @param response
+     * @return
+     */
+    private SearchResultsPage buildResultsPage(HttpResponse response) {
+        SearchResultsPage page = new SearchResultsPage();
         InputStream content = response.getContent();
         JsonObject result = Json.createReader(content).readObject();
         int totalHits = result.getJsonObject("hits").getInt("total");
         if(totalHits != 0) {
-        	List<SearchResult> searchResults = new ArrayList<SearchResult>();
+            List<SearchResult> searchResults = new ArrayList<SearchResult>();
             JsonArray hits = result.getJsonObject("hits").getJsonArray("hits");
             for(int i=0; i<hits.size(); i++) {
                 JsonObject hitSource = hits.getJsonObject(i).getJsonObject("_source");
@@ -90,8 +90,8 @@ public class SearchResponseHandler implements HttpResponseHandler<SearchResultsP
             this.setPagesInfo(page, response.getRequest());
         } 
         return page;
-	}
-	
+    }
+    
     /**
      * Set the page number, next page, previous page and all pages' links
      * on the results page. Use the original search request since parameters from and size
