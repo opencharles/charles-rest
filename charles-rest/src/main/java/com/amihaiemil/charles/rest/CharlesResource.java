@@ -33,14 +33,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.amihaiemil.charles.aws.AmazonEsSearch;
 import com.amihaiemil.charles.rest.model.EsQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * REST interface for charles' logic.
@@ -50,11 +45,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Path("/")
 public class CharlesResource {
-
-    /**
-     * Logger for this class.
-	 */
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Endpoint for checking if the service is online.
@@ -87,12 +77,6 @@ public class CharlesResource {
         String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
         AmazonEsSearch aws = new AmazonEsSearch(query, indexName);
         SearchResultsPage results = aws.search();
-        try {
-            String jsonResults = new ObjectMapper().writeValueAsString(results);
-            return Response.ok().entity(jsonResults).build();
-		} catch (JsonProcessingException e) {
-            logger.error("Error while parsing the json search response", e);
-            return Response.serverError().entity("Could not parse response to json!").build();
-        }
+        return Response.ok().entity(results).build();
     }
 }

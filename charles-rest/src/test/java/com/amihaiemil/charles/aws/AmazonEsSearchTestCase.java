@@ -24,7 +24,7 @@
  */
 package com.amihaiemil.charles.aws;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -108,9 +108,36 @@ public class AmazonEsSearchTestCase {
             );
             SearchResultsPage srp = es.search();
             assertTrue(srp.getTotalHits() == 0);
-            assertTrue(srp.getResults().size() == 0);
+            assertTrue(srp.getResults().isEmpty());
+            assertTrue(srp.getPageNr() == 1);
+            assertTrue(srp.getPages().isEmpty());
+            assertTrue(srp.getNextPage().equals("-"));
+            assertTrue(srp.getPreviousPage().equals("-"));
+            
         } finally {
         	awsEs.stop();
+        }
+    }
+	
+    /**
+     * AmazonEsSearch throws IllegalStateException if the elasticsearch endpoint
+     * sys property is missing.
+     */
+    @Test
+    public void missingEsEndpoint() {
+        AmazonEsSearch es = new AmazonEsSearch(null, null);
+        try {
+            es.search();
+            fail("ISE was expected!");
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().equals("ElasticSearch endpoint needs to be specified!"));
+        }
+        try {
+            System.setProperty("aws.es.endpoint", "");
+            es.search();
+            fail("ISE was expected!");
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().equals("ElasticSearch endpoint needs to be specified!"));
         }
     }
 	
