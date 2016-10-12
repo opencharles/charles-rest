@@ -239,8 +239,9 @@ public class Brain {
      */
     public Step indexPageStep(Command com, Language lang) throws IOException {
         String repoName = com.repo().json().getString("name");
+        String indexName = com.authorLogin() + "x" + repoName;
         IndexPage ip = new IndexPage(
-            com.json().getString("body"), com.authorLogin() + "X" + repoName,
+            com.json().getString("body"), indexName.toLowerCase(),
             this.logger, this.indexFollowupStep(com, lang)
         );
         return ip;

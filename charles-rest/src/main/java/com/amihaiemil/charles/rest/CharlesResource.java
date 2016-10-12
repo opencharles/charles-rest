@@ -24,7 +24,7 @@
 */
 package com.amihaiemil.charles.rest;
 
-import javax.websocket.server.PathParam;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,10 +32,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import com.amihaiemil.charles.aws.AmazonEsSearch;
 import com.amihaiemil.charles.rest.model.EsQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * REST interface for charles' logic.
@@ -61,6 +62,7 @@ public class CharlesResource {
      * @return Http response.
      * @param user Github username.
      * @param repo Github reponame.
+     * @throws JsonProcessingException 
      */
     @GET
     @Path("/s/{username}/{reponame}")
@@ -72,11 +74,11 @@ public class CharlesResource {
         @QueryParam("ctg") @DefaultValue("page") String category,
         @QueryParam("index") @DefaultValue("0") String index,
         @QueryParam("size") @DefaultValue("10") String size
-    ) {
+    ) throws JsonProcessingException {
         EsQuery query = new EsQuery(keywords, category, index, size);
         String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
         AmazonEsSearch aws = new AmazonEsSearch(query, indexName);
         SearchResultsPage results = aws.search();
-        return Response.ok().entity(results).build();
+        return Response.ok().entity(new ObjectMapper().writeValueAsString(results)).build();
     }
 }
