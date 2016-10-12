@@ -45,7 +45,7 @@
       "_source" : {
         "id" : "http://amihaiemil.com/stuff/more/page2.html",
         "name" : "page.html",
-        "url" : "http://amihaiemil.com/stuff/more/page.html",
+        "url" : "http://amihaiemil.com/stuff/link3page/page.html",
         "title" : "page | title",
         "textContent" : "text content...",
         "category" : "development",

@@ -40,7 +40,7 @@ import com.amazonaws.http.HttpResponseHandler;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * @see <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html"> Docs </a>
+ * @see <a href="http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html"> AWS Docs </a>
  * @see <a href="https://blogs.aws.amazon.com/security/post/Tx3VP208IBVASUQ/How-to-Control-Access-to-Your-Amazon-Elasticsearch-Service-Domain">Aws blog post</a>
  *
  */
