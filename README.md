@@ -27,5 +27,85 @@ it didn't make much sense. So, the deployment model is now as follows:
     1) The EJB jar is to be deployed alone in a single server
     2) The ``.war`` can be deployed in multple nodes
 
-You will need to set some system properties (e.g. Github access token; token for communication between the EJB and REST endpoint etc).
-More to follow on this topic.
+You will need to set the following system properties. Pay a lot of attention while configuring these, since everything relies on them.
+
+a) For the EJB notifications checker:
+<table>
+  <tr>
+    <th>Name</th><th>Value</th><th>Description</th>
+  </tr>
+  <tr>
+    <td>checks.interval.minutes</td>
+    <td>integer</td>
+    <td><b>Optional</b>. Minutes that should <br> pass between checks. Defaults to 2.</td>
+  </tr>
+  <tr>
+    <td>charles.rest.endpoint</td>
+    <td>--domain--/charles-rest/api/notifications</td>
+    <td><b>Mantadory</b>. Rest endpoint from charles-rest<br>where the found notifications should be sent for handling.</td>
+  </tr>
+  <tr>
+    <td>github.auth.token</td>
+    <td>string</td>
+    <td><b>Mantadory</b>. Github's agent access token</td>
+  </tr>
+  <tr>
+    <td>charles.rest.token</td>
+    <td>string</td>
+    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checked and charles-rest</td>
+  </tr>
+</table>
+
+b) For ``charles-rest``:
+<table>
+  <tr>
+    <th>Name</th><th>Value</th><th>Description</th>
+  </tr>
+  <tr>
+    <td>LOG_ROOT</td>
+    <td>string</td>
+    <td><b>Optional</b>. Place where the log files will be stored. Defaults to ``.``</td>
+  </tr>
+  <tr>
+    <td>charles.rest.logs.endpoint</td>
+    <td>--domain--/charles-rest/api/logs</td>
+    <td><b>Mantadory</b>. Rest endpoint from charles-rest<br>that returns the log of an action.</td>
+  </tr>
+  <tr>
+    <td>charles.rest.token</td>
+    <td>string</td>
+    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checked and charles-rest</td>
+  </tr>
+  <tr>
+    <td>github.auth.token</td>
+    <td>string</td>
+    <td><b>Mantadory</b>. Github's agent access token. <b>The same as for the EJB checker</b></td>
+  </tr>
+  <tr>
+    <td>phantomjsExec</td>
+    <td>string</td>
+    <td><b>Optional</b>. Location of phantomjs executable on the server. Defaults to ``/usr/local/bin/phantomjs``</td>
+  </tr>
+  <tr>
+    <td>aws.es.endpoint</td>
+    <td>string</td>
+    <td><b>Mandatory</b>. Endpoint of AWS elasticsearch service</td>
+  </tr>
+  <tr>
+    <td>aws.es.region</td>
+    <td>string</td>
+    <td><b>Mandatory</b>. Region of AWS elasticsearch service</td>
+  </tr>
+  <tr>
+    <td>aws.accessKeyId</td>
+    <td>string</td>
+    <td><b>Mandatory</b>. AWS access key id</td>
+  </tr>
+  <tr>
+    <td>aws.secretKey</td>
+    <td>string</td>
+    <td><b>Mandatory</b>. AWS secret key</td>
+  </tr>
+  
+</table>
+
