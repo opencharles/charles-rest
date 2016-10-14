@@ -33,7 +33,6 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.Request;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
 import com.amihaiemil.charles.rest.model.SearchResult;
@@ -79,27 +78,18 @@ public class SearchResponseHandler implements HttpResponseHandler<SearchResultsP
             JsonArray hits = result.getJsonObject("hits").getJsonArray("hits");
             for(int i=0; i<hits.size(); i++) {
                 JsonObject hitSource = hits.getJsonObject(i).getJsonObject("_source");
+                JsonObject highlight = hits.getJsonObject(i).getJsonObject("highlight");
                 SearchResult res = new SearchResult(
-                    //TODO ES settings and logic for highlighting text content.
-                    hitSource.getString("url"), "TODO set highlight settings", hitSource.getString("category")
+                    hitSource.getString("url"),
+                    highlight.getJsonArray("textContent").getString(0),
+                    hitSource.getString("category")
                 );
                 searchResults.add(res);
             }
             page.setResults(searchResults);
             page.setTotalHits(totalHits);
-            this.setPagesInfo(page, response.getRequest());
         } 
         return page;
     }
-    
-    /**
-     * Set the page number, next page, previous page and all pages' links
-     * on the results page. Use the original search request since parameters from and size
-     * are not part of the response. 
-     * @param page
-     * @param request
-     */
-    private void setPagesInfo(SearchResultsPage page, Request<?> request) {
-        //TODO be implemented after highlighting, since request logic might change then.
-    }
+
 }

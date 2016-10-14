@@ -24,14 +24,20 @@
 */
 package com.amihaiemil.charles.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import com.amihaiemil.charles.aws.AmazonEsSearch;
 import com.amihaiemil.charles.rest.model.EsQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
@@ -46,6 +52,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @Path("/")
 public class CharlesResource {
+
+	/**
+	 * Http request.
+	 */
+	@Context
+	private HttpServletRequest servletRequest;
 
     /**
      * Endpoint for checking if the service is online.
@@ -75,10 +87,38 @@ public class CharlesResource {
         @QueryParam("index") @DefaultValue("0") String index,
         @QueryParam("size") @DefaultValue("10") String size
     ) throws JsonProcessingException {
-        EsQuery query = new EsQuery(keywords, category, index, size);
+    	int idx = Integer.valueOf(index);
+    	int nr = Integer.valueOf(size);
+        EsQuery query = new EsQuery(keywords, category, Integer.valueOf(index), Integer.valueOf(size));
         String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
         AmazonEsSearch aws = new AmazonEsSearch(query, indexName);
         SearchResultsPage results = aws.search();
+        
+        String queryStringFormat = "?kw=%s&ctg=%s&index=%s&size=%s";
+        String requestUrl = servletRequest.getRequestURL().toString();
+        if(idx == 0) {
+        	results.setPreviousPage("-");
+        } else {
+            String queryString = String.format(queryStringFormat, keywords, category, idx - nr, nr);
+            results.setPreviousPage(requestUrl + queryString);
+        }
+        if(idx + nr >= results.getTotalHits()) {
+            results.setNextPage("-");
+        } else {
+        	String queryString = String.format(queryStringFormat, keywords, category, idx + nr, nr);
+            results.setNextPage(requestUrl + queryString);
+        }
+        results.setPageNr(idx/nr + 1);
+        
+        int start = 0;
+        List<String> pagesLinks = new ArrayList<String>();
+        while(start < nr) {
+        	pagesLinks.add(
+        	    requestUrl + String.format(queryStringFormat, keywords, category, start, nr)
+        	);
+            start += nr;
+        }
+        
         return Response.ok().entity(new ObjectMapper().writeValueAsString(results)).build();
     }
 }

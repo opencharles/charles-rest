@@ -24,14 +24,17 @@
  */
 package com.amihaiemil.charles.aws;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.HttpURLConnection;
+
 import org.junit.Test;
 import org.mockito.Mockito;
+
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.Request;
 import com.amazonaws.http.HttpResponse;
 import com.amihaiemil.charles.rest.model.SearchResult;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
@@ -58,7 +61,6 @@ public class SearchResponseHandlerTestCase {
                 new File("src/test/resources/esSearchResponse.json")
              )
         );
-        Mockito.when(response.getRequest()).thenReturn(Mockito.mock(Request.class));
         SearchResultsPage page = new SearchResponseHandler().handle(response);
         assertTrue(page.getTotalHits() == 27);
         assertTrue(page.getResults().size() == 10);

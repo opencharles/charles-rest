@@ -68,7 +68,7 @@ public class AmazonEsSearchTestCase {
 
         try {
             AmazonEsSearch es = new AmazonEsSearch(
-                new EsQuery("test", "page", "0", "10"),
+                new EsQuery("test", "page", 0, 10),
                 "amihaiemilxtestrepo"
             );
             SearchResultsPage srp = es.search();
@@ -103,7 +103,7 @@ public class AmazonEsSearchTestCase {
 
         try {
             AmazonEsSearch es = new AmazonEsSearch(
-                new EsQuery("test", "page", "0", "10"),
+                new EsQuery("test", "page", 0, 10),
                 "amihaiemilxtestrepo"
             );
             SearchResultsPage srp = es.search();
@@ -128,8 +128,8 @@ public class AmazonEsSearchTestCase {
         EsQuery query = new EsQuery();
         query.setCategory("");
         query.setContent("");
-        query.setIndex("0");
-        query.setNr("10");
+        query.setIndex(0);
+        query.setNr(10);
         AmazonEsSearch es = new AmazonEsSearch(query, "user/idx");
         try {
             es.search();

@@ -24,7 +24,9 @@
  */
 package com.amihaiemil.charles.aws;
 
+import java.io.ByteArrayInputStream;
 import java.net.URI;
+
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
@@ -83,19 +85,16 @@ public class AmazonEsSearch {
         if(esEndpoint == null || esEndpoint.isEmpty()) {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
         }
-        String search = "_search/"
-            + indexName + "/" 
-            + query.getCategory() + "?q=textContent="
-            + query.getContent() + "&from="
-            + query.getIndex() + "&size="
-            + query.getNr();
+        String search = indexName + "/_search";
         if(esEndpoint.endsWith("/")) {
             esEndpoint += search;
         } else {
             esEndpoint += "/" + search;
         }
         request.setEndpoint(URI.create(esEndpoint));
-        request.setHttpMethod(HttpMethodName.GET);
+        String queryDsl = this.query.toJson().toString();
+        request.setContent(new ByteArrayInputStream(queryDsl.getBytes()));
+        request.setHttpMethod(HttpMethodName.POST);
         return request;
     }
 }
