@@ -60,7 +60,7 @@ You will need to set the following system properties. **Pay a lot of attention w
   </tr>
 </table>
 
-## Rest api checker sys props
+## Rest api sys props
 <table>
   <tr>
     <th>Name</th><th>Value</th><th>Description</th>
@@ -68,7 +68,7 @@ You will need to set the following system properties. **Pay a lot of attention w
   <tr>
     <td>LOG_ROOT</td>
     <td>string</td>
-    <td><b>Optional</b>. Place where the log files will be stored. Defaults to ``.``</td>
+    <td><b>Optional</b>. Place where the log files will be stored. Defaults to . (dot)</td>
   </tr>
   <tr>
     <td>charles.rest.logs.endpoint</td>
