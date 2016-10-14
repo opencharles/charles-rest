@@ -17,8 +17,12 @@ actions according to each of them. Any Github account can be used with this code
 Say ``@charlesmike hi there`` in a Github issue comment and see what happens. 
 Check out the [website](http://charles.amihaiemil.com) for more details on how to use this service.
 
+## Key technologies
+- [phantom js](http://phantomjs.org/) and [Selenium] (http://www.seleniumhq.org/projects/webdriver/) with [GhostDriver](https://github.com/detro/ghostdriver)
+- [Elastic search] (https://www.elastic.co/)
+- [Amazon Web Services] (https://aws.amazon.com/)
 
-#If you wish to install it on your own infrastructure:
+## If you wish to install it on your own infrastructure:
 
 Initially the EJB module was part of the ``.war`` and there was one single deployable. They were split because of clustering issues.
 If you deployed the initial architecture in multiple nodes (in a cluster, for load balancing), they would all check the Github notifications at the same time and 
@@ -27,9 +31,9 @@ it didn't make much sense. So, the deployment model is now as follows:
     1) The EJB jar is to be deployed alone in a single server
     2) The ``.war`` can be deployed in multple nodes
 
-You will need to set the following system properties. Pay a lot of attention while configuring these, since everything relies on them.
+You will need to set the following system properties. **Pay a lot of attention while configuring these, since everything relies on them**.
 
-a) For the EJB notifications checker:
+## EJB notifications checker sys props
 <table>
   <tr>
     <th>Name</th><th>Value</th><th>Description</th>
@@ -56,7 +60,7 @@ a) For the EJB notifications checker:
   </tr>
 </table>
 
-b) For ``charles-rest``:
+## Rest api checker sys props
 <table>
   <tr>
     <th>Name</th><th>Value</th><th>Description</th>
