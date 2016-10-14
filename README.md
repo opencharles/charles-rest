@@ -88,7 +88,7 @@ You will need to set the following system properties. **Pay a lot of attention w
   <tr>
     <td>phantomjsExec</td>
     <td>string</td>
-    <td><b>Optional</b>. Location of phantomjs executable on the server. Defaults to ``/usr/local/bin/phantomjs``</td>
+    <td><b>Optional</b>. Location of phantomjs executable on the server. Defaults to <b>/usr/local/bin/phantomjs</b></td>
   </tr>
   <tr>
     <td>aws.es.endpoint</td>
