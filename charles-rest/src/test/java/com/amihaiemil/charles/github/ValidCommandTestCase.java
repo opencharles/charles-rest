@@ -51,78 +51,78 @@ import com.jcabi.github.mock.MkStorage;
  * 
  */
 public class ValidCommandTestCase {
-	
-	@Test(expected = IllegalArgumentException.class)
+    
+    @Test(expected = IllegalArgumentException.class)
     public void exceptionOnEmptyComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
-    	
-    	new ValidCommand(comm);
+        Command comm = Mockito.mock(Command.class);
+        Mockito.when(comm.json()).thenReturn(Json.createObjectBuilder().add("body", "").build());
+        
+        new ValidCommand(comm);
     }
-	
-	@Test
-	public void acceptsValidComment() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
-		Mockito.when(comm.json()).thenReturn(json);
-		    	
-    	assertTrue(new ValidCommand(comm).json().equals(json));
-	}
+    
+    @Test
+    public void acceptsValidComment() throws Exception {
+        Command comm = Mockito.mock(Command.class);
+        JsonObject json = Json.createObjectBuilder().add("body", "test text").add("id", 2).build();
+        Mockito.when(comm.json()).thenReturn(json);
+                
+        assertTrue(new ValidCommand(comm).json().equals(json));
+    }
 
-	@Test
-	public void getsAuthorLogin() throws Exception {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject user = Json.createObjectBuilder().add("login", "amihaiemil").build();
-		
-		JsonObject json = Json.createObjectBuilder()
-		    .add("user", user)
-			.add("body", "test text")
-		    .add("id", 2)
-		    .build();
-		Mockito.when(comm.json()).thenReturn(json);
-		ValidCommand vc = new ValidCommand(comm);
-		assertTrue(vc.authorLogin().equals("amihaiemil"));
-	}
+    @Test
+    public void getsAuthorLogin() throws Exception {
+        Command comm = Mockito.mock(Command.class);
+        JsonObject user = Json.createObjectBuilder().add("login", "amihaiemil").build();
+        
+        JsonObject json = Json.createObjectBuilder()
+            .add("user", user)
+            .add("body", "test text")
+            .add("id", 2)
+            .build();
+        Mockito.when(comm.json()).thenReturn(json);
+        ValidCommand vc = new ValidCommand(comm);
+        assertTrue(vc.authorLogin().equals("amihaiemil"));
+    }
 
-	@Test
-	public void getsAuthorEmail() throws Exception {
-		MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
-		
-		MkGithub authorGh = new MkGithub(storage, "amihaiemil");
-		authorGh.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
-		Repo authorRepo = authorGh.randomRepo();
-		Comment com = authorRepo.issues().create("", "").comments().post("@charlesmike do something");
+    @Test
+    public void getsAuthorEmail() throws Exception {
+        MkStorage storage = new MkStorage.Synced(new MkStorage.InFile());
+        
+        MkGithub authorGh = new MkGithub(storage, "amihaiemil");
+        authorGh.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
+        Repo authorRepo = authorGh.randomRepo();
+        Comment com = authorRepo.issues().create("", "").comments().post("@charlesmike do something");
 
-		Github agentGh = new MkGithub(storage, "charlesmike");
-		Issue issue = agentGh.repos().get(authorRepo.coordinates()).issues().get(com.issue().number());
-		Command comm = Mockito.mock(Command.class);
-		
-		JsonObject authorInfo = Json.createObjectBuilder().add("login", "amihaiemil").build();
-		JsonObject json = Json.createObjectBuilder()
-			.add("user", authorInfo)
-			.add("body", com.json().getString("body"))
-		    .add("id", 2)
-		    .build();
-		Mockito.when(comm.json()).thenReturn(json);
-		Mockito.when(comm.issue()).thenReturn(issue);
+        Github agentGh = new MkGithub(storage, "charlesmike");
+        Issue issue = agentGh.repos().get(authorRepo.coordinates()).issues().get(com.issue().number());
+        Command comm = Mockito.mock(Command.class);
+        
+        JsonObject authorInfo = Json.createObjectBuilder().add("login", "amihaiemil").build();
+        JsonObject json = Json.createObjectBuilder()
+            .add("user", authorInfo)
+            .add("body", com.json().getString("body"))
+            .add("id", 2)
+            .build();
+        Mockito.when(comm.json()).thenReturn(json);
+        Mockito.when(comm.issue()).thenReturn(issue);
 
-		ValidCommand vc = new ValidCommand(comm);
-		assertTrue(vc.authorEmail().equals("amihaiemil@gmail.com"));
-	}
-	
-	@Test
-	public void getsAgentLogin() throws IOException {
-		Command comm = Mockito.mock(Command.class);
-		JsonObject json = Json.createObjectBuilder()
-			.add("body", "test text")
-		    .add("id", 2)
-		    .build();
-		Mockito.when(comm.json()).thenReturn(json);
-		
-		MkGithub gh = new MkGithub("charlesmike");
-		Issue issue = gh.randomRepo().issues().create("test issue", "body");
-		Mockito.when(comm.issue()).thenReturn(issue);
-		ValidCommand vc = new ValidCommand(comm);
-		assertTrue(vc.agentLogin().equals("charlesmike"));
-	}
+        ValidCommand vc = new ValidCommand(comm);
+        assertTrue(vc.authorEmail().equals("amihaiemil@gmail.com"));
+    }
+    
+    @Test
+    public void getsAgentLogin() throws IOException {
+        Command comm = Mockito.mock(Command.class);
+        JsonObject json = Json.createObjectBuilder()
+            .add("body", "test text")
+            .add("id", 2)
+            .build();
+        Mockito.when(comm.json()).thenReturn(json);
+        
+        MkGithub gh = new MkGithub("charlesmike");
+        Issue issue = gh.randomRepo().issues().create("test issue", "body");
+        Mockito.when(comm.issue()).thenReturn(issue);
+        ValidCommand vc = new ValidCommand(comm);
+        assertTrue(vc.agentLogin().equals("charlesmike"));
+    }
 }

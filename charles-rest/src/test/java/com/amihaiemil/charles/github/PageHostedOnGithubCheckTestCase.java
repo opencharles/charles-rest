@@ -48,12 +48,12 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsValidLinkGhPages() throws IOException {
-    	Step onTrue = Mockito.mock(Step.class);
+        Step onTrue = Mockito.mock(Step.class);
         Mockito.doNothing().when(onTrue).perform();
         Step onFalse = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
-    	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+        PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", true, "http://amihaiemil.github.io/myrepo/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
@@ -73,12 +73,12 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsInvalidLinkGhPages() throws IOException {
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
 
-    	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+        PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", true, "http://domain.io/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
@@ -98,7 +98,7 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsValidLink() throws IOException {
-    	Step onTrue = Mockito.mock(Step.class);
+        Step onTrue = Mockito.mock(Step.class);
         Mockito.doNothing().when(onTrue).perform();
         Step onFalse = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
@@ -123,21 +123,21 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsInvalidLink() throws IOException {
-    	Step onTrue = Mockito.mock(Step.class);
+        Step onTrue = Mockito.mock(Step.class);
         Mockito.doNothing().when(onTrue).perform();
         Step onFalse = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
-    	PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+        PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", false, "http://amihaiemil.github.io/stuff/page.html"),
             Mockito.mock(Logger.class), onTrue, onFalse
         );
         phgc.perform();
 
-		Step onTrue2 = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		Step onFalse2 = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
+        Step onTrue2 = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse2 = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
             this.mockCommand("amihaiemil", "myrepo", false, "ftp://amihaiemil.github.io/myrepo/stuff/page.html"),
@@ -158,23 +158,23 @@ public class PageHostedOnGithubCheckTestCase {
     public Command mockCommand(
         String owner, String name, boolean hasGhPages, String link
     ) throws IOException {
-    	JsonObject repoJson = Json.createObjectBuilder()
+        JsonObject repoJson = Json.createObjectBuilder()
             .add("name", name)
-        	.add(
-        	    "owner",
-        	    Json.createObjectBuilder().add("login", owner).build()
-        	).build();
-    	
-    	Command com = Mockito.mock(Command.class);
-    	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-    	Mockito.when(crepo.json()).thenReturn(repoJson);
-    	Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);
-    	
-    	
-    	Mockito.when(com.repo()).thenReturn(crepo);
-    	
-    	JsonObject comBody = Json.createObjectBuilder().add("body", "[link](" + link + ")").build();
-    	Mockito.when(com.json()).thenReturn(comBody);
-    	return com;
+            .add(
+                "owner",
+                Json.createObjectBuilder().add("login", owner).build()
+            ).build();
+        
+        Command com = Mockito.mock(Command.class);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(repoJson);
+        Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);
+        
+        
+        Mockito.when(com.repo()).thenReturn(crepo);
+        
+        JsonObject comBody = Json.createObjectBuilder().add("body", "[link](" + link + ")").build();
+        Mockito.when(com.json()).thenReturn(comBody);
+        return com;
     }
 }

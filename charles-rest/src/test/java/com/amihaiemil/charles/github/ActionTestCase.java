@@ -55,122 +55,122 @@ import com.jcabi.github.mock.MkStorage;
  * 
  */
 public class ActionTestCase {
-	
-	/**
-	 * More Actions are executed on separate threads.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void actionsExecute() throws Exception {
-		Language english = (Language)new English();
-		Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
-		Issue issue2 = this.githubIssue("jeff", "@charlesmike hello");
-		Issue issue3 = this.githubIssue("vlad", "@charlesmike hi");
-		Issue issue4 = this.githubIssue("marius", "@charlesmike hello");
-		Action ac1 = new Action(issue1);
-		Action ac2 = new Action(issue2);
-		Action ac3 = new Action(issue3);
-		Action ac4 = new Action(issue4);
-		
-		final ExecutorService executorService = Executors.newFixedThreadPool(5);
-		List<Future> futures = new ArrayList<Future>();
-		futures.add(executorService.submit(ac1));
-		futures.add(executorService.submit(ac2));
-		futures.add(executorService.submit(ac3));
-		futures.add(executorService.submit(ac4));
+    
+    /**
+     * More Actions are executed on separate threads.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void actionsExecute() throws Exception {
+        Language english = (Language)new English();
+        Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
+        Issue issue2 = this.githubIssue("jeff", "@charlesmike hello");
+        Issue issue3 = this.githubIssue("vlad", "@charlesmike hi");
+        Issue issue4 = this.githubIssue("marius", "@charlesmike hello");
+        Action ac1 = new Action(issue1);
+        Action ac2 = new Action(issue2);
+        Action ac3 = new Action(issue3);
+        Action ac4 = new Action(issue4);
+        
+        final ExecutorService executorService = Executors.newFixedThreadPool(5);
+        List<Future> futures = new ArrayList<Future>();
+        futures.add(executorService.submit(ac1));
+        futures.add(executorService.submit(ac2));
+        futures.add(executorService.submit(ac3));
+        futures.add(executorService.submit(ac4));
 
-		for(Future f : futures) {
-			assertTrue(f.get()==null);
-		}
-		
-    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
-    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
-    	List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.comments().iterate());
-    	List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.comments().iterate());
-    	String expectedReply1 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"amihaiemil");
-    	assertTrue(commentsWithReply1.get(1).json().getString("body")
-    			.equals(expectedReply1)); //there should be only 2 comments - the command and the reply.
-    	
-    	String expectedReply2 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"jeff");
-    	assertTrue(commentsWithReply2.get(1).json().getString("body")
-    			.equals(expectedReply2)); //there should be only 2 comments - the command and the reply.
-		
-    	String expectedReply3 = "> @charlesmike hi\n\n" + String.format(english.response("hello.comment"),"vlad");
-    	assertTrue(commentsWithReply3.get(1).json().getString("body")
-    			.equals(expectedReply3)); //there should be only 2 comments - the command and the reply.
-		
-    	String expectedReply4 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"marius");
-    	assertTrue(commentsWithReply4.get(1).json().getString("body")
-    			.equals(expectedReply4)); //there should be only 2 comments - the command and the reply.
-		
-	}
-	
-	/**
-	 * Start 2 actions but each of them fail with IOException
-	 * when the comments are first listed (within LastComment(...))
-	 * @throws Exception If something goes wrong
-	 */
-	@Test
-	public void actionsFail() throws Exception {
-		Language english = (Language)new English();
-		Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike index");
-		Issue issue2 = this.githubIssue("jeff", "@charlesmike index");
-		
-		Comments comments = Mockito.mock(Comments.class);
-		Comment com = Mockito.mock(Comment.class);
-		Mockito.when(com.json()).thenThrow(new IOException("expected IOException..."));
-		Mockito.when(comments.iterate()).thenReturn(Arrays.asList(com));
-		
-		Issue mockedIssue1 = Mockito.mock(Issue.class);
-		Mockito.when(mockedIssue1.comments())
-		    .thenReturn(comments)
-		    .thenReturn(issue1.comments());
+        for(Future f : futures) {
+            assertTrue(f.get()==null);
+        }
+        
+        List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
+        List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
+        List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.comments().iterate());
+        List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.comments().iterate());
+        String expectedReply1 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"amihaiemil");
+        assertTrue(commentsWithReply1.get(1).json().getString("body")
+                .equals(expectedReply1)); //there should be only 2 comments - the command and the reply.
+        
+        String expectedReply2 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"jeff");
+        assertTrue(commentsWithReply2.get(1).json().getString("body")
+                .equals(expectedReply2)); //there should be only 2 comments - the command and the reply.
+        
+        String expectedReply3 = "> @charlesmike hi\n\n" + String.format(english.response("hello.comment"),"vlad");
+        assertTrue(commentsWithReply3.get(1).json().getString("body")
+                .equals(expectedReply3)); //there should be only 2 comments - the command and the reply.
+        
+        String expectedReply4 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"marius");
+        assertTrue(commentsWithReply4.get(1).json().getString("body")
+                .equals(expectedReply4)); //there should be only 2 comments - the command and the reply.
+        
+    }
+    
+    /**
+     * Start 2 actions but each of them fail with IOException
+     * when the comments are first listed (within LastComment(...))
+     * @throws Exception If something goes wrong
+     */
+    @Test
+    public void actionsFail() throws Exception {
+        Language english = (Language)new English();
+        Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike index");
+        Issue issue2 = this.githubIssue("jeff", "@charlesmike index");
+        
+        Comments comments = Mockito.mock(Comments.class);
+        Comment com = Mockito.mock(Comment.class);
+        Mockito.when(com.json()).thenThrow(new IOException("expected IOException..."));
+        Mockito.when(comments.iterate()).thenReturn(Arrays.asList(com));
+        
+        Issue mockedIssue1 = Mockito.mock(Issue.class);
+        Mockito.when(mockedIssue1.comments())
+            .thenReturn(comments)
+            .thenReturn(issue1.comments());
 
-		Issue mockedIssue2 = Mockito.mock(Issue.class);
-		Mockito.when(mockedIssue2.comments())
-	        .thenReturn(comments)
-	        .thenReturn(issue2.comments());
-		
-		Action ac1 = new Action(mockedIssue1);
-		Action ac2 = new Action(mockedIssue2);
-		
-		final ExecutorService executorService = Executors.newFixedThreadPool(5);
-		List<Future> futures = new ArrayList<Future>();
-		futures.add(executorService.submit(ac1));
-		futures.add(executorService.submit(ac2));
+        Issue mockedIssue2 = Mockito.mock(Issue.class);
+        Mockito.when(mockedIssue2.comments())
+            .thenReturn(comments)
+            .thenReturn(issue2.comments());
+        
+        Action ac1 = new Action(mockedIssue1);
+        Action ac2 = new Action(mockedIssue2);
+        
+        final ExecutorService executorService = Executors.newFixedThreadPool(5);
+        List<Future> futures = new ArrayList<Future>();
+        futures.add(executorService.submit(ac1));
+        futures.add(executorService.submit(ac2));
 
-		for(Future f : futures) {
-			assertTrue(f.get()==null);
-		}
-		
-    	List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
-    	List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
+        for(Future f : futures) {
+            assertTrue(f.get()==null);
+        }
+        
+        List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
+        List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
 
-    	String expectedStartsWith = "There was an error when processing your command. [Here](/Action_";
-    	assertTrue(commentsWithReply1.get(1).json().getString("body")
-    			.startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
-    	
-    	assertTrue(commentsWithReply2.get(1).json().getString("body")
-    			.startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
-		
-	}
-	/**
-	 * Creates an Issue with the given command.
-	 * @param commander Author of the comment;
-	 * @param command The comment's body;
-	 * @return Github issue
-	 */
-	public Issue githubIssue(String commander, String command) throws Exception {
-		MkStorage storage = new MkStorage.InFile();
-		Github commanderGh = new MkGithub(storage, commander);
-    	RepoCreate repoCreate = new RepoCreate(commander + ".github.io", false);
-    	commanderGh.repos().create(repoCreate);
-    	Coordinates repoCoordinates = new Coordinates.Simple(commander, commander + ".github.io");
-    	Issue issue = commanderGh.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
-    	issue.comments().post(command);
-    	Github agentGh = new MkGithub(storage, "charlesmike");
-    	return agentGh.repos().get(repoCoordinates).issues().get(issue.number());
-    	
-	}
+        String expectedStartsWith = "There was an error when processing your command. [Here](/Action_";
+        assertTrue(commentsWithReply1.get(1).json().getString("body")
+                .startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
+        
+        assertTrue(commentsWithReply2.get(1).json().getString("body")
+                .startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
+        
+    }
+    /**
+     * Creates an Issue with the given command.
+     * @param commander Author of the comment;
+     * @param command The comment's body;
+     * @return Github issue
+     */
+    public Issue githubIssue(String commander, String command) throws Exception {
+        MkStorage storage = new MkStorage.InFile();
+        Github commanderGh = new MkGithub(storage, commander);
+        RepoCreate repoCreate = new RepoCreate(commander + ".github.io", false);
+        commanderGh.repos().create(repoCreate);
+        Coordinates repoCoordinates = new Coordinates.Simple(commander, commander + ".github.io");
+        Issue issue = commanderGh.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
+        issue.comments().post(command);
+        Github agentGh = new MkGithub(storage, "charlesmike");
+        return agentGh.repos().get(repoCoordinates).issues().get(issue.number());
+        
+    }
 
 }

@@ -22,46 +22,38 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.amihaiemil.charles.aws;
 
-package com.amihaiemil.charles.github;
-
-import java.io.IOException;
-import java.util.List;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-
-import com.google.common.collect.Lists;
-import com.jcabi.github.Comment;
-import com.jcabi.github.Issue;
+import static org.junit.Assert.*;
+import java.net.HttpURLConnection;
+import org.junit.Test;
+import org.mockito.Mockito;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.http.HttpResponse;
 
 /**
- * Last comment where the agent was mentioned.
+ * Test cases for {@link SimpleAwsErrorHandler}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
  */
-public class LastComment extends Command {
-    
-    public LastComment(Issue issue) throws IOException {
-        super(
-            issue,
-            Json.createObjectBuilder().add("id", "-1").add("body", "").build()
-        );
-        List<Comment> comments = Lists.newArrayList(issue.comments().iterate());
-        boolean agentFound = false;
-        for(int i=comments.size() - 1; !agentFound && i >=0; i--) {//we go backwards
-            JsonObject currentJsonComment = comments.get(i).json();
-            if(currentJsonComment.getJsonObject("user").getString("login").equals(agentLogin())) {
-                agentFound = true; //we found a reply of the agent, so stop looking.
-            } else {
-                if(currentJsonComment.getString("body").contains("@" + agentLogin())) {
-                    this.comment(currentJsonComment);
-                    agentFound = true;
-                }
-            }
-        }
-    }
+public class SimpleAwsErrorHandlerTestCase {
 
+    /**
+     * SimpleAwsErrorHandler returns an {@link AmazonServiceException}
+     * from an {@link HttpResponse}.
+     */
+    @Test
+    public void returnsAwsException() {
+        HttpResponse resp = Mockito.mock(HttpResponse.class);
+        Mockito.when(resp.getStatusCode()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+        Mockito.when(resp.getStatusText()).thenReturn("Test not-found response");
+        SimpleAwsErrorHandler handler = new SimpleAwsErrorHandler(false);
+        assertFalse(handler.needsConnectionLeftOpen());
+        
+        AmazonServiceException aes = handler.handle(resp);
+        assertTrue(aes.getStatusCode() == HttpURLConnection.HTTP_NOT_FOUND);
+        assertTrue(aes.getErrorMessage().equals("Test not-found response"));
+    }
 }

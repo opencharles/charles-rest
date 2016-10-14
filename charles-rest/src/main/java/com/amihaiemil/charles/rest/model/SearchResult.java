@@ -22,73 +22,74 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
-
-import java.util.Arrays;
-import org.slf4j.Logger;
-import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.LiveWebPage;
-import com.amihaiemil.charles.SnapshotWebPage;
-import com.amihaiemil.charles.WebPage;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
+package com.amihaiemil.charles.rest.model;
 
 /**
- * Step to index a single page.
+ * A search result.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexPage extends IndexStep {
+public class SearchResult {
 
     /**
-     * Action's logger.
+     * Link to the page.
      */
-    private Logger logger;
+    private String link;
 
     /**
-     * Command text.
+     * Preview text.
      */
-    private String commandBody;
+    private String highlight;
 
     /**
-     * Es index.
+     * Category.
      */
-    private String index;
+    private String category;
+
+    /**
+     * Default ctor.
+     */
+    public SearchResult() {
+        this("", "", "");
+    }
 
     /**
      * Ctor.
-     * @param commandBody Text of the index-page command.
-     * @param indexName Name of the Es index where the page will go.
-     * @param logger Logger.
-     * @param next Next step to take.
+     * @param link
+     * @param highlight
+     * @param category
      */
-    public IndexPage(
-        String commandBody, String indexName, Logger logger, Step next
-    ) {
-        super(next);
-        this.commandBody = commandBody;
-        this.index = indexName;
-        this.logger = logger;
+    public SearchResult(String link, String highlight, String category) {
+        this.link = link;
+        this.highlight = highlight;
+        this.category = category;
+    }
+    
+    public String getLink() {
+        return link;
     }
 
-    @Override
-    public void perform() {
-        String link = this.getLink();
-        WebPage snapshot = new SnapshotWebPage(
-            new LiveWebPage(this.phantomJsDriver(), link)
-        );
-        try {
-            new AmazonEsRepository(this.index).export(Arrays.asList(snapshot));
-        } catch (DataExportException e) {
-            logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException("Exception while indexing the page" + link, e);
-        }
-        this.next().perform();
+    public void setLink(String link) {
+        this.link = link;
     }
 
-    private String getLink() {
-        return this.commandBody.substring(commandBody.indexOf('('), commandBody.indexOf(')'));
+    public String getHighlight() {
+        return highlight;
     }
 
+    public void setHighlight(String highlight) {
+        this.highlight = highlight;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+    
+    
 }

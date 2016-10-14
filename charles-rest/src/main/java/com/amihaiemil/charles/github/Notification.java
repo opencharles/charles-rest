@@ -35,18 +35,18 @@ package com.amihaiemil.charles.github;
 public class Notification {
     private String repoFullName;
     private int issueNumber;
-	public String getRepoFullName() {
-		return repoFullName;
-	}
-	public void setRepoFullName(String repoFullName) {
-		this.repoFullName = repoFullName;
-	}
-	public int getIssueNumber() {
-		return issueNumber;
-	}
-	public void setIssueNumber(int issueNumber) {
-		this.issueNumber = issueNumber;
-	}
+    public String getRepoFullName() {
+        return repoFullName;
+    }
+    public void setRepoFullName(String repoFullName) {
+        this.repoFullName = repoFullName;
+    }
+    public int getIssueNumber() {
+        return issueNumber;
+    }
+    public void setIssueNumber(int issueNumber) {
+        this.issueNumber = issueNumber;
+    }
     
     
 }

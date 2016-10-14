@@ -48,121 +48,121 @@ import com.jcabi.github.mock.MkGithub;
  */
 public class BrainTestCase {
 
-	/**
-	 * {@link Brain} can undestand a command.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
-	public void understandsHelloCommand() throws Exception {
-		Command com = this.mockCommand();
-		
-		Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("hello.comment")).thenReturn("hi there");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("hello", english));
-		
-		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
-		Steps steps = br.understand(com);
-		assertTrue(steps != null);
-		assertTrue(steps.getStepsToPerform() instanceof SendReply);
-	}
-	
-	/**
-	 * {@link Brain} can undestand an index site command.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
-	public void understandsIndexSiteCommand() throws Exception {
-		Command com = this.mockCommand();
-		
-		Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
-		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
-		Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
-		Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
-		Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("indexsite", english));
-		
-		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
-		
-		Steps steps = br.understand(com);
-		assertTrue(steps != null);
-		assertTrue(steps.getStepsToPerform() instanceof PreconditionCheckStep);
-	}
-	
-	/**
-	 * {@link Brain} can undestand an index page command.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
-	public void understandsIndexPageCommand() throws Exception {
+    /**
+     * {@link Brain} can undestand a command.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
+    public void understandsHelloCommand() throws Exception {
         Command com = this.mockCommand();
-		
+        
         Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
-		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
-		Mockito.when(english.response("denied.badlink.comment")).thenReturn("bad link!");
-		Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
-		Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
-		Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
-		
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("indexpage", english));
-		
-		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
-		Steps steps = br.understand(com);
-		assertTrue(steps != null);
-		assertTrue(steps.getStepsToPerform() instanceof PreconditionCheckStep);
-	}
-	
-	/**
-	 * {@link Brain} can see an unknown command.
-	 * @throws Exception if something goes wrong.
-	 */
-	@Test
-	public void uknownCommand() throws Exception {
+        Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+        Mockito.when(english.response("hello.comment")).thenReturn("hi there");
+        Mockito.when(english.categorize(com)
+        ).thenReturn(new CommandCategory("hello", english));
+        
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Steps steps = br.understand(com);
+        assertTrue(steps != null);
+        assertTrue(steps.getStepsToPerform() instanceof SendReply);
+    }
+    
+    /**
+     * {@link Brain} can undestand an index site command.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
+    public void understandsIndexSiteCommand() throws Exception {
         Command com = this.mockCommand();
-		
+        
         Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("unknown.comment")).thenReturn("Unknown command!");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("uknown", english));
-		
-		Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
-		Steps steps = br.understand(com);
-		assertTrue(steps != null);
-		assertTrue(steps.getStepsToPerform() instanceof SendReply);
-	}
-	
-	/**
+        Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+        Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
+        Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+        Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
+        Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
+        Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
+        Mockito.when(english.categorize(com)
+        ).thenReturn(new CommandCategory("indexsite", english));
+        
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        
+        Steps steps = br.understand(com);
+        assertTrue(steps != null);
+        assertTrue(steps.getStepsToPerform() instanceof PreconditionCheckStep);
+    }
+    
+    /**
+     * {@link Brain} can undestand an index page command.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
+    public void understandsIndexPageCommand() throws Exception {
+        Command com = this.mockCommand();
+        
+        Language english = Mockito.mock(English.class);
+        Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+        Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
+        Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+        Mockito.when(english.response("denied.badlink.comment")).thenReturn("bad link!");
+        Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
+        Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
+        Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
+        
+        Mockito.when(english.categorize(com)
+        ).thenReturn(new CommandCategory("indexpage", english));
+        
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Steps steps = br.understand(com);
+        assertTrue(steps != null);
+        assertTrue(steps.getStepsToPerform() instanceof PreconditionCheckStep);
+    }
+    
+    /**
+     * {@link Brain} can see an unknown command.
+     * @throws Exception if something goes wrong.
+     */
+    @Test
+    public void uknownCommand() throws Exception {
+        Command com = this.mockCommand();
+        
+        Language english = Mockito.mock(English.class);
+        Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+        Mockito.when(english.response("unknown.comment")).thenReturn("Unknown command!");
+        Mockito.when(english.categorize(com)
+        ).thenReturn(new CommandCategory("uknown", english));
+        
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Steps steps = br.understand(com);
+        assertTrue(steps != null);
+        assertTrue(steps.getStepsToPerform() instanceof SendReply);
+    }
+    
+    /**
      * Mock a Github command where the agent is mentioned.
      * @return The created MkIssue.
      * @throws IOException If something goes wrong.
      */
     public Command mockCommand() throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike mock command for you (http://amihaiemil.github.io/folder/page.html)!");
-    	
-    	Command com = Mockito.mock(Command.class);
+        Github gh = new MkGithub("amihaiemil");
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        gh.repos().create(repoCreate);
+        Issue issue = gh.repos().get(
+                          new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+                      ).issues().create("Test issue for commands", "test body");
+        Comment c = issue.comments().post("@charlesmike mock command for you (http://amihaiemil.github.io/folder/page.html)!");
+        
+        Command com = Mockito.mock(Command.class);
     
-     	Mockito.when(com.json()).thenReturn(c.json());
-     	Mockito.when(com.issue()).thenReturn(issue);
-     	
-     	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-		Mockito.when(crepo.json()).thenReturn(issue.repo().json());
-     	
-     	Mockito.when(com.repo()).thenReturn(crepo);
+         Mockito.when(com.json()).thenReturn(c.json());
+         Mockito.when(com.issue()).thenReturn(issue);
+         
+         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(issue.repo().json());
+         
+         Mockito.when(com.repo()).thenReturn(crepo);
 
-     	return com;
+         return com;
     }
 }

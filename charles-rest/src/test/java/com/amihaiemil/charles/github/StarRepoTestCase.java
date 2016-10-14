@@ -54,30 +54,30 @@ public class StarRepoTestCase {
      * StarRepo can successfully star a given repository.
      * @throws Exception If something goes wrong.
      */
-	@Test
-	public void starsRepo() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
+    @Test
+    public void starsRepo() throws Exception {
+        Logger logger = Mockito.mock(Logger.class);
+        Mockito.doNothing().when(logger).info(Mockito.anyString());
+        Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
-		Repo repo = this.mockGithubRepo();
+        Repo repo = this.mockGithubRepo();
         Step sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
         assertFalse(repo.stars().starred());
         sr.perform();
         assertTrue(repo.stars().starred());
     }
-	
-	/**
+    
+    /**
      * StarRepo tries to star a repo twice.
      * @throws Exception If something goes wrong.
      */
-	@Test
-	public void starsRepoTwice() throws Exception {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
+    @Test
+    public void starsRepoTwice() throws Exception {
+        Logger logger = Mockito.mock(Logger.class);
+        Mockito.doNothing().when(logger).info(Mockito.anyString());
+        Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
-		Repo repo = this.mockGithubRepo();
+        Repo repo = this.mockGithubRepo();
         Step sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
         assertFalse(repo.stars().starred());
         sr.perform();
@@ -96,30 +96,30 @@ public class StarRepoTestCase {
      */
     @Test(expected = RuntimeException.class)
     public void repoStarringFails() throws IOException {
-		Logger logger = Mockito.mock(Logger.class);
-		Mockito.doNothing().when(logger).info(Mockito.anyString());
-		Mockito.doThrow(new RuntimeException("Excpected excetion; all is ok!")).when(logger).error(
-		    Mockito.anyString(), Mockito.any(IOException.class)
-		);
-		
-		Repo repo = Mockito.mock(Repo.class);
-		Stars stars = Mockito.mock(Stars.class);
-		Mockito.when(stars.starred()).thenReturn(false);
-		Mockito.doThrow(new IOException()).when(stars).star();
-		Mockito.when(repo.stars()).thenReturn(stars);
-		
-		StarRepo sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
-		sr.perform();
-	}
-	/**
-	 * Return a Github Repo mock for test.
-	 * @return Repo.
-	 * @throws Exception
-	 */
-	public Repo mockGithubRepo() throws Exception {
-		Github gh = new MkGithub("amihaiemil");
-    	return gh.repos().create(
-    		new RepoCreate("amihaiemil.github.io", false)
-    	);
-	}
+        Logger logger = Mockito.mock(Logger.class);
+        Mockito.doNothing().when(logger).info(Mockito.anyString());
+        Mockito.doThrow(new RuntimeException("Excpected excetion; all is ok!")).when(logger).error(
+            Mockito.anyString(), Mockito.any(IOException.class)
+        );
+        
+        Repo repo = Mockito.mock(Repo.class);
+        Stars stars = Mockito.mock(Stars.class);
+        Mockito.when(stars.starred()).thenReturn(false);
+        Mockito.doThrow(new IOException()).when(stars).star();
+        Mockito.when(repo.stars()).thenReturn(stars);
+        
+        StarRepo sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
+        sr.perform();
+    }
+    /**
+     * Return a Github Repo mock for test.
+     * @return Repo.
+     * @throws Exception
+     */
+    public Repo mockGithubRepo() throws Exception {
+        Github gh = new MkGithub("amihaiemil");
+        return gh.repos().create(
+            new RepoCreate("amihaiemil.github.io", false)
+        );
+    }
 }

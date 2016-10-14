@@ -37,31 +37,29 @@ import com.amazonaws.http.HttpResponseHandler;
  */
 public class SimpleAwsErrorHandler implements HttpResponseHandler<AmazonServiceException> {
 
-	/**
-	 * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
-	 */
-	private boolean needsConnectionLeftOpen;
+    /**
+     * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
+     */
+    private boolean needsConnectionLeftOpen;
 
-	/**
-	 * Ctor.
-	 * @param connectionLeftOpen Should the connection be closed immediately or not?
-	 */
-	public SimpleAwsErrorHandler(boolean connectionLeftOpen) {
-		this.needsConnectionLeftOpen = connectionLeftOpen;
-	}
-	
-	@Override
-	public AmazonServiceException handle(HttpResponse response)
-			throws Exception {
-		AmazonServiceException ase = new AmazonServiceException("Caught in handler: unexpected status: " + response.getStatusCode());
+    /**
+     * Ctor.
+     * @param connectionLeftOpen Should the connection be closed immediately or not?
+     */
+    public SimpleAwsErrorHandler(boolean connectionLeftOpen) {
+        this.needsConnectionLeftOpen = connectionLeftOpen;
+    }
+
+    @Override
+    public AmazonServiceException handle(HttpResponse response) {
+        AmazonServiceException ase = new AmazonServiceException(response.getStatusText());
         ase.setStatusCode(response.getStatusCode());
-        ase.setErrorCode(response.getStatusText());
         return ase;
-	}
+    }
 
-	@Override
-	public boolean needsConnectionLeftOpen() {
-		return this.needsConnectionLeftOpen;
-	}
+    @Override
+    public boolean needsConnectionLeftOpen() {
+        return this.needsConnectionLeftOpen;
+    }
 
 }

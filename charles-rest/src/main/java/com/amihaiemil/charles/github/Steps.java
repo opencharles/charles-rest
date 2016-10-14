@@ -38,21 +38,21 @@ public class Steps implements Step {
     /**
      * Steps to be performed.
      */
-	private Step steps;
-	
-	/**
-	 * Message to send in case some step fails.
-	 */
-	private SendReply failureMessage;
-	
-	/**
-	 * Constructor.
-	 * @param steps Given steps.
-	 * @param fm failure message in case any step fails.
-	 */
-	public Steps(Step steps, SendReply fm) {
-    	this.steps = steps;
-    	this.failureMessage = fm;
+    private Step steps;
+    
+    /**
+     * Message to send in case some step fails.
+     */
+    private SendReply failureMessage;
+    
+    /**
+     * Constructor.
+     * @param steps Given steps.
+     * @param fm failure message in case any step fails.
+     */
+    public Steps(Step steps, SendReply fm) {
+        this.steps = steps;
+        this.failureMessage = fm;
     }
 
     /**
@@ -62,7 +62,7 @@ public class Steps implements Step {
     public Step getStepsToPerform() {
         return this.steps;
     }
-	
+    
     /**
      * Perform all the given steps.
      */

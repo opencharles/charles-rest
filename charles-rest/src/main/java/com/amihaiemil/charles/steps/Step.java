@@ -72,8 +72,8 @@ public interface Step {
             this.message = message;
         }
 
-    	public void perform() {
-    		this.logger.info(message);
-    	}
+        public void perform() {
+            this.logger.info(message);
+        }
     }
 }

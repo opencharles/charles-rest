@@ -40,38 +40,38 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class AuthorOwnerCheck extends PreconditionCheckStep {
 
-	/**
-	 * Given command;
-	 */
-	private Command com;
+    /**
+     * Given command;
+     */
+    private Command com;
 
-	/**
-	 * Logger of the action.
-	 */
-	private Logger logger;
+    /**
+     * Logger of the action.
+     */
+    private Logger logger;
 
-	/**
-	 * Constructor.
-	 * @param com Command.
-	 * @param logger Action logger.
+    /**
+     * Constructor.
+     * @param com Command.
+     * @param logger Action logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
-	 */
-	public AuthorOwnerCheck(
-	    Command com, Logger logger,
-	    Step onTrue, Step onFalse
-	) {
-		super(onTrue, onFalse);
-		this.com = com;
-		this.logger = logger;
-	}
+     */
+    public AuthorOwnerCheck(
+        Command com, Logger logger,
+        Step onTrue, Step onFalse
+    ) {
+        super(onTrue, onFalse);
+        this.com = com;
+        this.logger = logger;
+    }
 
-	/**
-	 * Check that the author of a command is owner of the repo.
-	 * @return true if the check is successful, false otherwise
-	 */
-	@Override
-	public void perform() {
+    /**
+     * Check that the author of a command is owner of the repo.
+     * @return true if the check is successful, false otherwise
+     */
+    @Override
+    public void perform() {
         logger.info("Checking ownership of the repo");
         try {
             String repoOwner = this.com.repo().json().getJsonObject("owner").getString("login");
@@ -88,5 +88,5 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
             throw new IllegalStateException("IOException when fetching repo owner!", ex);
         }
     }
-	
+    
 }

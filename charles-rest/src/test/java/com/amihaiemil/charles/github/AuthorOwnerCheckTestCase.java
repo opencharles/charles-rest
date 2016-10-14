@@ -49,59 +49,59 @@ public class AuthorOwnerCheckTestCase {
      * AuthorOwnerCheck can tell when the command author is owner of the repo.
      * @throws Exception If something goes wrong.
      */
-	@Test
-	public void authorIsRepoOwner() throws Exception {
-        Command com = this.mockCommand("amihaiemil", "amihaiemil", 0);    	
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+    @Test
+    public void authorIsRepoOwner() throws Exception {
+        Command com = this.mockCommand("amihaiemil", "amihaiemil", 0);        
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    	    com, Mockito.mock(Logger.class), onTrue, onFalse
-    	);
-    	aoc.perform();
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        aoc.perform();
     }
 
-	/**
-	 * AuthorOwnerCheck can tell when the command author is NOT owner of the repo.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void authorIsNotRepoOwner() throws Exception {
+    /**
+     * AuthorOwnerCheck can tell when the command author is NOT owner of the repo.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void authorIsNotRepoOwner() throws Exception {
         Command com  = this.mockCommand("someone", "amihaiemil", 0);
         Step onTrue = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-    		com, Mockito.mock(Logger.class), onTrue, onFalse
-    	);
-    	aoc.perform();
-	}
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        aoc.perform();
+    }
 
-	/**
-	 * Mock a command for the unit tests.
-	 * @param author Author of the command.
-	 * @param repoOwner Repository owner.
-	 * @param port Port on which the organization membership goes.
-	 * @return Command mock. 
-	 * @throws IOException If something goes wrong.
-	 */
-	private Command mockCommand(String author, String repoOwner, int port) throws IOException {
-		JsonObject repoJson = Json.createObjectBuilder()
-			.add(
-				"owner",
-				Json.createObjectBuilder()
-				.add("login", repoOwner)
-				.build()
-		    ).build();
-		Command command = Mockito.mock(Command.class);
-		Mockito.when(command.authorLogin()).thenReturn(author);
-		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-		Mockito.when(crepo.json()).thenReturn(repoJson);
-		Mockito.when(command.repo()).thenReturn(crepo);
-		return command;
-	}
-	
+    /**
+     * Mock a command for the unit tests.
+     * @param author Author of the command.
+     * @param repoOwner Repository owner.
+     * @param port Port on which the organization membership goes.
+     * @return Command mock. 
+     * @throws IOException If something goes wrong.
+     */
+    private Command mockCommand(String author, String repoOwner, int port) throws IOException {
+        JsonObject repoJson = Json.createObjectBuilder()
+            .add(
+                "owner",
+                Json.createObjectBuilder()
+                .add("login", repoOwner)
+                .build()
+            ).build();
+        Command command = Mockito.mock(Command.class);
+        Mockito.when(command.authorLogin()).thenReturn(author);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(repoJson);
+        Mockito.when(command.repo()).thenReturn(crepo);
+        return command;
+    }
+    
 }

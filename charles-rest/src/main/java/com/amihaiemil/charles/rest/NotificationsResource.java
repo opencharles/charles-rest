@@ -61,98 +61,99 @@ public class NotificationsResource {
     /**
      * Logger,
      */
-	private static final Logger LOG = LoggerFactory.getLogger(NotificationsResource.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(NotificationsResource.class.getName());
 
-	/**
+    /**
      * The http request.
      */
-	@Context
-	private HttpServletRequest request;
+    @Context
+    private HttpServletRequest request;
 
-	/**
-	 * Consumes a JsonArray consisting of Github notifications json objects.
-	 * The <b>notifications are simplified</b>: a notification json looks like this:
-	 * <pre>
-	 * {
-	 *     "repoFullName":"amihaiemil/myrepo",
-	 *     "issueNumber":23
-	 * }
-	 * </pre>
-	 * This info is enough. Since we have the repo and the issue that triggered the notification, we can easily
-	 * find out the earliest comment where the Github agent was tagged.
-	 * <br><br>
-	 * <b>IMPORTANT:</b><br>
-	 * Each call to this endpoint has to contain the <b>Authorization http header</b>, with a token
-	 * <b>agreed upon</b> by this service and the EJB checker.<br>Technically, it might as well be the
-	 * Github auth token since it has to be the same on both parties, but this is really sensitive information
-	 * and we should pass it around as little as possible.<br><br>
-	 * 
-	 * @param notifications Json array of simplified Github notifications.
-	 * @return Http Response.
-	 */
-	@POST
-	@Path("notifications")
+    /**
+     * Consumes a JsonArray consisting of Github notifications json objects.
+     * The <b>notifications are simplified</b>: a notification json looks like this:
+     * <pre>
+     * {
+     *     "repoFullName":"amihaiemil/myrepo",
+     *     "issueNumber":23
+     * }
+     * </pre>
+     * This info is enough. Since we have the repo and the issue that triggered the notification, we can easily
+     * find out the earliest comment where the Github agent was tagged.
+     * <br><br>
+     * <b>IMPORTANT:</b><br>
+     * Each call to this endpoint has to contain the <b>Authorization http header</b>, with a token
+     * <b>agreed upon</b> by this service and the EJB checker.<br>Technically, it might as well be the
+     * Github auth token since it has to be the same on both parties, but this is really sensitive information
+     * and we should pass it around as little as possible.<br><br>
+     * 
+     * @param notifications Json array of simplified Github notifications.
+     * @return Http Response.
+     */
+    @POST
+    @Path("notifications")
     public Response postNotifications(String notifications) {
-		try {
-		    String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-		    if(token == null || token.isEmpty()) {
-			    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
-		    } else {
-		    	String key = System.getProperty("charles.rest.token");
-		        if(token.equals(key)) {
-		        	if(startedActionThreads() > 15) {
-		        		return Response.status(HttpURLConnection.HTTP_UNAVAILABLE).build();
-		        	}
-		        	ObjectMapper mapper = new ObjectMapper();
-				    List<Notification> parsedNotifications = mapper.readValue(notifications, new TypeReference<List<Notification>>(){});
-		    	    boolean startedHandling = this.handleNotifications(parsedNotifications);
-		    	    if(startedHandling) {
-		    	    	return Response.ok().build();
-		    	    }
-		        } else {
-		        	if(key == null || key.isEmpty()) {
-		        		LOG.error("Missing token charles.rest.token (system property)! Please specify it!");
-		        	}
-		    	    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
-		        }
-	     	}
+        try {
+            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if(token == null || token.isEmpty()) {
+                return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+            } else {
+                String key = System.getProperty("charles.rest.token");
+                if(token.equals(key)) {
+                    if(startedActionThreads() > 15) {
+                        return Response.status(HttpURLConnection.HTTP_UNAVAILABLE).build();
+                    }
+                    ObjectMapper mapper = new ObjectMapper();
+                    List<Notification> parsedNotifications = mapper.readValue(notifications, new TypeReference<List<Notification>>(){});
+                    boolean startedHandling = this.handleNotifications(parsedNotifications);
+                    if(startedHandling) {
+                        return Response.ok().build();
+                    }
+                } else {
+                    if(key == null || key.isEmpty()) {
+                        LOG.error("Missing token charles.rest.token (system property)! Please specify it!");
+                    }
+                    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+                }
+             }
         } catch (IOException ex) {
             LOG.error("Exception when parsing Json notifications!", ex);
         }
-		return Response.serverError().build();
-	}
+        return Response.serverError().build();
+    }
 
-	/**
-	 * Handles notifications, starts one action thread for each of them.
-	 * @param notifications List of notifications.
-	 * @return true if actions were started successfully; false otherwise.
-	 */
-	private boolean handleNotifications(List<Notification> notifications) {
-		String authToken = System.getProperty("github.auth.token");
-		if(authToken == null || authToken.isEmpty()) {
-	        LOG.error("Missing github.auth.token. Please specify a Github api access token!");
-		    return false;
-		} else {
-		    Github gh = new RtGithub(
-		        new RtGithub(
-		            authToken
-		        ).entry().through(RetryWire.class)
-	        );
-		    try {
-		        for(Notification notification : notifications) {
-		            new Action(
-		                gh.repos().get(
-					        new Coordinates.Simple(notification.getRepoFullName())
-					    ).issues().get(notification.getIssueNumber())		            ).take();
-		        }
-		        LOG.info("Started " + notifications.size() + " actions, to handle each notification!");
-		        return true;
-		    } catch (IOException ex) {
-		    	LOG.error("IOException while getting the Issue from Github API");
-		    	return false;
-		    }
-		}
-	}
+    /**
+     * Handles notifications, starts one action thread for each of them.
+     * @param notifications List of notifications.
+     * @return true if actions were started successfully; false otherwise.
+     */
+    private boolean handleNotifications(List<Notification> notifications) {
+        String authToken = System.getProperty("github.auth.token");
+        if(authToken == null || authToken.isEmpty()) {
+            LOG.error("Missing github.auth.token. Please specify a Github api access token!");
+            return false;
+        } else {
+            Github gh = new RtGithub(
+                new RtGithub(
+                    authToken
+                ).entry().through(RetryWire.class)
+            );
+            try {
+                for(Notification notification : notifications) {
+                    new Action(
+                        gh.repos().get(
+                        new Coordinates.Simple(notification.getRepoFullName())
+                        ).issues().get(notification.getIssueNumber())
+                   ).take();
+                }
+                LOG.info("Started " + notifications.size() + " actions, to handle each notification!");
+                return true;
+            } catch (IOException ex) {
+                LOG.error("IOException while getting the Issue from Github API");
+                return false;
+            }
+        }
+    }
 
     /**
      * When notifications are received, we check how many action threads are currently running.
@@ -169,5 +170,5 @@ public class NotificationsResource {
             }
         }
         return runningActions;
-	}
+    }
 }

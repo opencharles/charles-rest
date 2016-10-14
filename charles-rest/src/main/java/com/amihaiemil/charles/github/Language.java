@@ -42,53 +42,53 @@ import org.slf4j.LoggerFactory;
  * 
  */
 abstract class Language {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Language.class.getName());
+    
+    private static final Logger LOG = LoggerFactory.getLogger(Language.class.getName());
 
-	/**
-	 * Commands that the agent can understand, in a given language.
-	 */
-	private Properties commandsPatterns = new Properties();
-	
-	/**
-	 * Responses that the agent can give, in a given language
-	 */
-	private Properties responses = new Properties();
-	
-	Language(String commandsFileName, String responsesFileName) {
-		try {
-			commandsPatterns.load(
-				this.getClass().getClassLoader().getResourceAsStream(commandsFileName)
-			);
-			responses.load(
-				this.getClass().getClassLoader().getResourceAsStream(responsesFileName)
-			);
-		} catch (IOException e) {
-			LOG.error("Exception when loading commands' patterns!", e);
-			throw new IllegalStateException(e);
-		}
-	}
-	
+    /**
+     * Commands that the agent can understand, in a given language.
+     */
+    private Properties commandsPatterns = new Properties();
+    
+    /**
+     * Responses that the agent can give, in a given language
+     */
+    private Properties responses = new Properties();
+    
+    Language(String commandsFileName, String responsesFileName) {
+        try {
+            commandsPatterns.load(
+                this.getClass().getClassLoader().getResourceAsStream(commandsFileName)
+            );
+            responses.load(
+                this.getClass().getClassLoader().getResourceAsStream(responsesFileName)
+            );
+        } catch (IOException e) {
+            LOG.error("Exception when loading commands' patterns!", e);
+            throw new IllegalStateException(e);
+        }
+    }
+    
     CommandCategory categorize(Command command) throws IOException {
-    	Set<Object> keys = this.commandsPatterns.keySet();
-		for(Object key : keys) {
-			String keyString = (String) key;
-			String regex = this.commandsPatterns.getProperty(keyString, "");
-			if(!regex.isEmpty()) {
-				String formattedRegex = String.format(regex, "@" + command.agentLogin());
-				Pattern p = Pattern.compile(formattedRegex);
-				String text = command.json().getString("body");
-				Matcher m = p.matcher(text);
+        Set<Object> keys = this.commandsPatterns.keySet();
+        for(Object key : keys) {
+            String keyString = (String) key;
+            String regex = this.commandsPatterns.getProperty(keyString, "");
+            if(!regex.isEmpty()) {
+                String formattedRegex = String.format(regex, "@" + command.agentLogin());
+                Pattern p = Pattern.compile(formattedRegex);
+                String text = command.json().getString("body");
+                Matcher m = p.matcher(text);
 
-				if(m.matches()) {
-					return new CommandCategory(keyString.split("\\.")[0], this);
-				}
-			}
-		}
-		return new CommandCategory("unknown", this);
+                if(m.matches()) {
+                    return new CommandCategory(keyString.split("\\.")[0], this);
+                }
+            }
+        }
+        return new CommandCategory("unknown", this);
     }
     
     String response(String key) {
-    	return responses.getProperty(key);
+        return responses.getProperty(key);
     }
 }

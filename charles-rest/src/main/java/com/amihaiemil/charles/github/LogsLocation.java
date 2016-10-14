@@ -34,9 +34,9 @@ package com.amihaiemil.charles.github;
  */
 public interface LogsLocation {
 
-	/**
-	 * Get the log file's address.
-	 * @return String address.
-	 */
+    /**
+     * Get the log file's address.
+     * @return String address.
+     */
     String address();
 }

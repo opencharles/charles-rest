@@ -47,70 +47,70 @@ import com.jcabi.github.Repo;
  */
 public class RepoNameCheckTestCase {
 
-	/**
-	 * RepoNameCheck can tell when the repo's name is in the right format.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void repoNameMatches() throws Exception {
+    /**
+     * RepoNameCheck can tell when the repo's name is in the right format.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void repoNameMatches() throws Exception {
 
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onTrue).perform();
-		
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onTrue).perform();
+        
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
-		RepoNameCheck rnc = new RepoNameCheck(
-    		this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
-    		Mockito.mock(Logger.class),
-    		onTrue,
-    		onFalse
-    	);
-    	rnc.perform();
-    }
-	
-	/**
-	 * RepoNameCheck can tell when the repo's name is not in the right format.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void repoNameDoesntMatch() throws Exception {
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
-
-    	RepoNameCheck rnc = new RepoNameCheck(
-    		this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
-    		Mockito.mock(Logger.class),
-    		onTrue,
-    		onFalse
-    	);
+        RepoNameCheck rnc = new RepoNameCheck(
+            this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
+            Mockito.mock(Logger.class),
+            onTrue,
+            onFalse
+        );
         rnc.perform();
-	}
-	
-	/**
-	 * Mock a command for the unit tests.
-	 * @param owner Owner of the repo.
-	 * @param name Repository name.
-	 * @return Command mock.
-	 * @throws IOException If something goes wrong.
-	 */
-	public Command mockCommand(String owner, String name) throws IOException {
-		JsonObject repoJson = Json.createObjectBuilder()
-			.add("name", name)
-			.add(
-				"owner",
-				Json.createObjectBuilder().add("login", owner).build()
-			).build();
-		Repo repo = Mockito.mock(Repo.class);
-		Mockito.when(repo.json()).thenReturn(repoJson);
-		Issue issue = Mockito.mock(Issue.class);
-		Mockito.when(issue.repo()).thenReturn(repo);
-		Command command = Mockito.mock(Command.class);
-		Mockito.when(command.issue()).thenReturn(issue);
-		return command;
-	}
+    }
+    
+    /**
+     * RepoNameCheck can tell when the repo's name is not in the right format.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void repoNameDoesntMatch() throws Exception {
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
+
+        RepoNameCheck rnc = new RepoNameCheck(
+            this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
+            Mockito.mock(Logger.class),
+            onTrue,
+            onFalse
+        );
+        rnc.perform();
+    }
+    
+    /**
+     * Mock a command for the unit tests.
+     * @param owner Owner of the repo.
+     * @param name Repository name.
+     * @return Command mock.
+     * @throws IOException If something goes wrong.
+     */
+    public Command mockCommand(String owner, String name) throws IOException {
+        JsonObject repoJson = Json.createObjectBuilder()
+            .add("name", name)
+            .add(
+                "owner",
+                Json.createObjectBuilder().add("login", owner).build()
+            ).build();
+        Repo repo = Mockito.mock(Repo.class);
+        Mockito.when(repo.json()).thenReturn(repoJson);
+        Issue issue = Mockito.mock(Issue.class);
+        Mockito.when(issue.repo()).thenReturn(repo);
+        Command command = Mockito.mock(Command.class);
+        Mockito.when(command.issue()).thenReturn(issue);
+        return command;
+    }
 
 }

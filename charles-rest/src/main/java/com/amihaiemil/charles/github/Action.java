@@ -45,27 +45,27 @@ import com.jcabi.github.Issue;
  */
 public class Action implements Runnable {
 
-	private Logger logger;
+    private Logger logger;
 
-	/**
-	 * Thread that runs this.
-	 */
-	private Thread tr;
+    /**
+     * Thread that runs this.
+     */
+    private Thread tr;
 
-	/**
-	 * Github issue where the command was given.
-	 */
-	private Issue issue;
+    /**
+     * Github issue where the command was given.
+     */
+    private Issue issue;
 
-	/**
-	 * Brain of the github agent.
-	 */
-	private Brain br;	
+    /**
+     * Brain of the github agent.
+     */
+    private Brain br;    
 
-	/**
-	 * Location of the logs.
-	 */
-	private LogsLocation logs;
+    /**
+     * Location of the logs.
+     */
+    private LogsLocation logs;
 
     /**
      * Constructor.
@@ -82,73 +82,73 @@ public class Action implements Runnable {
         );
         this.br = new Brain(this.logger, this.logs);
     }
-	
-	
-	@Override
-	public void run() {
-		ValidCommand command;
-		try {
-			logger.info("Started action " + this.tr.getName());
-			LastComment lc = new LastComment(issue);
-			command = new ValidCommand(lc);
-			String commandBody = command.json().getString("body");
-			logger.info("Received command: " + commandBody);
-			Steps steps = br.understand(command);
-			steps.perform();
-		} catch (IllegalArgumentException e) {
-			logger.warn("No command found in the issue or the agent has already replied to the last command!");
-		} catch (IOException | IllegalStateException e) {
-			logger.error("Action failed entirely with exception: ",  e);
-	        this.sendReply(
+    
+    
+    @Override
+    public void run() {
+        ValidCommand command;
+        try {
+            logger.info("Started action " + this.tr.getName());
+            LastComment lc = new LastComment(issue);
+            command = new ValidCommand(lc);
+            String commandBody = command.json().getString("body");
+            logger.info("Received command: " + commandBody);
+            Steps steps = br.understand(command);
+            steps.perform();
+        } catch (IllegalArgumentException e) {
+            logger.warn("No command found in the issue or the agent has already replied to the last command!");
+        } catch (IOException | IllegalStateException e) {
+            logger.error("Action failed entirely with exception: ",  e);
+            this.sendReply(
                 new ErrorReply(logs.address(), this.issue)
             );
-		}
-	}
-	
-	/**
-	 * Take this action.
-	 */
-	public void take() { 
-		this.tr.start();
-	}
+        }
+    }
+    
+    /**
+     * Take this action.
+     */
+    public void take() { 
+        this.tr.start();
+    }
 
-	/**
-	 * Send the reply to Github issue.
-	 * @param reply
-	 */
-	private void sendReply(Reply reply) {
-		try {
-			reply.send();
-		} catch (IOException e) {
-			logger.error("FAILED TO REPLY!", e);
-		}
-	}
+    /**
+     * Send the reply to Github issue.
+     * @param reply
+     */
+    private void sendReply(Reply reply) {
+        try {
+            reply.send();
+        } catch (IOException e) {
+            logger.error("FAILED TO REPLY!", e);
+        }
+    }
 
-	/**
-	 * Setup the Log4J logger for this action thread.
-	 * @return String path to log file
-	 * @throws IOException If there's something wrong with the FileAppender.
-	 */
-	private void setupLog4jForAction() throws IOException {
-		String loggerName = "Action_" + this.tr.getName();
-		org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.tr.getName());
-		String logRoot = System.getProperty("LOG_ROOT");
-		if(logRoot == null) {
-			logRoot = ".";
-		}
-		String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log";
-		
-		File logFile = new File(logFilePath);
-		logFile.getParentFile().mkdirs();
-		logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
+    /**
+     * Setup the Log4J logger for this action thread.
+     * @return String path to log file
+     * @throws IOException If there's something wrong with the FileAppender.
+     */
+    private void setupLog4jForAction() throws IOException {
+        String loggerName = "Action_" + this.tr.getName();
+        org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.tr.getName());
+        String logRoot = System.getProperty("LOG_ROOT");
+        if(logRoot == null) {
+            logRoot = ".";
+        }
+        String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log";
+        
+        File logFile = new File(logFilePath);
+        logFile.getParentFile().mkdirs();
+        logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
 
-		FileAppender fa = new FileAppender(new PatternLayout("%d %p - %m%n"), logFilePath);
-		fa.setName(this.tr.getName() + "_appender");
-		fa.setThreshold(Level.DEBUG);
-		log4jLogger.addAppender(fa);
-		log4jLogger.setLevel(Level.DEBUG);
-		
-		this.logger = LoggerFactory.getLogger(loggerName);
-		
-	}
+        FileAppender fa = new FileAppender(new PatternLayout("%d %p - %m%n"), logFilePath);
+        fa.setName(this.tr.getName() + "_appender");
+        fa.setThreshold(Level.DEBUG);
+        log4jLogger.addAppender(fa);
+        log4jLogger.setLevel(Level.DEBUG);
+        
+        this.logger = LoggerFactory.getLogger(loggerName);
+        
+    }
 }

@@ -24,51 +24,72 @@
  */
 package com.amihaiemil.charles.aws;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
+import com.amihaiemil.charles.rest.model.SearchResult;
+import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
- * A simple aws response handler that only checks that the http status is within the 200 range.
- * If not, {@link AmazonServiceException} is thrown.
+ * Response handler that parses the search response into a {@link SearchResultsPage}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class SimpleAwsResponseHandler implements
-    HttpResponseHandler<HttpResponse> {
-
-    /**
-     * See {@link HttpResponseHandler}, method needsConnectionLeftOpen()
-     */
-    private boolean needsConnectionLeftOpen;
-
-    /**
-     * Ctor.
-     * @param connectionLeftOpen Should the connection be closed immediately or not?
-     */
-    public SimpleAwsResponseHandler(boolean connectionLeftOpen) {
-        this.needsConnectionLeftOpen = connectionLeftOpen;
-    }
+public class SearchResponseHandler implements HttpResponseHandler<SearchResultsPage>{
 
     @Override
-    public HttpResponse handle(HttpResponse response) {
-
+    public SearchResultsPage handle(HttpResponse response) {
         int status = response.getStatusCode();
         if(status < 200 || status >= 300) {
             AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
             ase.setStatusCode(status);
             throw ase;
         }
-
-        return response;
-        
+        return this.buildResultsPage(response);
     }
 
     @Override
     public boolean needsConnectionLeftOpen() {
-        return this.needsConnectionLeftOpen;
+        return false;
+    }
+
+    /**
+     * Build the search results page
+     * @param response
+     * @return
+     */
+    private SearchResultsPage buildResultsPage(HttpResponse response) {
+        SearchResultsPage page = new SearchResultsPage();
+        InputStream content = response.getContent();
+        JsonObject result = Json.createReader(content).readObject();
+        int totalHits = result.getJsonObject("hits").getInt("total");
+        if(totalHits != 0) {
+            List<SearchResult> searchResults = new ArrayList<SearchResult>();
+            JsonArray hits = result.getJsonObject("hits").getJsonArray("hits");
+            for(int i=0; i<hits.size(); i++) {
+                JsonObject hitSource = hits.getJsonObject(i).getJsonObject("_source");
+                JsonObject highlight = hits.getJsonObject(i).getJsonObject("highlight");
+                SearchResult res = new SearchResult(
+                    hitSource.getString("url"),
+                    highlight.getJsonArray("textContent").getString(0),
+                    hitSource.getString("category")
+                );
+                searchResults.add(res);
+            }
+            page.setResults(searchResults);
+            page.setTotalHits(totalHits);
+        } 
+        return page;
     }
 
 }

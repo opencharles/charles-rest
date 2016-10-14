@@ -43,31 +43,31 @@ import com.amihaiemil.charles.WebPage;
  */
 public class EsBulkJsonTestCase {
 
-	/**
-	 * EsBulkJson can create the json bulk for Elastic search _bulk api.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void structuresPagesCorrectly() throws Exception {
-		List<WebPage> pages = new ArrayList<>();
-		pages.add(this.mockWebPage("http://amihaiemil.com/page.html", "tech"));
-		pages.add(this.mockWebPage("http://amihaiemil.com/stuff/page.html", "mischelaneous"));
-		pages.add(this.mockWebPage("http://amihaiemil.com/stuff/more/page.html", "development"));
+    /**
+     * EsBulkJson can create the json bulk for Elastic search _bulk api.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void structuresPagesCorrectly() throws Exception {
+        List<WebPage> pages = new ArrayList<>();
+        pages.add(this.mockWebPage("http://amihaiemil.com/page.html", "tech"));
+        pages.add(this.mockWebPage("http://amihaiemil.com/stuff/page.html", "mischelaneous"));
+        pages.add(this.mockWebPage("http://amihaiemil.com/stuff/more/page.html", "development"));
 
-		String bulkStrucure = new EsBulkJson("testIndex", pages).structure();
-		
-		String expected = new String(
-		    IOUtils.toByteArray(
-			    new FileInputStream(
-				    new File("src/test/resources/bulkIndexStructure.txt")
-				)	
-			)
-		);
-		assertTrue(
-			"The 2 structures are not the same! (did you forget to add a final newline (\\n)?",
-		    expected.equals(bulkStrucure)
-		);
-	}
+        String bulkStrucure = new EsBulkJson("testIndex", pages).structure();
+        
+        String expected = new String(
+            IOUtils.toByteArray(
+                new FileInputStream(
+                    new File("src/test/resources/bulkIndexStructure.txt")
+                )    
+            )
+        );
+        assertTrue(
+            "The 2 structures are not the same! (did you forget to add a final newline (\\n)?",
+            expected.equals(bulkStrucure)
+        );
+    }
 
     /**
      * EsBulkJson throws exception on empty docs list.
@@ -76,30 +76,30 @@ public class EsBulkJsonTestCase {
     public void throwsExceptionOnEmptyList() {
         new EsBulkJson("testIndex", new ArrayList<WebPage>());
     }
-	
-	/**
+    
+    /**
      * EsBulkJson throws exception on null docs list.
      */
-	@Test(expected = IllegalArgumentException.class)
-	public void throwsExceptionOnNullList() {
-		new EsBulkJson("testIndex", null);
-	}
-	
-	/**
-	 * Mock a WebPage for test.
-	 * @param url
-	 * @param category
-	 * @return Webpage instance.
-	 */
-	private WebPage mockWebPage(String url, String category) {
-		WebPage page = new SnapshotWebPage();
-		page.setUrl(url);
-		page.setCategory(category);
+    @Test(expected = IllegalArgumentException.class)
+    public void throwsExceptionOnNullList() {
+        new EsBulkJson("testIndex", null);
+    }
+    
+    /**
+     * Mock a WebPage for test.
+     * @param url
+     * @param category
+     * @return Webpage instance.
+     */
+    private WebPage mockWebPage(String url, String category) {
+        WebPage page = new SnapshotWebPage();
+        page.setUrl(url);
+        page.setCategory(category);
 
-		page.setLinks(new HashSet<Link>());
-		page.setTextContent("text content...");
-		page.setName("page.html");
-		page.setTitle("page | title");
-		return page;
-	}
+        page.setLinks(new HashSet<Link>());
+        page.setTextContent("text content...");
+        page.setName("page.html");
+        page.setTitle("page | title");
+        return page;
+    }
 }

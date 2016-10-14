@@ -22,73 +22,96 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.rest.model;
 
-import java.util.Arrays;
-import org.slf4j.Logger;
-import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.LiveWebPage;
-import com.amihaiemil.charles.SnapshotWebPage;
-import com.amihaiemil.charles.WebPage;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Step to index a single page.
+ * A page of search results.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexPage extends IndexStep {
+public class SearchResultsPage {
 
     /**
-     * Action's logger.
+     * Search results on this page.
      */
-    private Logger logger;
+    private List<SearchResult> results = new ArrayList<SearchResult>();
 
     /**
-     * Command text.
+     * Total of results found.
      */
-    private String commandBody;
+    private int totalHits;
 
     /**
-     * Es index.
+     * Page number - what page we're on?
      */
-    private String index;
+    private int pageNr = 1;
 
     /**
-     * Ctor.
-     * @param commandBody Text of the index-page command.
-     * @param indexName Name of the Es index where the page will go.
-     * @param logger Logger.
-     * @param next Next step to take.
+     * Link to the previosus results page.
      */
-    public IndexPage(
-        String commandBody, String indexName, Logger logger, Step next
-    ) {
-        super(next);
-        this.commandBody = commandBody;
-        this.index = indexName;
-        this.logger = logger;
+    private String previousPage = "-";
+
+    /**
+     * Link to the next results page.
+     */
+    private String nextPage = "-";
+
+    /**
+     * List of links to all the found pages.
+     */
+    private List<String> pages = new ArrayList<String>();
+
+    public List<SearchResult> getResults() {
+        return results;
     }
 
-    @Override
-    public void perform() {
-        String link = this.getLink();
-        WebPage snapshot = new SnapshotWebPage(
-            new LiveWebPage(this.phantomJsDriver(), link)
-        );
-        try {
-            new AmazonEsRepository(this.index).export(Arrays.asList(snapshot));
-        } catch (DataExportException e) {
-            logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException("Exception while indexing the page" + link, e);
-        }
-        this.next().perform();
+    public void setResults(List<SearchResult> results) {
+        this.results = results;
     }
 
-    private String getLink() {
-        return this.commandBody.substring(commandBody.indexOf('('), commandBody.indexOf(')'));
+    public int getTotalHits() {
+        return totalHits;
     }
 
+    public void setTotalHits(int totalHits) {
+        this.totalHits = totalHits;
+    }
+
+    public int getPageNr() {
+        return pageNr;
+    }
+
+    public void setPageNr(int pageNr) {
+        this.pageNr = pageNr;
+    }
+
+    public String getPreviousPage() {
+        return previousPage;
+    }
+
+    public void setPreviousPage(String previousPage) {
+        this.previousPage = previousPage;
+    }
+
+    public String getNextPage() {
+        return nextPage;
+    }
+
+    public void setNextPage(String nextPage) {
+        this.nextPage = nextPage;
+    }
+
+    public List<String> getPages() {
+        return pages;
+    }
+
+    public void setPages(List<String> pages) {
+        this.pages = pages;
+    }
+    
 }

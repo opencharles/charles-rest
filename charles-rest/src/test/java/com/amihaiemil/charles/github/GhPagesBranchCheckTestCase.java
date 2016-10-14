@@ -40,13 +40,13 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class GhPagesBranchCheckTestCase {
 
-	/**
-	 * GhPagesBranchCheck can tell if the gh-pages branch exists in the repo.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void ghpagesBranchExists() throws Exception {
-		Command com = Mockito.mock(Command.class);
+    /**
+     * GhPagesBranchCheck can tell if the gh-pages branch exists in the repo.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void ghpagesBranchExists() throws Exception {
+        Command com = Mockito.mock(Command.class);
         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(true);
         Mockito.when(com.repo()).thenReturn(crepo);
@@ -59,27 +59,27 @@ public class GhPagesBranchCheckTestCase {
             com, Mockito.mock(Logger.class), onTrue, onFalse
         );
         gpc.perform();
-	}
+    }
 
-	/**
-	 * GhPagesBranchCheck can tell if the gh-pages branch does not exist in the repo.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
-	public void ghpagesBranchDoesntExist() throws Exception {
-		Command com = Mockito.mock(Command.class);
-		CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+    /**
+     * GhPagesBranchCheck can tell if the gh-pages branch does not exist in the repo.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void ghpagesBranchDoesntExist() throws Exception {
+        Command com = Mockito.mock(Command.class);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(false);
         Mockito.when(com.repo()).thenReturn(crepo);
-		Step onTrue = Mockito.mock(Step.class);
-		Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-		Step onFalse = Mockito.mock(Step.class);
-		Mockito.doNothing().when(onFalse).perform();
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
 
-		GhPagesBranchCheck gpc = new GhPagesBranchCheck(
-		    com, Mockito.mock(Logger.class), onTrue, onFalse
-		);
+        GhPagesBranchCheck gpc = new GhPagesBranchCheck(
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
         gpc.perform();
-	}
+    }
 
 }

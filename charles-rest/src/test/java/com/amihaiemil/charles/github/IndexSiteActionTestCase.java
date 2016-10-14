@@ -70,24 +70,24 @@ public class IndexSiteActionTestCase {
             false, false
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "Index-site checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexSiteStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "Index-site checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexSiteStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -102,9 +102,9 @@ public class IndexSiteActionTestCase {
     }
 
     /**
-	 * All the precondition checks for an index-site command
-	 * finish successfully when we have a repo with gh-pages website.
-	 * @throws Exception If something goes wrong.
+     * All the precondition checks for an index-site command
+     * finish successfully when we have a repo with gh-pages website.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexSiteChecksAreSuccessfulOnGhPagesRepo() throws Exception {
@@ -113,24 +113,24 @@ public class IndexSiteActionTestCase {
             false, true
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "Index-site checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexSiteStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "Index-site checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexSiteStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -145,11 +145,11 @@ public class IndexSiteActionTestCase {
     }
     
     /**
-	 * All the precondition checks for an index-site command
-	 * finish successfully when we have a repo with gh-pages website, which is
-	 * owned by an organization. In this case, the command author has to be an active admin
-	 * of the organization.
-	 * @throws Exception If something goes wrong.
+     * All the precondition checks for an index-site command
+     * finish successfully when we have a repo with gh-pages website, which is
+     * owned by an organization. In this case, the command author has to be an active admin
+     * of the organization.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexSiteChecksAreSuccessfulOnGhPagesRepoUnderOrg() throws Exception {
@@ -158,32 +158,32 @@ public class IndexSiteActionTestCase {
             false, true
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "Index-site checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexSiteStep(com, eng);
-	    
-	    Mockito.when(com.authorOrgMembership()).thenReturn(
-	        Json.createObjectBuilder()
-	            .add("state", "active")
-	            .add("role", "admin")
-	            .build()
-	    );
-	    
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "Index-site checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexSiteStep(com, eng);
+        
+        Mockito.when(com.authorOrgMembership()).thenReturn(
+            Json.createObjectBuilder()
+                .add("state", "active")
+                .add("role", "admin")
+                .build()
+        );
+        
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -198,11 +198,11 @@ public class IndexSiteActionTestCase {
     }
 
     /**
-	 * All the precondition checks for an index-site command
-	 * finish successfully when we have a blog repo, which is
-	 * owned by an organization. In this case, the command author has to be an active admin
-	 * of the organization.
-	 * @throws Exception If something goes wrong.
+     * All the precondition checks for an index-site command
+     * finish successfully when we have a blog repo, which is
+     * owned by an organization. In this case, the command author has to be an active admin
+     * of the organization.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexSiteChecksAreSuccessfulOnBlogRepoUnderOrg() throws Exception {
@@ -211,32 +211,32 @@ public class IndexSiteActionTestCase {
             false, false
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "Index-site checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexSiteStep(com, eng);
-	    
-	    Mockito.when(com.authorOrgMembership()).thenReturn(
-	        Json.createObjectBuilder()
-	            .add("state", "active")
-	            .add("role", "admin")
-	            .build()
-	    );
-	    
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "Index-site checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexSiteStep(com, eng);
+        
+        Mockito.when(com.authorOrgMembership()).thenReturn(
+            Json.createObjectBuilder()
+                .add("state", "active")
+                .add("role", "admin")
+                .build()
+        );
+        
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -251,9 +251,9 @@ public class IndexSiteActionTestCase {
     }
     
     /**
-	 * Preconditions' check for index-site command fail because the author
-	 * is not repo owner.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-site command fail because the author
+     * is not repo owner.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexSiteChecksFailAuthorNotOwner() throws Exception {
@@ -262,24 +262,24 @@ public class IndexSiteActionTestCase {
             false, false
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexStep index = Mockito.mock(IndexStep.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexStep index = Mockito.mock(IndexStep.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
 
-	    Mockito.when(com.authorOrgMembership()).thenReturn(
-		    Json.createObjectBuilder().build()
-		);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Mockito.when(com.authorOrgMembership()).thenReturn(
+            Json.createObjectBuilder().build()
+        );
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -294,9 +294,9 @@ public class IndexSiteActionTestCase {
     }
     
     /**
-	 * Preconditions' check for index-site command fail: the author is owner,
-	 * the repo has a gh-pages branch BUT it is a fork.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-site command fail: the author is owner,
+     * the repo has a gh-pages branch BUT it is a fork.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexSiteChecksFailRepoIsForked() throws Exception {
@@ -305,20 +305,20 @@ public class IndexSiteActionTestCase {
             true, true
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexStep index = Mockito.mock(IndexStep.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexStep index = Mockito.mock(IndexStep.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -333,10 +333,10 @@ public class IndexSiteActionTestCase {
     }
 
     /**
-	 * Preconditions' check for index-site command fail. The author is owner,
-	 * but it has no website in it: is not named owner.github.io and has no
-	 * gh-pages branch.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-site command fail. The author is owner,
+     * but it has no website in it: is not named owner.github.io and has no
+     * gh-pages branch.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexSiteChecksFailNoWebsite() throws Exception {
@@ -345,20 +345,20 @@ public class IndexSiteActionTestCase {
             false, false
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexStep index = Mockito.mock(IndexStep.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexStep index = Mockito.mock(IndexStep.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").equals(
@@ -387,37 +387,37 @@ public class IndexSiteActionTestCase {
         String repoName, boolean fork,
         boolean ghpages
     ) throws IOException {
-    	MkStorage storage = new MkStorage.InFile();
-    	Github gh = new MkGithub(storage, owner);
-    	RepoCreate repoCreate = new RepoCreate(repoName, false);
-    	gh.repos().create(repoCreate);
-    	Coordinates repoCoord = new Coordinates.Simple(owner, repoName);
-    	
-    	Issue issue = gh.repos().get(repoCoord).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike index");  	
-    	Issue agentIssue = new MkGithub(storage, "charlesmike")
+        MkStorage storage = new MkStorage.InFile();
+        Github gh = new MkGithub(storage, owner);
+        RepoCreate repoCreate = new RepoCreate(repoName, false);
+        gh.repos().create(repoCreate);
+        Coordinates repoCoord = new Coordinates.Simple(owner, repoName);
+        
+        Issue issue = gh.repos().get(repoCoord).issues().create("Test issue for commands", "test body");
+        Comment c = issue.comments().post("@charlesmike index");      
+        Issue agentIssue = new MkGithub(storage, "charlesmike")
             .repos().get(repoCoord).issues().get(issue.number());
   
   
-    	Command com = Mockito.mock(Command.class);
-     	Mockito.when(com.json()).thenReturn(c.json());
-     	Mockito.when(com.issue()).thenReturn(agentIssue);
+        Command com = Mockito.mock(Command.class);
+         Mockito.when(com.json()).thenReturn(c.json());
+         Mockito.when(com.issue()).thenReturn(agentIssue);
         Mockito.when(com.authorLogin()).thenReturn(commander);
 
-     	//we build our own json repo since the one returned by MkGithub doesn't map 1:1 with the expected and so the tests fail.
-     	JsonObject repo = Json.createObjectBuilder()
-     	    .add("name", repoName)
-     	    .add("owner", Json.createObjectBuilder().add("login", owner).build())
-     	    .add("fork", fork)
-     	    .build();
-     	    
-     	
-     	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-		Mockito.when(crepo.json()).thenReturn(repo);
+         //we build our own json repo since the one returned by MkGithub doesn't map 1:1 with the expected and so the tests fail.
+         JsonObject repo = Json.createObjectBuilder()
+             .add("name", repoName)
+             .add("owner", Json.createObjectBuilder().add("login", owner).build())
+             .add("fork", fork)
+             .build();
+             
+         
+         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(repo);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(ghpages);
 
-     	Mockito.when(com.repo()).thenReturn(crepo);
-     	return com;
+         Mockito.when(com.repo()).thenReturn(crepo);
+         return com;
     }
     
     /**
@@ -427,15 +427,15 @@ public class IndexSiteActionTestCase {
      * @throws IOException
      */
     private Language mockEnglish(Command com) throws IOException {
-    	Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
-		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
-		Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
-		Mockito.when(english.response("denied.commander.comment")).thenReturn("denied because author is not repo owner!");
-		Mockito.when(english.response("denied.name.comment")).thenReturn("This repo doesn't host any website!");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("indexsite", english));
-		return english;
+        Language english = Mockito.mock(English.class);
+        Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+        Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
+        Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+        Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
+        Mockito.when(english.response("denied.commander.comment")).thenReturn("denied because author is not repo owner!");
+        Mockito.when(english.response("denied.name.comment")).thenReturn("This repo doesn't host any website!");
+        Mockito.when(english.categorize(com)
+        ).thenReturn(new CommandCategory("indexsite", english));
+        return english;
     }
 }

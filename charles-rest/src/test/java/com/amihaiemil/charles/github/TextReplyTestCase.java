@@ -48,23 +48,23 @@ import com.jcabi.github.mock.MkGithub;
  * 
  */
 public class TextReplyTestCase {
-	/**
-	 * The agent can reply to a comment on a Github issue.
-	 * @throws Exception If something goes wrong.
-	 */
-	@Test
+    /**
+     * The agent can reply to a comment on a Github issue.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
     public void repliesToComment() throws Exception {
-    	Command com = this.mockCommand("@charlesmike hello there!");
-    	Reply rep = new TextReply(com, "Hi to you too, @amihaiemil!");
-    	
-    	List<Comment> initialComments = Lists.newArrayList(com.issue().comments().iterate());
-    	assertTrue(initialComments.size() == 1);
-    	
-    	rep.send();
-    	
-    	List<Comment> commentsWithReply = Lists.newArrayList(com.issue().comments().iterate());
-    	assertTrue(commentsWithReply.size() == 2);
-    	assertTrue(
+        Command com = this.mockCommand("@charlesmike hello there!");
+        Reply rep = new TextReply(com, "Hi to you too, @amihaiemil!");
+        
+        List<Comment> initialComments = Lists.newArrayList(com.issue().comments().iterate());
+        assertTrue(initialComments.size() == 1);
+        
+        rep.send();
+        
+        List<Comment> commentsWithReply = Lists.newArrayList(com.issue().comments().iterate());
+        assertTrue(commentsWithReply.size() == 2);
+        assertTrue(
             commentsWithReply.get(1).json().getString("body").equals(
                 "> @charlesmike hello there!\n\nHi to you too, @amihaiemil!"
             )
@@ -77,19 +77,19 @@ public class TextReplyTestCase {
      * @throws IOException If something goes wrong.
      */
     public Command mockCommand(String msg) throws IOException {
-    	Github gh = new MkGithub("amihaiemil");
-    	RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-    	gh.repos().create(repoCreate);
-    	Issue issue = gh.repos().get(
-    					  new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
-    				  ).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post(msg);
-    	
-    	Command com = Mockito.mock(Command.class);
+        Github gh = new MkGithub("amihaiemil");
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        gh.repos().create(repoCreate);
+        Issue issue = gh.repos().get(
+                          new Coordinates.Simple("amihaiemil", "amihaiemil.github.io")
+                      ).issues().create("Test issue for commands", "test body");
+        Comment c = issue.comments().post(msg);
+        
+        Command com = Mockito.mock(Command.class);
     
-     	Mockito.when(com.json()).thenReturn(c.json());
-     	Mockito.when(com.issue()).thenReturn(issue);
-     	
-     	return com;
+         Mockito.when(com.json()).thenReturn(c.json());
+         Mockito.when(com.issue()).thenReturn(issue);
+         
+         return com;
     }
 }

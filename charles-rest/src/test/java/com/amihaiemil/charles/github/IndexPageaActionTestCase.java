@@ -57,7 +57,7 @@ import com.jcabi.github.mock.MkStorage;
  */
 public class IndexPageaActionTestCase {
 
-	/**
+    /**
      * All the precondition checks for an index-page command
      * finish successfully when we have a blog-repo (a repo which
      * has the name owner.github.io)
@@ -70,24 +70,24 @@ public class IndexPageaActionTestCase {
             false, false, "http://amihaiemil.github.io/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "index-page checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "index-page checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexPageStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
             comments.get(0).json().getString("body").startsWith(
@@ -102,9 +102,9 @@ public class IndexPageaActionTestCase {
     }
 
     /**
-	 * All the precondition checks for an index-page command
-	 * finish successfully when we have a repo with gh-pages website.
-	 * @throws Exception If something goes wrong.
+     * All the precondition checks for an index-page command
+     * finish successfully when we have a repo with gh-pages website.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksAreSuccessfulOnGhPagesRepo() throws Exception {
@@ -113,24 +113,24 @@ public class IndexPageaActionTestCase {
             false, true, "https://amihaiemil.github.io/repowithghpages/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "index-page checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "index-page checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexPageStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -145,11 +145,11 @@ public class IndexPageaActionTestCase {
     }
     
     /**
-	 * All the precondition checks for an index-page command
-	 * finish successfully when we have a repo with gh-pages website, which is
-	 * owned by an organization. In this case, the command author has to be an active admin
-	 * of the organization.
-	 * @throws Exception If something goes wrong.
+     * All the precondition checks for an index-page command
+     * finish successfully when we have a repo with gh-pages website, which is
+     * owned by an organization. In this case, the command author has to be an active admin
+     * of the organization.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksAreSuccessfulOnGhPagesRepoUnderOrg() throws Exception {
@@ -158,32 +158,32 @@ public class IndexPageaActionTestCase {
             false, true, "https://teamed.github.io/repowithghpages/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "index-page checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Mockito.when(com.authorOrgMembership()).thenReturn(
-	        Json.createObjectBuilder()
-	            .add("state", "active")
-	            .add("role", "admin")
-	            .build()
-	    );
-	    
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "index-page checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexPageStep(com, eng);
+        
+        Mockito.when(com.authorOrgMembership()).thenReturn(
+            Json.createObjectBuilder()
+                .add("state", "active")
+                .add("role", "admin")
+                .build()
+        );
+        
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -198,11 +198,11 @@ public class IndexPageaActionTestCase {
     }
 
     /**
-	 * All the precondition checks for an index-page command
-	 * finish successfully when we have a blog repo, which is
-	 * owned by an organization. In this case, the command author has to be an active admin
-	 * of the organization.
-	 * @throws Exception If something goes wrong.
+     * All the precondition checks for an index-page command
+     * finish successfully when we have a blog repo, which is
+     * owned by an organization. In this case, the command author has to be an active admin
+     * of the organization.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksAreSuccessfulOnBlogRepoUnderOrg() throws Exception {
@@ -211,32 +211,32 @@ public class IndexPageaActionTestCase {
             false, false, "http://teamed.github.io/somepath/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
-	        new SendReply(
-	 		    new TextReply(com, "index-page checks passed!"),
-	 			Mockito.mock(Logger.class),
-	 		    new Step.FinalStep(Mockito.mock(Logger.class))
-	 	    )
-	    ).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Mockito.when(com.authorOrgMembership()).thenReturn(
-	        Json.createObjectBuilder()
-	            .add("state", "active")
-	            .add("role", "admin")
-	            .build()
-	    );
-	    
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
+            new SendReply(
+                 new TextReply(com, "index-page checks passed!"),
+                 Mockito.mock(Logger.class),
+                 new Step.FinalStep(Mockito.mock(Logger.class))
+             )
+        ).when(spiedBrain).indexPageStep(com, eng);
+        
+        Mockito.when(com.authorOrgMembership()).thenReturn(
+            Json.createObjectBuilder()
+                .add("state", "active")
+                .add("role", "admin")
+                .build()
+        );
+        
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -251,9 +251,9 @@ public class IndexPageaActionTestCase {
     }
     
     /**
-	 * Preconditions' check for index-page command fail because the author
-	 * is not repo owner.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-page command fail because the author
+     * is not repo owner.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksFailAuthorNotOwner() throws Exception {
@@ -262,24 +262,24 @@ public class IndexPageaActionTestCase {
             false, false, "http://www.some.test/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexPage index = Mockito.mock(IndexPage.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexPage index = Mockito.mock(IndexPage.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
 
-	    Mockito.when(com.authorOrgMembership()).thenReturn(
-		    Json.createObjectBuilder().build()
-		);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Mockito.when(com.authorOrgMembership()).thenReturn(
+            Json.createObjectBuilder().build()
+        );
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -294,9 +294,9 @@ public class IndexPageaActionTestCase {
     }
     
     /**
-	 * Preconditions' check for index-page command fail: the author is owner,
-	 * the repo has a gh-pages branch BUT it is a fork.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-page command fail: the author is owner,
+     * the repo has a gh-pages branch BUT it is a fork.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksFailRepoIsForked() throws Exception {
@@ -305,20 +305,20 @@ public class IndexPageaActionTestCase {
             true, true, "http://www.some.test/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexPage index = Mockito.mock(IndexPage.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexPage index = Mockito.mock(IndexPage.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -333,10 +333,10 @@ public class IndexPageaActionTestCase {
     }
 
     /**
-	 * Preconditions' check for index-page command fail. The author is owner,
-	 * but it has no website in it: is not named owner.github.io and has no
-	 * gh-pages branch.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-page command fail. The author is owner,
+     * but it has no website in it: is not named owner.github.io and has no
+     * gh-pages branch.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksFailNoWebsite() throws Exception {
@@ -345,20 +345,20 @@ public class IndexPageaActionTestCase {
             false, false, "http://www.some.test/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexPage index = Mockito.mock(IndexPage.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexPage index = Mockito.mock(IndexPage.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -373,10 +373,10 @@ public class IndexPageaActionTestCase {
     }
     
     /**
-	 * Preconditions' check for index-page command fail. The author is owner,
-	 * repo is not a fork and has a website, but the given page is not part of it!
-	 * gh-pages branch.
-	 * @throws Exception If something goes wrong.
+     * Preconditions' check for index-page command fail. The author is owner,
+     * repo is not a fork and has a website, but the given page is not part of it!
+     * gh-pages branch.
+     * @throws Exception If something goes wrong.
      */
     @Test
     public void indexPageChecksFailPageNotInTheRepo() throws Exception {
@@ -385,20 +385,20 @@ public class IndexPageaActionTestCase {
             false, true, "http://www.othersite.test/page/to/index"
         );
         Language eng = this.mockEnglish(com);
-		Brain br = new Brain(
-		    Mockito.mock(Logger.class),
-		    Mockito.mock(LogsLocation.class),
-		    Arrays.asList(eng)
-	    );
-	    Brain spiedBrain = Mockito.spy(br);
-	    IndexPage index = Mockito.mock(IndexPage.class);
-	    Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
-	    Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
-	    
-	    Step steps = spiedBrain.understand(com);
-	    steps.perform();
-	    
-	    List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
+        Brain br = new Brain(
+            Mockito.mock(Logger.class),
+            Mockito.mock(LogsLocation.class),
+            Arrays.asList(eng)
+        );
+        Brain spiedBrain = Mockito.spy(br);
+        IndexPage index = Mockito.mock(IndexPage.class);
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
+        
+        Step steps = spiedBrain.understand(com);
+        steps.perform();
+        
+        List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
                 comments.get(0).json().getString("body").startsWith(
@@ -427,37 +427,37 @@ public class IndexPageaActionTestCase {
         String repoName, boolean fork,
         boolean ghpages, String link
     ) throws IOException {
-    	MkStorage storage = new MkStorage.InFile();
-    	Github gh = new MkGithub(storage, owner);
-    	RepoCreate repoCreate = new RepoCreate(repoName, false);
-    	gh.repos().create(repoCreate);
-    	Coordinates repoCoord = new Coordinates.Simple(owner, repoName);
-    	
-    	Issue issue = gh.repos().get(repoCoord).issues().create("Test issue for commands", "test body");
-    	Comment c = issue.comments().post("@charlesmike index [this](" + link + ") page pls");  	
-    	Issue agentIssue = new MkGithub(storage, "charlesmike")
+        MkStorage storage = new MkStorage.InFile();
+        Github gh = new MkGithub(storage, owner);
+        RepoCreate repoCreate = new RepoCreate(repoName, false);
+        gh.repos().create(repoCreate);
+        Coordinates repoCoord = new Coordinates.Simple(owner, repoName);
+        
+        Issue issue = gh.repos().get(repoCoord).issues().create("Test issue for commands", "test body");
+        Comment c = issue.comments().post("@charlesmike index [this](" + link + ") page pls");      
+        Issue agentIssue = new MkGithub(storage, "charlesmike")
             .repos().get(repoCoord).issues().get(issue.number());
   
   
-    	Command com = Mockito.mock(Command.class);
-     	Mockito.when(com.json()).thenReturn(c.json());
-     	Mockito.when(com.issue()).thenReturn(agentIssue);
+        Command com = Mockito.mock(Command.class);
+         Mockito.when(com.json()).thenReturn(c.json());
+         Mockito.when(com.issue()).thenReturn(agentIssue);
         Mockito.when(com.authorLogin()).thenReturn(commander);
 
-     	//we build our own json repo since the one returned by MkGithub doesn't map 1:1 with the expected and so the tests fail.
-     	JsonObject repo = Json.createObjectBuilder()
-     	    .add("name", repoName)
-     	    .add("owner", Json.createObjectBuilder().add("login", owner).build())
-     	    .add("fork", fork)
-     	    .build();
-     	    
-     	
-     	CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-		Mockito.when(crepo.json()).thenReturn(repo);
+         //we build our own json repo since the one returned by MkGithub doesn't map 1:1 with the expected and so the tests fail.
+         JsonObject repo = Json.createObjectBuilder()
+             .add("name", repoName)
+             .add("owner", Json.createObjectBuilder().add("login", owner).build())
+             .add("fork", fork)
+             .build();
+             
+         
+         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.json()).thenReturn(repo);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(ghpages);
 
-     	Mockito.when(com.repo()).thenReturn(crepo);
-     	return com;
+         Mockito.when(com.repo()).thenReturn(crepo);
+         return com;
     }
     
     /**
@@ -467,16 +467,16 @@ public class IndexPageaActionTestCase {
      * @throws IOException
      */
     private Language mockEnglish(Command com) throws IOException {
-    	Language english = Mockito.mock(English.class);
-		Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
-		Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
-		Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
-		Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
-		Mockito.when(english.response("denied.badlink.comment")).thenReturn("The page is not from this repo!");
-		Mockito.when(english.response("denied.commander.comment")).thenReturn("denied because author is not repo owner!");
-		Mockito.when(english.response("denied.name.comment")).thenReturn("This repo doesn't host any website!");
-		Mockito.when(english.categorize(com)
-		).thenReturn(new CommandCategory("indexpage", english));
-		return english;
+        Language english = Mockito.mock(English.class);
+        Mockito.when(english.response("step.failure.comment")).thenReturn("failure on step");
+        Mockito.when(english.response("index.start.comment")).thenReturn("index start!");
+        Mockito.when(english.response("index.finished.comment")).thenReturn("index finished!");
+        Mockito.when(english.response("denied.fork.comment")).thenReturn("repo is a fork!");
+        Mockito.when(english.response("denied.badlink.comment")).thenReturn("The page is not from this repo!");
+        Mockito.when(english.response("denied.commander.comment")).thenReturn("denied because author is not repo owner!");
+        Mockito.when(english.response("denied.name.comment")).thenReturn("This repo doesn't host any website!");
+        Mockito.when(english.categorize(com)
+        ).thenReturn(new CommandCategory("indexpage", english));
+        return english;
     }
 }

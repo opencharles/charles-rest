@@ -40,9 +40,9 @@ import com.jcabi.github.Repo;
  */
 public class StarRepo extends IntermediaryStep {
 
-	/**
-	 * Repository to be starred.
-	 */
+    /**
+     * Repository to be starred.
+     */
     private Repo repo;
 
     /**
@@ -51,14 +51,14 @@ public class StarRepo extends IntermediaryStep {
     private Logger logger;
     
     /**
-	 * Constructor.
-	 * @param repo Given repo.
-	 * @param logger Action's logger.
-	 * @param next Next step to perform.
-	 */
+     * Constructor.
+     * @param repo Given repo.
+     * @param logger Action's logger.
+     * @param next Next step to perform.
+     */
     public StarRepo(Repo repo, Logger logger, Step next) {
         super(next);
-    	this.repo = repo;
+        this.repo = repo;
         this.logger = logger;
     }
     
@@ -74,9 +74,9 @@ public class StarRepo extends IntermediaryStep {
             }
             this.logger.info("Repository starred!");
         } catch (IOException e) {
-			this.logger.error("Error when starring repository: " + e.getMessage(), e);
-		    //We do not throw IllegalStateException here since starring the repo is not
-			//a critical matter
+            this.logger.error("Error when starring repository: " + e.getMessage(), e);
+            //We do not throw IllegalStateException here since starring the repo is not
+            //a critical matter
         }
         this.next().perform();
     }

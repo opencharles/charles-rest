@@ -48,95 +48,95 @@ import com.amihaiemil.charles.steps.Step;
  */
 public class Brain {
 
-	/**
-	 * All the languages that the chatbot can understang/speaks.
-	 */
-	private List<Language> languages = new LinkedList<Language>();
+    /**
+     * All the languages that the chatbot can understang/speaks.
+     */
+    private List<Language> languages = new LinkedList<Language>();
 
-	/**
-	 * The action's logger.
-	 */
-	private Logger logger;
+    /**
+     * The action's logger.
+     */
+    private Logger logger;
 
-	/**
-	 * Location of the log file.
-	 */
-	private LogsLocation logsLoc;
+    /**
+     * Location of the log file.
+     */
+    private LogsLocation logsLoc;
 
-	/**
-	 * Constructor.
-	 */
-	public Brain(Logger logger, LogsLocation logsLoc) {
-		this(logger, logsLoc, Arrays.asList((Language) new English()));
-	}
+    /**
+     * Constructor.
+     */
+    public Brain(Logger logger, LogsLocation logsLoc) {
+        this(logger, logsLoc, Arrays.asList((Language) new English()));
+    }
 
-	/**
-	 * Constructor which takes the responses and languages.
-	 * @param resp
-	 * @param langs
-	 */
-	public Brain(Logger logger, LogsLocation logsLoc, List<Language> langs) {
-		this.logger = logger;
-		this.logsLoc = logsLoc;
-		this.languages = langs;
-	}
-	
-	/**
-	 * Understand a command.
-	 * @param com Given command.
-	 * @return Steps.
-	 * @throws IOException if something goes worng.
-	 */
+    /**
+     * Constructor which takes the responses and languages.
+     * @param resp
+     * @param langs
+     */
+    public Brain(Logger logger, LogsLocation logsLoc, List<Language> langs) {
+        this.logger = logger;
+        this.logsLoc = logsLoc;
+        this.languages = langs;
+    }
+    
+    /**
+     * Understand a command.
+     * @param com Given command.
+     * @return Steps.
+     * @throws IOException if something goes worng.
+     */
     public Steps understand(Command com) throws IOException {
-    	 String authorLogin = com.authorLogin();
-	     logger.info("Command author's login: " + authorLogin);
-    	 Step steps;
-    	 CommandCategory category = this.categorizeCommand(com);
+         String authorLogin = com.authorLogin();
+         logger.info("Command author's login: " + authorLogin);
+         Step steps;
+         CommandCategory category = this.categorizeCommand(com);
 
-    	 switch (category.type()) {
-    	 	case "hello":
-    	 		String hello = String.format(category.language().response("hello.comment"), authorLogin);
-    	 		steps = new SendReply(
-    	 				    new TextReply(com, hello),
-    	 				    this.logger,
-    	 				    new Step.FinalStep(this.logger)
-    	 	            );
-    	 		break;
-    	 	case "indexsite":
-    	 		steps = this.stepsForIndex(com, category.language(), false);
-    	 		break;
-    	 	case "indexpage":
-    	 		steps = this.stepsForIndex(com, category.language(), true);
-    	 		break;
-    	 	default:
-    	 		logger.info("Unknwon command!");
-    	 		String unknown = String.format(
-    	 			category.language().response("unknown.comment"),
-    	 			authorLogin);
-    	 		steps = new SendReply(
-            	            new TextReply(com, unknown),
-            	            this.logger,
-            	            new Step.FinalStep(this.logger)
-            	        );
-    	 		break;
-		 }
-    	 return new Steps(
-    	     steps,
-    	     new SendReply(
-    	         new TextReply(
-    	             com,
-    	             String.format(
-    	                 category.language().response("step.failure.comment"),
-    	                 com.authorLogin(), "%s"
-    	             ), this.logsLoc
-    	         ),
-    	         this.logger,
-    	         new Step.FinalStep(
-    	             this.logger,
-    	             "[ERROR] Some step didn't execute properly."
-    	         )
-    	     )
-    	 );
+         switch (category.type()) {
+             case "hello":
+                 String hello = String.format(category.language().response("hello.comment"), authorLogin);
+                 steps = new SendReply(
+                             new TextReply(com, hello),
+                             this.logger,
+                             new Step.FinalStep(this.logger)
+                         );
+                 break;
+             case "indexsite":
+                 steps = this.stepsForIndex(com, category.language(), false);
+                 break;
+             case "indexpage":
+                 steps = this.stepsForIndex(com, category.language(), true);
+                 break;
+             default:
+                 logger.info("Unknwon command!");
+                 String unknown = String.format(
+                     category.language().response("unknown.comment"),
+                     authorLogin);
+                 steps = new SendReply(
+                            new TextReply(com, unknown),
+                            this.logger,
+                            new Step.FinalStep(this.logger)
+                        );
+                 break;
+         }
+         return new Steps(
+             steps,
+             new SendReply(
+                 new TextReply(
+                     com,
+                     String.format(
+                         category.language().response("step.failure.comment"),
+                         com.authorLogin(), "%s"
+                     ), this.logsLoc
+                 ),
+                 this.logger,
+                 new Step.FinalStep(
+                     this.logger,
+                     "[ERROR] Some step didn't execute properly."
+                 )
+             )
+         );
     }
 
     /**
@@ -149,14 +149,14 @@ public class Brain {
      */
     private CommandCategory categorizeCommand(Command com) throws IOException {
         CommandCategory category = new CommandCategory("unknown", languages.get(0));
-   	    for(Language l : languages) {
-   		    category = l.categorize(com);
-   		    if(category.isUnderstood()) {
-   		    	this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getSimpleName());
-   			    break;
-   		    }
-   	    }
-   	    return category;
+           for(Language l : languages) {
+               category = l.categorize(com);
+               if(category.isUnderstood()) {
+                   this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getSimpleName());
+                   break;
+               }
+           }
+           return category;
     }
 
     /**
@@ -170,13 +170,13 @@ public class Brain {
     private Step stepsForIndex(Command com, Language lang, boolean singlePage) throws IOException {
         PreconditionCheckStep repoForkCheck;
         if(!singlePage) {
-        	repoForkCheck = new RepoForkCheck(
+            repoForkCheck = new RepoForkCheck(
                 com.repo().json(), this.logger,
                 this.indexSiteStep(com, lang),
                 this.denialReplyStep(com, lang, "denied.fork.comment")
             );
         } else {
-        	repoForkCheck = new RepoForkCheck(
+            repoForkCheck = new RepoForkCheck(
                 com.repo().json(), this.logger,
                 new PageHostedOnGithubCheck(
                     com, this.logger,
@@ -195,14 +195,14 @@ public class Brain {
                 this.denialReplyStep(com, lang, "denied.commander.comment")
             )
         );
-    	PreconditionCheckStep repoNameCheck = new RepoNameCheck(
+        PreconditionCheckStep repoNameCheck = new RepoNameCheck(
             com.repo().json(), this.logger, authorOwnerCheck,
             new GhPagesBranchCheck(
                 com, this.logger, authorOwnerCheck,
                 this.denialReplyStep(com, lang, "denied.name.comment")
             )
         );        
-		return repoNameCheck;
+        return repoNameCheck;
     }
 
     /**
@@ -216,9 +216,9 @@ public class Brain {
         Reply rep = new TextReply(
             com,
             String.format(
-         	    lang.response(messagekey),
+                 lang.response(messagekey),
                 com.authorLogin()
-         	)
+             )
         );
         return
             new SendReply(
@@ -238,12 +238,13 @@ public class Brain {
      * @throws IOException 
      */
     public Step indexPageStep(Command com, Language lang) throws IOException {
-	    String repoName = com.repo().json().getString("name");
-    	IndexPage ip = new IndexPage(
-            com.json().getString("body"), com.authorLogin() + "/" + repoName,
+        String repoName = com.repo().json().getString("name");
+        String indexName = com.authorLogin() + "x" + repoName;
+        IndexPage ip = new IndexPage(
+            com.json().getString("body"), indexName.toLowerCase(),
             this.logger, this.indexFollowupStep(com, lang)
         );
-    	return ip;
+        return ip;
     }
     
     /**
@@ -254,17 +255,17 @@ public class Brain {
      * @throws IOException 
      */
     public Step indexSiteStep(Command com, Language lang) throws IOException {
-    	return new SendReply(
+        return new SendReply(
             new TextReply(
-        	    com,
-        		String.format(
-        		    lang.response("index.start.comment"),
-        		    com.authorLogin()
-        		)
+                com,
+                String.format(
+                    lang.response("index.start.comment"),
+                    com.authorLogin()
+                )
             ), this.logger,
             new IndexSite(
                 com, logger,
-        	    this.indexFollowupStep(com, lang)
+                this.indexFollowupStep(com, lang)
             )
         );
     }
@@ -283,10 +284,10 @@ public class Brain {
                 com.issue().repo(), this.logger,
                 new SendReply(
                     new TextReply(
-                	    com,
+                        com,
                         String.format(
-                		    lang.response("index.finished.comment"),
-                			com.authorLogin(), com.repo().json().getString("name"), "%s"
+                            lang.response("index.finished.comment"),
+                            com.authorLogin(), com.repo().json().getString("name"), "%s"
                         ),
                         this.logsLoc
                     ), this.logger,

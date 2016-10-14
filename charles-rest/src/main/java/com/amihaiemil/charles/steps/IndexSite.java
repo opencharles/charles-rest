@@ -49,9 +49,9 @@ public class IndexSite extends IndexStep {
     private Command com;
 
     /**
-	 * Action's logger.
-	 */
-	private Logger logger;
+     * Action's logger.
+     */
+    private Logger logger;
 
 
     /**
@@ -63,13 +63,13 @@ public class IndexSite extends IndexStep {
     public IndexSite(
         Command com, Logger logger, Step next
     ) {
-    	super(next);
-    	this.com = com;
+        super(next);
+        this.com = com;
         this.logger = logger;
     }
 
-	@Override
-	public void perform() {
+    @Override
+    public void perform() {
         try {
             this.graphCrawl().crawl();
         } catch (DataExportException | IOException e ) {
@@ -77,20 +77,21 @@ public class IndexSite extends IndexStep {
             throw new IllegalStateException("Exception while indexing the website", e);
         }
         this.next().perform();
-	}
-	public WebCrawl graphCrawl() throws IOException {
-		String repoName = com.repo().json().getString("name");
-		String siteIndexUrl;
-	    if(com.repo().hasGhPagesBranch()) {
-	        siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
-	    } else {
-	        siteIndexUrl = "http://" + repoName;
-		}
-		WebCrawl siteCrawl = new GraphCrawl(
-		    siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
-		    new AmazonEsRepository(com.authorLogin() + "/" + repoName), 20
-		);
-		return siteCrawl;
-	}
+    }
+    public WebCrawl graphCrawl() throws IOException {
+        String repoName = com.repo().json().getString("name");
+        String siteIndexUrl;
+        if(com.repo().hasGhPagesBranch()) {
+            siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
+        } else {
+            siteIndexUrl = "http://" + repoName;
+        }
+        String indexName = com.authorLogin() + "x" + repoName;
+        WebCrawl siteCrawl = new GraphCrawl(
+            siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
+            new AmazonEsRepository(indexName.toLowerCase()), 20
+        );
+        return siteCrawl;
+    }
 
 }

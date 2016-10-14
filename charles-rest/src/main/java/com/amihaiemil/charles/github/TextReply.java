@@ -36,9 +36,9 @@ import java.io.IOException;
  */
 public class TextReply implements Reply {
 
-	/**
-	 * Command to which this reply goes.
-	 */
+    /**
+     * Command to which this reply goes.
+     */
     private Command command;
 
     /**
@@ -68,15 +68,15 @@ public class TextReply implements Reply {
      */
     @Override
     public void send() throws IOException {
-    	String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
+        String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
 
-    	if(this.logs != null) {
-    		this.response = String.format(this.response, logs.address());
-    	}
-    	
+        if(this.logs != null) {
+            this.response = String.format(this.response, logs.address());
+        }
+        
         command.issue().comments().post(
             cmdPreview + this.response
-        );	
+        );    
     }
 
 }

@@ -60,7 +60,7 @@ public class RepoForkCheck extends PreconditionCheckStep {
     public RepoForkCheck(
         JsonObject repo, Logger logger, Step onTrue, Step onFalse
     ) {
-    	super(onTrue, onFalse);
+        super(onTrue, onFalse);
         this.repo = repo;
         this.logger = logger;
     }
@@ -71,12 +71,12 @@ public class RepoForkCheck extends PreconditionCheckStep {
      */
     @Override
     public void perform() {
-		logger.info("Checking whether the repository is a fork...");
-		boolean fork = repo.getBoolean("fork");
-		if(fork) {
+        logger.info("Checking whether the repository is a fork...");
+        boolean fork = repo.getBoolean("fork");
+        if(fork) {
             logger.warn("Repository should NOT be a fork!");
             this.onFalse().perform();
-		} else {
+        } else {
             logger.info("Repository is not a fort - Ok!");
             this.onTrue().perform();
         }
