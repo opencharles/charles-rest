@@ -56,7 +56,7 @@ You will need to set the following system properties. **Pay a lot of attention w
   <tr>
     <td>charles.rest.token</td>
     <td>string</td>
-    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checked and charles-rest</td>
+    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checker and charles-rest</td>
   </tr>
 </table>
 
@@ -78,7 +78,7 @@ You will need to set the following system properties. **Pay a lot of attention w
   <tr>
     <td>charles.rest.token</td>
     <td>string</td>
-    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checked and charles-rest</td>
+    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checker and charles-rest</td>
   </tr>
   <tr>
     <td>github.auth.token</td>
