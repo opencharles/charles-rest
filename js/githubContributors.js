@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    getContributors(
+	getContributors(
 	    [
 		    "https://api.github.com/repos/amihaiemil/charles-github-ejb/contributors",
 			"https://api.github.com/repos/amihaiemil/charles/contributors"

@@ -1,7 +1,5 @@
 $(document).ready(function() {
-    getStarredRepos(
-        "charlesmike", starredCallback
-	);
+	getStarredRepos("charlesmike", starredCallback);
 });
 function getStarredRepos(user, successCallback) {
 	$.support.cors = true;

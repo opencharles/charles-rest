@@ -1,7 +1,6 @@
 $(document).ready(function() {
-    getLastUpdateTimestamp("https://api.github.com/repos/amihaiemil/charles-github-ejb/commits?sha=gh-pages");
+	getLastUpdateTimestamp("https://api.github.com/repos/amihaiemil/charles-github-ejb/commits?sha=gh-pages");
 });
-
 function getLastUpdateTimestamp(githubCommitsUri) {
     $.support.cors = true;
 	$.ajax({
