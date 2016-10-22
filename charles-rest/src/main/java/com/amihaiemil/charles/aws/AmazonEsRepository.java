@@ -89,7 +89,7 @@ public class AmazonEsRepository implements Repository {
      * @return Aws request.
      */
     public Request<Void> buildAwsIndexRequest(String data) {
-        Request<Void> request = new DefaultRequest<Void>("es");
+    	Request<Void> request = new DefaultRequest<Void>("es");
         request.setContent(new ByteArrayInputStream(data.getBytes()));
         String esEndpoint = System.getProperty("aws.es.endpoint");
         if(esEndpoint == null || esEndpoint.isEmpty()) {

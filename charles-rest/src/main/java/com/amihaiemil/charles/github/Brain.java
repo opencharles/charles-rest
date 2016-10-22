@@ -127,8 +127,8 @@ public class Brain {
                      com,
                      String.format(
                          category.language().response("step.failure.comment"),
-                         com.authorLogin(), "%s"
-                     ), this.logsLoc
+                         com.authorLogin(), this.logsLoc.address()
+                     )
                  ),
                  this.logger,
                  new Step.FinalStep(
@@ -240,11 +240,22 @@ public class Brain {
     public Step indexPageStep(Command com, Language lang) throws IOException {
         String repoName = com.repo().json().getString("name");
         String indexName = com.authorLogin() + "x" + repoName;
-        IndexPage ip = new IndexPage(
-            com.json().getString("body"), indexName.toLowerCase(),
-            this.logger, this.indexFollowupStep(com, lang)
+        return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    lang.response("index.start.comment"),
+                    com.authorLogin(),
+                    this.logsLoc.address()
+                )
+            ), this.logger,
+            new IndexPage(
+                com.json().getString("body"),
+                indexName.toLowerCase(),
+                this.logger,
+                this.indexFollowupStep(com, lang)
+            )
         );
-        return ip;
     }
     
     /**
@@ -260,7 +271,8 @@ public class Brain {
                 com,
                 String.format(
                     lang.response("index.start.comment"),
-                    com.authorLogin()
+                    com.authorLogin(),
+                    this.logsLoc.address()
                 )
             ), this.logger,
             new IndexSite(
@@ -287,9 +299,10 @@ public class Brain {
                         com,
                         String.format(
                             lang.response("index.finished.comment"),
-                            com.authorLogin(), com.repo().json().getString("name"), "%s"
-                        ),
-                        this.logsLoc
+                            com.authorLogin(),
+                            com.repo().json().getString("name"),
+                            this.logsLoc.address()
+                        )
                     ), this.logger,
                     new Step.FinalStep(this.logger)
                )

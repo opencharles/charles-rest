@@ -70,7 +70,7 @@ public class Steps implements Step {
     public void perform() {
         try {
             this.steps.perform();
-        } catch (IllegalStateException ex) {
+        } catch (RuntimeException ex) {
             this.failureMessage.perform();
         }
     }

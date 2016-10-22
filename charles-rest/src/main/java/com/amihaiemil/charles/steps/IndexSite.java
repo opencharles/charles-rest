@@ -72,7 +72,11 @@ public class IndexSite extends IndexStep {
     public void perform() {
         try {
             this.graphCrawl().crawl();
-        } catch (DataExportException | IOException e ) {
+        } catch (
+            DataExportException |
+            IOException |
+            RuntimeException e 
+        ) {
             logger.error("Exception while indexing the website!", e);
             throw new IllegalStateException("Exception while indexing the website", e);
         }
