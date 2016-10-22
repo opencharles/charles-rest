@@ -74,13 +74,13 @@ public class IndexPage extends IndexStep {
 
     @Override
     public void perform() {
-        String link = this.getLink();
-        WebPage snapshot = new SnapshotWebPage(
-            new LiveWebPage(this.phantomJsDriver(), link)
-        );
-        try {
+	    String link = this.getLink();
+    	try {
+            WebPage snapshot = new SnapshotWebPage(
+                new LiveWebPage(this.phantomJsDriver(), link)
+            );
             new AmazonEsRepository(this.index).export(Arrays.asList(snapshot));
-        } catch (DataExportException e) {
+        } catch (DataExportException | RuntimeException e) {
             logger.error("Exception while indexing the page " + link, e);
             throw new IllegalStateException("Exception while indexing the page" + link, e);
         }

@@ -46,20 +46,9 @@ public class TextReply implements Reply {
      */
     private String response;
 
-    /**
-     * Logs location, used if specified.
-     */
-    private LogsLocation logs;
-    
     public TextReply(Command com, String response) {
         this.command = com;
         this.response = response;
-    }
-    
-    public TextReply(Command com, String response, LogsLocation logs) {
-        this.command = com;
-        this.response = response;
-        this.logs = logs;
     }
 
     /**
@@ -69,10 +58,6 @@ public class TextReply implements Reply {
     @Override
     public void send() throws IOException {
         String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
-
-        if(this.logs != null) {
-            this.response = String.format(this.response, logs.address());
-        }
         
         command.issue().comments().post(
             cmdPreview + this.response
