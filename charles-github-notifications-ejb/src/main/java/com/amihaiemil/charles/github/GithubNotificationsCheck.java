@@ -125,7 +125,6 @@ public class GithubNotificationsCheck {
     public void readNotifications() {
         String token = System.getProperty("github.auth.token");
         String handlerEndpoint = System.getProperty("charles.rest.endpoint");
-        String handlerEndpointToken = System.getProperty("charles.rest.token");
 
         if(token == null || token.isEmpty()) {
             log.error("Missing github.auth.token system property! Please specify the Github's agent authorization token!");
@@ -133,56 +132,50 @@ public class GithubNotificationsCheck {
             if(handlerEndpoint == null || handlerEndpoint.isEmpty()) {
                 log.error("Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!");
             } else {
-                if(handlerEndpointToken == null || handlerEndpointToken.isEmpty()) {
-                    log.error("Missing charles.rest.token system property! Please specify it so we can authenticate to " + handlerEndpoint + " !");
-                } else {
-                    Request req = new ApacheRequest(this.napiEndpoint);
-                    req = req.header(
-                        HttpHeaders.AUTHORIZATION, String.format("token %s", token)
-                    );
-                    try {
-                        JsonArray notifications = req.fetch()
-                            .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
-                            .as(JsonResponse.class).json().readArray();
-                        log.info("Found " + notifications.size() + " new notifications!");
-                        if(notifications.size() > 0) {
-                            List<JsonObject> validNotifications = new ArrayList<JsonObject>();
-                            for(int i=0; i<notifications.size(); i++) {
-                                JsonObject notification = notifications.getJsonObject(i);
-                                if(this.isNotificationValid(notification)) {
-                                    validNotifications.add(notification);
-                                }
-                            }
-                            log.info("POST-ing " + validNotifications.size() + " valid notifications!");
-                        
-                            boolean posted = this.postNotifications(handlerEndpoint, handlerEndpointToken, validNotifications);
-                        
-                            if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
-                                log.info("POST successful, marking notifications as read...");
-                                req.uri()
-                                    .queryParam(
-                                        "last_read_at",
-                                        DateFormatUtils.formatUTC(
-                                            new Date(System.currentTimeMillis()),
-                                            "yyyy-MM-dd'T'HH:mm:ss'Z'"
-                                        )
-                                    ).back()
-                                    .method(Request.PUT).body().set("{}").back().fetch()
-                                    .as(RestResponse.class)
-                                    .assertStatus(
-                                        Matchers.isOneOf(
-                                            HttpURLConnection.HTTP_OK,
-                                            HttpURLConnection.HTTP_RESET
-                                        )
-                                    );
-                                log.info("Notifications marked as read!");
+                Request req = new ApacheRequest(this.napiEndpoint);
+                req = req.header(
+                    HttpHeaders.AUTHORIZATION, String.format("token %s", token)
+                );
+                try {
+                    JsonArray notifications = req.fetch()
+                        .as(RestResponse.class).assertStatus(HttpURLConnection.HTTP_OK)
+                        .as(JsonResponse.class).json().readArray();
+                    log.info("Found " + notifications.size() + " new notifications!");
+                    if(notifications.size() > 0) {
+                        List<JsonObject> validNotifications = new ArrayList<JsonObject>();
+                        for(int i=0; i<notifications.size(); i++) {
+                            JsonObject notification = notifications.getJsonObject(i);
+                            if(this.isNotificationValid(notification)) {
+                                validNotifications.add(notification);
                             }
                         }
-                    } catch (AssertionError aerr) {
-                        log.error("Unexpected HTTP status!", aerr);
-                    } catch (IOException e) {
-                        log.error("IOException when making HTTP call!", e);
+                        log.info("POST-ing " + validNotifications.size() + " valid notifications!");
+                        boolean posted = this.postNotifications(handlerEndpoint, token, validNotifications);
+                        if(posted) {//if the notifications were successfully posted to the REST service, mark them as read.
+                            log.info("POST successful, marking notifications as read...");
+                            req.uri()
+                                .queryParam(
+                                    "last_read_at",
+                                    DateFormatUtils.formatUTC(
+                                        new Date(System.currentTimeMillis()),
+                                        "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                                    )
+                                ).back()
+                                .method(Request.PUT).body().set("{}").back().fetch()
+                                .as(RestResponse.class)
+                                .assertStatus(
+                                    Matchers.isOneOf(
+                                        HttpURLConnection.HTTP_OK,
+                                        HttpURLConnection.HTTP_RESET
+                                    )
+                                );
+                           log.info("Notifications marked as read!");
+                        }
                     }
+                } catch (AssertionError aerr) {
+                    log.error("Unexpected HTTP status!", aerr);
+                } catch (IOException e) {
+                    log.error("IOException when making HTTP call!", e);
                 }
             }
         }

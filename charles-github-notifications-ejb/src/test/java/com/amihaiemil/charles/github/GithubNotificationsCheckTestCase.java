@@ -24,17 +24,22 @@
  */
 package com.amihaiemil.charles.github;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
+
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
@@ -92,7 +97,6 @@ public class GithubNotificationsCheckTestCase {
         try {
             System.setProperty("github.auth.token", "githubtoken");
             System.setProperty("charles.rest.endpoint", "restendpointcharles");
-            System.setProperty("charles.rest.token", "chalresresttoken");
             Logger logger = Mockito.mock(Logger.class);
             GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
                 "http://localhost:"+port+"/", logger
@@ -118,7 +122,6 @@ public class GithubNotificationsCheckTestCase {
         try {
             System.setProperty("github.auth.token", "githubtoken");
             System.setProperty("charles.rest.endpoint", "restendpointcharles");
-            System.setProperty("charles.rest.token", "chalresresttoken");
             Logger logger = Mockito.mock(Logger.class);
             GithubNotificationsCheck ghnv = Mockito.spy(
                 new GithubNotificationsCheck(
@@ -290,7 +293,6 @@ public class GithubNotificationsCheckTestCase {
         try {
             System.setProperty("github.auth.token", "githubtoken");
             System.setProperty("charles.rest.endpoint", "restendpointcharles");
-            System.setProperty("charles.rest.token", "chalresresttoken");
             Logger logger = Mockito.mock(Logger.class);
             GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
                 "http://localhost:"+port+"/", logger
@@ -310,7 +312,6 @@ public class GithubNotificationsCheckTestCase {
     public void ioExceptionWhenCheckingNotifications() throws Exception {
         System.setProperty("github.auth.token", "githubtoken");
         System.setProperty("charles.rest.endpoint", "restendpointcharles");
-        System.setProperty("charles.rest.token", "chalresresttoken");
         Logger logger = Mockito.mock(Logger.class);
         GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
             "http://localhost:"+this.port()+"/", logger
@@ -349,24 +350,6 @@ public class GithubNotificationsCheckTestCase {
         ghnv.readNotifications();
         Mockito.verify(logger).error(
             "Missing charles.rest.roken system property! Please specify the REST endpoint where notifications are posted!"
-       );
-    }
-    
-    /**
-     * GithubNotificationsCheck logs an error if the chales rest token is missing.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void missingCharlesRestToken() throws Exception {
-        System.setProperty("github.auth.token", "githubtoken");
-        System.setProperty("charles.rest.endpoint", "restendpointcharles");
-        Logger logger = Mockito.mock(Logger.class);
-        GithubNotificationsCheck ghnv = new GithubNotificationsCheck(
-            "http://localhost:8080/", logger
-        );
-        ghnv.readNotifications();
-        Mockito.verify(logger).error(
-            "Missing charles.rest.token system property! Please specify it so we can authenticate to restendpointcharles !"
        );
     }
     
@@ -416,6 +399,5 @@ public class GithubNotificationsCheckTestCase {
     public void cleanupSysProps() {
         System.clearProperty("github.auth.token");
         System.clearProperty("charles.rest.endpoint");
-        System.clearProperty("charles.rest.token");
     }
 }

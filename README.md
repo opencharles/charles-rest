@@ -52,12 +52,8 @@ You will need to set the following system properties. **Pay a lot of attention w
   <tr>
     <td>github.auth.token</td>
     <td>string</td>
-    <td><b>Mantadory</b>. Github's agent access token</td>
-  </tr>
-  <tr>
-    <td>charles.rest.token</td>
-    <td>string</td>
-    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checker and charles-rest</td>
+    <td><b>Mantadory</b>. Github's agent access token. It should only have permissions to check notifications, star repos and
+    post comments. <b>Do not give full permsions!</b></td>
   </tr>
 </table>
 
@@ -77,14 +73,9 @@ You will need to set the following system properties. **Pay a lot of attention w
     <td><b>Mantadory</b>. Rest endpoint from charles-rest<br>that returns the log of an action.</td>
   </tr>
   <tr>
-    <td>charles.rest.token</td>
-    <td>string</td>
-    <td><b>Mantadory</b>. Security token <b>agreed upon</b> by the ejb checker and charles-rest</td>
-  </tr>
-  <tr>
     <td>github.auth.token</td>
     <td>string</td>
-    <td><b>Mantadory</b>. Github's agent access token. <b>The same as for the EJB checker</b></td>
+    <td><b>Mantadory</b>. Github's agent access token. <b>Must be the same as for the EJB checker</b></td>
   </tr>
   <tr>
     <td>phantomjsExec</td>
