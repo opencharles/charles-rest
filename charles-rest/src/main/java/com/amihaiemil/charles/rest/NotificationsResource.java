@@ -98,7 +98,7 @@ public class NotificationsResource {
             if(token == null || token.isEmpty()) {
                 return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
             } else {
-                String key = System.getProperty("charles.rest.token");
+                String key = System.getProperty("github.auth.token");
                 if(token.equals(key)) {
                     if(startedActionThreads() > 15) {
                         return Response.status(HttpURLConnection.HTTP_UNAVAILABLE).build();
