@@ -101,9 +101,9 @@ public class AmazonEsRepository implements Repository {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
         }
         if(esEndpoint.endsWith("/")) {
-            esEndpoint += "_bulk?pretty";
+            esEndpoint += "_bulk";
         } else {
-            esEndpoint += "/_bulk?pretty";
+            esEndpoint += "/_bulk";
         }
         request.setEndpoint(URI.create(esEndpoint));
         request.setHttpMethod(HttpMethodName.POST);
