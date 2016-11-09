@@ -29,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -40,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amihaiemil.charles.github.Action;
+import com.amihaiemil.charles.github.ActionTaker;
 import com.amihaiemil.charles.github.Notification;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -69,6 +71,12 @@ public class NotificationsResource {
     @Context
     private HttpServletRequest request;
 
+    /**
+     * Ejb for asynchronous actions.
+     */
+    @EJB
+    private ActionTaker actions;
+    
     /**
      * Consumes a JsonArray consisting of Github notifications json objects.
      * The <b>notifications are simplified</b>: a notification json looks like this:
@@ -140,11 +148,13 @@ public class NotificationsResource {
             );
             try {
                 for(Notification notification : notifications) {
-                    new Action(
-                        gh.repos().get(
-                        new Coordinates.Simple(notification.getRepoFullName())
-                        ).issues().get(notification.getIssueNumber())
-                   ).take();
+                    this.actions.take(
+                        new Action(
+                            gh.repos().get(
+                                new Coordinates.Simple(notification.getRepoFullName())
+                            ).issues().get(notification.getIssueNumber())
+                        )
+                    );
                 }
                 LOG.info("Started " + notifications.size() + " actions, to handle each notification!");
                 return true;
