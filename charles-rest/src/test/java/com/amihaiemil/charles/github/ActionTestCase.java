@@ -75,33 +75,30 @@ public class ActionTestCase {
         final ExecutorService executorService = Executors.newFixedThreadPool(5);
         List<Future> futures = new ArrayList<Future>();
         futures.add(executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				ac1.perform();
-				
-			}
-		}));
+            @Override
+            public void run() {
+                new ActionTaker().take(ac1);
+            }
+        }));
         futures.add(executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				ac2.perform();
-				
-			}
-		}));
+            @Override
+            public void run() {
+                new ActionTaker().take(ac2);
+            }
+        }));
         futures.add(executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				ac3.perform();
-				
-			}
-		}));
+            @Override
+            public void run() {
+                new ActionTaker().take(ac3);
+                
+            }
+        }));
         futures.add(executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				ac4.perform();
-				
-			}
-		}));
+            @Override
+            public void run() {
+                new ActionTaker().take(ac4);                
+            }
+        }));
 
         for(Future f : futures) {
             assertTrue(f.get()==null);
@@ -161,17 +158,17 @@ public class ActionTestCase {
         final ExecutorService executorService = Executors.newFixedThreadPool(5);
         List<Future> futures = new ArrayList<Future>();
         futures.add(executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				ac1.perform();
-			}
-		}));
+            @Override
+            public void run() {
+                new ActionTaker().take(ac1);
+            }
+        }));
         futures.add(executorService.submit(new Runnable() {
-			@Override
-			public void run() {
-				ac2.perform();
-			}
-		}));
+            @Override
+            public void run() {
+                new ActionTaker().take(ac2);
+            }
+        }));
 
         for(Future f : futures) {
             assertTrue(f.get()==null);
