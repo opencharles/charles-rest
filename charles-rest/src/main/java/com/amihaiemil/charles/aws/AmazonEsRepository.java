@@ -27,7 +27,9 @@ package com.amihaiemil.charles.aws;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +92,9 @@ public class AmazonEsRepository implements Repository {
      */
     public Request<Void> buildAwsIndexRequest(String data) {
     	Request<Void> request = new DefaultRequest<Void>("es");
+    	Map<String, String> headers = new HashMap<String, String>();
+    	headers.put("Content-Type", "application/json");
+    	request.setHeaders(headers);
         request.setContent(new ByteArrayInputStream(data.getBytes()));
         String esEndpoint = System.getProperty("aws.es.endpoint");
         if(esEndpoint == null || esEndpoint.isEmpty()) {
