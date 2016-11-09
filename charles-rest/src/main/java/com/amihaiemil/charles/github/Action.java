@@ -43,14 +43,18 @@ import com.jcabi.github.Issue;
  * @since 1.0.0
  * 
  */
-public class Action implements Runnable {
+public class Action {
 
+	/**
+	 * This action's logger. Each action has its own logger
+	 * so any action is logged separately in its own log file.
+	 */
     private Logger logger;
 
     /**
-     * Thread that runs this.
+     * Id.
      */
-    private Thread tr;
+    private String id;
 
     /**
      * Github issue where the command was given.
@@ -74,21 +78,20 @@ public class Action implements Runnable {
      * @throws IOException If the file appender cannot be instantiated.
      */
     public Action(Issue issue) throws IOException {
-        this.tr = new Thread(this, "Action_" + UUID.randomUUID().toString());
+        this.id = UUID.randomUUID().toString();
         this.issue = issue;
         this.setupLog4jForAction();
         this.logs = new LogsOnServer(
-            System.getProperty("charles.rest.logs.endpoint"), this.tr.getName() + ".log"
+            System.getProperty("charles.rest.logs.endpoint"), this.id + ".log"
         );
         this.br = new Brain(this.logger, this.logs);
     }
     
     
-    @Override
-    public void run() {
+    public void perform() {
         ValidCommand command;
         try {
-            logger.info("Started action " + this.tr.getName());
+            logger.info("Started action " + this.id);
             LastComment lc = new LastComment(issue);
             command = new ValidCommand(lc);
             String commandBody = command.json().getString("body");
@@ -103,13 +106,6 @@ public class Action implements Runnable {
                 new ErrorReply(logs.address(), this.issue)
             );
         }
-    }
-    
-    /**
-     * Take this action.
-     */
-    public void take() { 
-        this.tr.start();
     }
 
     /**
@@ -130,20 +126,20 @@ public class Action implements Runnable {
      * @throws IOException If there's something wrong with the FileAppender.
      */
     private void setupLog4jForAction() throws IOException {
-        String loggerName = "Action_" + this.tr.getName();
-        org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.tr.getName());
+        String loggerName = "Action_" + this.id;
+        org.apache.log4j.Logger log4jLogger = org.apache.log4j.Logger.getLogger("Action_" + this.id);
         String logRoot = System.getProperty("LOG_ROOT");
         if(logRoot == null) {
             logRoot = ".";
         }
-        String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.tr.getName() + ".log";
+        String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.id + ".log";
         
         File logFile = new File(logFilePath);
         logFile.getParentFile().mkdirs();
         logFile.createNewFile();//you have to create the file yourself since FileAppender acts funny under linux if the file doesn't already exist.
 
         FileAppender fa = new FileAppender(new PatternLayout("%d %p - %m%n"), logFilePath);
-        fa.setName(this.tr.getName() + "_appender");
+        fa.setName(this.id + "_appender");
         fa.setThreshold(Level.DEBUG);
         log4jLogger.addAppender(fa);
         log4jLogger.setLevel(Level.DEBUG);

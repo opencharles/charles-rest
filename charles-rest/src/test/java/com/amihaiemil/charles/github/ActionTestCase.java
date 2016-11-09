@@ -63,21 +63,42 @@ public class ActionTestCase {
     @Test
     public void actionsExecute() throws Exception {
         Language english = (Language)new English();
-        Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello");
+        Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello there");
         Issue issue2 = this.githubIssue("jeff", "@charlesmike hello");
         Issue issue3 = this.githubIssue("vlad", "@charlesmike hi");
         Issue issue4 = this.githubIssue("marius", "@charlesmike hello");
-        Action ac1 = new Action(issue1);
-        Action ac2 = new Action(issue2);
-        Action ac3 = new Action(issue3);
-        Action ac4 = new Action(issue4);
+        final Action ac1 = new Action(issue1);
+        final Action ac2 = new Action(issue2);
+        final Action ac3 = new Action(issue3);
+        final Action ac4 = new Action(issue4);
         
         final ExecutorService executorService = Executors.newFixedThreadPool(5);
         List<Future> futures = new ArrayList<Future>();
-        futures.add(executorService.submit(ac1));
-        futures.add(executorService.submit(ac2));
-        futures.add(executorService.submit(ac3));
-        futures.add(executorService.submit(ac4));
+        futures.add(executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                new ActionTaker().take(ac1);
+            }
+        }));
+        futures.add(executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                new ActionTaker().take(ac2);
+            }
+        }));
+        futures.add(executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                new ActionTaker().take(ac3);
+                
+            }
+        }));
+        futures.add(executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                new ActionTaker().take(ac4);                
+            }
+        }));
 
         for(Future f : futures) {
             assertTrue(f.get()==null);
@@ -87,7 +108,7 @@ public class ActionTestCase {
         List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
         List<Comment> commentsWithReply3 = Lists.newArrayList(issue3.comments().iterate());
         List<Comment> commentsWithReply4 = Lists.newArrayList(issue4.comments().iterate());
-        String expectedReply1 = "> @charlesmike hello\n\n" + String.format(english.response("hello.comment"),"amihaiemil");
+        String expectedReply1 = "> @charlesmike hello there\n\n" + String.format(english.response("hello.comment"),"amihaiemil");
         assertTrue(commentsWithReply1.get(1).json().getString("body")
                 .equals(expectedReply1)); //there should be only 2 comments - the command and the reply.
         
@@ -131,13 +152,23 @@ public class ActionTestCase {
             .thenReturn(comments)
             .thenReturn(issue2.comments());
         
-        Action ac1 = new Action(mockedIssue1);
-        Action ac2 = new Action(mockedIssue2);
+        final Action ac1 = new Action(mockedIssue1);
+        final Action ac2 = new Action(mockedIssue2);
         
         final ExecutorService executorService = Executors.newFixedThreadPool(5);
         List<Future> futures = new ArrayList<Future>();
-        futures.add(executorService.submit(ac1));
-        futures.add(executorService.submit(ac2));
+        futures.add(executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                new ActionTaker().take(ac1);
+            }
+        }));
+        futures.add(executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                new ActionTaker().take(ac2);
+            }
+        }));
 
         for(Future f : futures) {
             assertTrue(f.get()==null);
@@ -146,7 +177,7 @@ public class ActionTestCase {
         List<Comment> commentsWithReply1 = Lists.newArrayList(issue1.comments().iterate());
         List<Comment> commentsWithReply2 = Lists.newArrayList(issue2.comments().iterate());
 
-        String expectedStartsWith = "There was an error when processing your command. [Here](/Action_";
+        String expectedStartsWith = "There was an error when processing your command. [Here](/";
         assertTrue(commentsWithReply1.get(1).json().getString("body")
                 .startsWith(expectedStartsWith)); //there should be only 2 comments - the command and the reply.
         
