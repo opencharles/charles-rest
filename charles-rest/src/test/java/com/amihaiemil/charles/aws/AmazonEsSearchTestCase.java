@@ -85,7 +85,7 @@ public class AmazonEsSearchTestCase {
             awsEs.stop();
         }
     }
-    
+
     /**
      * AmazonEsSearch performs ok when there are no search results.
      * @throws IOException If something goes wrong.

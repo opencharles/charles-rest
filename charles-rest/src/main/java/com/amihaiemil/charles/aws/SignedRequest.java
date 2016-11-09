@@ -50,6 +50,7 @@ public class SignedRequest<T> {
     private HttpResponseHandler<T> respHandler;
     private HttpResponseHandler<AmazonServiceException> errHandler;
 
+    
     /**
      * Ctor.
      * @param req Request made to AWS.
@@ -61,13 +62,29 @@ public class SignedRequest<T> {
         HttpResponseHandler<T> respHandler,
         HttpResponseHandler<AmazonServiceException> errHandler
     ) {
+        this(req, "es", respHandler, errHandler);
+    }
+    
+    /**
+     * Ctor.
+     * @param req Request made to AWS.
+     * @param serviceName The AWS service called.
+     * @param respHandler Response handler.
+     * @param errHandler Error handler.
+     */
+    public SignedRequest(
+        Request<Void> req,
+        String serviceName,
+        HttpResponseHandler<T> respHandler,
+        HttpResponseHandler<AmazonServiceException> errHandler
+    ) {
         AWS4Signer signer = new AWS4Signer();
-        signer.setServiceName("es");
+        signer.setServiceName(serviceName);
         String region = System.getProperty("aws.es.region");
         if(region == null || region.isEmpty()) {
             throw new IllegalStateException("Mandatory sys property aws.es.region not specified!");
         }
-        signer.setRegionName(region.trim());      
+        signer.setRegionName(region.trim());
         signer.sign(req, new AwsCredentialsFromSystem());
         
         this.request = req;
@@ -80,8 +97,8 @@ public class SignedRequest<T> {
      * The Response is handled in the specified response handler.
      */
     public T sendRequest() {
-        Response<T> r = new AmazonHttpClient(new ClientConfiguration())
-            .execute(
+        Response<T> r = new AmazonHttpClient(
+            new ClientConfiguration()).execute(
                 this.request, new ExecutionContext(true), this.respHandler, this.errHandler
             );
         return r.getAwsResponse();

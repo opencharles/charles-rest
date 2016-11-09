@@ -26,6 +26,8 @@ package com.amihaiemil.charles.aws;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
@@ -95,6 +97,9 @@ public class AmazonEsSearch {
         String queryDsl = this.query.toJson().toString();
         request.setContent(new ByteArrayInputStream(queryDsl.getBytes()));
         request.setHttpMethod(HttpMethodName.POST);
+        Map<String, String> headers = new HashMap<String, String>();
+    	headers.put("Content-Type", "application/json");
+    	request.setHeaders(headers);
         return request;
     }
 }
