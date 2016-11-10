@@ -6,8 +6,8 @@ merge:
   script: |-
     cd charles-github-notifications-ejb
     mvn clean install
-    cs ../charles-rest
+    cd ../charles-rest
     mvn clean install
 deploy:
   script:
-    - echo "Deployment to AWS EC2 tbd in the future..."
+   - echo "Deployment to AWS EC2 tbd in the future..."
