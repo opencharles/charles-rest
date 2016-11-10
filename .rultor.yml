@@ -6,7 +6,7 @@ merge:
   script: |-
     cd charles-github-notifications-ejb
     mvn clean install
-    cs ../charles-rest
+    cd ../charles-rest
     mvn clean install
 deploy:
   script:
