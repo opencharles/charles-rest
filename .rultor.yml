@@ -10,4 +10,4 @@ merge:
     mvn clean install
 deploy:
   script:
-    - echo "Deployment to AWS EC2 tbd..."
+   - echo "Deployment to AWS EC2 tbd in the future..."
