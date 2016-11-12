@@ -21,7 +21,7 @@ Check out the [website](http://charles.amihaiemil.com) for more details on how t
 - [phantom js](http://phantomjs.org/) and [Selenium] (http://www.seleniumhq.org/projects/webdriver/) with [GhostDriver](https://github.com/detro/ghostdriver)
 - [Elastic search] (https://www.elastic.co/)
 - [Amazon Web Services] (https://aws.amazon.com/)
-- [Github API] (https://developer.github.com/v3/)
+- [Github API] (https://developer.github.com/v3/) (using [jcabi-github](https://github.com/jcabi/jcabi-github/))
 
 ## If you wish to install it on your own infrastructure:
 
