@@ -100,7 +100,7 @@
 		<dependency>
 			<groupId>com.amihaiemil.web</groupId>
 			<artifactId>charles</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency><!-- Client for the Github API -->
 			<groupId>com.jcabi</groupId>
@@ -153,12 +153,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>amihaiemilmvn</id>
-			<name>Remote maven repo for development (holding snapshot dependencies)</name>
-			<url>http://ec2-54-68-83-8.us-west-2.compute.amazonaws.com:1452</url>
-		</repository>
-	</repositories>
 
 </project>
