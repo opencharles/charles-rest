@@ -65,7 +65,7 @@ public class GithubNotificationsCheckTestCase {
                 this.mockNotification("mention", "/issue/url", "latest/comment/url", "")
             )
         );
-        
+
         assertFalse(
             ghnc.isNotificationValid(
                 this.mockNotification("mention", "/issue/url", "/issue/url", "")
@@ -177,35 +177,6 @@ public class GithubNotificationsCheckTestCase {
 
             assertTrue(
                 ghnv.postNotifications("http://localhost:"+port+"/", "token", notifications)
-            );
-            
-        } finally {
-            server.stop();
-        }
-    }
-
-    /**
-     * GithubNotificationsCheck can post notifications and handle an HTTP unavaliable response status.
-     * @throws Exception If something goes wrong.
-     */
-    @Test
-    public void postsNotificationsUnavailable() throws Exception {
-        int port = this.port();
-        MkContainer server = new MkGrizzlyContainer()
-            .next(new MkAnswer.Simple(503))
-            .start(port);
-        try {
-            Logger logger = Mockito.mock(Logger.class);
-            Mockito.doThrow(new IllegalStateException("Unexpected AssertionError..."))
-                .when(logger)
-                .error(Mockito.anyString(), Mockito.any(AssertionError.class));
-            Mockito.doThrow(new IllegalStateException("Unexpected IOException..."))
-                .when(logger)
-                .error(Mockito.anyString(), Mockito.any(IOException.class));
-            GithubNotificationsCheck ghnv = new GithubNotificationsCheck("", logger);
-
-            assertFalse(
-                ghnv.postNotifications("http://localhost:"+port+"/", "token", new ArrayList<JsonObject>())
             );
             
         } finally {

@@ -29,7 +29,8 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Set;
 
-import javax.ejb.EJB;
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -41,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amihaiemil.charles.github.Action;
-import com.amihaiemil.charles.github.ActionTaker;
 import com.amihaiemil.charles.github.Notification;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,6 +58,7 @@ import com.jcabi.http.wire.RetryWire;
  *
  */
 @Path("/")
+@Stateless
 public class NotificationsResource {
 
     /**
@@ -71,12 +72,6 @@ public class NotificationsResource {
     @Context
     private HttpServletRequest request;
 
-    /**
-     * Ejb for asynchronous actions.
-     */
-    @EJB
-    private ActionTaker actions;
-    
     /**
      * Consumes a JsonArray consisting of Github notifications json objects.
      * The <b>notifications are simplified</b>: a notification json looks like this:
@@ -108,9 +103,6 @@ public class NotificationsResource {
             } else {
                 String key = System.getProperty("github.auth.token");
                 if(token.equals(key)) {
-                    if(startedActionThreads() > 15) {
-                        return Response.status(HttpURLConnection.HTTP_UNAVAILABLE).build();
-                    }
                     ObjectMapper mapper = new ObjectMapper();
                     List<Notification> parsedNotifications = mapper.readValue(notifications, new TypeReference<List<Notification>>(){});
                     boolean startedHandling = this.handleNotifications(parsedNotifications);
@@ -148,7 +140,7 @@ public class NotificationsResource {
             );
             try {
                 for(Notification notification : notifications) {
-                    this.actions.take(
+                    this.take(
                         new Action(
                             gh.repos().get(
                                 new Coordinates.Simple(notification.getRepoFullName())
@@ -166,19 +158,11 @@ public class NotificationsResource {
     }
 
     /**
-     * When notifications are received, we check how many action threads are currently running.
-     * If there are too many action threads started, we return HTTP 503 code, so the caller knows
-     * to try again later when we have less load running.
-     * @return number of Action threads started.
+     * Take an action.
+     * @param action Given action.
      */
-    private int startedActionThreads() {
-        Set<Thread> threads = Thread.getAllStackTraces().keySet();
-        int runningActions = 0;
-        for(Thread tr : threads) {
-            if(tr.getName().startsWith("Action_")) {
-                runningActions ++;
-            }
-        }
-        return runningActions;
+    @Asynchronous
+    private void take(Action action) {
+    	action.perform();
     }
 }

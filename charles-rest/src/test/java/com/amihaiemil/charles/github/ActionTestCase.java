@@ -77,26 +77,26 @@ public class ActionTestCase {
         futures.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
-                new ActionTaker().take(ac1);
+                ac1.perform();
             }
         }));
         futures.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
-                new ActionTaker().take(ac2);
+                ac2.perform();
             }
         }));
         futures.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
-                new ActionTaker().take(ac3);
+                ac3.perform();
                 
             }
         }));
         futures.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
-                new ActionTaker().take(ac4);                
+                ac4.perform();
             }
         }));
 
@@ -160,13 +160,13 @@ public class ActionTestCase {
         futures.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
-                new ActionTaker().take(ac1);
+                ac1.perform();;
             }
         }));
         futures.add(executorService.submit(new Runnable() {
             @Override
             public void run() {
-                new ActionTaker().take(ac2);
+                ac2.perform();
             }
         }));
 

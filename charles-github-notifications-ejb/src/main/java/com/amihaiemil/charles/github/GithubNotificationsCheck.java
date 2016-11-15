@@ -235,8 +235,7 @@ public class GithubNotificationsCheck {
                 .assertStatus(
                     Matchers.isOneOf(
                         HttpURLConnection.HTTP_OK,
-                        HttpURLConnection.HTTP_UNAUTHORIZED,
-                        HttpURLConnection.HTTP_UNAVAILABLE
+                        HttpURLConnection.HTTP_UNAUTHORIZED
                     )
                 ).status();
             if(status == HttpURLConnection.HTTP_OK) {
