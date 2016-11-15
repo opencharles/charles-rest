@@ -108,6 +108,9 @@ public class Brain {
              case "indexpage":
                  steps = this.stepsForIndex(com, category.language(), true);
                  break;
+             case "deleteindex":
+                 steps = null; //todo finish impelmenting this.
+                 break;
              default:
                  logger.info("Unknwon command!");
                  String unknown = String.format(

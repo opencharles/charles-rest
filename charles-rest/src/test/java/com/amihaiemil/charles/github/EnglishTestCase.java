@@ -119,7 +119,7 @@ public class EnglishTestCase {
     public void knowsTheHelloResponse() {
         Language eng = new English();
         String hi = eng.response("hello.comment");
-        assertTrue(hi.contains("Hi, @%s! I can help you index your Github"));
+        assertTrue(hi.contains("Hi @%s! I can help you index your Github"));
     }
     
     /**
