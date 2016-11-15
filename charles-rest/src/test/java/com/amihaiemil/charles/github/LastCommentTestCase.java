@@ -49,6 +49,7 @@ import com.jcabi.github.mock.MkStorage;
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
+import com.jcabi.http.mock.MkQuery;
 import com.jcabi.http.request.ApacheRequest;
 
 /**
@@ -210,30 +211,6 @@ public class LastCommentTestCase {
         JsonObject jsonComment = lastComment.json();
         assertTrue(lastMention.json().equals(jsonComment)); 
     }
-    
-    /**
-     * Mock an issue on Github.
-     * @return 2 Issues: 1 from the commander's Github (where the comments
-     * are posted) and 1 from the agent's Github (where comments are checked)
-     * @throws IOException If something goes wrong.
-     */
-    private Issue[] mockIssue() throws IOException {
-        MkStorage storage = new MkStorage.InFile();
-        Github commanderGithub = new MkGithub(storage, "amihaiemil");
-        commanderGithub.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
-        Github agentGithub = new MkGithub(storage, "charlesmike");
-        
-        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
-        commanderGithub.repos().create(repoCreate);
-        Issue[] issues = new Issue[2];
-        Coordinates repoCoordinates = new Coordinates.Simple("amihaiemil", "amihaiemil.github.io");
-        Issue authorsIssue = commanderGithub.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
-        Issue agentsIssue = agentGithub.repos().get(repoCoordinates).issues().get(authorsIssue.number());
-        issues[0] = authorsIssue;
-        issues[1] = agentsIssue;
-        
-        return issues;
-    }
 
     /**
      * Command can fetch the author's organization membership.
@@ -288,9 +265,40 @@ public class LastCommentTestCase {
             JsonObject mem = lastComment.authorOrgMembership();
             assertTrue(mem.getString("state").equals("snowflake"));
             assertTrue(mem.getString("role").equals("special_test_admin"));
+            MkQuery request = server.take();
+            String uri = request.uri().toString();
+            assertTrue(
+                uri.equals(
+                    "/orgs/someorganization/memberships/amihaiemil"
+                )
+            );
         } finally {
             server.stop();
         }
+    }
+
+    /**
+     * Mock an issue on Github.
+     * @return 2 Issues: 1 from the commander's Github (where the comments
+     * are posted) and 1 from the agent's Github (where comments are checked)
+     * @throws IOException If something goes wrong.
+     */
+    private Issue[] mockIssue() throws IOException {
+        MkStorage storage = new MkStorage.InFile();
+        Github commanderGithub = new MkGithub(storage, "amihaiemil");
+        commanderGithub.users().self().emails().add(Arrays.asList("amihaiemil@gmail.com"));
+        Github agentGithub = new MkGithub(storage, "charlesmike");
+        
+        RepoCreate repoCreate = new RepoCreate("amihaiemil.github.io", false);
+        commanderGithub.repos().create(repoCreate);
+        Issue[] issues = new Issue[2];
+        Coordinates repoCoordinates = new Coordinates.Simple("amihaiemil", "amihaiemil.github.io");
+        Issue authorsIssue = commanderGithub.repos().get(repoCoordinates).issues().create("Test issue for commands", "test body");
+        Issue agentsIssue = agentGithub.repos().get(repoCoordinates).issues().get(authorsIssue.number());
+        issues[0] = authorsIssue;
+        issues[1] = agentsIssue;
+        
+        return issues;
     }
 
     /**

@@ -143,13 +143,24 @@ public abstract class Command {
         return this.authorEmail;
     }
 
+    /**
+     * Get the commands' author org membership.
+     * @return Json membership as described
+     * <a href="https://developer.github.com/v3/orgs/members/#get-organization-membership">here</a>
+     * or an empty Json object if the repo owner is not an organization.
+     * @throws IOException
+     */
     public JsonObject authorOrgMembership() throws IOException {
         JsonObject repo = this.repo().json();
-        if(repo.getJsonObject("owner").getString("type").equalsIgnoreCase("organization")) {
+        JsonObject owner = repo.getJsonObject("owner");
+        String type = owner.getString("type");
+        String ownerLogin = owner.getString("login");
+        if("organization".equalsIgnoreCase(type)) {
             Request req = this.issue.repo().github().entry()
-                .uri().path("/orgs/").path(
-                    repo.getJsonObject("owner"
-                 ).getString("login")).path("/").path(this.authorLogin()).back();
+                .uri().path("/orgs/")
+                .path(ownerLogin)
+                .path("/memberships/")
+                .path(this.authorLogin()).back();
             return req.fetch().as(JsonResponse.class).json().readObject();
         } else {
             return Json.createObjectBuilder().build();
