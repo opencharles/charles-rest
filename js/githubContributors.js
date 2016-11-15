@@ -1,8 +1,8 @@
 $(document).ready(function() {
 	getContributors(
 	    [
-		    "https://api.github.com/repos/amihaiemil/charles-github-ejb/contributors",
-			"https://api.github.com/repos/amihaiemil/charles/contributors"
+		    "https://api.github.com/repos/opencharles/charles-github-ejb/contributors",
+			"https://api.github.com/repos/opencharles/charles/contributors"
 		], contributorsCallback
 	);
 });
