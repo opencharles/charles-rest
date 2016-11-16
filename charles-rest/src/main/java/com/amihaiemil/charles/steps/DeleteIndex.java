@@ -25,7 +25,10 @@
 package com.amihaiemil.charles.steps;
 
 import java.io.IOException;
+
 import org.slf4j.Logger;
+
+import com.amihaiemil.charles.aws.AmazonEsRepository;
 import com.amihaiemil.charles.github.Command;
 
 /**
@@ -47,33 +50,28 @@ public class DeleteIndex  extends IntermediaryStep {
      */
     private Logger logger;
 
-
     /**
      * Constructor.
      * @param com Command
      * @param logger The action's logger
      * @param next The next step to take
      */
-    public DeleteIndex(
-        Command com, Logger logger, Step next
-    ) {
+    public DeleteIndex(Command com, Logger logger, Step next) {
         super(next);
         this.com = com;
         this.logger = logger;
     }
-
+    
     @Override
     public void perform() {
-    	this.logger.info("Starting index deletion...");
+        this.logger.info("Starting index deletion...");
         try {
-            String indexName = com.indexName();
-            logger.info(indexName);
-            //todo delete logic here...
+            new AmazonEsRepository(com.indexName()).deleteIndex();
         } catch (IOException e) {
-        	 logger.error("Exception while deleting the indx!", e);
-             throw new IllegalStateException("Exception while deleting the indx!" , e);
+            logger.error("Exception while deleting the index!", e);
+            throw new IllegalStateException("Exception while deleting the index!" , e);
         }
-        this.logger.info("The index was successfully removed!");
+        this.logger.info("Index successfully deleted!");
         this.next().perform();
     }
 

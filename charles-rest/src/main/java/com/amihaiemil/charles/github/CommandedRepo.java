@@ -70,6 +70,8 @@ public class CommandedRepo {
      * Returns true if the repository has a gh-pages branch, false otherwise.
      * The result is <b>cached</b> and so the http call to Github API is performed only at the first call.
      * @return true if there is a gh-pages branch, false otherwise.
+     * @throws IOException If an error occurs
+     *  while communicating with the Github API.
      */
     public boolean hasGhPagesBranch() throws IOException {
         try {
@@ -91,17 +93,28 @@ public class CommandedRepo {
             throw new IOException ("Unexpected HTTP status response.", aerr);
         }
     }
-    
+
     /**
      * Get the Json representation of this repo.
      * @return JsonObject repo.
-     * @throws IOException If something goes wrong.
+     * @throws IOException If an error occurs
+     *  while reading the repo from the Github API.
      */
     public JsonObject json() throws IOException {
         if(this.repoJson == null) {
             this.repoJson = this.repo.json();
         }
         return this.repoJson;
+    }
+
+    /**
+     * Get the repo's name.
+     * @return String name.
+     * @throws IOException If an error occurs
+     *  while reading the repo from the Github API.
+     */
+    public String name() throws IOException{
+        return this.json().getString("name");
     }
 
 }

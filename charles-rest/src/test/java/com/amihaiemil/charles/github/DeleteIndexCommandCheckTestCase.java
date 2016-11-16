@@ -22,66 +22,101 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
 import javax.json.Json;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.Step;
 
 /**
- * Unit tests for {@link GhPagesBranchCheck}
+ * Unit tests for {@link DeleteIndexCommandCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class GhPagesBranchCheckTestCase {
+public class DeleteIndexCommandCheckTestCase {
 
     /**
-     * GhPagesBranchCheck can tell if the gh-pages branch exists in the repo.
+     * DeleteIndexCommandCheck can see that given reponame equals the actual reponame
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void ghpagesBranchExists() throws Exception {
+    public void repoNameEqualsActual() throws Exception {
         Command com = Mockito.mock(Command.class);
+        Mockito.when(com.json()).thenReturn(
+            Json.createObjectBuilder()
+                .add("body", "@charlesmike delete `eva` index")
+                .build()
+        );
         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-        Mockito.when(crepo.hasGhPagesBranch()).thenReturn(true);
+        Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
+
         Step onTrue = Mockito.mock(Step.class);
         Mockito.doNothing().when(onTrue).perform();
         Step onFalse = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
-        GhPagesBranchCheck gpc = new GhPagesBranchCheck(
+        DeleteIndexCommandCheck dc = new DeleteIndexCommandCheck(
             com, Mockito.mock(Logger.class), onTrue, onFalse
         );
-        gpc.perform();
+        dc.perform();
     }
 
     /**
-     * GhPagesBranchCheck can tell if the gh-pages branch does not exist in the repo.
+     * DeleteIndexCommandCheck can see that given reponame does not equal the actual reponame
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void ghpagesBranchDoesntExist() throws Exception {
+    public void repoNameNotEqualsActual() throws Exception {
         Command com = Mockito.mock(Command.class);
+        Mockito.when(com.json()).thenReturn(
+            Json.createObjectBuilder()
+                .add("body", "@charlesmike delete `evamisspelled` index")
+                .build()
+        );
         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-        Mockito.when(crepo.hasGhPagesBranch()).thenReturn(false);
+        Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
+
         Step onTrue = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
         Step onFalse = Mockito.mock(Step.class);
         Mockito.doNothing().when(onFalse).perform();
 
-        GhPagesBranchCheck gpc = new GhPagesBranchCheck(
+        DeleteIndexCommandCheck dc = new DeleteIndexCommandCheck(
             com, Mockito.mock(Logger.class), onTrue, onFalse
         );
-        gpc.perform();
+        dc.perform();
     }
 
+    /**
+     * DeleteIndexCommandCheck goes onFalse if the given repoName is not between back-apostrophes.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void missingBackApostrophes() throws Exception {
+        Command com = Mockito.mock(Command.class);
+        Mockito.when(com.json()).thenReturn(
+            Json.createObjectBuilder()
+                .add("body", "@charlesmike delete eva index")
+                .build()
+        );
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        Mockito.when(crepo.name()).thenReturn("eva");
+        Mockito.when(com.repo()).thenReturn(crepo);
+
+        Step onTrue = Mockito.mock(Step.class);
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Step onFalse = Mockito.mock(Step.class);
+        Mockito.doNothing().when(onFalse).perform();
+
+        DeleteIndexCommandCheck dc = new DeleteIndexCommandCheck(
+            com, Mockito.mock(Logger.class), onTrue, onFalse
+        );
+        dc.perform();
+    }
 }

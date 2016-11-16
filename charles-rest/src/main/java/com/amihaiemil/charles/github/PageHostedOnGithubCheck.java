@@ -26,9 +26,7 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
-import javax.json.JsonObject;
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.steps.PreconditionCheckStep;
 import com.amihaiemil.charles.steps.Step;
 
@@ -78,14 +76,14 @@ public class PageHostedOnGithubCheck extends PreconditionCheckStep {
     @Override
     public void perform() {
         try {
-            JsonObject repo = com.repo().json();
-            String owner = repo.getJsonObject("owner").getString("login");
+            CommandedRepo repo = com.repo();
+            String owner = repo.json().getJsonObject("owner").getString("login");
             String expDomain;
-            logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.getString("name"));
+            logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.name());
             logger.info("Page link: " + this.link);
             boolean ghPagesBranch = com.repo().hasGhPagesBranch();
             if (ghPagesBranch) {
-                expDomain = owner + ".github.io/" + repo.getString("name");
+                expDomain = owner + ".github.io/" + repo.name();
                 logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
             } else {
                 expDomain = owner + ".github.io";

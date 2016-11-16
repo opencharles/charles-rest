@@ -79,7 +79,6 @@ abstract class Language {
                 Pattern p = Pattern.compile(formattedRegex);
                 String text = command.json().getString("body");
                 Matcher m = p.matcher(text);
-
                 if(m.matches()) {
                     return new CommandCategory(keyString.split("\\.")[0], this);
                 }

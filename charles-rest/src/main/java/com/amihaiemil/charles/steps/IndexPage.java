@@ -61,9 +61,7 @@ public class IndexPage extends IndexStep {
      * @param logger Logger.
      * @param next Next step to take.
      */
-    public IndexPage(
-        Command com, Logger logger, Step next
-    ) {
+    public IndexPage(Command com, Logger logger, Step next) {
         super(next);
         this.com = com;
         this.logger = logger;
@@ -72,11 +70,15 @@ public class IndexPage extends IndexStep {
     @Override
     public void perform() {
 	    String link = this.getLink();
+	    logger.info("Indexing page " + link + " ...");
     	try {
+    	    logger.info("Crawling the page...");
             WebPage snapshot = new SnapshotWebPage(
                 new LiveWebPage(this.phantomJsDriver(), link)
             );
+    	    logger.info("Page crawled. Sending to aws...");
             new AmazonEsRepository(this.com.indexName()).export(Arrays.asList(snapshot));
+    	    logger.info("Page successfully sent to aws!");
         } catch (DataExportException | IOException | RuntimeException e) {
             logger.error("Exception while indexing the page " + link, e);
             throw new IllegalStateException("Exception while indexing the page" + link, e);

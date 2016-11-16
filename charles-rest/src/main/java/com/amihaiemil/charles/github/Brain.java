@@ -29,9 +29,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.slf4j.Logger;
-
+import com.amihaiemil.charles.steps.DeleteIndex;
 import com.amihaiemil.charles.steps.IndexPage;
 import com.amihaiemil.charles.steps.IndexSite;
 import com.amihaiemil.charles.steps.PreconditionCheckStep;
@@ -113,7 +112,7 @@ public class Brain {
                      this.withCommonChecks(
                          com, category.language(), this.indexPageStep(com, category.language())
                      ),
-                     this.denialReplyStep(com, category.language(), "denied.badlink.comment")
+                     this.finalCommentStep(com, category.language(), "denied.badlink.comment", com.authorLogin())
                  );
                  break;
              case "deleteindex":
@@ -122,7 +121,10 @@ public class Brain {
                      this.withCommonChecks(
                          com, category.language(), this.deleteIndexStep(com, category.language())
                      ),
-                     this.denialReplyStep(com, category.language(), "denied.deleteindex.comment")
+                     this.finalCommentStep(
+                         com, category.language(), "denied.deleteindex.comment",
+                         com.authorLogin(), com.agentLogin(), com.repo().name()
+                     )
                  );
                  break;
              default:
@@ -164,7 +166,7 @@ public class Brain {
      * @throws IOException 
      */
     public Step indexPageStep(Command com, Language lang) throws IOException {
-        return new SendReply(
+    	return new SendReply(
             new TextReply(
                 com,
                 String.format(
@@ -175,11 +177,14 @@ public class Brain {
             ), this.logger,
             new IndexPage(
                 com, this.logger,
-                this.followUpComment(
-                    com, lang, "index.finished.comment",
-                    com.authorLogin(),
-                    com.repo().json().getString("name"),
-                    this.logsLoc.address()
+                new StarRepo(
+                    com.issue().repo(), this.logger,
+                    this.finalCommentStep(
+                        com, lang, "index.finished.comment",
+                        com.authorLogin(),
+                        com.repo().name(),
+                        this.logsLoc.address()
+                    )
                 )
             )
         );
@@ -204,11 +209,14 @@ public class Brain {
             ), this.logger,
             new IndexSite(
                 com, logger,
-                this.followUpComment(
-                    com, lang, "index.finished.comment",
-                    com.authorLogin(),
-                    com.repo().json().getString("name"),
-                    this.logsLoc.address()
+                new StarRepo(
+                    com.issue().repo(), this.logger,
+                    this.finalCommentStep(
+                        com, lang, "index.finished.comment",
+                        com.authorLogin(),
+                        com.repo().name(),
+                        this.logsLoc.address()
+                    )
                 )
             )
         );
@@ -231,12 +239,12 @@ public class Brain {
                     this.logsLoc.address()
                 )
             ), this.logger,
-            new IndexSite(
+            new DeleteIndex(
                 com, logger,
-                this.followUpComment(
-                    com, lang, "index.finished.comment",
+                this.finalCommentStep(
+                    com, lang, "deleteindex.finished.comment",
                     com.authorLogin(),
-                    com.repo().json().getString("name"),
+                    com.repo().name(),
                     this.logsLoc.address()
                 )
             )
@@ -274,7 +282,7 @@ public class Brain {
     private Step withCommonChecks(Command com, Language lang, Step action) throws IOException {
         PreconditionCheckStep repoForkCheck = new RepoForkCheck(
             com.repo().json(), this.logger, action,
-            this.denialReplyStep(com, lang, "denied.fork.comment")
+            this.finalCommentStep(com, lang, "denied.fork.comment", com.authorLogin())
         );
         PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
             com, this.logger,
@@ -282,68 +290,39 @@ public class Brain {
             new OrganizationAdminCheck(
                 com, this.logger,
                 repoForkCheck,
-                this.denialReplyStep(com, lang, "denied.commander.comment")
+                this.finalCommentStep(com, lang, "denied.commander.comment", com.authorLogin())
             )
         );
         PreconditionCheckStep repoNameCheck = new RepoNameCheck(
             com.repo().json(), this.logger, authorOwnerCheck,
             new GhPagesBranchCheck(
                 com, this.logger, authorOwnerCheck,
-                this.denialReplyStep(com, lang, "denied.name.comment")
+                this.finalCommentStep(com, lang, "denied.name.comment", com.authorLogin())
             )
         );        
         return repoNameCheck;
     }
 
     /**
-     * Builds the reply to send to a command that did not 
-     * pass a precondition.
+     * Builds the final comment to be sent to the issue. <b>This should be the last in the steps' chain</b>.
+     * @param com Command.
+     * @param lang Spoken language.
+     * @param formatParts Parts to format the response %s elements with.
      * @return SendReply step.
      */
-    private SendReply denialReplyStep(
-        Command com, Language lang, String messagekey
+    private SendReply finalCommentStep(
+        Command com, Language lang, String messagekey, String ... formatParts
     ) {
-        Reply rep = new TextReply(
-            com,
-            String.format(
-                 lang.response(messagekey),
-                com.authorLogin()
-             )
+        return new SendReply(
+            new TextReply(
+        	    com,
+        	    String.format(
+        		    lang.response(messagekey),
+        		    (Object[]) formatParts
+        		)
+            ), this.logger,
+            new Step.FinalStep(this.logger)
         );
-        return
-            new SendReply(
-                rep, this.logger,
-                new Step.FinalStep(
-                    this.logger,
-                    "Action finished successfully after command denial."
-                )
-            );
     }
 
-    /**
-     * Step that sends a followup comment after the action has been executed.
-     * @param com Command.
-     * @param lang Language
-     * @param messageKey key of the response.
-     * @param formatParams String format params that should replace the %s in the response.
-     * @return Step
-     * @throws IOException If something goes wrong.
-     */
-    private Step followUpComment(Command com, Language lang, String messageKey, String...formatParams) throws IOException {
-        Step followUp =
-            new StarRepo(
-                com.issue().repo(), this.logger,
-                new SendReply(
-                    new TextReply(
-                        com,
-                        String.format(
-                            lang.response(messageKey),
-                            (Object[]) formatParams
-                        )
-                    ), this.logger,
-                    new Step.FinalStep(this.logger)
-               )
-            );
-        return followUp;
-    }
 }

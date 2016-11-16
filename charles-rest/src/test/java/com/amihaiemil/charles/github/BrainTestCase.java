@@ -136,7 +136,8 @@ public class BrainTestCase {
         Mockito.when(english.response("denied.commander.comment")).thenReturn("denied commander!");
         Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
         Mockito.when(english.response("denied.deleteindex.comment")).thenReturn("delete denied!");
-        
+        Mockito.when(english.response("deleteindex.finished.comment")).thenReturn("index deleted!");
+
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("deleteindex", english));
         

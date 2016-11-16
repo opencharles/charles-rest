@@ -158,9 +158,8 @@ public class CommandedRepoTestCase {
         MkGithub gh = new MkGithub("amihaiemil");
         Repo rep = gh.repos().create(new RepoCreate("charlesrepo", false));
         CommandedRepo crepo = new CommandedRepo(rep);
-        
         JsonObject repoJson = crepo.json();
-        assertTrue(repoJson.getString("name").equals("charlesrepo"));
+        assertTrue(crepo.name().equals("charlesrepo"));
         assertTrue(repoJson.getString("private").equals("false"));
 
         JsonObject repoFromCache = crepo.json();

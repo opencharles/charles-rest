@@ -77,7 +77,7 @@ public class RepoForkCheck extends PreconditionCheckStep {
             logger.warn("Repository should NOT be a fork!");
             this.onFalse().perform();
         } else {
-            logger.info("Repository is not a fort - Ok!");
+            logger.info("Repository is not a fork - Ok!");
             this.onTrue().perform();
         }
     }

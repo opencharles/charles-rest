@@ -30,10 +30,8 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
@@ -69,7 +67,7 @@ public class AmazonEsRepository implements Repository {
     public void export(List<WebPage> pages) throws DataExportException {
         try {
             SignedRequest<HttpResponse> sr = new SignedRequest<>(
-                this.buildAwsIndexRequest(
+                this.buildAwsEsIndexRequest(
                     new EsBulkJson(this.indexName, pages).structure()
                 ),
                 new SimpleAwsResponseHandler(false),
@@ -83,6 +81,19 @@ public class AmazonEsRepository implements Repository {
     }
 
     /**
+     * Delete the elasticsearch index.
+     * @param name Name of the index.
+     */
+    public void deleteIndex() {
+        SignedRequest<HttpResponse> sr = new SignedRequest<>(
+            this.buildAwsEsDeleteRequest(),
+            new SimpleAwsResponseHandler(false),
+            new SimpleAwsErrorHandler(false)
+        );
+        sr.sendRequest();
+    }
+
+    /**
      * Builds the POST request to send to the
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">
      * Es Bulk API
@@ -90,11 +101,11 @@ public class AmazonEsRepository implements Repository {
      * @param data Json structure expected by the bulk api.
      * @return Aws request.
      */
-    public Request<Void> buildAwsIndexRequest(String data) {
-    	Request<Void> request = new DefaultRequest<Void>("es");
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put("Content-Type", "application/json");
-    	request.setHeaders(headers);
+    private Request<Void> buildAwsEsIndexRequest(String data) {
+        Request<Void> request = new DefaultRequest<Void>("es");
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json");
+        request.setHeaders(headers);
         request.setContent(new ByteArrayInputStream(data.getBytes()));
         String esEndpoint = System.getProperty("aws.es.endpoint");
         if(esEndpoint == null || esEndpoint.isEmpty()) {
@@ -107,6 +118,30 @@ public class AmazonEsRepository implements Repository {
         }
         request.setEndpoint(URI.create(esEndpoint));
         request.setHttpMethod(HttpMethodName.POST);
+        return request;
+    }
+
+    /**
+     * Builds the POST request to send to the
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html">
+     * Es Index API
+     * </a>
+     * @param index Name of the index to be deleted.
+     * @return Aws request.
+     */
+    private Request<Void> buildAwsEsDeleteRequest() {
+        Request<Void> request = new DefaultRequest<Void>("es");
+        String esEndpoint = System.getProperty("aws.es.endpoint");
+        if(esEndpoint == null || esEndpoint.isEmpty()) {
+            throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
+        }
+        if(esEndpoint.endsWith("/")) {
+            esEndpoint += this.indexName;
+        } else {
+            esEndpoint = esEndpoint + "/" + this.indexName;
+        }
+        request.setEndpoint(URI.create(esEndpoint));
+        request.setHttpMethod(HttpMethodName.DELETE);
         return request;
     }
 

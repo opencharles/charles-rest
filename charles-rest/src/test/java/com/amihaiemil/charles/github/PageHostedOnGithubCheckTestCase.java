@@ -159,7 +159,6 @@ public class PageHostedOnGithubCheckTestCase {
         String owner, String name, boolean hasGhPages, String link
     ) throws IOException {
         JsonObject repoJson = Json.createObjectBuilder()
-            .add("name", name)
             .add(
                 "owner",
                 Json.createObjectBuilder().add("login", owner).build()
@@ -168,6 +167,7 @@ public class PageHostedOnGithubCheckTestCase {
         Command com = Mockito.mock(Command.class);
         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.json()).thenReturn(repoJson);
+        Mockito.when(crepo.name()).thenReturn(name);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);
         
         

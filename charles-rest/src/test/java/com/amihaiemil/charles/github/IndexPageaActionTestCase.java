@@ -190,6 +190,7 @@ public class IndexPageaActionTestCase {
                     "@charlesmike index [this]("
                 )
         );
+        System.out.println( comments.get(1).json().getString("body"));
         assertTrue(
             comments.get(1).json().getString("body").endsWith(
                 "\n\nindex-page checks passed!"
@@ -456,6 +457,7 @@ public class IndexPageaActionTestCase {
          
          CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.json()).thenReturn(repo);
+        Mockito.when(crepo.name()).thenReturn(repoName);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(ghpages);
 
          Mockito.when(com.repo()).thenReturn(crepo);

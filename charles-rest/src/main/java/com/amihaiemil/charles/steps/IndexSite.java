@@ -53,16 +53,13 @@ public class IndexSite extends IndexStep {
      */
     private Logger logger;
 
-
     /**
      * Constructor.
      * @param com Command
      * @param logger The action's logger
      * @param next The next step to take
      */
-    public IndexSite(
-        Command com, Logger logger, Step next
-    ) {
+    public IndexSite(Command com, Logger logger, Step next) {
         super(next);
         this.com = com;
         this.logger = logger;
@@ -71,7 +68,9 @@ public class IndexSite extends IndexStep {
     @Override
     public void perform() {
         try {
+        	logger.info("Starting to index the whole site...");
             this.graphCrawl().crawl();
+        	logger.info("Indexing finished successfully!");
         } catch (
             DataExportException |
             IOException |
@@ -82,14 +81,17 @@ public class IndexSite extends IndexStep {
         }
         this.next().perform();
     }
+
     public WebCrawl graphCrawl() throws IOException {
-        String repoName = com.repo().json().getString("name");
+        String repoName = this.com.repo().name();
         String siteIndexUrl;
         if(com.repo().hasGhPagesBranch()) {
             siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
         } else {
             siteIndexUrl = "http://" + repoName;
         }
+        logger.info("Graph-crawling, starting from " + siteIndexUrl
+        + " .The website will be crawled as a graph, going in-depth from the index page.");
         WebCrawl siteCrawl = new GraphCrawl(
             siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
             new AmazonEsRepository(this.com.indexName()), 20

@@ -43,6 +43,7 @@ import com.amihaiemil.charles.WebPage;
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
+import com.jcabi.http.mock.MkQuery;
 
 /**
  * Unit tests for {@link AmazonEsRepository}
@@ -120,11 +121,11 @@ public class AmazonEsRepositoryTestCase {
     }
     
     /**
-     * A request is send to the AWS Es service.
+     * A request is sent to the AWS Es bulk api service.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void sendsRequestToAwsEs() throws Exception {
+    public void sendsExportRequestToAwsEs() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
@@ -136,26 +137,26 @@ public class AmazonEsRepositoryTestCase {
         int port = this.port();
         System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
     
-        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
         
         MkContainer server = new MkGrizzlyContainer()
-           .next(
-               new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}")
-           )
+           .next(new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}"))
            .start(port);
         try {
-            repo.export(pages);
+        	new AmazonEsRepository("testIndex").export(pages);
+            MkQuery request = server.take();
+            assertTrue("/es/_bulk/".equals(request.uri().toString()));
+            assertTrue("POST".equals(request.method()));
         } finally {
             server.stop();
         }
     }
     
     /**
-     * A request is send to the AWS Es service.
+     * A request is sent to the AWS Es bulk api service, but it fails.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void sendsRequestToAwsEsWithError() throws Exception {
+    public void sendsExportRequestToAwsEsWithError() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
@@ -166,18 +167,44 @@ public class AmazonEsRepositoryTestCase {
         int port = this.port();
         System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es/");
     
-        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
         
         MkContainer server = new MkGrizzlyContainer()
-           .next(
-               new MkAnswer.Simple(412)
-           )
+           .next(new MkAnswer.Simple(412))
            .start(port);
         try {
-            repo.export(pages);
+        	new AmazonEsRepository("testIndex").export(pages);
         } catch (AmazonServiceException ase) {
             assertTrue(ase.getErrorMessage().contains("Precondition Failed"));
+            MkQuery request = server.take();
+            assertTrue("/es/_bulk/".equals(request.uri().toString()));
+            assertTrue("POST".equals(request.method()));
         }finally {
+            server.stop();
+        }
+    }
+    
+    /**
+     * A request to DELETE the index is made to ES.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void sendsDeleteRequestToAwsEs() throws Exception {
+        System.setProperty("aws.accessKeyId", "access_key");
+        System.setProperty("aws.secretKey", "secret_key");
+        System.setProperty("aws.es.region", "ro");
+        
+        int port = this.port();
+        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
+        
+        MkContainer server = new MkGrizzlyContainer()
+           .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
+           .start(port);
+        try {
+        	new AmazonEsRepository("index.to.be.deleted").deleteIndex();
+            MkQuery request = server.take();
+            assertTrue("/es/index.to.be.deleted/".equals(request.uri().toString()));
+            assertTrue("DELETE".equals(request.method()));
+        } finally {
             server.stop();
         }
     }

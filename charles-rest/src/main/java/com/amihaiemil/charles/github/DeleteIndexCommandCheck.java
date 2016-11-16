@@ -67,7 +67,7 @@ public class DeleteIndexCommandCheck extends PreconditionCheckStep {
         if(text.contains("`")) {
             String repoToBeDeleted = text.substring(text.indexOf('`') + 1, text.lastIndexOf('`'));
             try {
-                String repoName = com.repo().json().getString("name");
+                String repoName = com.repo().name();
                 passed = repoName.equals(repoToBeDeleted);
             } catch (IOException e) {
                 logger.error("Exception when getting repo's name", e);
