@@ -90,10 +90,9 @@ public class IndexSite extends IndexStep {
         } else {
             siteIndexUrl = "http://" + repoName;
         }
-        String indexName = com.authorLogin() + "x" + repoName;
         WebCrawl siteCrawl = new GraphCrawl(
             siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
-            new AmazonEsRepository(indexName.toLowerCase()), 20
+            new AmazonEsRepository(this.com.indexName()), 20
         );
         return siteCrawl;
     }

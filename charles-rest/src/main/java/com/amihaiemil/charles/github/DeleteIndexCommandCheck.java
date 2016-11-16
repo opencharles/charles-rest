@@ -22,76 +22,63 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.LiveWebPage;
-import com.amihaiemil.charles.SnapshotWebPage;
-import com.amihaiemil.charles.WebPage;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.github.Command;
+import com.amihaiemil.charles.steps.PreconditionCheckStep;
+import com.amihaiemil.charles.steps.Step;
 
 /**
- * Step to index a single page.
+ * Checks if a deleteindex command specifies the right repository.
+ * A deledeintex command should have the format "@agent delete [reponame] index".
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexPage extends IndexStep {
+public class DeleteIndexCommandCheck extends PreconditionCheckStep {
 
     /**
-     * Action's logger.
-     */
-    private Logger logger;
-
-    /**
-     * Command.
+     * Given command.
      */
     private Command com;
 
     /**
-     * Ctor.
-     * @param com Given command.
-     * @param logger Logger.
-     * @param next Next step to take.
+     * Logger.
      */
-    public IndexPage(
-        Command com, Logger logger, Step next
+    private Logger logger;
+
+    public DeleteIndexCommandCheck(
+        Command com, Logger logger,
+        Step onTrue, Step onFalse
     ) {
-        super(next);
+        super(onTrue, onFalse);
         this.com = com;
         this.logger = logger;
     }
 
     @Override
     public void perform() {
-	    String link = this.getLink();
-    	try {
-            WebPage snapshot = new SnapshotWebPage(
-                new LiveWebPage(this.phantomJsDriver(), link)
-            );
-            new AmazonEsRepository(this.com.indexName()).export(Arrays.asList(snapshot));
-        } catch (DataExportException | IOException | RuntimeException e) {
-            logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException("Exception while indexing the page" + link, e);
+        boolean passed = false;
+        String text = com.json().getString("body");
+        if(text.contains("`")) {
+            String repoToBeDeleted = text.substring(text.indexOf('`') + 1, text.lastIndexOf('`'));
+            try {
+                String repoName = com.repo().json().getString("name");
+                passed = repoName.equals(repoToBeDeleted);
+            } catch (IOException e) {
+                logger.error("Exception when getting repo's name", e);
+                throw new IllegalStateException("Exception when getting repo's name", e);
+            }
         }
-        this.next().perform();
-    }
-
-    /**
-     * Get the page's link from the command's text which should be in markdown format, with a
-     * link like [this](http://link.com/here/the/ling) .
-     * @return String link.
-     */
-    private String getLink() {
-    	String body = this.com.json().getString("body");
-        return body.substring(body.indexOf('('),  body.indexOf(')'));
+        if(passed) {
+        	this.onTrue().perform();
+        } else {
+        	this.onFalse().perform();
+        }
     }
 
 }

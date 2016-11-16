@@ -25,30 +25,17 @@
 package com.amihaiemil.charles.steps;
 
 import java.io.IOException;
-import java.util.Arrays;
-
 import org.slf4j.Logger;
-
-import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.LiveWebPage;
-import com.amihaiemil.charles.SnapshotWebPage;
-import com.amihaiemil.charles.WebPage;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
 import com.amihaiemil.charles.github.Command;
 
 /**
- * Step to index a single page.
+ * Step that deletes the index from AWS es.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
+ * @version  $Id$
  * @since 1.0.0
  *
  */
-public class IndexPage extends IndexStep {
-
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
+public class DeleteIndex  extends IntermediaryStep {
 
     /**
      * Command.
@@ -56,12 +43,18 @@ public class IndexPage extends IndexStep {
     private Command com;
 
     /**
-     * Ctor.
-     * @param com Given command.
-     * @param logger Logger.
-     * @param next Next step to take.
+     * Action's logger.
      */
-    public IndexPage(
+    private Logger logger;
+
+
+    /**
+     * Constructor.
+     * @param com Command
+     * @param logger The action's logger
+     * @param next The next step to take
+     */
+    public DeleteIndex(
         Command com, Logger logger, Step next
     ) {
         super(next);
@@ -71,27 +64,17 @@ public class IndexPage extends IndexStep {
 
     @Override
     public void perform() {
-	    String link = this.getLink();
-    	try {
-            WebPage snapshot = new SnapshotWebPage(
-                new LiveWebPage(this.phantomJsDriver(), link)
-            );
-            new AmazonEsRepository(this.com.indexName()).export(Arrays.asList(snapshot));
-        } catch (DataExportException | IOException | RuntimeException e) {
-            logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException("Exception while indexing the page" + link, e);
+    	this.logger.info("Starting index deletion...");
+        try {
+            String indexName = com.indexName();
+            logger.info(indexName);
+            //todo delete logic here...
+        } catch (IOException e) {
+        	 logger.error("Exception while deleting the indx!", e);
+             throw new IllegalStateException("Exception while deleting the indx!" , e);
         }
+        this.logger.info("The index was successfully removed!");
         this.next().perform();
-    }
-
-    /**
-     * Get the page's link from the command's text which should be in markdown format, with a
-     * link like [this](http://link.com/here/the/ling) .
-     * @return String link.
-     */
-    private String getLink() {
-    	String body = this.com.json().getString("body");
-        return body.substring(body.indexOf('('),  body.indexOf(')'));
     }
 
 }

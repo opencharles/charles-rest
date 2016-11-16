@@ -42,7 +42,7 @@ import com.amihaiemil.charles.steps.Step;
 public class GhPagesBranchCheck extends PreconditionCheckStep {
 
     /**
-     * Repository json as returned by the Github API.
+     * Given command.
      */
     private Command com;
     

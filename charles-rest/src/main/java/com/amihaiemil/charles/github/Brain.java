@@ -103,13 +103,27 @@ public class Brain {
                          );
                  break;
              case "indexsite":
-                 steps = this.stepsForIndex(com, category.language(), false);
+                 steps = this.withCommonChecks(
+                     com, category.language(), this.indexSiteStep(com, category.language())
+                 );
                  break;
              case "indexpage":
-                 steps = this.stepsForIndex(com, category.language(), true);
+                 steps = new PageHostedOnGithubCheck(
+                     com, this.logger,
+                     this.withCommonChecks(
+                         com, category.language(), this.indexPageStep(com, category.language())
+                     ),
+                     this.denialReplyStep(com, category.language(), "denied.badlink.comment")
+                 );
                  break;
              case "deleteindex":
-                 steps = null; //todo finish impelmenting this.
+                 steps = new DeleteIndexCommandCheck(
+                     com, this.logger,
+                     this.withCommonChecks(
+                         com, category.language(), this.deleteIndexStep(com, category.language())
+                     ),
+                     this.denialReplyStep(com, category.language(), "denied.deleteindex.comment")
+                 );
                  break;
              default:
                  logger.info("Unknwon command!");
@@ -143,6 +157,93 @@ public class Brain {
     }
 
     /**
+     * Builds and returns the IndexPage step.
+     * @param com Command
+     * @param lang Language
+     * @return Step
+     * @throws IOException 
+     */
+    public Step indexPageStep(Command com, Language lang) throws IOException {
+        return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    lang.response("index.start.comment"),
+                    com.authorLogin(),
+                    this.logsLoc.address()
+                )
+            ), this.logger,
+            new IndexPage(
+                com, this.logger,
+                this.followUpComment(
+                    com, lang, "index.finished.comment",
+                    com.authorLogin(),
+                    com.repo().json().getString("name"),
+                    this.logsLoc.address()
+                )
+            )
+        );
+    }
+
+    /**
+     * Builds and returns the IndexSite step.
+     * @param com Command
+     * @param lang Language
+     * @return Step
+     * @throws IOException 
+     */
+    public Step indexSiteStep(Command com, Language lang) throws IOException {
+        return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    lang.response("index.start.comment"),
+                    com.authorLogin(),
+                    this.logsLoc.address()
+                )
+            ), this.logger,
+            new IndexSite(
+                com, logger,
+                this.followUpComment(
+                    com, lang, "index.finished.comment",
+                    com.authorLogin(),
+                    com.repo().json().getString("name"),
+                    this.logsLoc.address()
+                )
+            )
+        );
+    }
+    
+    /**
+     * Builds and returns the DeleteIndex step.
+     * @param com Command
+     * @param lang Language
+     * @return Step
+     * @throws IOException 
+     */
+    public Step deleteIndexStep(Command com, Language lang) throws IOException {
+        return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    lang.response("index.start.comment"),
+                    com.authorLogin(),
+                    this.logsLoc.address()
+                )
+            ), this.logger,
+            new IndexSite(
+                com, logger,
+                this.followUpComment(
+                    com, lang, "index.finished.comment",
+                    com.authorLogin(),
+                    com.repo().json().getString("name"),
+                    this.logsLoc.address()
+                )
+            )
+        );
+    }
+
+    /**
      * Find out the type and Language of a command.
      * @param com Received Command.
      * @param logger Logger to use.
@@ -163,32 +264,18 @@ public class Brain {
     }
 
     /**
-     * Build and return the steps tree for an index command
-     * @param com Received Command, 
+     * Add precondition checks that are common to most actions (indexsite, indexpage, deleteindex etc)
+     * @param com Received Command,
      * @param lang Spoken language.
-     * @param singlePage is it an index-page or an index-site command?
+     * @param action Step that should be performed after the checks are met.
      * @return Steps that have to be followed to fulfill an index command.
      * @throws IOException If something goes wrong.
      */
-    private Step stepsForIndex(Command com, Language lang, boolean singlePage) throws IOException {
-        PreconditionCheckStep repoForkCheck;
-        if(!singlePage) {
-            repoForkCheck = new RepoForkCheck(
-                com.repo().json(), this.logger,
-                this.indexSiteStep(com, lang),
-                this.denialReplyStep(com, lang, "denied.fork.comment")
-            );
-        } else {
-            repoForkCheck = new RepoForkCheck(
-                com.repo().json(), this.logger,
-                new PageHostedOnGithubCheck(
-                    com, this.logger,
-                    this.indexPageStep(com, lang),
-                    this.denialReplyStep(com, lang, "denied.badlink.comment")
-                ),
-                this.denialReplyStep(com, lang, "denied.fork.comment")
-            );
-        }
+    private Step withCommonChecks(Command com, Language lang, Step action) throws IOException {
+        PreconditionCheckStep repoForkCheck = new RepoForkCheck(
+            com.repo().json(), this.logger, action,
+            this.denialReplyStep(com, lang, "denied.fork.comment")
+        );
         PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
             com, this.logger,
             repoForkCheck,
@@ -234,66 +321,15 @@ public class Brain {
     }
 
     /**
-     * Builds and returns the IndexPage step.
-     * @param com Command
+     * Step that sends a followup comment after the action has been executed.
+     * @param com Command.
      * @param lang Language
+     * @param messageKey key of the response.
+     * @param formatParams String format params that should replace the %s in the response.
      * @return Step
-     * @throws IOException 
+     * @throws IOException If something goes wrong.
      */
-    public Step indexPageStep(Command com, Language lang) throws IOException {
-        String repoName = com.repo().json().getString("name");
-        String indexName = com.authorLogin() + "x" + repoName;
-        return new SendReply(
-            new TextReply(
-                com,
-                String.format(
-                    lang.response("index.start.comment"),
-                    com.authorLogin(),
-                    this.logsLoc.address()
-                )
-            ), this.logger,
-            new IndexPage(
-                com.json().getString("body"),
-                indexName.toLowerCase(),
-                this.logger,
-                this.indexFollowupStep(com, lang)
-            )
-        );
-    }
-    
-    /**
-     * Builds and returns the IndexSite step.
-     * @param com Command
-     * @param lang Language
-     * @return Step
-     * @throws IOException 
-     */
-    public Step indexSiteStep(Command com, Language lang) throws IOException {
-        return new SendReply(
-            new TextReply(
-                com,
-                String.format(
-                    lang.response("index.start.comment"),
-                    com.authorLogin(),
-                    this.logsLoc.address()
-                )
-            ), this.logger,
-            new IndexSite(
-                com, logger,
-                this.indexFollowupStep(com, lang)
-            )
-        );
-    }
-    
-    /**
-     * Builds and returns the steps that need to be performed
-     * after an index command.
-     * @param com
-     * @param lang
-     * @return
-     * @throws IOException 
-     */
-    private Step indexFollowupStep(Command com, Language lang) throws IOException{
+    private Step followUpComment(Command com, Language lang, String messageKey, String...formatParams) throws IOException {
         Step followUp =
             new StarRepo(
                 com.issue().repo(), this.logger,
@@ -301,10 +337,8 @@ public class Brain {
                     new TextReply(
                         com,
                         String.format(
-                            lang.response("index.finished.comment"),
-                            com.authorLogin(),
-                            com.repo().json().getString("name"),
-                            this.logsLoc.address()
+                            lang.response(messageKey),
+                            (Object[]) formatParams
                         )
                     ), this.logger,
                     new Step.FinalStep(this.logger)

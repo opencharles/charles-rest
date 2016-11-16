@@ -259,7 +259,7 @@ public class IndexPageaActionTestCase {
     public void indexPageChecksFailAuthorNotOwner() throws Exception {
         Command com = this.mockCommand(
             "notowner", "amihaiemil", "amihaiemil.github.io",
-            false, false, "http://www.some.test/page/to/index"
+            false, false, "http://amihaiemil.github.io/page/to/index"
         );
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
@@ -302,7 +302,7 @@ public class IndexPageaActionTestCase {
     public void indexPageChecksFailRepoIsForked() throws Exception {
         Command com = this.mockCommand(
             "amihaiemil", "amihaiemil", "forkedrepo",
-            true, true, "http://www.some.test/page/to/index"
+            true, true, "http://amihaiemil.github.io/forkedrepo/page/to/index"
         );
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
@@ -325,6 +325,7 @@ public class IndexPageaActionTestCase {
                     "@charlesmike index [this]("
                 )
         );
+        System.out.println(comments.get(1).json().getString("body"));
         assertTrue(
             comments.get(1).json().getString("body").endsWith(
                 "\n\nrepo is a fork!"
@@ -342,7 +343,7 @@ public class IndexPageaActionTestCase {
     public void indexPageChecksFailNoWebsite() throws Exception {
         Command com = this.mockCommand(
             "amihaiemil", "amihaiemil", "someRepoWithNoWebsite",
-            false, false, "http://www.some.test/page/to/index"
+            false, false, "http://amihaiemil.github.io/page/to/index"
         );
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
@@ -365,6 +366,7 @@ public class IndexPageaActionTestCase {
                     "@charlesmike index [this]("
                 )
         );
+        System.out.println(comments.get(1).json().getString("body"));
         assertTrue(
             comments.get(1).json().getString("body").endsWith(
                 "\n\nThis repo doesn't host any website!"

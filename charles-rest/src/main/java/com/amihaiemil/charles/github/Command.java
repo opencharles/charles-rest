@@ -180,4 +180,17 @@ public abstract class Command {
         return this.crepo;
     }
 
+    /**
+     * Returns the elasticsearch index name for this command.
+     * @return String indexname.
+     * @throws IOException If something goes wrong while reading
+     *  the repo json form the Github API.
+     */
+    public String indexName() throws IOException {
+    	JsonObject repo = this.repo().json();
+    	String owner = repo.getJsonObject("owner").getString("login");
+        String name = repo.getString("name");
+        return owner.toLowerCase() + "x" + name.toLowerCase();
+    }
+
 }
