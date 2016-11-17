@@ -33,6 +33,11 @@ package com.amihaiemil.charles.rest.model;
  */
 public class SearchResult {
 
+	/**
+	 * Page title.
+	 */
+	private String title;
+	
     /**
      * Link to the page.
      */
@@ -52,22 +57,31 @@ public class SearchResult {
      * Default ctor.
      */
     public SearchResult() {
-        this("", "", "");
+        this("", "", "", "");
     }
 
     /**
      * Ctor.
-     * @param link
-     * @param highlight
-     * @param category
+     * @param title Page title.
+     * @param link Page link.
+     * @param highlight Text preview.
+     * @param category Page category.
      */
-    public SearchResult(String link, String highlight, String category) {
+    public SearchResult(String title, String link, String highlight, String category) {
+    	this.title = title;
         this.link = link;
         this.highlight = highlight;
         this.category = category;
     }
-    
-    public String getLink() {
+    public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getLink() {
         return link;
     }
 

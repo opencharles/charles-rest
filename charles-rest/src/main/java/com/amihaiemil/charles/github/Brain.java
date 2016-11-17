@@ -91,7 +91,6 @@ public class Brain {
          logger.info("Command author's login: " + authorLogin);
          Step steps;
          CommandCategory category = this.categorizeCommand(com);
-
          switch (category.type()) {
              case "hello":
                  String hello = String.format(category.language().response("hello.comment"), authorLogin);
