@@ -41,6 +41,19 @@
             <div class="navbar-header page-scroll">
                 <p class="navbar-brand">Commands</p>
             </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="hidden">
+                        <a href="#page-top"></a>
+                    </li>
+					          <li class="page-scroll">
+                        <a href="index.html">Home</a>
+                    </li>
+                    <li class="page-scroll">
+                        <a href="doc.html">Documentation</a>
+                    </li>
+                </ul>
+            </div>
             <!-- /.navbar-collapse -->
         </div>
         <!-- /.container-fluid -->
@@ -73,27 +86,37 @@
 						    <td>Index site</td>
 							<td>^@charlesmike[ ,]+(please index|pls index|index please|index pls|index)[ \\?,\\.;!]*$</td>
 							<td>@charlesmike pls index</td>
-							<td>The bot will crawl and <b>index the whole website</b> if you are the repo owner. See bellow a detailed explanation.</td>
+							<td>The bot will crawl and <b>index the whole website</b></td>
 					    </tr>
                         <tr>
 						    <td>Index page</td>
 							<td>^@charlesmike[ ,]+(index \\[this\\] *\\(.+\\) page|please index \\[this\\] *\\(.+\\) page|pls index \\[this\\] *\\(.+\\) page)[ \\?,\\.;!]*$</td>
 							<td>@charlesmike pls index [this](link/to/page) page</td>
-							<td>Notice the Markdown styling - it's mandatory. The bot will crawl and <b>index the specified page</b> if you are the repo owner. See bellow a detailed explanation.</td>
-					    </tr>						
+							<td>Notice the Markdown styling - it's mandatory. The bot will crawl and <b>index the specified page</b></td>
+					    </tr>
+              <tr>
+                <td>Delete index</td>
+                <td>^%s[ ,]+(delete \S+ index (pls|please)*)$</td>
+                <td>@charlesmike delete `repo` index</td>
+                <td><b>The index will be deleted</b>. Note that you have to specify the repo's exact name (case sensitive) between back-apostrophes. After running this command,
+                <b>you should remove the script from your website since the search won't work anymore</b>
+                </td>
+              </tr>
 					</table>
-					<span>More to come ...</span> <br/><br/><br/>
-					<p>In order to give certain commands you need to be the repository's owner. This means that:</p>
+					<p>More commands to come. Also more languages will be supported!</p><br/>
+          <h3>Important</h3>
+
+					<p>In order to give any command, besides hello, you need to be the repository's owner. This means that:</p>
 					<ul>
-					    <li>The repo is under your name.</li>
+					  <li>The repo is under your name.</li>
 						<li>The repo is not a fork.</li>
 						<li>
 						    If the repo is under an organization, you must be one of the organization's active admins.
 						    <ul>
-							    <li>In this case, you need to invite <a target="_blank" href="https://www.github.com/charlesmike">@charlesmike</a> to be a member of the organization because otherwise it won't be able to check
+							    <li>In this case, you need to <b>invite <a target="_blank" href="https://www.github.com/charlesmike">@charlesmike</a> to be a member of the organization</b> because otherwise it won't be able to check
 								    your membership. See <a target="_blank" href="https://developer.github.com/v3/orgs/members/#get-organization-membership">here.</a>
 								</li>
-							</ul> 
+							</ul>
 						</li>
 					</ul>
 				</div>
@@ -153,7 +176,7 @@ have to add a JS script to your page to render the search box.</p>
                 </div>
 				<div class="row">
                     <div class="col-lg-12">
-                        <a style="color:white;" href="terms.html">Terms and conditions</a> | 
+                        <a style="color:white;" href="terms.html">Terms and conditions</a> |
 						<a style="color:white;" href="data.html">Data policy</a>
                     </div>
                 </div>

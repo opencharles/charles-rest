@@ -79,8 +79,8 @@
             <br/>
             <div class="row">
                 <div class="col-lg-4 col-lg-offset-2">
-                    <p>Like already mentioned, you interact with this service via <b>Github issue comments</b>. The code behind 
-it can be found <a target="_blank" href="https://github.com/amihaiemil/charles-github-ejb" title="charles-github-ejb Github">here</a>. In short, 
+                    <p>You interact with this service via <b>Github issue comments</b>. The code behind
+it can be found <a target="_blank" href="https://github.com/amihaiemil/charles-github-ejb" title="charles-github-ejb Github">here</a>. In short,
 there is a job that uses the Github API to interact with the <a target="_blank" href="https://github.com/charlesmike" title="Charles Michael's Github account">@charlesmike</a> account. Every minute, the notifications are checked and actions are taken according to each notification.</p>
                 </div>
                 <div class="col-lg-4">
@@ -104,30 +104,32 @@ there is a job that uses the Github API to interact with the <a target="_blank" 
                 </div>
             </div>
             <div class="col-lg-4 col-lg-offset-2">
-                <p>For now, 3 types of commands are "understood": <b>hello, index site, and index page</b>. We say types
+                <p>More types of commands are "understood": <b>hello, index site, and index page</b>. We say types
 because <a target="_blank" href="https://en.wikipedia.org/wiki/Regular_expression" title="What is RegEx?">regex rules</a> are used and so, for instance, "hi" and "hello" or "hi there!" will be understood as salutations.</p>
 
             <ul>
-                <li><b>hello</b> will trigger a salutation from the bot, and it will reply explaining what it can offer and on what conditions. Give it a try: say <b>@charlesmike helo there!!</b> in an issue comment</li>
+                <li><b>hello</b> will trigger a salutation from the bot, and it will reply explaining what it can offer and on what conditions. Give it a try: say <b>@charlesmike hello there!</b> in an issue comment</li>
                 <li><b>index site</b> will trigger the crawling and indexing of the whole website and can be triggered by saying <b>@charlesmike pls index</b> or simply <b>@charlesmike index</b></li>
                 <li><b>index page</b> will trigger the crawling and indexing of a single page of the website and can be triggered by saying something like <b>@charlesmike pls index [this](http://link-to-page.com)</b> - here <a target="_blank" href="https://guides.github.com/features/mastering-markdown/" title="Github Mastering Markdown">Markdown</a> styling is used, to pretty format the Github comment and also make the text easely parasable.</li>
+                <li><b>...and others</b>, see "More on commands" for details</li>
             </ul>
             </div>
             <div class="col-lg-4">
                   <p>Any Github user, in any Issue, can say <b>hi</b> to the bot and it will answer, but <b>only the repository owner can
                    trigger index commands</b>. Owner means that the repo is under his/her name and it is not a fork. If the repo is under
-                   an <b>organization</b>, then the user must be <b>admin</b> of that organization. If the ownership condition is not met, the 
+                   an <b>organization</b>, then the user must be <b>admin</b> of that organization.</p>
+                   <p>If the repository ownership condition is not met, the
 bot will answer explaining that this condition is not met and will not take any further action.</p>
             </div>
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 text-center">
 				    <br/><br/>
-					<a href="commands.html" class="btn btn-default">More on commands</a>                    
+					<a href="commands.html" class="btn btn-default">More on commands</a>
                 </div>
             </div>
         </div>
     </section>
-	
+
     <!-- Index and search Section -->
     <section id="indexsearch">
         <div class="container">
@@ -162,10 +164,10 @@ bot will answer explaining that this condition is not met and will not take any 
                 </div>
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <br/><br/>
-					<a href="#" class="btn btn-default">More on search</a>                    
+					<a href="#" class="btn btn-default">More on search</a>
 		        </div>
             </div>
-        </div>    
+        </div>
 	</section>
 
     <!-- Footer -->
@@ -220,7 +222,7 @@ have to add a JS script to your page to render the search box.</p>
                 </div>
 				<div class="row">
                     <div class="col-lg-12">
-                        <a style="color:white;" href="terms.html">Terms and conditions</a> | 
+                        <a style="color:white;" href="terms.html">Terms and conditions</a> |
 						<a style="color:white;" href="data.html">Data policy</a>
                     </div>
                 </div>
