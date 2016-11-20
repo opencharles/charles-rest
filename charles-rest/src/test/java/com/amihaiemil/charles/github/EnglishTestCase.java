@@ -98,6 +98,25 @@ public class EnglishTestCase {
     }
     
     /**
+     * A 'deleteindex' command is understood.
+     */
+    @Test
+    public void recognizesDeleteIndexCommands() throws Exception{
+        Command indexPage1 = this.mockCommand("@charlesmike, delete `eva` index pls");
+        Command indexPage2 = this.mockCommand("@charlesmike delete `amihaiemil.github.io` index");
+        Command indexPage3 = this.mockCommand("@charlesmike, delete this index");
+        Command indexPage4 = this.mockCommand("@charlesmike delete `charles` index please");
+        Command indexPage5 = this.mockCommand("@charlesmike delete `charles-github-ejb` index");
+
+        Language english = new English();
+        assertTrue(english.categorize(indexPage1).type().equals("deleteindex"));
+        assertTrue(english.categorize(indexPage2).type().equals("deleteindex"));
+        assertTrue(english.categorize(indexPage3).type().equals("deleteindex"));
+        assertTrue(english.categorize(indexPage4).type().equals("deleteindex"));
+        assertTrue(english.categorize(indexPage5).type().equals("deleteindex"));
+    }
+    
+    /**
      * A command can be categorized as unknown.
      */
     @Test
