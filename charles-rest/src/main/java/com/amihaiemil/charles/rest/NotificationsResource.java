@@ -27,7 +27,6 @@ package com.amihaiemil.charles.rest;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
-import java.util.Set;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
