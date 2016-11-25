@@ -24,57 +24,45 @@
  */
 package com.amihaiemil.charles.aws;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
 import java.util.Map;
-
-import com.amihaiemil.charles.rest.model.EsQuery;
-import com.amihaiemil.charles.rest.model.SearchResultsPage;
+import com.amazonaws.Request;
 
 /**
- * Perform a search in the Amazon ElasticSerch service
+ * Aws HTTP request with set headers.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AmazonEsSearch {
+public final class AwsHttpHeaders<T> implements AwsHttpRequest<T> {
 
     /**
-     * ElasticSearch  query.
+     * Base request.
      */
-    private EsQuery query;
+    private AwsHttpRequest<T> base;
 
     /**
-     * Index to search into.
+     * Http headers map.
      */
-    private String indexName;
+    private Map<String, String> hdrs;
 
     /**
      * Ctor.
-     * @param qry
-     * @param idxName
+     * @param req Base AwsHttpRequest.
+     * @param headers Map of headers to set on the request. Key - headername, value - its value.
      */
-    public AmazonEsSearch(EsQuery qry, String idxName) {
-        this.query = qry;
-        this.indexName = idxName;
+    public AwsHttpHeaders(AwsHttpRequest<T> req, Map<String, String> headers) {
+    	this.base = req;
+	}
+
+    @Override
+    public T perform() {
+    	this.base.request().setHeaders(this.hdrs);
+        return this.base.perform();
     }
 
-    public SearchResultsPage search() {
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put("Content-Type", "application/json");
-    	AwsHttpRequest<SearchResultsPage> search =
-    	    new SignedRequest<>(
-    	        new AwsHttpHeaders<>(
-    	            new AwsPost<>(
-    	                new EsHttpRequest<>(
-    	            	    this.indexName + "/_search",
-    	                    new SearchResponseHandler(), new SimpleAwsErrorHandler(false)
-    	                ),
-    	                new ByteArrayInputStream(this.query.toJson().toString().getBytes())
-    	            ), headers
-    	        )
-    	    );
-        return search.perform();
+    @Override
+    public Request<Void> request() {
+    	return this.base.request();
     }
 }

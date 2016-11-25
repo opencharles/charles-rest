@@ -30,8 +30,10 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
@@ -66,14 +68,23 @@ public class AmazonEsRepository implements Repository {
     @Override
     public void export(List<WebPage> pages) throws DataExportException {
         try {
-            SignedRequest<HttpResponse> sr = new SignedRequest<>(
-                this.buildAwsEsIndexRequest(
-                    new EsBulkJson(this.indexName, pages).structure()
-                ),
-                new SimpleAwsResponseHandler(false),
-                new SimpleAwsErrorHandler(false)
-            );
-            sr.sendRequest();
+            String data = new EsBulkJson(this.indexName, pages).structure();
+            Map<String, String> headers = new HashMap<String, String>();
+            headers.put("Content-Type", "application/json");
+            AwsHttpRequest<HttpResponse> index =
+                new SignedRequest<>(
+                	new AwsHttpHeaders<>(
+                        new AwsPost<>(
+                	        new EsHttpRequest<>(
+                	            "_bulk",
+                	            new SimpleAwsResponseHandler(false),
+                	            new SimpleAwsErrorHandler(false)
+                	        ),
+                	        new ByteArrayInputStream(data.getBytes())
+                	    ), headers
+                	 )
+                );
+                index.perform();
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
             throw new DataExportException(e.getMessage());
@@ -85,12 +96,17 @@ public class AmazonEsRepository implements Repository {
      * @param name Name of the index.
      */
     public void deleteIndex() {
-        SignedRequest<HttpResponse> sr = new SignedRequest<>(
-            this.buildAwsEsDeleteRequest(),
-            new SimpleAwsResponseHandler(false),
-            new SimpleAwsErrorHandler(false)
-        );
-        sr.sendRequest();
+    	AwsHttpRequest<HttpResponse> deleteIndex =
+            new SignedRequest<>(
+        	    new AwsDelete<>(
+        	        new EsHttpRequest<>(
+        	            this.indexName,
+        	            new SimpleAwsResponseHandler(false),
+        	            new SimpleAwsErrorHandler(false)
+        	        )
+        	    )
+        	);
+       deleteIndex.perform();
     }
 
     /**
@@ -118,30 +134,6 @@ public class AmazonEsRepository implements Repository {
         }
         request.setEndpoint(URI.create(esEndpoint));
         request.setHttpMethod(HttpMethodName.POST);
-        return request;
-    }
-
-    /**
-     * Builds the POST request to send to the
-     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html">
-     * Es Index API
-     * </a>
-     * @param index Name of the index to be deleted.
-     * @return Aws request.
-     */
-    private Request<Void> buildAwsEsDeleteRequest() {
-        Request<Void> request = new DefaultRequest<Void>("es");
-        String esEndpoint = System.getProperty("aws.es.endpoint");
-        if(esEndpoint == null || esEndpoint.isEmpty()) {
-            throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
-        }
-        if(esEndpoint.endsWith("/")) {
-            esEndpoint += this.indexName;
-        } else {
-            esEndpoint = esEndpoint + "/" + this.indexName;
-        }
-        request.setEndpoint(URI.create(esEndpoint));
-        request.setHttpMethod(HttpMethodName.DELETE);
         return request;
     }
 

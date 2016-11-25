@@ -24,18 +24,12 @@
  */
 package com.amihaiemil.charles.aws;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Request;
-import com.amazonaws.Response;
 import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.http.AmazonHttpClient;
-import com.amazonaws.http.ExecutionContext;
-import com.amazonaws.http.HttpResponseHandler;
 
 /**
- * A request made to AWS.
+ * A signed request made to AWS.
  * @param <T> Response type.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
@@ -44,66 +38,38 @@ import com.amazonaws.http.HttpResponseHandler;
  * @see <a href="https://blogs.aws.amazon.com/security/post/Tx3VP208IBVASUQ/How-to-Control-Access-to-Your-Amazon-Elasticsearch-Service-Domain">Aws blog post</a>
  *
  */
-public class SignedRequest<T> {
+public class SignedRequest<T> implements AwsHttpRequest<T> {
 
-    private Request<Void> request;
-    private HttpResponseHandler<T> respHandler;
-    private HttpResponseHandler<AmazonServiceException> errHandler;
+    /**
+     * Base request.
+     */
+    private AwsHttpRequest<T> base;
 
-    
     /**
      * Ctor.
-     * @param req Request made to AWS.
-     * @param respHandler Response handler.
-     * @param errHandler Error handler.
+     * @param req Request to sign.
      */
-    public SignedRequest(
-        Request<Void> req,
-        HttpResponseHandler<T> respHandler,
-        HttpResponseHandler<AmazonServiceException> errHandler
-    ) {
-        this(req, "es", respHandler, errHandler);
+    public SignedRequest(AwsHttpRequest<T> req) {
+        this.base = req;
     }
-    
-    /**
-     * Ctor.
-     * @param req Request made to AWS.
-     * @param serviceName The AWS service called.
-     * @param respHandler Response handler.
-     * @param errHandler Error handler.
-     */
-    public SignedRequest(
-        Request<Void> req,
-        String serviceName,
-        HttpResponseHandler<T> respHandler,
-        HttpResponseHandler<AmazonServiceException> errHandler
-    ) {
+
+    public T perform() {
         AWS4Signer signer = new AWS4Signer();
-        signer.setServiceName(serviceName);
         String region = System.getProperty("aws.es.region");
         if(region == null || region.isEmpty()) {
             throw new IllegalStateException("Mandatory sys property aws.es.region not specified!");
         }
         signer.setRegionName(region.trim());
-        signer.sign(req, new AwsCredentialsFromSystem());
-        
-        this.request = req;
-        this.respHandler = respHandler;
-        this.errHandler = errHandler;
+        signer.setServiceName(this.base.request().getServiceName());
+        signer.sign(this.base.request(), new AwsCredentialsFromSystem());
+        return this.base.perform();
     }
 
-    /**
-     * Send it.
-     * The Response is handled in the specified response handler.
-     */
-    public T sendRequest() {
-        Response<T> r = new AmazonHttpClient(
-            new ClientConfiguration()).execute(
-                this.request, new ExecutionContext(true), this.respHandler, this.errHandler
-            );
-        return r.getAwsResponse();
+    @Override
+    public Request<Void> request() {
+        return this.base.request();
     }
-
+    
     /**
      * AWS credentials (aws access key id and aws secret key from the system properties).
      */

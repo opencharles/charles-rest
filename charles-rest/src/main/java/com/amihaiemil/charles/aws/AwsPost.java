@@ -24,57 +24,50 @@
  */
 package com.amihaiemil.charles.aws;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.InputStream;
 
-import com.amihaiemil.charles.rest.model.EsQuery;
-import com.amihaiemil.charles.rest.model.SearchResultsPage;
+import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
+
 
 /**
- * Perform a search in the Amazon ElasticSerch service
+ * Http POST request sent to AWS.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AmazonEsSearch {
+public final class AwsPost<T> implements AwsHttpRequest<T> {
 
     /**
-     * ElasticSearch  query.
+     * Base request.
      */
-    private EsQuery query;
+    private AwsHttpRequest<T> base;
 
     /**
-     * Index to search into.
+     * Request content.
      */
-    private String indexName;
+    private InputStream content;
 
     /**
      * Ctor.
-     * @param qry
-     * @param idxName
+     * @param req Base AwsHttpRequest.
+     * @param content InputStream containing this request's content.
      */
-    public AmazonEsSearch(EsQuery qry, String idxName) {
-        this.query = qry;
-        this.indexName = idxName;
+    public AwsPost(AwsHttpRequest<T> req, InputStream content) {
+    	this.base = req;
+        this.content = content;
+	}
+
+    @Override
+    public T perform() {
+        this.base.request().setHttpMethod(HttpMethodName.POST);
+    	this.base.request().setContent(this.content);
+        return this.base.perform();
     }
 
-    public SearchResultsPage search() {
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put("Content-Type", "application/json");
-    	AwsHttpRequest<SearchResultsPage> search =
-    	    new SignedRequest<>(
-    	        new AwsHttpHeaders<>(
-    	            new AwsPost<>(
-    	                new EsHttpRequest<>(
-    	            	    this.indexName + "/_search",
-    	                    new SearchResponseHandler(), new SimpleAwsErrorHandler(false)
-    	                ),
-    	                new ByteArrayInputStream(this.query.toJson().toString().getBytes())
-    	            ), headers
-    	        )
-    	    );
-        return search.perform();
+    @Override
+    public Request<Void> request() {
+    	return this.base.request();
     }
 }

@@ -24,57 +24,25 @@
  */
 package com.amihaiemil.charles.aws;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.amihaiemil.charles.rest.model.EsQuery;
-import com.amihaiemil.charles.rest.model.SearchResultsPage;
+import com.amazonaws.Request;
 
 /**
- * Perform a search in the Amazon ElasticSerch service
+ * Http request sent to AWS.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AmazonEsSearch {
+public interface AwsHttpRequest<T> {
 
     /**
-     * ElasticSearch  query.
+     * Perform this request.
      */
-    private EsQuery query;
+	T perform();
 
-    /**
-     * Index to search into.
-     */
-    private String indexName;
-
-    /**
-     * Ctor.
-     * @param qry
-     * @param idxName
-     */
-    public AmazonEsSearch(EsQuery qry, String idxName) {
-        this.query = qry;
-        this.indexName = idxName;
-    }
-
-    public SearchResultsPage search() {
-    	Map<String, String> headers = new HashMap<String, String>();
-    	headers.put("Content-Type", "application/json");
-    	AwsHttpRequest<SearchResultsPage> search =
-    	    new SignedRequest<>(
-    	        new AwsHttpHeaders<>(
-    	            new AwsPost<>(
-    	                new EsHttpRequest<>(
-    	            	    this.indexName + "/_search",
-    	                    new SearchResponseHandler(), new SimpleAwsErrorHandler(false)
-    	                ),
-    	                new ByteArrayInputStream(this.query.toJson().toString().getBytes())
-    	            ), headers
-    	        )
-    	    );
-        return search.perform();
-    }
+	/**
+	 * Get the aws base request.
+	 * @return Request.
+	 */
+	Request<Void> request();
 }
