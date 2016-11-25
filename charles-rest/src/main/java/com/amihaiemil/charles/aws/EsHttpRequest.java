@@ -50,11 +50,6 @@ public final class EsHttpRequest<T> implements AwsHttpRequest<T> {
     private Request<Void> request;
 
     /**
-     * Rest path for elasticsearch.
-     */
-    private String esUri;
-
-    /**
      * Response handler.
      */
     private HttpResponseHandler<T> respHandler;
@@ -81,9 +76,9 @@ public final class EsHttpRequest<T> implements AwsHttpRequest<T> {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
         }
     	if(esEndpoint.endsWith("/")) {
-    		esEndpoint += this.esUri;
+    		esEndpoint += uri;
         } else {
-        	esEndpoint += "/" + this.esUri;
+        	esEndpoint += "/" + uri;
         }
         this.request.setEndpoint(URI.create(esEndpoint));
         

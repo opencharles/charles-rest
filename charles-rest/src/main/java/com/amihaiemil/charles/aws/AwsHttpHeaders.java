@@ -53,6 +53,7 @@ public final class AwsHttpHeaders<T> implements AwsHttpRequest<T> {
      */
     public AwsHttpHeaders(AwsHttpRequest<T> req, Map<String, String> headers) {
     	this.base = req;
+    	this.hdrs = headers;
 	}
 
     @Override
