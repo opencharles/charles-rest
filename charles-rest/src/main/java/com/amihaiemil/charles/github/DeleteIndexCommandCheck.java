@@ -28,9 +28,6 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
-import com.amihaiemil.charles.steps.Step;
-
 /**
  * Checks if a deleteindex command specifies the right repository.
  * A deledeintex command should have the format "@agent delete [reponame] index".

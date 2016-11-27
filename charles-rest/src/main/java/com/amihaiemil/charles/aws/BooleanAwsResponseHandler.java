@@ -22,8 +22,42 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package com.amihaiemil.charles.aws;
+
+import org.apache.http.HttpStatus;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.http.HttpResponse;
+import com.amazonaws.http.HttpResponseHandler;
 
 /**
- * Contains {@link Step}s that can be reused outside the Github integration context.
+ * An aws response handler that checks if the resource exists or not (status
+ * code should be either 404 or 200). If the status is neither 404 nor 200,
+ * {@link AmazonServiceException} is thrown.
+ * 
+ * @author Mihai Andronache (amihaiemil@gmail.com)
+ * @version $Id$
+ * @since 1.0.0
+ *
  */
-package com.amihaiemil.charles.steps;
+public class BooleanAwsResponseHandler implements
+        HttpResponseHandler<Boolean> {
+
+    @Override
+    public Boolean handle(HttpResponse response) {
+        int status = response.getStatusCode();
+        if (status != HttpStatus.SC_OK && status != HttpStatus.SC_NOT_FOUND) {
+            AmazonServiceException ase = new AmazonServiceException(
+                    "Unexpected status: " + status);
+            ase.setStatusCode(status);
+            throw ase;
+        }
+        return status == HttpStatus.SC_OK ? true : false;
+    }
+
+    @Override
+    public boolean needsConnectionLeftOpen() {
+        return false;
+    }
+
+}

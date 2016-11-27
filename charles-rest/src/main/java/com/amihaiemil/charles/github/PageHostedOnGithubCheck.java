@@ -27,8 +27,6 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 
 import org.slf4j.Logger;
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
-import com.amihaiemil.charles.steps.Step;
 
 /**
  * Checks that a given page is hosted on Github (has the right domain)

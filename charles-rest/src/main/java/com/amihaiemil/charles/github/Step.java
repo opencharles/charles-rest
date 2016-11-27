@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.github;
 
 import org.slf4j.Logger;
 

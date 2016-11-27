@@ -26,9 +26,9 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+
 import org.slf4j.Logger;
-import com.amihaiemil.charles.steps.IntermediaryStep;
-import com.amihaiemil.charles.steps.Step;
+
 import com.jcabi.github.Repo;
 
 /**

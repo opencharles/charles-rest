@@ -26,7 +26,6 @@ package com.amihaiemil.charles.aws;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +33,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.DefaultRequest;
-import com.amazonaws.Request;
-import com.amazonaws.http.HttpMethodName;
 import com.amazonaws.http.HttpResponse;
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.Repository;
@@ -73,16 +69,16 @@ public class AmazonEsRepository implements Repository {
             headers.put("Content-Type", "application/json");
             AwsHttpRequest<HttpResponse> index =
                 new SignedRequest<>(
-                	new AwsHttpHeaders<>(
+                    new AwsHttpHeaders<>(
                         new AwsPost<>(
-                	        new EsHttpRequest<>(
-                	            "_bulk",
-                	            new SimpleAwsResponseHandler(false),
-                	            new SimpleAwsErrorHandler(false)
-                	        ),
-                	        new ByteArrayInputStream(data.getBytes())
-                	    ), headers
-                	 )
+                            new EsHttpRequest<>(
+                                "_bulk",
+                                new SimpleAwsResponseHandler(false),
+                                new SimpleAwsErrorHandler(false)
+                            ),
+                            new ByteArrayInputStream(data.getBytes())
+                        ), headers
+                     )
                 );
                 index.perform();
         } catch (IOException e) {
@@ -92,49 +88,39 @@ public class AmazonEsRepository implements Repository {
     }
 
     /**
+     * Make a HEAD request and check if the elasticsearch
+     * index exists.
+     * @return True if the index exists, false otherwise.
+     */
+    public boolean indexExists() {
+        AwsHttpRequest<Boolean> head =
+            new SignedRequest<>(
+                new AwsHead<>(
+                    new EsHttpRequest<>(
+                        this.indexName,
+                        new BooleanAwsResponseHandler(),
+                        new SimpleAwsErrorHandler(false)
+                    )
+                )
+            );
+        return head.perform();
+    }
+    /**
      * Delete the elasticsearch index.
      * @param name Name of the index.
      */
     public void deleteIndex() {
-    	AwsHttpRequest<HttpResponse> deleteIndex =
+        AwsHttpRequest<HttpResponse> deleteIndex =
             new SignedRequest<>(
-        	    new AwsDelete<>(
-        	        new EsHttpRequest<>(
-        	            this.indexName,
-        	            new SimpleAwsResponseHandler(false),
-        	            new SimpleAwsErrorHandler(false)
-        	        )
-        	    )
-        	);
+                new AwsDelete<>(
+                    new EsHttpRequest<>(
+                        this.indexName,
+                        new SimpleAwsResponseHandler(false),
+                        new SimpleAwsErrorHandler(false)
+                    )
+                )
+           );
        deleteIndex.perform();
     }
-
-    /**
-     * Builds the POST request to send to the
-     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-bulk.html">
-     * Es Bulk API
-     * </a>
-     * @param data Json structure expected by the bulk api.
-     * @return Aws request.
-     */
-    private Request<Void> buildAwsEsIndexRequest(String data) {
-        Request<Void> request = new DefaultRequest<Void>("es");
-        Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-Type", "application/json");
-        request.setHeaders(headers);
-        request.setContent(new ByteArrayInputStream(data.getBytes()));
-        String esEndpoint = System.getProperty("aws.es.endpoint");
-        if(esEndpoint == null || esEndpoint.isEmpty()) {
-            throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
-        }
-        if(esEndpoint.endsWith("/")) {
-            esEndpoint += "_bulk";
-        } else {
-            esEndpoint += "/_bulk";
-        }
-        request.setEndpoint(URI.create(esEndpoint));
-        request.setHttpMethod(HttpMethodName.POST);
-        return request;
-    }
-
+    
 }

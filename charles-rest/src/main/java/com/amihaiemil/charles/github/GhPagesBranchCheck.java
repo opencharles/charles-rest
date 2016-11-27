@@ -29,9 +29,6 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
-import com.amihaiemil.charles.steps.Step;
-
 /**
  * Step where it is checked if a repo has the gh-pages branch or not.
  * @author Mihai Andronache (amihaiemil@gmail.com)

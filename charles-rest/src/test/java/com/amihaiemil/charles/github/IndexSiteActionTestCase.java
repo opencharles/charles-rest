@@ -37,8 +37,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.IndexStep;
-import com.amihaiemil.charles.steps.Step;
 import com.google.common.collect.Lists;
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;

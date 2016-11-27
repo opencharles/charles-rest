@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.github;
 
 
 import static org.junit.Assert.assertTrue;
@@ -36,6 +36,7 @@ import javax.mail.internet.MimeMessage;
 import org.junit.After;
 import org.junit.Test;
 
+import com.amihaiemil.charles.github.SendEmail;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.jcabi.email.Envelope;

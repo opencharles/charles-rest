@@ -22,53 +22,60 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.github;
+
+import java.io.IOException;
+
+import org.slf4j.Logger;
+
+import com.amihaiemil.charles.aws.AmazonEsRepository;
 
 /**
- * A step which validates a condition and splits the path
- * in two. One in case the condition is met, one in case the
- * condition is not met.
+ * Step that checks if an index exists in elasticsearch
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version $Id$
+ * @version  $Id$
  * @since 1.0.0
  *
  */
-public abstract class PreconditionCheckStep implements Step {
-    /**
-     * Next step if the check is true.
-     */
-    private Step onTrue;
+public class IndexExistsCheck  extends PreconditionCheckStep {
 
     /**
-     * Next step if the check is false.
+     * Index name.
      */
-    private Step onFalse;
+    private String index;
 
     /**
-     * Ctor
-     * @param onTrue Step that should be performed next if the check is true.
-     * @param onFalse Step that should be performed next if the check is false.
+     * Action's logger.
      */
-    public PreconditionCheckStep(Step onTrue, Step onFalse) {
-        this.onTrue = onTrue;
-        this.onFalse = onFalse;
+    private Logger logger;
+
+    /**
+     * Constructor.
+     * @param index Index name
+     * @param logger The action's logger
+     * @param onTrue The step to perform on successful check.
+     * @param onFalse the step to perform in unsuccessful check.
+     */
+    public IndexExistsCheck(
+        String index, Logger logger,
+        Step onTrue, Step onFalse
+    ) {
+        super(onTrue, onFalse);
+        this.index = index;
+        this.logger = logger;
     }
 
-    public abstract void perform();
-    
-    /**
-     * Step to perform on successful check
-     * @return Step
-     */
-    public Step onTrue() {
-        return this.onTrue;
+    @Override
+    public void perform() {
+        this.logger.info("Checking if index " + this.index + " exists...");
+        boolean exists = new AmazonEsRepository(this.index).indexExists();
+        if(exists) {
+            this.logger.info("Index exists - Ok!");
+            this.onTrue().perform();
+        } else {
+            this.logger.warn("Index " + this.index + " does not exist! It may have been deleted already.");
+            this.onFalse().perform();
+        }
     }
-    
-    /**
-     * Step to perform on failed check.
-     * @return Step
-     */
-    public Step onFalse() {
-        return this.onFalse;
-    }
+
 }

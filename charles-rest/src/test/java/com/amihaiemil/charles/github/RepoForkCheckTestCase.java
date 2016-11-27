@@ -27,10 +27,10 @@ package com.amihaiemil.charles.github;
 
 import javax.json.Json;
 import javax.json.JsonObject;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-import com.amihaiemil.charles.steps.Step;
 
 /**
  * Unit tests for {@link RepoForkCheck}

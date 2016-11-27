@@ -29,12 +29,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
 import org.slf4j.Logger;
-import com.amihaiemil.charles.steps.DeleteIndex;
-import com.amihaiemil.charles.steps.IndexPage;
-import com.amihaiemil.charles.steps.IndexSite;
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
-import com.amihaiemil.charles.steps.Step;
 
 /**
  * The "brain" of the Github agent. Can understand commands and 
@@ -158,7 +154,7 @@ public class Brain {
     }
 
     /**
-     * Builds and returns the IndexPage step.
+     * Steps for indexpage step.
      * @param com Command
      * @param lang Language
      * @return Step
@@ -190,7 +186,7 @@ public class Brain {
     }
 
     /**
-     * Builds and returns the IndexSite step.
+     * Steps for indexsite action
      * @param com Command
      * @param lang Language
      * @return Step
@@ -222,22 +218,15 @@ public class Brain {
     }
     
     /**
-     * Builds and returns the DeleteIndex step.
+     * Steps for deleteindex action.
      * @param com Command
      * @param lang Language
      * @return Step
-     * @throws IOException 
+     * @throws IOException
      */
     public Step deleteIndexStep(Command com, Language lang) throws IOException {
-        return new SendReply(
-            new TextReply(
-                com,
-                String.format(
-                    lang.response("index.start.comment"),
-                    com.authorLogin(),
-                    this.logsLoc.address()
-                )
-            ), this.logger,
+        return new IndexExistsCheck(
+            com.indexName(), this.logger,
             new DeleteIndex(
                 com, logger,
                 this.finalCommentStep(
@@ -246,7 +235,19 @@ public class Brain {
                     com.repo().name(),
                     this.logsLoc.address()
                 )
-            )
+            ),
+            new SendReply (
+                new TextReply(
+                    com,
+                    String.format(
+                        lang.response("index.missing.comment"),
+                        com.authorLogin(),
+                        this.logsLoc.address()
+                    )
+                ), 
+                this.logger,
+                new Step.FinalStep(this.logger)
+           )
         );
     }
 

@@ -27,10 +27,8 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 
 import javax.json.JsonObject;
-import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
-import com.amihaiemil.charles.steps.Step;
+import org.slf4j.Logger;
 
 /**
  * Step where it's checked if the repo is under an organization in which the

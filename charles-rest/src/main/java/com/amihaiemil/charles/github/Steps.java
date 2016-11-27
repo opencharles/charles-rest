@@ -25,7 +25,6 @@
 
 package com.amihaiemil.charles.github;
 
-import com.amihaiemil.charles.steps.Step;
 
 /**
  * Steps taken to fulfill a command.

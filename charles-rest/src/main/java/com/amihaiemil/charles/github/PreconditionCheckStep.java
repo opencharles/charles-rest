@@ -22,38 +22,53 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.github;
 
 /**
- * A step that is not final in the chain of steps
- * performed by an action; it has a next step. 
+ * A step which validates a condition and splits the path
+ * in two. One in case the condition is met, one in case the
+ * condition is not met.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public abstract class IntermediaryStep implements Step {
+public abstract class PreconditionCheckStep implements Step {
+    /**
+     * Next step if the check is true.
+     */
+    private Step onTrue;
 
     /**
-     * Next step in line.
+     * Next step if the check is false.
      */
-    private Step nextStep;
+    private Step onFalse;
 
     /**
-     * Ctor.
-     * @param next The next step to perform.
+     * Ctor
+     * @param onTrue Step that should be performed next if the check is true.
+     * @param onFalse Step that should be performed next if the check is false.
      */
-    public IntermediaryStep(Step next) {
-        this.nextStep = next;
+    public PreconditionCheckStep(Step onTrue, Step onFalse) {
+        this.onTrue = onTrue;
+        this.onFalse = onFalse;
     }
 
     public abstract void perform();
-
+    
     /**
-     * Get the next step to perform.
-     * @return Step.
+     * Step to perform on successful check
+     * @return Step
      */
-    public Step next() {
-        return this.nextStep;
+    public Step onTrue() {
+        return this.onTrue;
+    }
+    
+    /**
+     * Step to perform on failed check.
+     * @return Step
+     */
+    public Step onFalse() {
+        return this.onFalse;
     }
 }

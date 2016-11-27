@@ -22,14 +22,13 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.github.Command;
 
 /**
  * Step that deletes the index from AWS es.

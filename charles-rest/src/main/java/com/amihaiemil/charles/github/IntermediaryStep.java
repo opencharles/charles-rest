@@ -22,46 +22,38 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
-
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriver;
-import org.openqa.selenium.phantomjs.PhantomJSDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
+package com.amihaiemil.charles.github;
 
 /**
- * Base class for index steps.
+ * A step that is not final in the chain of steps
+ * performed by an action; it has a next step. 
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public abstract class IndexStep extends IntermediaryStep{
+public abstract class IntermediaryStep implements Step {
+
+    /**
+     * Next step in line.
+     */
+    private Step nextStep;
 
     /**
      * Ctor.
-     * @param next Next step to take.
+     * @param next The next step to perform.
      */
-    public IndexStep(Step next) {
-        super(next);
+    public IntermediaryStep(Step next) {
+        this.nextStep = next;
     }
+
+    public abstract void perform();
 
     /**
-     * Use phantomjs to fetch the web content.
-     * @return
+     * Get the next step to perform.
+     * @return Step.
      */
-    protected WebDriver phantomJsDriver() {
-        String phantomJsExecPath =  System.getProperty("phantomjsExec");
-        if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
-            phantomJsExecPath = "/usr/local/bin/phantomjs";
-        }
-        DesiredCapabilities dc = new DesiredCapabilities();
-        dc.setJavascriptEnabled(true);
-        dc.setCapability(
-            PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
-            phantomJsExecPath
-        );
-        return new PhantomJSDriver(dc);
+    public Step next() {
+        return this.nextStep;
     }
-
 }

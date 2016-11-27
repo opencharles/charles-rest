@@ -22,64 +22,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import javax.json.JsonObject;
-
-import org.slf4j.Logger;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
+import org.openqa.selenium.remote.DesiredCapabilities;
 
 /**
- * Step where the repo's name is checked.
+ * Base class for index steps.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class RepoNameCheck extends PreconditionCheckStep {
+public abstract class IndexStep extends IntermediaryStep{
 
     /**
-     * Json repository as returned by the Github API.
+     * Ctor.
+     * @param next Next step to take.
      */
-    private JsonObject repo;
-
-    /**
-     * Action logger.
-     */
-    private Logger logger;
-
-
-    /**
-     * Constructor.
-     * @param repo Json repo.
-     * @param message For the commander in case this check fails.
-     * @param onTrue Step that should be performed next if the check is true.
-     * @param onFalse Step that should be performed next if the check is false.
-     */
-    public RepoNameCheck(JsonObject repo, Logger logger, Step onTrue, Step onFalse) {
-        super(onTrue, onFalse);
-        this.repo = repo;
-        this.logger = logger;
+    public IndexStep(Step next) {
+        super(next);
     }
 
     /**
-     * Check that the repo's name respects the format owner.github.io
-     * @return true if the check is successful, false otherwise
+     * Use phantomjs to fetch the web content.
+     * @return
      */
-    @Override
-    public void perform() {
-        logger.info("Checking repository name... ");
-        String  owner = this.repo.getJsonObject("owner").getString("login");
-        String expectedName = owner + ".github.io";
-        logger.info("Expected name: " + expectedName);
-        String name = this.repo.getString("name");
-        logger.info("Actual name: " + name);
-        if(expectedName.equals(name)) {
-            logger.info("Repository name matchers - Ok");
-            this.onTrue().perform();
-        } else {
-            logger.warn("Repository name does not match the expected name");
-            this.onFalse().perform();
+    protected WebDriver phantomJsDriver() {
+        String phantomJsExecPath =  System.getProperty("phantomjsExec");
+        if(phantomJsExecPath == null || "".equals(phantomJsExecPath)) {
+            phantomJsExecPath = "/usr/local/bin/phantomjs";
         }
+        DesiredCapabilities dc = new DesiredCapabilities();
+        dc.setJavascriptEnabled(true);
+        dc.setCapability(
+            PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
+            phantomJsExecPath
+        );
+        return new PhantomJSDriver(dc);
     }
+
 }

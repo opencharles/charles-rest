@@ -28,10 +28,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Arrays;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
+
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -137,7 +138,7 @@ public class BrainTestCase {
         Mockito.when(english.response("denied.name.comment")).thenReturn("bad repo!!");
         Mockito.when(english.response("denied.deleteindex.comment")).thenReturn("delete denied!");
         Mockito.when(english.response("deleteindex.finished.comment")).thenReturn("index deleted!");
-
+        Mockito.when(english.response("index.missing.comment")).thenReturn("index missing!");
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("deleteindex", english));
         

@@ -33,8 +33,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.Step;
-
 /**
  * Unit tests for {@link OrganizationAdminCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)

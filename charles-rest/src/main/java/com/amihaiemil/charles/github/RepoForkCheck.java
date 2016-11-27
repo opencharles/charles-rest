@@ -28,9 +28,6 @@ import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.PreconditionCheckStep;
-import com.amihaiemil.charles.steps.Step;
-
 /**
  * Check for repository fork.
  * @author Mihai Andronache (amihaiemil@gmail.com)

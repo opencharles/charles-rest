@@ -22,33 +22,27 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.steps;
+
+package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.LiveWebPage;
-import com.amihaiemil.charles.SnapshotWebPage;
-import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.GraphCrawl;
+import com.amihaiemil.charles.IgnoredPatterns;
+import com.amihaiemil.charles.WebCrawl;
 import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.github.Command;
 
 /**
- * Step to index a single page.
+ * Step to index a website.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexPage extends IndexStep {
-
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
+public class IndexSite extends IndexStep {
 
     /**
      * Command.
@@ -56,12 +50,17 @@ public class IndexPage extends IndexStep {
     private Command com;
 
     /**
-     * Ctor.
-     * @param com Given command.
-     * @param logger Logger.
-     * @param next Next step to take.
+     * Action's logger.
      */
-    public IndexPage(Command com, Logger logger, Step next) {
+    private Logger logger;
+
+    /**
+     * Constructor.
+     * @param com Command
+     * @param logger The action's logger
+     * @param next The next step to take
+     */
+    public IndexSite(Command com, Logger logger, Step next) {
         super(next);
         this.com = com;
         this.logger = logger;
@@ -69,31 +68,36 @@ public class IndexPage extends IndexStep {
 
     @Override
     public void perform() {
-	    String link = this.getLink();
-	    logger.info("Indexing page " + link + " ...");
-    	try {
-    	    logger.info("Crawling the page...");
-            WebPage snapshot = new SnapshotWebPage(
-                new LiveWebPage(this.phantomJsDriver(), link)
-            );
-    	    logger.info("Page crawled. Sending to aws...");
-            new AmazonEsRepository(this.com.indexName()).export(Arrays.asList(snapshot));
-    	    logger.info("Page successfully sent to aws!");
-        } catch (DataExportException | IOException | RuntimeException e) {
-            logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException("Exception while indexing the page" + link, e);
+        try {
+        	logger.info("Starting to index the whole site...");
+            this.graphCrawl().crawl();
+        	logger.info("Indexing finished successfully!");
+        } catch (
+            DataExportException |
+            IOException |
+            RuntimeException e 
+        ) {
+            logger.error("Exception while indexing the website!", e);
+            throw new IllegalStateException("Exception while indexing the website", e);
         }
         this.next().perform();
     }
 
-    /**
-     * Get the page's link from the command's text which should be in markdown format, with a
-     * link like [this](http://link.com/here/the/ling) .
-     * @return String link.
-     */
-    private String getLink() {
-    	String body = this.com.json().getString("body");
-        return body.substring(body.indexOf('('),  body.indexOf(')'));
+    public WebCrawl graphCrawl() throws IOException {
+        String repoName = this.com.repo().name();
+        String siteIndexUrl;
+        if(com.repo().hasGhPagesBranch()) {
+            siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
+        } else {
+            siteIndexUrl = "http://" + repoName;
+        }
+        logger.info("Graph-crawling, starting from " + siteIndexUrl
+        + " .The website will be crawled as a graph, going in-depth from the index page.");
+        WebCrawl siteCrawl = new GraphCrawl(
+            siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
+            new AmazonEsRepository(this.com.indexName()), 20
+        );
+        return siteCrawl;
     }
 
 }

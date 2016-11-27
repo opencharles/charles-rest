@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.steps.Step;
 import com.jcabi.github.Github;
 import com.jcabi.github.Repo;
 import com.jcabi.github.Repos.RepoCreate;
