@@ -24,48 +24,56 @@
  */
 package com.amihaiemil.charles.aws;
 
-import com.amazonaws.DefaultRequest;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
 
 /**
- * Http request sent to AWS.
+ * Unit tests for {@link AwsPost}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public interface AwsHttpRequest<T> {
-
+public class AwsPostTestCase {
+    
     /**
-     * Perform this request.
+     * AwsPost can fetch the original {@link Request}
      */
-    T perform();
-
+    @Test
+    public void fetchesOriginalRequest() {
+        AwsPost<String> awsp = new AwsPost<>(
+            new AwsHttpRequest.FaceAwsHttpRequest(),
+            new ByteArrayInputStream("fake content".getBytes())
+        );
+        assertTrue(awsp.request() != null);
+        assertTrue(awsp.request().getServiceName().equals("fake"));
+    }
+    
     /**
-     * Get the aws base request.
-     * @return Request.
+     * AwsPost can perform the original {@link AwsHttpRequest}
+     * @throws IOException If something goes wrong while reading
+     *  the request's content.
      */
-    Request<Void> request();
+    @Test
+    public void performsRequest() throws IOException {
+        String jsonContent = "{\"testContent\":\"fake\"}";
+        AwsPost<String> awsp = new AwsPost<>(
+            new AwsHttpRequest.FaceAwsHttpRequest(),
+            new ByteArrayInputStream(jsonContent.getBytes())
+        );
+        assertTrue(awsp.perform().equals("performed fake request"));
+        assertTrue(awsp.request().getHttpMethod().equals(HttpMethodName.POST));
 
-    /**
-     * Fake AwsHttpRequest for unit testing.
-     * @author Mihai Andronache (amihaiemil@gmail.com)
-     * @version $Id$
-     * @since 1.0.0
-     */
-    class FaceAwsHttpRequest implements AwsHttpRequest<String>{
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(awsp.request().getContent(), writer, "UTF-8");
+        String content = writer.toString();
 
-        private Request<Void> fakeRq = new DefaultRequest<>("fake");
-
-        @Override
-        public String perform() {
-            return "performed fake request";
-        }
-
-        @Override
-        public Request<Void> request() {
-            return this.fakeRq;
-        }
-
+        assertTrue(content.equals(jsonContent));
     }
 }

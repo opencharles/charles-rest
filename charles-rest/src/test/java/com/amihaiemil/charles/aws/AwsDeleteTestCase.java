@@ -24,48 +24,42 @@
  */
 package com.amihaiemil.charles.aws;
 
-import com.amazonaws.DefaultRequest;
+
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
 
 /**
- * Http request sent to AWS.
+ * Unit tests for {@link AwsDelete}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public interface AwsHttpRequest<T> {
-
-    /**
-     * Perform this request.
-     */
-    T perform();
-
-    /**
-     * Get the aws base request.
-     * @return Request.
-     */
-    Request<Void> request();
-
-    /**
-     * Fake AwsHttpRequest for unit testing.
-     * @author Mihai Andronache (amihaiemil@gmail.com)
-     * @version $Id$
-     * @since 1.0.0
-     */
-    class FaceAwsHttpRequest implements AwsHttpRequest<String>{
-
-        private Request<Void> fakeRq = new DefaultRequest<>("fake");
-
-        @Override
-        public String perform() {
-            return "performed fake request";
-        }
-
-        @Override
-        public Request<Void> request() {
-            return this.fakeRq;
-        }
-
+public class AwsDeleteTestCase {
+    
+	/**
+	 * AwsDelete can fetch the original {@link Request}
+	 */
+	@Test
+	public void fetchesOriginalRequest() {
+        AwsDelete<String> awsd = new AwsDelete<>(
+            new AwsHttpRequest.FaceAwsHttpRequest()
+        );
+        assertTrue(awsd.request() != null);
+        assertTrue(awsd.request().getServiceName().equals("fake"));
+    }
+	
+	/**
+	 * AwsDelete can perform the original {@link AwsHttpRequest}
+	 */
+	@Test
+	public void performsRequest() {
+        AwsDelete<String> awsd = new AwsDelete<>(
+            new AwsHttpRequest.FaceAwsHttpRequest()
+        );
+        assertTrue(awsd.perform().equals("performed fake request"));
+        assertTrue(awsd.request().getHttpMethod().equals(HttpMethodName.DELETE));
     }
 }

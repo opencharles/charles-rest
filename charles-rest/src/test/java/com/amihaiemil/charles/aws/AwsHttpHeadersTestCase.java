@@ -24,48 +24,55 @@
  */
 package com.amihaiemil.charles.aws;
 
-import com.amazonaws.DefaultRequest;
+import static org.junit.Assert.assertTrue;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.Test;
 import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
 
 /**
- * Http request sent to AWS.
+ * Unit tests for {@link AwsHttpHeaders}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public interface AwsHttpRequest<T> {
-
+public class AwsHttpHeadersTestCase {
+    
     /**
-     * Perform this request.
+     * AwsHttpHeaders can fetch the original {@link Request}
      */
-    T perform();
-
+    @Test
+    public void fetchesOriginalRequest() {
+    	AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
+            new AwsHttpRequest.FaceAwsHttpRequest(),
+            new HashMap<String, String>()
+        );
+        assertTrue(awsh.request() != null);
+        assertTrue(awsh.request().getServiceName().equals("fake"));
+    }
+    
     /**
-     * Get the aws base request.
-     * @return Request.
+     * AwsHttpHeaders can perform the original {@link AwsHttpRequest}
+     * @throws IOException If something goes wrong while reading
+     *  the request's content.
      */
-    Request<Void> request();
-
-    /**
-     * Fake AwsHttpRequest for unit testing.
-     * @author Mihai Andronache (amihaiemil@gmail.com)
-     * @version $Id$
-     * @since 1.0.0
-     */
-    class FaceAwsHttpRequest implements AwsHttpRequest<String>{
-
-        private Request<Void> fakeRq = new DefaultRequest<>("fake");
-
-        @Override
-        public String perform() {
-            return "performed fake request";
-        }
-
-        @Override
-        public Request<Void> request() {
-            return this.fakeRq;
-        }
+    @Test
+    public void performsRequest() throws IOException {
+    	Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-type", "json");
+        headers.put("HeaderName", "HeaderValue");
+        AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
+            new AwsHttpRequest.FaceAwsHttpRequest(), headers
+        );
+        assertTrue(awsh.perform().equals("performed fake request"));
+        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.POST));
+        Map<String, String> retreived = awsh.request().getHeaders();
+        assertTrue(retreived.size() == 2);
+        assertTrue(retreived.get("Content-type").equals("json"));
+        assertTrue(retreived.get("HeaderName").equals("HeaderValue"));
 
     }
 }

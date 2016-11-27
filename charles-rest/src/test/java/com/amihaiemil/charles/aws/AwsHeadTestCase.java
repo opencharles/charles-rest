@@ -24,48 +24,42 @@
  */
 package com.amihaiemil.charles.aws;
 
-import com.amazonaws.DefaultRequest;
+
+import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 import com.amazonaws.Request;
+import com.amazonaws.http.HttpMethodName;
 
 /**
- * Http request sent to AWS.
+ * Unit tests for {@link AwsHead}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public interface AwsHttpRequest<T> {
-
-    /**
-     * Perform this request.
-     */
-    T perform();
-
-    /**
-     * Get the aws base request.
-     * @return Request.
-     */
-    Request<Void> request();
-
-    /**
-     * Fake AwsHttpRequest for unit testing.
-     * @author Mihai Andronache (amihaiemil@gmail.com)
-     * @version $Id$
-     * @since 1.0.0
-     */
-    class FaceAwsHttpRequest implements AwsHttpRequest<String>{
-
-        private Request<Void> fakeRq = new DefaultRequest<>("fake");
-
-        @Override
-        public String perform() {
-            return "performed fake request";
-        }
-
-        @Override
-        public Request<Void> request() {
-            return this.fakeRq;
-        }
-
+public class AwsHeadTestCase {
+    
+	/**
+	 * AwsHead can fetch the original {@link Request}
+	 */
+	@Test
+	public void fetchesOriginalRequest() {
+		AwsHead<String> awsh = new AwsHead<>(
+            new AwsHttpRequest.FaceAwsHttpRequest()
+        );
+        assertTrue(awsh.request() != null);
+        assertTrue(awsh.request().getServiceName().equals("fake"));
+    }
+	
+	/**
+	 * AwsHead can perform the original {@link AwsHttpRequest}
+	 */
+	@Test
+	public void performsRequest() {
+		AwsHead<String> awsh = new AwsHead<>(
+            new AwsHttpRequest.FaceAwsHttpRequest()
+        );
+        assertTrue(awsh.perform().equals("performed fake request"));
+        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.HEAD));
     }
 }
