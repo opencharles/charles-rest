@@ -4,7 +4,4 @@ jdk:
   - openjdk7
 script:
   - set -e
-  - cd charles-github-notifications-ejb
-  - mvn clean install
-  - cd ../charles-rest
   - mvn clean install jacoco:report coveralls:report

@@ -4,9 +4,6 @@ env:
   MAVEN_OPTS: "-XX:MaxPermSize=256m -Xmx1g"
 merge:
   script: |-
-    cd charles-github-notifications-ejb
-    mvn clean install
-    cd ../charles-rest
     mvn clean install
 deploy:
   script:
