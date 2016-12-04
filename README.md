@@ -20,22 +20,22 @@ Check out the [website](http://charles.amihaiemil.com) for more details on how t
 
 ## If you wish to install it on your own infrastructure:
 
-The .war should work fine on any Java EE web server. It is not bound by any server-specific property file or other things like that.
-Once deployed, it exposes the endpoint POST /api/notifications which accepts a JsonArray of format:
+The ``.war`` should work fine on any Java EE web server. It is not bound by any server-specific property file or other things like that.
+Once deployed, it exposes the endpoint ``POST /api/notifications`` which accepts a ``JsonArray`` of format:
 
 ```
 [
     ...,
     {
-        "repoFullName":"repo/nameHere",
+        "repoFullName":"owner/repoNameHere",
         "issueNumber":123
     },
     ...
 ]
 ```
-As it is clear, a pipeline between Github Notifications API and this endpoint is needed. You can setup one of your own (respecting the
+As it is clear, a **pipeline** between [Github Notifications API](https://developer.github.com/v3/activity/notifications/#list-your-notifications) and this endpoint is needed. You can setup one of your own (respecting the
 above mentioned interface) or use
-[this](https://github.com/opencharles/mention-notifications-ejb) project.
+[this](https://github.com/opencharles/mention-notifications-ejb) ``ejb .jar``.
 
 
 You will need to set the following system properties. **Pay a lot of attention while configuring these, since everything relies on them**.
