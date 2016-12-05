@@ -2,7 +2,7 @@
 # charles-rest
 [![Build Status](https://travis-ci.org/opencharles/charles-github-ejb.svg?branch=master)](https://travis-ci.org/opencharles/charles-github-ejb)
 ![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
-<a href='https://coveralls.io/github/opencharles/charles-github-ejb?branch=master'><img src='https://coveralls.io/repos/github/opencharles/charles-github-ejb/badge.svg?branch=master' alt='Coverage Status' /></a>
+<a href='https://coveralls.io/github/opencharles/charles-rest?branch=master'><img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' /></a>
 
 #What it is: 
 
