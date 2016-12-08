@@ -55,13 +55,8 @@ public class DeleteIndexCommandCheckTestCase {
         Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
 
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onTrue).perform();
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
-
         DeleteIndexCommandCheck dc = new DeleteIndexCommandCheck(
-            com, Mockito.mock(Logger.class), onTrue, onFalse
+            com, Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
         );
         dc.perform();
     }
@@ -82,13 +77,8 @@ public class DeleteIndexCommandCheckTestCase {
         Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
 
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onFalse).perform();
-
         DeleteIndexCommandCheck dc = new DeleteIndexCommandCheck(
-            com, Mockito.mock(Logger.class), onTrue, onFalse
+            com, Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
         );
         dc.perform();
     }

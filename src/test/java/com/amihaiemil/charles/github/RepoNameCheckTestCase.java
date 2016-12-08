@@ -53,38 +53,24 @@ public class RepoNameCheckTestCase {
     @Test
     public void repoNameMatches() throws Exception {
 
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onTrue).perform();
-        
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
-
         RepoNameCheck rnc = new RepoNameCheck(
             this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
             Mockito.mock(Logger.class),
-            onTrue,
-            onFalse
+            new Step.Fake(true), new Step.Fake(false)
         );
         rnc.perform();
     }
-    
+
     /**
      * RepoNameCheck can tell when the repo's name is not in the right format.
      * @throws Exception If something goes wrong.
      */
     @Test
     public void repoNameDoesntMatch() throws Exception {
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-        
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onFalse).perform();
-
         RepoNameCheck rnc = new RepoNameCheck(
             this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
             Mockito.mock(Logger.class),
-            onTrue,
-            onFalse
+            new Step.Fake(false), new Step.Fake(true)
         );
         rnc.perform();
     }
@@ -96,7 +82,7 @@ public class RepoNameCheckTestCase {
      * @return Command mock.
      * @throws IOException If something goes wrong.
      */
-    public Command mockCommand(String owner, String name) throws IOException {
+    private Command mockCommand(String owner, String name) throws IOException {
         JsonObject repoJson = Json.createObjectBuilder()
             .add("name", name)
             .add(

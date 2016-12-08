@@ -42,7 +42,7 @@ public interface Step {
      * Final step of the action. Just logs a line
      * saying the action was successful.
      */
-    public static class FinalStep implements Step {
+    public final static class FinalStep implements Step {
 
         /**
          * Action's logger.
@@ -74,6 +74,33 @@ public interface Step {
 
         public void perform() {
             this.logger.info(message);
+        }
+    }
+
+    /**
+     * Fake for unit tests.
+     */
+    public final static class Fake implements Step {
+
+        /**
+         * Should this step's perform pass or throw an exception?
+         */
+        private boolean pass;
+
+        /**
+         * Ctor.
+         * @param pass Should this step pass or throw an exception?
+         */
+        public Fake(boolean pass) {
+            this.pass = pass;
+        }
+
+        @Override
+        public void perform() {
+            if(!pass) {
+                throw new IllegalStateException("Step should not have been executed!");
+            }
+            
         }
     }
 }

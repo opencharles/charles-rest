@@ -29,14 +29,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.amazonaws.http.HttpResponse;
 import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.Repository;
 import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.github.AwsEsRepository;
 
 /**
  * AWS ElasticSearch repository that sends the webpages to the
@@ -45,7 +43,7 @@ import com.amihaiemil.charles.WebPage;
  * @version $Id$
  * @since 1.0.0
  */
-public class AmazonEsRepository implements Repository {
+public final class AmazonEsRepository implements AwsEsRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
 
     /**
@@ -92,6 +90,7 @@ public class AmazonEsRepository implements Repository {
      * index exists.
      * @return True if the index exists, false otherwise.
      */
+    @Override
     public boolean indexExists() {
         AwsHttpRequest<Boolean> head =
             new SignedRequest<>(
@@ -109,6 +108,7 @@ public class AmazonEsRepository implements Repository {
      * Delete the elasticsearch index.
      * @param name Name of the index.
      */
+    @Override
     public void deleteIndex() {
         AwsHttpRequest<HttpResponse> deleteIndex =
             new SignedRequest<>(

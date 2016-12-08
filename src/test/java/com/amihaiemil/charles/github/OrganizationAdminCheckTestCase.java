@@ -52,13 +52,9 @@ public class OrganizationAdminCheckTestCase {
         JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "admin").build();
         Command com  = this.mockCommand("someone", "orgName");
         Mockito.when(com.authorOrgMembership()).thenReturn(membership);
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onTrue).perform();
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
 
         OrganizationAdminCheck oac = new OrganizationAdminCheck(
-            com, Mockito.mock(Logger.class), onTrue, onFalse
+            com, Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
         );
         oac.perform();
     }
@@ -94,7 +90,7 @@ public class OrganizationAdminCheckTestCase {
         Mockito.doNothing().when(onFalse).perform();
 
         OrganizationAdminCheck oac = new OrganizationAdminCheck(
-            com, Mockito.mock(Logger.class), onTrue, onFalse
+            com, Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
         );
         oac.perform();
     }

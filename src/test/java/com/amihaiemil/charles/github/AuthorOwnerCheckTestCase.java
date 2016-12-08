@@ -50,13 +50,8 @@ public class AuthorOwnerCheckTestCase {
     @Test
     public void authorIsRepoOwner() throws Exception {
         Command com = this.mockCommand("amihaiemil", "amihaiemil", 0);        
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onTrue).perform();
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
-
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-            com, Mockito.mock(Logger.class), onTrue, onFalse
+            com, Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
         );
         aoc.perform();
     }
@@ -68,12 +63,8 @@ public class AuthorOwnerCheckTestCase {
     @Test
     public void authorIsNotRepoOwner() throws Exception {
         Command com  = this.mockCommand("someone", "amihaiemil", 0);
-        Step onTrue = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
-        Step onFalse = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onFalse).perform();
         AuthorOwnerCheck aoc = new AuthorOwnerCheck(
-            com, Mockito.mock(Logger.class), onTrue, onFalse
+            com, Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
         );
         aoc.perform();
     }

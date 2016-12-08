@@ -24,70 +24,53 @@
  */
 package com.amihaiemil.charles.github;
 
-import org.slf4j.Logger;
-
-import com.amihaiemil.charles.aws.AmazonEsRepository;
+import java.util.List;
+import com.amihaiemil.charles.DataExportException;
+import com.amihaiemil.charles.Repository;
+import com.amihaiemil.charles.WebPage;
 
 /**
- * Step that checks if an index exists in elasticsearch
+ * Our repository is an ElasticSearch Index in the AWS cloud. Extend the Repository interface
+ * to add our methods too.
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version  $Id$
- * @since 1.0.0
- *
+ * @version $Id$
  */
-public final class IndexExistsCheck  extends PreconditionCheckStep {
+public interface AwsEsRepository extends Repository {
+    boolean indexExists();
+    void deleteIndex();
 
     /**
-     * AWS elasticsearch repository.
+     * Fake for unit tests.
+     *
      */
-    private AwsEsRepository repo;
+    final static class Fake implements AwsEsRepository {
 
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
+        /**
+         * Does this index exist?
+         */
+        private boolean indexExists;
 
-    /**
-     * Constructor.
-     * @param index Index name
-     * @param logger The action's logger
-     * @param onTrue The step to perform on successful check.
-     * @param onFalse the step to perform in unsuccessful check.
-     */
-    public IndexExistsCheck(
-        String index, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
-        this(new AmazonEsRepository(index), logger, onTrue, onFalse);
-    }
-
-    /**
-     * Constructor.
-     * @param repo AWS repository to look into.
-     * @param logger The action's logger
-     * @param onTrue The step to perform on successful check.
-     * @param onFalse The step to perform in unsuccessful check.
-     */
-    public IndexExistsCheck(
-        AwsEsRepository repo, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
-        super(onTrue, onFalse);
-        this.repo = repo;
-        this.logger = logger;
-    }
-
-    @Override
-    public void perform() {
-        this.logger.info("Checking if required index exists...");
-        boolean exists = this.repo.indexExists();
-        if(exists) {
-            this.logger.info("Index exists - Ok!");
-            this.onTrue().perform();
-        } else {
-            this.logger.warn("The required index does not exist! It may have been deleted already.");
-            this.onFalse().perform();
+        /**
+         * Ctor.
+         * @param exists True if the index should exist, false otherwise.
+         */
+        public Fake(boolean exists) {
+            this.indexExists = exists;
         }
-    }
+        @Override
+        public void export(List<WebPage> pages) throws DataExportException {
+            //Fake export; nothing to do.
+        }
 
+        @Override
+        public boolean indexExists() {
+            return this.indexExists;
+        }
+
+        @Override
+        public void deleteIndex() {
+            //Fale delete; nothing to do.
+        }
+        
+    }
 }

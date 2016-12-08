@@ -75,7 +75,7 @@ public class Brain {
         this.logsLoc = logsLoc;
         this.languages = langs;
     }
-    
+
     /**
      * Understand a command.
      * @param com Given command.
@@ -113,8 +113,17 @@ public class Brain {
              case "deleteindex":
                  steps = new DeleteIndexCommandCheck(
                      com, this.logger,
-                     this.withCommonChecks(
-                         com, category.language(), this.deleteIndexStep(com, category.language())
+                     new IndexExistsCheck(
+                         com.indexName(), this.logger,
+                         this.withCommonChecks(
+                             com, category.language(),
+                             this.deleteIndexStep(com, category.language())
+                         ), 
+                         this.finalCommentStep(
+                             com, category.language(), "index.missing.comment",
+                             com.authorLogin(),
+                             this.logsLoc.address()
+                         )
                      ),
                      this.finalCommentStep(
                          com, category.language(), "denied.deleteindex.comment",
@@ -225,9 +234,7 @@ public class Brain {
      * @throws IOException
      */
     public Step deleteIndexStep(Command com, Language lang) throws IOException {
-        return new IndexExistsCheck(
-            com.indexName(), this.logger,
-            new DeleteIndex(
+        return  new DeleteIndex(
                 com, logger,
                 this.finalCommentStep(
                     com, lang, "deleteindex.finished.comment",
@@ -235,20 +242,7 @@ public class Brain {
                     com.repo().name(),
                     this.logsLoc.address()
                 )
-            ),
-            new SendReply (
-                new TextReply(
-                    com,
-                    String.format(
-                        lang.response("index.missing.comment"),
-                        com.authorLogin(),
-                        this.logsLoc.address()
-                    )
-                ), 
-                this.logger,
-                new Step.FinalStep(this.logger)
-           )
-        );
+            );
     }
 
     /**
