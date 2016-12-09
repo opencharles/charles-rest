@@ -39,8 +39,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.amihaiemil.charles.aws.AmazonEsSearch;
-import com.amihaiemil.charles.rest.model.EsQuery;
+import com.amihaiemil.charles.aws.AmazonEsSuggest;
+import com.amihaiemil.charles.rest.model.SearchQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
+import com.amihaiemil.charles.rest.model.SuggestQuery;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,11 +55,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Path("/")
 public class CharlesResource {
 
-	/**
-	 * Http request.
-	 */
-	@Context
-	private HttpServletRequest servletRequest;
+    /**
+     * Http request.
+     */
+    @Context
+    private HttpServletRequest servletRequest;
 
     /**
      * Endpoint for checking if the service is online.
@@ -74,6 +76,10 @@ public class CharlesResource {
      * @return Http response.
      * @param user Github username.
      * @param repo Github reponame.
+     * @param kw Keywords.
+     * @param ctg Category.
+     * @param index Start displaying results form index.
+     * @param size Max number of results on the page.
      * @throws JsonProcessingException 
      */
     @GET
@@ -87,9 +93,9 @@ public class CharlesResource {
         @QueryParam("index") @DefaultValue("0") String index,
         @QueryParam("size") @DefaultValue("10") String size
     ) throws JsonProcessingException {
-    	int idx = Integer.valueOf(index);
-    	int nr = Integer.valueOf(size);
-        EsQuery query = new EsQuery(keywords, category, Integer.valueOf(index), Integer.valueOf(size));
+        int idx = Integer.valueOf(index);
+        int nr = Integer.valueOf(size);
+        SearchQuery query = new SearchQuery(keywords, category, Integer.valueOf(index), Integer.valueOf(size));
         String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
         AmazonEsSearch aws = new AmazonEsSearch(query, indexName);
         SearchResultsPage results = aws.search();
@@ -97,7 +103,7 @@ public class CharlesResource {
         String queryStringFormat = "?kw=%s&ctg=%s&index=%s&size=%s";
         String requestUrl = servletRequest.getRequestURL().toString();
         if(idx == 0) {
-        	results.setPreviousPage("-");
+            results.setPreviousPage("-");
         } else {
             String queryString = String.format(queryStringFormat, keywords, category, idx - nr, nr);
             results.setPreviousPage(requestUrl + queryString);
@@ -105,7 +111,7 @@ public class CharlesResource {
         if(idx + nr >= results.getTotalHits()) {
             results.setNextPage("-");
         } else {
-        	String queryString = String.format(queryStringFormat, keywords, category, idx + nr, nr);
+            String queryString = String.format(queryStringFormat, keywords, category, idx + nr, nr);
             results.setNextPage(requestUrl + queryString);
         }
         results.setPageNr(idx/nr + 1);
@@ -113,12 +119,36 @@ public class CharlesResource {
         int start = 0;
         List<String> pagesLinks = new ArrayList<String>();
         while(start < nr) {
-        	pagesLinks.add(
-        	    requestUrl + String.format(queryStringFormat, keywords, category, start, nr)
-        	);
+            pagesLinks.add(
+                requestUrl + String.format(queryStringFormat, keywords, category, start, nr)
+            );
             start += nr;
         }
         
         return Response.ok().entity(new ObjectMapper().writeValueAsString(results)).build();
+    }
+
+    /**
+     * Perform a an autocomplete search. Suggest keywords based on
+     * user input.
+     * @return Http response.
+     * @param user Github username.
+     * @param repo Github reponame.
+     * @param kw User input (keywords).
+     */
+    @GET
+    @Path("/a/{username}/{reponame}")
+    public Response autocomplete(
+        @PathParam("username") String user,
+        @PathParam("reponame") String repo,
+        @QueryParam("kw") @DefaultValue("") String keyword
+    ) {
+        String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
+        AmazonEsSuggest aws = new AmazonEsSuggest(new SuggestQuery(keyword), indexName);
+        String[] suggestions = aws.suggest();
+        if(suggestions.length == 0) {
+            return Response.noContent().build();
+        }
+        return Response.ok().entity(suggestions).build();
     }
 }

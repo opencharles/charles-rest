@@ -22,56 +22,46 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
+package com.amihaiemil.charles.rest.model;
 
-import java.io.IOException;
-
-import org.slf4j.Logger;
-
-import com.amihaiemil.charles.aws.AmazonEsRepository;
+import javax.json.Json;
+import javax.json.JsonObject;
 
 /**
- * Step that deletes the index from AWS es.
+ * A query meant for the /_suggest endpoint of ElasticSearch
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version  $Id$
+ * @version $Id$
  * @since 1.0.0
  *
  */
-public class DeleteIndex  extends IntermediaryStep {
+public final class SuggestQuery implements EsQuery {
 
     /**
-     * Command.
+     * Input for wich we query suggestions.
      */
-    private Command com;
+    private String input;
 
     /**
-     * Action's logger.
+     * Default ctor.
      */
-    private Logger logger;
-
-    /**
-     * Constructor.
-     * @param com Command
-     * @param logger The action's logger
-     * @param next The next step to take
-     */
-    public DeleteIndex(Command com, Logger logger, Step next) {
-        super(next);
-        this.com = com;
-        this.logger = logger;
+    public SuggestQuery() {
+        this("");
     }
-    
+
+    /**
+     * Ctor.
+     * @param content
+     * @param category
+     * @param index
+     * @param nr
+     */
+    public SuggestQuery(String input) {
+        this.input = input;
+    }
+
     @Override
-    public void perform() {
-        this.logger.info("Starting index deletion...");
-        try {
-            new AmazonEsRepository(com.indexName()).delete();
-        } catch (IOException e) {
-            logger.error("Exception while deleting the index!", e);
-            throw new IllegalStateException("Exception while deleting the index!" , e);
-        }
-        this.logger.info("Index successfully deleted!");
-        this.next().perform();
+    public JsonObject toJson() {
+        return Json.createObjectBuilder().build();
     }
 
 }

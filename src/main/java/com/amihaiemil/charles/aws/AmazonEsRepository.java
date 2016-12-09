@@ -91,7 +91,7 @@ public final class AmazonEsRepository implements AwsEsRepository {
      * @return True if the index exists, false otherwise.
      */
     @Override
-    public boolean indexExists() {
+    public boolean exists() {
         AwsHttpRequest<Boolean> head =
             new SignedRequest<>(
                 new AwsHead<>(
@@ -109,7 +109,7 @@ public final class AmazonEsRepository implements AwsEsRepository {
      * @param name Name of the index.
      */
     @Override
-    public void deleteIndex() {
+    public void delete() {
         AwsHttpRequest<HttpResponse> deleteIndex =
             new SignedRequest<>(
                 new AwsDelete<>(

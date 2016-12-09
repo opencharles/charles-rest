@@ -80,7 +80,7 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
     @Override
     public void perform() {
         this.logger.info("Checking if required index exists...");
-        boolean exists = this.repo.indexExists();
+        boolean exists = this.repo.exists();
         if(exists) {
             this.logger.info("Index exists - Ok!");
             this.onTrue().perform();

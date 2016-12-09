@@ -195,12 +195,12 @@ public class AmazonEsRepositoryTestCase {
         
         int port = this.port();
         System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
-        
+
         MkContainer server = new MkGrizzlyContainer()
            .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
            .start(port);
         try {
-        	new AmazonEsRepository("index.to.be.deleted").deleteIndex();
+        	new AmazonEsRepository("index.to.be.deleted").delete();
             MkQuery request = server.take();
             assertTrue("/es/index.to.be.deleted/".equals(request.uri().toString()));
             assertTrue("DELETE".equals(request.method()));

@@ -27,8 +27,7 @@ package com.amihaiemil.charles.aws;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.amihaiemil.charles.rest.model.EsQuery;
+import com.amihaiemil.charles.rest.model.SearchQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
@@ -38,12 +37,12 @@ import com.amihaiemil.charles.rest.model.SearchResultsPage;
  * @since 1.0.0
  *
  */
-public class AmazonEsSearch {
+public final class AmazonEsSearch {
 
     /**
      * ElasticSearch  query.
      */
-    private EsQuery query;
+    private SearchQuery query;
 
     /**
      * Index to search into.
@@ -55,11 +54,15 @@ public class AmazonEsSearch {
      * @param qry
      * @param idxName
      */
-    public AmazonEsSearch(EsQuery qry, String idxName) {
+    public AmazonEsSearch(SearchQuery qry, String idxName) {
         this.query = qry;
         this.indexName = idxName;
     }
 
+    /**
+     * Perform a search query.
+     * @return
+     */
     public SearchResultsPage search() {
     	Map<String, String> headers = new HashMap<String, String>();
     	headers.put("Content-Type", "application/json");

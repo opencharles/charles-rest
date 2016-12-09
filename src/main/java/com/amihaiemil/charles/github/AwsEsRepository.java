@@ -36,8 +36,8 @@ import com.amihaiemil.charles.WebPage;
  * @version $Id$
  */
 public interface AwsEsRepository extends Repository {
-    boolean indexExists();
-    void deleteIndex();
+    boolean exists();
+    void delete();
 
     /**
      * Fake for unit tests.
@@ -63,12 +63,12 @@ public interface AwsEsRepository extends Repository {
         }
 
         @Override
-        public boolean indexExists() {
+        public boolean exists() {
             return this.indexExists;
         }
 
         @Override
-        public void deleteIndex() {
+        public void delete() {
             //Fale delete; nothing to do.
         }
         

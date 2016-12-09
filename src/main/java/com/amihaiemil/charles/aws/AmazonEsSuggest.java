@@ -22,56 +22,62 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
+package com.amihaiemil.charles.aws;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.slf4j.Logger;
-
-import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.rest.model.SuggestQuery;
 
 /**
- * Step that deletes the index from AWS es.
+ * Perform a suggest request in the Amazon ElasticSerch service
  * @author Mihai Andronache (amihaiemil@gmail.com)
- * @version  $Id$
+ * @version $Id$
  * @since 1.0.0
  *
  */
-public class DeleteIndex  extends IntermediaryStep {
+public final class AmazonEsSuggest {
 
     /**
-     * Command.
+     * ElasticSearch suggest query.
      */
-    private Command com;
+    private SuggestQuery query;
 
     /**
-     * Action's logger.
+     * Index to search into.
      */
-    private Logger logger;
+    private String indexName;
 
     /**
-     * Constructor.
-     * @param com Command
-     * @param logger The action's logger
-     * @param next The next step to take
+     * Ctor.
+     * @param qry
+     * @param idxName
      */
-    public DeleteIndex(Command com, Logger logger, Step next) {
-        super(next);
-        this.com = com;
-        this.logger = logger;
-    }
-    
-    @Override
-    public void perform() {
-        this.logger.info("Starting index deletion...");
-        try {
-            new AmazonEsRepository(com.indexName()).delete();
-        } catch (IOException e) {
-            logger.error("Exception while deleting the index!", e);
-            throw new IllegalStateException("Exception while deleting the index!" , e);
-        }
-        this.logger.info("Index successfully deleted!");
-        this.next().perform();
+    public AmazonEsSuggest(SuggestQuery qry, String idxName) {
+        this.query = qry;
+        this.indexName = idxName;
     }
 
+    /**
+     * Perform a search query.
+     * @return
+     */
+    public String[] suggest() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json");
+        AwsHttpRequest<String[]> request =
+            new SignedRequest<>(
+                new AwsHttpHeaders<>(
+                    new AwsPost<>(
+                        new EsHttpRequest<>(
+                            this.indexName + "/_suggest",
+                            new SuggestionsResponseHandler(), new SimpleAwsErrorHandler(false)
+                        ),
+                        new ByteArrayInputStream(this.query.toJson().toString().getBytes())
+                    ), headers
+                )
+            );
+        return request.perform();
+    }
 }

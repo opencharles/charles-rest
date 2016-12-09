@@ -36,7 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Test;
 
-import com.amihaiemil.charles.rest.model.EsQuery;
+import com.amihaiemil.charles.rest.model.SearchQuery;
 import com.amihaiemil.charles.rest.model.SearchResult;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.jcabi.http.mock.MkAnswer;
@@ -68,7 +68,7 @@ public class AmazonEsSearchTestCase {
 
         try {
             AmazonEsSearch es = new AmazonEsSearch(
-                new EsQuery("test", "page", 0, 10),
+                new SearchQuery("test", "page", 0, 10),
                 "amihaiemilxtestrepo"
             );
             SearchResultsPage srp = es.search();
@@ -103,7 +103,7 @@ public class AmazonEsSearchTestCase {
 
         try {
             AmazonEsSearch es = new AmazonEsSearch(
-                new EsQuery("test", "page", 0, 10),
+                new SearchQuery("test", "page", 0, 10),
                 "amihaiemilxtestrepo"
             );
             SearchResultsPage srp = es.search();
@@ -125,12 +125,7 @@ public class AmazonEsSearchTestCase {
      */
     @Test
     public void missingEsEndpoint() {
-        EsQuery query = new EsQuery();
-        query.setCategory("");
-        query.setContent("");
-        query.setIndex(0);
-        query.setNr(10);
-        AmazonEsSearch es = new AmazonEsSearch(query, "user/idx");
+        AmazonEsSearch es = new AmazonEsSearch(new SearchQuery(), "user/idx");
         try {
             es.search();
             fail("ISE was expected!");
