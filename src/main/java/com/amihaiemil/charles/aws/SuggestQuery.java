@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.rest.model;
+package com.amihaiemil.charles.aws;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -32,7 +32,6 @@ import javax.json.JsonObject;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- *
  */
 public final class SuggestQuery implements EsQuery {
 
@@ -59,9 +58,55 @@ public final class SuggestQuery implements EsQuery {
         this.input = input;
     }
 
+    /**
+     * Turn this to a json query for the /_suggest endpoint of elasticsearch.<br>
+     * Example of query <br><br>
+     * <pre>
+     *   {
+     *     "text" : "the amsterdma meetpu",
+     *     "contentSuggestion" : {
+     *       "term" : {
+     *         "field" : "textContent"
+     *       }
+     *     },
+     *     "titleSuggestion" : {
+     *       "term" : {
+     *         "field" : "title"
+     *       }
+     *     }
+     *   }
+     * </pre>
+     * @see
+     * <a
+     *   href="https://www.elastic.co/guide/en/elasticsearch/reference/2.3/search-suggesters.html"
+     * >
+     *   Elasticsearch Suggesters
+     * </a>
+     */
     @Override
     public JsonObject toJson() {
-        return Json.createObjectBuilder().build();
+        JsonObject query =
+            Json.createObjectBuilder()
+                .add("text", this.input)
+                .add(
+                    "contentSuggestion",
+                    Json.createObjectBuilder().add(
+                        "term",
+                        Json.createObjectBuilder()
+                            .add("field", "textContent")
+                            .build()
+                    ).build()
+                )
+                .add(
+                    "titleSuggestion",
+                    Json.createObjectBuilder().add(
+                        "term",
+                        Json.createObjectBuilder()
+                            .add("field", "title")
+                            .build()
+                    ).build()
+            ).build();
+        return query;
     }
 
 }

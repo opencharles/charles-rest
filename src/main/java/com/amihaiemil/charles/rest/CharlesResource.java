@@ -40,9 +40,9 @@ import javax.ws.rs.core.Response;
 
 import com.amihaiemil.charles.aws.AmazonEsSearch;
 import com.amihaiemil.charles.aws.AmazonEsSuggest;
-import com.amihaiemil.charles.rest.model.SearchQuery;
+import com.amihaiemil.charles.aws.SearchQuery;
+import com.amihaiemil.charles.aws.SuggestQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
-import com.amihaiemil.charles.rest.model.SuggestQuery;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -36,7 +36,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Test;
 
-import com.amihaiemil.charles.rest.model.SearchQuery;
 import com.amihaiemil.charles.rest.model.SearchResult;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.jcabi.http.mock.MkAnswer;
@@ -49,13 +48,14 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  * @version $Id$
  * @since 1.0.0
  */
-public class AmazonEsSearchTestCase {
+@SuppressWarnings("resource")
+public final class AmazonEsSearchTestCase {
 
     /**
      * AmazonEsSearch performs ok when there are search results.
      * @throws IOException If something goes wrong.
      */
-    @Test
+	@Test
     public void searchWithResults() throws IOException {
         int port = this.port();
         MkContainer awsEs = new MkGrizzlyContainer().next(

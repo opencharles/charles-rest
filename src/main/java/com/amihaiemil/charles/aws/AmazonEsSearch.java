@@ -27,7 +27,7 @@ package com.amihaiemil.charles.aws;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
-import com.amihaiemil.charles.rest.model.SearchQuery;
+
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**

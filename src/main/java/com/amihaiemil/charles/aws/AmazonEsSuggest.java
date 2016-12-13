@@ -28,8 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.amihaiemil.charles.rest.model.SuggestQuery;
-
 /**
  * Perform a suggest request in the Amazon ElasticSerch service
  * @author Mihai Andronache (amihaiemil@gmail.com)

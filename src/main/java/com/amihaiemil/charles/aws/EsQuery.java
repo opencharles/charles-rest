@@ -1,4 +1,4 @@
-package com.amihaiemil.charles.rest.model;
+package com.amihaiemil.charles.aws;
 
 import javax.json.JsonObject;
 
@@ -9,7 +9,7 @@ import javax.json.JsonObject;
  * @since 1.0.0
  */
 public interface EsQuery {
-    
+
     /**
      * All queries made to elasticsearch are in JSON format.
      * @return Json object representing the query.

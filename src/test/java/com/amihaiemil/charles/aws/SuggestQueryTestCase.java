@@ -24,41 +24,40 @@
  */
 package com.amihaiemil.charles.aws;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.http.HttpResponse;
-import com.amazonaws.http.HttpResponseHandler;
+import static org.junit.Assert.assertTrue;
+import javax.json.JsonObject;
+import org.junit.Test;
 
 /**
- * For handling responses from the /_suggest elasticsearch endpoint.
+ * Unit tests for {@link SuggestQuery}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- *
  */
-public final class SuggestionsResponseHandler implements HttpResponseHandler<String[]> {
-
-    @Override
-    public String[] handle(HttpResponse response) throws Exception {
-        int status = response.getStatusCode();
-        if(status < 200 || status >= 300) {
-            AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
-            ase.setStatusCode(status);
-            throw ase;
-        }
-        return this.extractOptions(response);
-    }
-
-    @Override
-    public boolean needsConnectionLeftOpen() {
-        return false;
-    }
+public final class SuggestQueryTestCase {
 
     /**
-     * Pull out the suggestions from the response json.
-     * @param response Json response form ElasticSearch
-     * @return String array.
+     * SuggestQuery can build the proper json query for elasticsearch.
      */
-    private String[] extractOptions(HttpResponse response) {
-        return new String[]{"universal","unique","university"};
+    @Test
+    public void buildsJsonQuery() {
+        final String text = "softw";
+        final JsonObject query =  new SuggestQuery(text).toJson();
+        assertTrue(query.keySet().size() == 3);
+        assertTrue(
+            query.getString("text").equals(text)
+        );
+        assertTrue(
+            query.getJsonObject("contentSuggestion")
+                .getJsonObject("term")
+                .getString("field")
+                .equals("textContent")
+        );
+        assertTrue(
+            query.getJsonObject("titleSuggestion")
+                .getJsonObject("term")
+                .getString("field")
+                .equals("title")
+        );
     }
 }

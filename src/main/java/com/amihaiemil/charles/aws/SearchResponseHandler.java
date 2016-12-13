@@ -45,7 +45,7 @@ import com.amihaiemil.charles.rest.model.SearchResultsPage;
  * @since 1.0.0
  *
  */
-public class SearchResponseHandler implements HttpResponseHandler<SearchResultsPage>{
+public final class SearchResponseHandler implements HttpResponseHandler<SearchResultsPage>{
 
     @Override
     public SearchResultsPage handle(HttpResponse response) {

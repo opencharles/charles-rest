@@ -50,8 +50,8 @@ import com.jcabi.http.mock.MkQuery;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- *
  */
+@SuppressWarnings("resource")
 public class AmazonEsRepositoryTestCase {
 
     /**
