@@ -42,6 +42,9 @@ import com.amihaiemil.charles.github.AwsEsRepository;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
+ * @todo #150:30m/DEV We might have to implement mappings and indexing of suggestions.
+ *  Waiting for a clarification here:
+ *  https://discuss.elastic.co/t/simple-way-to-implement-autocomplete-functionality/68979
  */
 public final class AmazonEsRepository implements AwsEsRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    

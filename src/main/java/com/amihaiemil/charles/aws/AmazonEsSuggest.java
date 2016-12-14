@@ -59,7 +59,9 @@ public final class AmazonEsSuggest {
 
     /**
      * Perform a search query.
-     * @return
+     * @return Array of strings.
+     * @todo #150:30m/DEV When the autocomplete topic is clear and the handler
+     *  implemented write unit tests for AmazonEsSuggest.
      */
     public String[] suggest() {
         Map<String, String> headers = new HashMap<String, String>();

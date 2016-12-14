@@ -33,7 +33,6 @@ import com.amazonaws.http.HttpResponseHandler;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- *
  */
 public final class SuggestionsResponseHandler implements HttpResponseHandler<String[]> {
 
@@ -57,6 +56,8 @@ public final class SuggestionsResponseHandler implements HttpResponseHandler<Str
      * Pull out the suggestions from the response json.
      * @param response Json response form ElasticSearch
      * @return String array.
+     * @todo #150:30m/DEV Once the autocomplete topic is clear and we have the
+     *  final response layout, implement and unit test this method.
      */
     private String[] extractOptions(HttpResponse response) {
         return new String[]{"universal","unique","university"};

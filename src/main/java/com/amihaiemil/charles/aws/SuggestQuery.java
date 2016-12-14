@@ -82,6 +82,10 @@ public final class SuggestQuery implements EsQuery {
      * >
      *   Elasticsearch Suggesters
      * </a>
+     * @todo #150:30m/DEV This implementation might have to be changed. Currently it's using
+     *  bare Suggester which does word correction rather than actual autocomplete. Waiting for
+     *  an answer here:
+     *  https://discuss.elastic.co/t/simple-way-to-implement-autocomplete-functionality/68979
      */
     @Override
     public JsonObject toJson() {
