@@ -75,7 +75,7 @@ public class PageHostedOnGithubCheck extends PreconditionCheckStep {
     public void perform() {
         try {
             CommandedRepo repo = com.repo();
-            String owner = repo.json().getJsonObject("owner").getString("login");
+            String owner = repo.ownerLogin();
             String expDomain;
             logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.name());
             logger.info("Page link: " + this.link);

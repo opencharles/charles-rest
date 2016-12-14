@@ -441,8 +441,8 @@ public class IndexPageaActionTestCase {
   
   
         Command com = Mockito.mock(Command.class);
-         Mockito.when(com.json()).thenReturn(c.json());
-         Mockito.when(com.issue()).thenReturn(agentIssue);
+        Mockito.when(com.json()).thenReturn(c.json());
+        Mockito.when(com.issue()).thenReturn(agentIssue);
         Mockito.when(com.authorLogin()).thenReturn(commander);
 
          //we build our own json repo since the one returned by MkGithub doesn't map 1:1 with the expected and so the tests fail.
@@ -453,8 +453,9 @@ public class IndexPageaActionTestCase {
              .build();
              
          
-         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.json()).thenReturn(repo);
+        Mockito.when(crepo.ownerLogin()).thenReturn(owner);
         Mockito.when(crepo.name()).thenReturn(repoName);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(ghpages);
 

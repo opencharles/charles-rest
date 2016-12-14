@@ -139,15 +139,10 @@ public class PageHostedOnGithubCheckTestCase {
     private Command mockCommand(
         String owner, String name, boolean hasGhPages, String link
     ) throws IOException {
-        JsonObject repoJson = Json.createObjectBuilder()
-            .add(
-                "owner",
-                Json.createObjectBuilder().add("login", owner).build()
-            ).build();
         
         Command com = Mockito.mock(Command.class);
         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
-        Mockito.when(crepo.json()).thenReturn(repoJson);
+        Mockito.when(crepo.ownerLogin()).thenReturn(owner);
         Mockito.when(crepo.name()).thenReturn(name);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);
         
