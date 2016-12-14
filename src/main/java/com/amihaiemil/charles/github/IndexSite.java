@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.GraphCrawl;
 import com.amihaiemil.charles.IgnoredPatterns;
+import com.amihaiemil.charles.RetriableCrawl;
 import com.amihaiemil.charles.WebCrawl;
 import com.amihaiemil.charles.aws.AmazonEsRepository;
 
@@ -83,6 +84,11 @@ public class IndexSite extends IndexStep {
         this.next().perform();
     }
 
+    /**
+     * Builds a retriable graph crawl.
+     * @return RetriableWebCrawl
+     * @throws IOException
+     */
     public WebCrawl graphCrawl() throws IOException {
         String repoName = this.com.repo().name();
         String siteIndexUrl;
@@ -97,7 +103,7 @@ public class IndexSite extends IndexStep {
             siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
             new AmazonEsRepository(this.com.indexName()), 20
         );
-        return siteCrawl;
+        return new RetriableCrawl(siteCrawl);
     }
 
 }
