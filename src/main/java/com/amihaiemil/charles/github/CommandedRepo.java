@@ -26,8 +26,11 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+
 import javax.json.JsonObject;
+
 import org.hamcrest.Matchers;
+
 import com.jcabi.github.Repo;
 import com.jcabi.http.Request;
 import com.jcabi.http.request.ApacheRequest;
@@ -57,6 +60,11 @@ public class CommandedRepo {
      * or not.
      */
     private Boolean ghPagesBranch;
+
+    /**
+     * Cached flag to tell if this repo is owned by an org or not.
+     */
+    private Boolean ownedByOrg;
 
     /**
      * Ctor.
@@ -109,12 +117,38 @@ public class CommandedRepo {
 
     /**
      * Get the repo's name.
-     * @return String name.
+     * @return String.
      * @throws IOException If an error occurs
      *  while reading the repo from the Github API.
      */
     public String name() throws IOException{
         return this.json().getString("name");
+    }
+
+    /**
+     * Get the repo owner's login.
+     * @return String.
+     * @throws IOException If an error occurs
+     *  while reading the repo from the Github API.
+     */
+    public String ownerLogin() throws IOException {
+        return this.json().getJsonObject("owner").getString("login");
+    }
+
+    /**
+     * Is this repo owned by an organization?
+     * @return True or false
+     * @throws IOException If there's an error when communicating with the
+     *  Github API.
+     */
+    public boolean isOwnedByOrganization() throws IOException {
+        if (this.ownedByOrg == null) {
+            this.ownedByOrg = "organization"
+                .equalsIgnoreCase(
+                    this.json().getJsonObject("owner").getString("type")
+                );
+        }
+        return this.ownedByOrg;
     }
 
 }

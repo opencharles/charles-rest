@@ -59,6 +59,7 @@ import com.jcabi.http.request.ApacheRequest;
  * @since 1.0.0
  * 
  */
+@SuppressWarnings("resource")
 public class LastCommentTestCase {
     /**
      * The latest comment in the issue mentions the agent.

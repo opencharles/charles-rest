@@ -45,9 +45,9 @@ import com.jcabi.http.response.JsonResponse;
 public abstract class Command {
 
     /**
-     * Cached Github repo.
+     * Github repo.
      */
-    private CommandedRepo crepo;
+    private CommandedRepo repo;
 
     /**
      * Cached agentLogin.
@@ -121,7 +121,7 @@ public abstract class Command {
      * @return String Github username.
      */
     public String authorLogin() {
-        return comment.getJsonObject("user").getString("login");
+        return this.comment.getJsonObject("user").getString("login");
     }
 
     /**
@@ -151,14 +151,10 @@ public abstract class Command {
      * @throws IOException
      */
     public JsonObject authorOrgMembership() throws IOException {
-        JsonObject repo = this.repo().json();
-        JsonObject owner = repo.getJsonObject("owner");
-        String type = owner.getString("type");
-        String ownerLogin = owner.getString("login");
-        if("organization".equalsIgnoreCase(type)) {
+        if(this.repo().isOwnedByOrganization()) {
             Request req = this.issue.repo().github().entry()
                 .uri().path("/orgs/")
-                .path(ownerLogin)
+                .path(this.repo.ownerLogin())
                 .path("/memberships/")
                 .path(this.authorLogin()).back();
             return req.fetch().as(JsonResponse.class).json().readObject();
@@ -174,10 +170,10 @@ public abstract class Command {
      * @return
      */
     public CommandedRepo repo() throws IOException {
-        if(this.crepo == null) {
-            this.crepo = new CommandedRepo(this.issue().repo());
+        if(this.repo == null) {
+            this.repo = new CommandedRepo(this.issue.repo());;
         }
-        return this.crepo;
+        return this.repo;
     }
 
     /**
@@ -187,10 +183,7 @@ public abstract class Command {
      *  the repo json form the Github API.
      */
     public String indexName() throws IOException {
-    	JsonObject repo = this.repo().json();
-    	String owner = repo.getJsonObject("owner").getString("login");
-        String name = repo.getString("name");
-        return owner.toLowerCase() + "x" + name.toLowerCase();
+        return this.repo().ownerLogin().toLowerCase() + "x" + this.repo().name().toLowerCase();
     }
 
 }

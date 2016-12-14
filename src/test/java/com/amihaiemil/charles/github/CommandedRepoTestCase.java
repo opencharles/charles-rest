@@ -52,6 +52,7 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  * @since 1.0.0
  *
  */
+@SuppressWarnings("resource")
 public class CommandedRepoTestCase {
     
     /**
@@ -61,7 +62,7 @@ public class CommandedRepoTestCase {
     @Test
     public void repoHasGhPagesBranch() throws Exception {
         int port = this.port();
-        MkContainer server = new MkGrizzlyContainer()
+		MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_OK))
             .start(port);
         try {
