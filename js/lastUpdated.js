@@ -1,5 +1,5 @@
 $(document).ready(function() {
-	getLastUpdateTimestamp("https://api.github.com/repos/opencharles/charles-github-ejb/commits?sha=gh-pages");
+	getLastUpdateTimestamp("https://api.github.com/repos/opencharles/charles-rest/commits?sha=gh-pages");
 });
 function getLastUpdateTimestamp(githubCommitsUri) {
     $.support.cors = true;

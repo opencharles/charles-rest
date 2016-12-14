@@ -1,7 +1,7 @@
 $(document).ready(function() {
 	getContributors(
 	    [
-		    "https://api.github.com/repos/opencharles/charles-github-ejb/contributors",
+		    "https://api.github.com/repos/opencharles/charles-rest/contributors",
 			"https://api.github.com/repos/opencharles/charles/contributors"
 		], contributorsCallback
 	);
