@@ -92,8 +92,8 @@ public class IndexSite extends IndexStep {
     public WebCrawl graphCrawl() throws IOException {
         String repoName = this.com.repo().name();
         String siteIndexUrl;
-        if(com.repo().hasGhPagesBranch()) {
-            siteIndexUrl = "http://" + com.authorLogin() + ".github.io/" + repoName;
+        if(this.com.repo().hasGhPagesBranch()) {
+            siteIndexUrl = "http://" + this.com.repo().ownerLogin() + ".github.io/" + repoName;
         } else {
             siteIndexUrl = "http://" + repoName;
         }
