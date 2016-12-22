@@ -5,7 +5,7 @@
 ![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
 <a href='https://coveralls.io/github/opencharles/charles-rest?branch=master'><img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' /></a>
 
-#What it is: 
+##What it is: 
 
 A webapp ``.war`` - codebase behind [Charles Michaels](https://www.github.com/charlesmike) chatbot. It receives notifications read by this [ejb checker](https://github.com/opencharles/mention-notifications-ejb) and takes
 actions according to each of them. Any Github account can be used with this project; it's all dictated by the Github auth token used.
@@ -13,7 +13,7 @@ actions according to each of them. Any Github account can be used with this proj
 Say ``@charlesmike hi there`` in a Github issue comment and see what happens. 
 Check out the [website](http://charles.amihaiemil.com) for more details on how to use this service.
 
-### Contribute
+## Contribute
 
 I am currently looking for contributors. I believe, if there are no contributors, a project is not known and thus won't fly for too long (if it ever takes off)
 
