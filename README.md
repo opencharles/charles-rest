@@ -17,7 +17,7 @@ Check out the [website](http://charles.amihaiemil.com) for more details on how t
 
 I am currently looking for contributors. I believe, if there are no contributors, a project is not known and thus won't fly for too long (if it ever takes off)
 
-1. Open an issue regarding an improvement you thought of, or a bug you noticed.
+1. Open an issue regarding an improvement you thought of, or a bug you noticed, or asked to be assigned to an existing one.
 2. If the issue is confirmed, fork the repository, do the changes on a sepparate branch and make a Pull Request.
 3. After review and acceptance, the PR is merged and closed.
 4. You are automatically listed as a contributor on the project's site
