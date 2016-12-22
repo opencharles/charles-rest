@@ -13,6 +13,22 @@ actions according to each of them. Any Github account can be used with this proj
 Say ``@charlesmike hi there`` in a Github issue comment and see what happens. 
 Check out the [website](http://charles.amihaiemil.com) for more details on how to use this service.
 
+### Contribute
+
+I am currently looking for contributors. I believe, if there are no contributors, a project is not known and thus won't fly for too long (if it ever takes off)
+
+1. Open an issue regarding an improvement you thought of, or a bug you noticed.
+2. If the issue is confirmed, fork the repository, do the changes on a sepparate branch and make a Pull Request.
+3. After review and acceptance, the PR is merged and closed.
+4. You are automatically listed as a contributor on the project's site
+
+Make sure the maven build
+
+``$mvn clean install``
+
+passes before making a PR. 
+
+
 ## Key technologies
 - [phantom js](http://phantomjs.org/) and [Selenium] (http://www.seleniumhq.org/projects/webdriver/) with [GhostDriver](https://github.com/detro/ghostdriver)
 - [Elastic search] (https://www.elastic.co/)
