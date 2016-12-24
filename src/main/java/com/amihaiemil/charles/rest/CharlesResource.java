@@ -28,10 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -39,9 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.amihaiemil.charles.aws.AmazonEsSearch;
-import com.amihaiemil.charles.aws.AmazonEsSuggest;
 import com.amihaiemil.charles.aws.SearchQuery;
-import com.amihaiemil.charles.aws.SuggestQuery;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -128,27 +126,4 @@ public class CharlesResource {
         return Response.ok().entity(new ObjectMapper().writeValueAsString(results)).build();
     }
 
-    /**
-     * Perform a an autocomplete search. Suggest keywords based on
-     * user input.
-     * @return Http response.
-     * @param user Github username.
-     * @param repo Github reponame.
-     * @param kw User input (keywords).
-     */
-    @GET
-    @Path("/a/{username}/{reponame}")
-    public Response autocomplete(
-        @PathParam("username") String user,
-        @PathParam("reponame") String repo,
-        @QueryParam("kw") @DefaultValue("") String keyword
-    ) {
-        String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
-        AmazonEsSuggest aws = new AmazonEsSuggest(new SuggestQuery(keyword), indexName);
-        String[] suggestions = aws.suggest();
-        if(suggestions.length == 0) {
-            return Response.noContent().build();
-        }
-        return Response.ok().entity(suggestions).build();
-    }
 }
