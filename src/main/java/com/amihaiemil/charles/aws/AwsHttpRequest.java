@@ -54,7 +54,7 @@ public interface AwsHttpRequest<T> {
      * @version $Id$
      * @since 1.0.0
      */
-    class FaceAwsHttpRequest implements AwsHttpRequest<String>{
+    class FakeAwsHttpRequest implements AwsHttpRequest<String>{
 
         private Request<Void> fakeRq = new DefaultRequest<>("fake");
 

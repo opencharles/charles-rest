@@ -43,28 +43,22 @@ public final class AwsHttpHeaders<T> implements AwsHttpRequest<T> {
     private AwsHttpRequest<T> base;
 
     /**
-     * Http headers map.
-     */
-    private Map<String, String> hdrs;
-
-    /**
      * Ctor.
      * @param req Base AwsHttpRequest.
      * @param headers Map of headers to set on the request. Key - headername, value - its value.
      */
     public AwsHttpHeaders(AwsHttpRequest<T> req, Map<String, String> headers) {
-    	this.base = req;
-    	this.hdrs = headers;
-	}
+        this.base = req;
+        this.base.request().getHeaders().putAll(headers);
+    }
 
     @Override
     public T perform() {
-    	this.base.request().setHeaders(this.hdrs);
         return this.base.perform();
     }
 
     @Override
     public Request<Void> request() {
-    	return this.base.request();
+        return this.base.request();
     }
 }

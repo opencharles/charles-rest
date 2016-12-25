@@ -49,11 +49,11 @@ public final class AwsHead<T> implements AwsHttpRequest<T> {
      */
     public AwsHead(AwsHttpRequest<T> req) {
     	this.base = req;
+        this.base.request().setHttpMethod(HttpMethodName.HEAD);
 	}
 
     @Override
     public T perform() {
-        this.base.request().setHttpMethod(HttpMethodName.HEAD);
         return this.base.perform();
     }
 

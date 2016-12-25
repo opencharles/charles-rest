@@ -48,7 +48,7 @@ public class AwsPostTestCase {
     @Test
     public void fetchesOriginalRequest() {
         AwsPost<String> awsp = new AwsPost<>(
-            new AwsHttpRequest.FaceAwsHttpRequest(),
+            new AwsHttpRequest.FakeAwsHttpRequest(),
             new ByteArrayInputStream("fake content".getBytes())
         );
         assertTrue(awsp.request() != null);
@@ -64,7 +64,7 @@ public class AwsPostTestCase {
     public void performsRequest() throws IOException {
         String jsonContent = "{\"testContent\":\"fake\"}";
         AwsPost<String> awsp = new AwsPost<>(
-            new AwsHttpRequest.FaceAwsHttpRequest(),
+            new AwsHttpRequest.FakeAwsHttpRequest(),
             new ByteArrayInputStream(jsonContent.getBytes())
         );
         assertTrue(awsp.perform().equals("performed fake request"));

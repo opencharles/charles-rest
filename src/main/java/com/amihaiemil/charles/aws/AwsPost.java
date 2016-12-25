@@ -46,24 +46,18 @@ public final class AwsPost<T> implements AwsHttpRequest<T> {
     private AwsHttpRequest<T> base;
 
     /**
-     * Request content.
-     */
-    private InputStream content;
-
-    /**
      * Ctor.
      * @param req Base AwsHttpRequest.
      * @param content InputStream containing this request's content.
      */
     public AwsPost(AwsHttpRequest<T> req, InputStream content) {
     	this.base = req;
-        this.content = content;
+        this.base.request().setHttpMethod(HttpMethodName.POST);
+    	this.base.request().setContent(content);
 	}
 
     @Override
     public T perform() {
-        this.base.request().setHttpMethod(HttpMethodName.POST);
-    	this.base.request().setContent(this.content);
         return this.base.perform();
     }
 

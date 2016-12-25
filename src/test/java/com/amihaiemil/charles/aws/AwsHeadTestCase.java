@@ -45,7 +45,7 @@ public class AwsHeadTestCase {
 	@Test
 	public void fetchesOriginalRequest() {
 		AwsHead<String> awsh = new AwsHead<>(
-            new AwsHttpRequest.FaceAwsHttpRequest()
+            new AwsHttpRequest.FakeAwsHttpRequest()
         );
         assertTrue(awsh.request() != null);
         assertTrue(awsh.request().getServiceName().equals("fake"));
@@ -57,7 +57,7 @@ public class AwsHeadTestCase {
 	@Test
 	public void performsRequest() {
 		AwsHead<String> awsh = new AwsHead<>(
-            new AwsHttpRequest.FaceAwsHttpRequest()
+            new AwsHttpRequest.FakeAwsHttpRequest()
         );
         assertTrue(awsh.perform().equals("performed fake request"));
         assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.HEAD));

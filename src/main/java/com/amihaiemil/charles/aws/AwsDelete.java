@@ -47,17 +47,17 @@ public final class AwsDelete<T> implements AwsHttpRequest<T> {
      * @param req Base AwsHttpRequest.
      */
     public AwsDelete(AwsHttpRequest<T> req) {
-    	this.base = req;
-	}
+        this.base = req;
+        this.base.request().setHttpMethod(HttpMethodName.DELETE);
+    }
 
     @Override
     public T perform() {
-        this.base.request().setHttpMethod(HttpMethodName.DELETE);
         return this.base.perform();
     }
 
     @Override
     public Request<Void> request() {
-    	return this.base.request();
+        return this.base.request();
     }
 }

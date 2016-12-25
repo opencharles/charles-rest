@@ -45,7 +45,7 @@ public class AwsDeleteTestCase {
 	@Test
 	public void fetchesOriginalRequest() {
         AwsDelete<String> awsd = new AwsDelete<>(
-            new AwsHttpRequest.FaceAwsHttpRequest()
+            new AwsHttpRequest.FakeAwsHttpRequest()
         );
         assertTrue(awsd.request() != null);
         assertTrue(awsd.request().getServiceName().equals("fake"));
@@ -57,7 +57,7 @@ public class AwsDeleteTestCase {
 	@Test
 	public void performsRequest() {
         AwsDelete<String> awsd = new AwsDelete<>(
-            new AwsHttpRequest.FaceAwsHttpRequest()
+            new AwsHttpRequest.FakeAwsHttpRequest()
         );
         assertTrue(awsd.perform().equals("performed fake request"));
         assertTrue(awsd.request().getHttpMethod().equals(HttpMethodName.DELETE));

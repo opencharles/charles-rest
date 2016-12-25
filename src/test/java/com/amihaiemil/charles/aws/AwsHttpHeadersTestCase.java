@@ -47,7 +47,7 @@ public class AwsHttpHeadersTestCase {
     @Test
     public void fetchesOriginalRequest() {
     	AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
-            new AwsHttpRequest.FaceAwsHttpRequest(),
+            new AwsHttpRequest.FakeAwsHttpRequest(),
             new HashMap<String, String>()
         );
         assertTrue(awsh.request() != null);
@@ -65,7 +65,7 @@ public class AwsHttpHeadersTestCase {
         headers.put("Content-type", "json");
         headers.put("HeaderName", "HeaderValue");
         AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
-            new AwsHttpRequest.FaceAwsHttpRequest(), headers
+            new AwsHttpRequest.FakeAwsHttpRequest(), headers
         );
         assertTrue(awsh.perform().equals("performed fake request"));
         assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.POST));
