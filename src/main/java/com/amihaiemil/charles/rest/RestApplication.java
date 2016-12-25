@@ -33,6 +33,10 @@ import javax.ws.rs.core.Application;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
+ * @todo #162:1h/DEV Checkstyle validation was added but currently the
+ *  build fails since not all the rules are respected. The validations
+ *  should be fixed, but this will probably be an ongoing task since
+ *  they are too many of them to go in one shot.
  */
 @ApplicationPath("/api")
 public class RestApplication extends Application {
