@@ -15,7 +15,7 @@ Check out the [website](http://charles.amihaiemil.com) for more details on how t
 
 ## Contribute
 
-I am currently looking for contributors. I believe that if there are no contributors then a project is not known and thus won't fly for too long (if it ever takes off)
+I am currently looking for contributors. Read this [post](http://www.amihaiemil.com/2016/12/30/becoming-a-contributor.html).
 
 1. Open an issue regarding an improvement you thought of, or a bug you noticed, or asked to be assigned to an existing one.
 2. If the issue is confirmed, fork the repository, do the changes on a sepparate branch and make a Pull Request.
