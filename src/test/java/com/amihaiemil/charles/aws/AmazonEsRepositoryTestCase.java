@@ -61,8 +61,8 @@ public class AmazonEsRepositoryTestCase {
     @Test
     public void illegalStateOnMissingSecretKey() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
-        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
         System.setProperty("aws.accessKeyId", "access_key");
         System.setProperty("aws.es.region", "ro");
@@ -84,8 +84,8 @@ public class AmazonEsRepositoryTestCase {
     @Test
     public void illegalStateOnMissingAccessKey() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
-        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
         System.setProperty("aws.es.region", "ro");
         System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
@@ -106,8 +106,8 @@ public class AmazonEsRepositoryTestCase {
     @Test
     public void illegalStateOnMissingRegion() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
-        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
         System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
 
@@ -127,8 +127,8 @@ public class AmazonEsRepositoryTestCase {
     @Test
     public void sendsExportRequestToAwsEs() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
-        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
         System.setProperty("aws.accessKeyId", "access_key");
         System.setProperty("aws.secretKey", "secret_key");
@@ -158,8 +158,8 @@ public class AmazonEsRepositoryTestCase {
     @Test
     public void sendsExportRequestToAwsEsWithError() throws Exception {
         List<WebPage> pages = new ArrayList<WebPage>();
-        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html", "category"));
-        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html", "category"));
+        pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
+        pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
         System.setProperty("aws.accessKeyId", "access_key");
         System.setProperty("aws.secretKey", "secret_key");
@@ -224,13 +224,11 @@ public class AmazonEsRepositoryTestCase {
     /**
      * Mock a WebPage for test.
      * @param url
-     * @param category
      * @return Webpage instance.
      */
-    private WebPage mockWebPage(String url, String category) {
+    private WebPage mockWebPage(String url) {
         WebPage page = new SnapshotWebPage();
         page.setUrl(url);
-        page.setCategory(category);
 
         page.setLinks(new HashSet<Link>());
         page.setTextContent("some content");

@@ -50,9 +50,9 @@ public class EsBulkJsonTestCase {
     @Test
     public void structuresPagesCorrectly() throws Exception {
         List<WebPage> pages = new ArrayList<>();
-        pages.add(this.mockWebPage("http://amihaiemil.com/page.html", "tech"));
-        pages.add(this.mockWebPage("http://amihaiemil.com/stuff/page.html", "mischelaneous"));
-        pages.add(this.mockWebPage("http://amihaiemil.com/stuff/more/page.html", "development"));
+        pages.add(this.mockWebPage("http://amihaiemil.com/page.html"));
+        pages.add(this.mockWebPage("http://amihaiemil.com/stuff/page.html"));
+        pages.add(this.mockWebPage("http://amihaiemil.com/stuff/more/page.html"));
 
         String bulkStrucure = new EsBulkJson("testIndex", pages).structure();
         
@@ -91,10 +91,9 @@ public class EsBulkJsonTestCase {
      * @param category
      * @return Webpage instance.
      */
-    private WebPage mockWebPage(String url, String category) {
+    private WebPage mockWebPage(String url) {
         WebPage page = new SnapshotWebPage();
         page.setUrl(url);
-        page.setCategory(category);
 
         page.setLinks(new HashSet<Link>());
         page.setTextContent("text content...");

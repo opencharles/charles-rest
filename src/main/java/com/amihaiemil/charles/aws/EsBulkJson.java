@@ -78,9 +78,9 @@ public class EsBulkJson {
             String id = doc.getString("id", "");
             String action_and_meta_data;
             if(id.isEmpty()) {
-                action_and_meta_data = "{\"index\":{\"_index\":\"" + this.index + "\", \"_type\":\"" + doc.getString("category") + "\"}}";
+                action_and_meta_data = "{\"index\":{\"_index\":\"" + this.index + "\", \"_type\":\"page\"}}";
             } else {
-                action_and_meta_data = "{\"index\":{\"_index\":\"" + this.index + "\", \"_type\":\"" + doc.getString("category") + "\", "
+                action_and_meta_data = "{\"index\":{\"_index\":\"" + this.index + "\", \"_type\":\"page\", "
                                         + "\"_id\":\"" + id + "\"}}";
             }
             sb = sb.append(action_and_meta_data).append("\n");
@@ -100,7 +100,7 @@ public class EsBulkJson {
         JsonObject parsed = jsonPage.toJsonObject();
         return Json.createObjectBuilder()
             .add("id", page.getUrl())
-            .add("category", parsed.getString("category"))
+            .add("category", "page")
             .add("page", parsed).build();
     }
 }
