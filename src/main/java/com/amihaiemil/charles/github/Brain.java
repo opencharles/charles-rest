@@ -116,10 +116,18 @@ public class Brain {
                      com, this.logger,
                      new IndexExistsCheck(
                          com.indexName(), this.logger,
-                         this.withCommonChecks(
-                             com, category.language(),
-                             this.deleteIndexStep(com, category.language())
-                         ), 
+                         new AuthorOwnerCheck(
+                             com, this.logger,
+                             this.deleteIndexStep(com, category.language()),
+                             new OrganizationAdminCheck(
+                                 com, this.logger,
+                                 this.deleteIndexStep(com, category.language()),
+                                 this.finalCommentStep(
+                                     com, category.language(),
+                                     "denied.commander.comment", com.authorLogin()
+                                 )
+                             )
+                         ),
                          this.finalCommentStep(
                              com, category.language(), "index.missing.comment",
                              com.authorLogin(),
