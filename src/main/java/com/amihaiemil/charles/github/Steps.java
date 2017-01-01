@@ -26,6 +26,8 @@
 
 package com.amihaiemil.charles.github;
 
+import org.slf4j.Logger;
+
 
 /**
  * Steps taken to fulfill a command.
@@ -46,12 +48,19 @@ public class Steps implements Step {
     private SendReply failureMessage;
     
     /**
+     * Action's logger.
+     */
+    private Logger logger;
+
+    /**
      * Constructor.
      * @param steps Given steps.
+     * @param log Given logger.
      * @param fm failure message in case any step fails.
      */
-    public Steps(Step steps, SendReply fm) {
+    public Steps(Step steps, Logger log, SendReply fm) {
         this.steps = steps;
+        this.logger = log;
         this.failureMessage = fm;
     }
 
@@ -71,6 +80,7 @@ public class Steps implements Step {
         try {
             this.steps.perform();
         } catch (RuntimeException ex) {
+            logger.error("A runtime exception occured", ex);
             this.failureMessage.perform();
         }
     }

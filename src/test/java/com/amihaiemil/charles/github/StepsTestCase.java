@@ -57,7 +57,11 @@ public class StepsTestCase {
      */
     @Test
     public void stepsPerformOk() {
-        Steps steps = new Steps(Mockito.mock(Step.class), Mockito.mock(SendReply.class));
+        Steps steps = new Steps(
+            Mockito.mock(Step.class),
+            Mockito.mock(Logger.class),
+            Mockito.mock(SendReply.class)
+        );
         steps.perform();
     }
     
@@ -78,7 +82,7 @@ public class StepsTestCase {
         Mockito.doThrow(new IllegalStateException("for test"))
             .when(s).perform();
 
-        Steps steps = new Steps(s, sr);
+        Steps steps = new Steps(s, Mockito.mock(Logger.class), sr);
         steps.perform();
 
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());

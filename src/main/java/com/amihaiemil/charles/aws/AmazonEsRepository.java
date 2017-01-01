@@ -30,8 +30,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.http.HttpResponse;
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.WebPage;
@@ -103,7 +107,15 @@ public final class AmazonEsRepository implements AwsEsRepository {
                     )
                 )
             );
-        return head.perform();
+        boolean exists = false;
+        try {
+            exists = head.perform();
+        } catch (AmazonServiceException ex) {
+            if (!(ex.getStatusCode() == HttpStatus.SC_NOT_FOUND)) {
+                throw ex;
+            }
+        }
+        return exists;
     }
     /**
      * Delete the elasticsearch index.

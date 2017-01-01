@@ -25,6 +25,11 @@
  */
 package com.amihaiemil.charles.aws;
 
+import java.io.IOException;
+import java.io.StringWriter;
+
+import org.apache.commons.io.IOUtils;
+
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
@@ -58,7 +63,15 @@ public class SimpleAwsResponseHandler implements
 
         int status = response.getStatusCode();
         if(status < 200 || status >= 300) {
-            AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
+            String content;
+            final StringWriter writer = new StringWriter();
+            try {
+                IOUtils.copy(response.getContent(), writer, "UTF-8");
+                content = writer.toString();
+            } catch (final IOException e) {
+            	content = "Couldn't get response content!";
+            }
+            AmazonServiceException ase = new AmazonServiceException(content);
             ase.setStatusCode(status);
             throw ase;
         }

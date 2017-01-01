@@ -146,6 +146,7 @@ public class Brain {
          }
          return new Steps(
              steps,
+             this.logger,
              new SendReply(
                  new TextReply(
                      com,

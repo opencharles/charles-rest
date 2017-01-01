@@ -72,11 +72,16 @@ public class SimpleAwsResponseHandlerTestCase {
     public void throwsAwsExceptionOnBadStatus() {
         HttpResponse response = Mockito.mock(HttpResponse.class);
         Mockito.when(response.getStatusCode()).thenReturn(HttpURLConnection.HTTP_BAD_METHOD);
+        String content = "bad request message";
+        Mockito.when(response.getContent())
+            .thenReturn(
+                new ByteArrayInputStream(content.getBytes())
+            );
         try {
             new SimpleAwsResponseHandler(true).handle(response);
             fail("AmazonServiceException should have been thrown!");
         } catch (AmazonServiceException awsEx) {
-               assertTrue(awsEx.getErrorMessage().equals("Unexpected status: 405"));
+            assertTrue(awsEx.getErrorMessage().equals(content));
             assertTrue(awsEx.getStatusCode() == HttpURLConnection.HTTP_BAD_METHOD);
         }
     }

@@ -24,6 +24,7 @@
  */
 package com.amihaiemil.charles.aws;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Test;
 
@@ -204,6 +206,60 @@ public class AmazonEsRepositoryTestCase {
             MkQuery request = server.take();
             assertTrue("/es/index.to.be.deleted/".equals(request.uri().toString()));
             assertTrue("DELETE".equals(request.method()));
+        } finally {
+            server.stop();
+        }
+    }
+    
+    /**
+     * AmazonEsRespository can tell if an index exists or not.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void tellsIfIndexExists() throws Exception {
+        System.setProperty("aws.accessKeyId", "access_key");
+        System.setProperty("aws.secretKey", "secret_key");
+        System.setProperty("aws.es.region", "ro");
+        
+        int port = this.port();
+        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
+
+        MkContainer server = new MkGrizzlyContainer()
+           .next(new MkAnswer.Simple(HttpStatus.SC_OK))
+           .start(port);
+        try {
+        	boolean exists = new AmazonEsRepository("present.index").exists();
+        	assertTrue(exists);
+            MkQuery request = server.take();
+            assertTrue("/es/present.index/".equals(request.uri().toString()));
+            assertTrue("HEAD".equals(request.method()));
+        } finally {
+            server.stop();
+        }
+    }
+    
+    /**
+     * AmazonEsRespository can tell if an index exists or not.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void tellsIfIndexDoesNotExist() throws Exception {
+        System.setProperty("aws.accessKeyId", "access_key");
+        System.setProperty("aws.secretKey", "secret_key");
+        System.setProperty("aws.es.region", "ro");
+        
+        int port = this.port();
+        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
+
+        MkContainer server = new MkGrizzlyContainer()
+           .next(new MkAnswer.Simple(HttpStatus.SC_NOT_FOUND))
+           .start(port);
+        try {
+        	boolean exists = new AmazonEsRepository("missing.index").exists();
+        	assertFalse(exists);
+            MkQuery request = server.take();
+            assertTrue("/es/missing.index/".equals(request.uri().toString()));
+            assertTrue("HEAD".equals(request.method()));
         } finally {
             server.stop();
         }
