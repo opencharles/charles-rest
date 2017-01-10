@@ -26,21 +26,23 @@
 
 package com.amihaiemil.charles.github;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Language that the agent speaks.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ *
+ * @todo #174:30m/DEV Add commands_ru.properties files for commands and responses
+ *
  */
 abstract class Language {
     
