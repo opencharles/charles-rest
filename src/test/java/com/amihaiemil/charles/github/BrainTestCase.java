@@ -25,14 +25,10 @@
 package com.amihaiemil.charles.github;
 
 import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
-import java.util.Arrays;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
-
 import com.jcabi.github.Comment;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
@@ -63,7 +59,7 @@ public class BrainTestCase {
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("hello", english));
         
-        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), english);
         Steps steps = br.understand(com);
         assertTrue(steps != null);
         assertTrue(steps.getStepsToPerform() instanceof SendReply);
@@ -87,7 +83,7 @@ public class BrainTestCase {
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("indexsite", english));
         
-        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), english);
         
         Steps steps = br.understand(com);
         assertTrue(steps != null);
@@ -114,7 +110,7 @@ public class BrainTestCase {
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("indexpage", english));
         
-        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), english);
         Steps steps = br.understand(com);
         assertTrue(steps != null);
         assertTrue(steps.getStepsToPerform() instanceof PageHostedOnGithubCheck);
@@ -142,7 +138,7 @@ public class BrainTestCase {
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("deleteindex", english));
         
-        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), english);
         Steps steps = br.understand(com);
         assertTrue(steps != null);
         assertTrue(steps.getStepsToPerform() instanceof DeleteIndexCommandCheck);
@@ -162,7 +158,7 @@ public class BrainTestCase {
         Mockito.when(english.categorize(com)
         ).thenReturn(new CommandCategory("uknown", english));
         
-        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), Arrays.asList(english));
+        Brain br = new Brain(Mockito.mock(Logger.class), Mockito.mock(LogsLocation.class), english);
         Steps steps = br.understand(com);
         assertTrue(steps != null);
         assertTrue(steps.getStepsToPerform() instanceof SendReply);

@@ -27,9 +27,6 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.slf4j.Logger;
 
@@ -47,7 +44,7 @@ public class Brain {
     /**
      * All the languages that the chatbot can understang/speaks.
      */
-    private List<Language> languages = new LinkedList<Language>();
+    private Language[] languages;
 
     /**
      * The action's logger.
@@ -61,9 +58,12 @@ public class Brain {
 
     /**
      * Constructor.
+     * @todo #181:30m/DEV After Russian language is done and tested,
+     *  let's start using it. It should be added bellow, right after
+     *  English and everything should work after that.
      */
     public Brain(Logger logger, LogsLocation logsLoc) {
-        this(logger, logsLoc, Arrays.asList((Language) new English()));
+        this(logger, logsLoc, new English());
     }
 
     /**
@@ -71,7 +71,7 @@ public class Brain {
      * @param resp
      * @param langs
      */
-    public Brain(Logger logger, LogsLocation logsLoc, List<Language> langs) {
+    public Brain(Logger logger, LogsLocation logsLoc, Language... langs) {
         this.logger = logger;
         this.logsLoc = logsLoc;
         this.languages = langs;
@@ -264,15 +264,18 @@ public class Brain {
      * @throws IOException 
      */
     private CommandCategory categorizeCommand(Command com) throws IOException {
-        CommandCategory category = new CommandCategory("unknown", languages.get(0));
-           for(Language l : languages) {
-               category = l.categorize(com);
-               if(category.isUnderstood()) {
-                   this.logger.info("Command type: " + category.type() + ". Language: " + l.getClass().getSimpleName());
-                   break;
-               }
-           }
-           return category;
+        CommandCategory category = new CommandCategory("unknown", this.languages[0]);
+        for(Language lang : this.languages) {
+            category = lang.categorize(com);
+            if(category.isUnderstood()) {
+                this.logger.info(
+                    "Command type: " + category.type() +
+                    ". Language: " + lang.getClass().getSimpleName()
+                );
+                break;
+            }
+        }
+        return category;
     }
 
     /**

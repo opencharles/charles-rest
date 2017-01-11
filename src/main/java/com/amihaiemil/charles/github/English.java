@@ -25,8 +25,6 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
 /**
  * The Github agent speaks English.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -38,11 +36,6 @@ public class English extends Language {
 
     public English() {
         super("commands_en.properties", "responses_en.properties");
-    }
-
-    @Override
-    public CommandCategory categorize(Command com) throws IOException {
-        return super.categorize(com);
     }
 
 }

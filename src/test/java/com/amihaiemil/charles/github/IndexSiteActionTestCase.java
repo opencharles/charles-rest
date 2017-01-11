@@ -27,7 +27,6 @@ package com.amihaiemil.charles.github;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.json.Json;
@@ -71,7 +70,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
@@ -114,7 +113,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
@@ -159,7 +158,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
@@ -212,7 +211,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
@@ -263,7 +262,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexStep index = Mockito.mock(IndexStep.class);
@@ -306,7 +305,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexStep index = Mockito.mock(IndexStep.class);
@@ -346,7 +345,7 @@ public class IndexSiteActionTestCase {
         Brain br = new Brain(
             Mockito.mock(Logger.class),
             Mockito.mock(LogsLocation.class),
-            Arrays.asList(eng)
+            eng
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexStep index = Mockito.mock(IndexStep.class);

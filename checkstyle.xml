@@ -83,16 +83,6 @@
     JavaDoc regexp checks
     -->
     <module name="RegexpSingleline">
-        <property name="format" value="\* +@return +[^A-Z]"/>
-        <property name="fileExtensions" value="java"/>
-        <property name="message" value="@return tag description should start with capital letter"/>
-    </module>
-    <module name="RegexpSingleline">
-        <property name="format" value="\* +@param +\w+ +[^A-Z]"/>
-        <property name="fileExtensions" value="java"/>
-        <property name="message" value="@param tag description should start with capital letter"/>
-    </module>
-    <module name="RegexpSingleline">
         <property name="format" value="/\*\* +[^A-Z\{]"/>
         <property name="fileExtensions" value="java"/>
         <property name="message" value="First sentence in a comment should start with a capital letter"/>
@@ -116,16 +106,6 @@
         <property name="format" value="org\.apache\.commons\.(codec|lang3?)\.CharEncoding"/>
         <property name="fileExtensions" value="java"/>
         <property name="message" value="Use 'java.nio.charset.StandardCharsets' instead"/>
-    </module>
-    <module name="RegexpSingleline">
-        <property name="format" value="^(?! *(/\*\*|\*|//)).*[\.\-\+%/\*&lt;&gt;] *$"/>
-        <property name="fileExtensions" value="java"/>
-        <property name="message" value="Line cannot end with this symbol, move it to the next line"/>
-    </module>
-    <module name="RegexpSingleline">
-        <property name="format" value="^ *="/>
-        <property name="fileExtensions" value="java"/>
-        <property name="message" value="Line cannot start with this symbol, move it to the previous line"/>
     </module>
 
     <!--
