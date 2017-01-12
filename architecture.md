@@ -59,14 +59,14 @@ If there is an error during steps' execution, a comment is delivered explaining 
 
 ## Other details
 
- * Interaction with the Github API:
+ * **Interaction with the Github API**:
 
     For communication with the Github API, the librari [jcabi-github](https://github.com/jcabi/jcabi-github) is used.
     This library encapsulates are the HTTP calls to the API and provides very good abstractions and a convenient fluency in method calls.
 
     Also, the library provides a mock implementation of the Github API, which is used when unit testing the code (in order to avoid calling the
     real API at each unit test run).
- * More languages:
+ * **More languages**:
 
     The bot should "speak" more languages. See how the [Language](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/Language.java)
     class is used (type hierarchy and use by class Brain)
