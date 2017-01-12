@@ -3,6 +3,12 @@
 This document's intention is to give a full overview of code base's structure, flow and main types.
 In the text bellow, main types will be written with capital letter and will be linked to their interface or class.
 
+ * [Entry point](#entry-point)
+ * [Taking action about a notification](#taking-action-about-a-notification)
+ * [Understanding a Command](#understanding-a-command)
+ * [Steps](#steps)
+ * [Other details](#other-details)
+ 
 ## Entry point
 
 The entry point is REST method ``POST /api/notifications`` (see [here](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/rest/NotificationsResource.java#L98)) .
@@ -29,6 +35,9 @@ went fine)
 
 ## Understanding a Command
 
+A notification contains only the repo and the issue where the bot has been mentioned. To find the command, the bot searches for the **last** (most recent) comment in the issue
+where it's been mentioned. Only the last mentioning comment will be treated as a command, in order to avoid spamming.
+
 The bot has a [Brain](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/Brain.java) and at the beginning of each Action, it tries to **understand** the command.
 Understanding a command means building up the [Step](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/Step.java)s to be executed in order to fulfill the command.
 
@@ -38,7 +47,6 @@ Please note that currently class **Brain** has grown quite big and needs to be r
 There is an issue for that [here](https://github.com/opencharles/charles-rest/issues/155).
 
 
-
 ## Steps
 
 The bot has to execute one or more steps in order to fulfill any command. Always. At a minimum, if the command cannot be understood there is the one step of leaving a comment on the Github issue explaining
@@ -46,4 +54,17 @@ that the command wasn't understood and pointing the user to the commands' docume
 
 Any Step that the bot takes is (should extend) either a [PreconditionCheckStep](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/PreconditionCheckStep.java) or a [IntermediaryStep](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/IntermediaryStep.java). Read the javadocs of those two classes, you'll get the idea quickly.
 
-...more to follow...
+Once the command has been "understood" and the Step-tree is built, the steps are executed within an Action.
+If there is an error during steps' execution, a comment is delivered explaining the something went wrong and ofering a link to the logs.
+
+## Other details
+
+ * Interaction with the Github API
+    For communication with the Github API, the librari [jcabi-github](https://github.com/jcabi/jcabi-github) is used.
+    This library encapsulates are the HTTP calls to the API and provides very good abstractions and a convenient fluency in method calls.
+
+    Also, the library provides a mock implementation of the Github API, which is used when unit testing the code (in order to avoid calling the
+    real API at each unit test run).
+ * More languages
+    The bot should "speak" more languages. See how the [Language](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/Language.java)
+    class is used (type hierarchy and use by class Brain)
