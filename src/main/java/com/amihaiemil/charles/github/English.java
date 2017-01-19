@@ -30,7 +30,9 @@ package com.amihaiemil.charles.github;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ * @todo #174:30m/DEV Implement and unit test Language class Russian,
+ *  following the model of this class and its unit tests. The class should
+ *  use the commands_ru and responses_ru properties files.
  */
 public class English extends Language {
 

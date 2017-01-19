@@ -40,9 +40,6 @@ import java.util.regex.Pattern;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * @todo #174:30m/DEV Implement and unit test Language class Russian.
- *  Follow class English and its unit tests as example. The class should
- *  use the commands_ru and responses_ru properties files.
  */
 abstract class Language {
     
