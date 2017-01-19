@@ -61,10 +61,10 @@ If there is an error during steps' execution, a comment is delivered explaining 
 
  * **Interaction with the Github API**:
 
-    For communication with the Github API, the librari [jcabi-github](https://github.com/jcabi/jcabi-github) is used.
-    This library encapsulates are the HTTP calls to the API and provides very good abstractions and a convenient fluency in method calls.
+    For communication with the Github API, the library [jcabi-github](https://github.com/jcabi/jcabi-github) is used.
+    This library encapsulates all the HTTP calls made to the API and provides very good abstractions and a convenient fluency in method calls.
 
-    Also, the library provides a mock implementation of the Github API, which is used when unit testing the code (in order to avoid calling the
+    Also, the library provides a **mock implementation of the Github API**, which is **used when unit testing** the code (in order to avoid calling the
     real API at each unit test run).
  * **More languages**:
 
