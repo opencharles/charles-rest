@@ -19,7 +19,7 @@ That endpoint listens for an array of notifications formatted as follows:
     ...,
     {
         "repoFullName":"owner/repoName",
-        "issueNumber":127
+        "issueNumber":128
     },
     ...
 ]
