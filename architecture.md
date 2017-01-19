@@ -19,8 +19,8 @@ That endpoint listens for an array of notifications formatted as follows:
     ...,
     {
         "repoFullName":"owner/repoName",
-        "issueNumber":124
-    },
+        "issueNumber":127
+    },
     ...
 ]
 ```
