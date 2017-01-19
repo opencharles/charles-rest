@@ -41,7 +41,9 @@ import com.jcabi.http.response.JsonResponse;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * 
+ * @todo #176:1h/DEV Test puzzle to test if 0pdd works for
+ *  this repository? Last puzzle didn't generate any Github
+ *  issue.
  */
 public abstract class Command {
 
