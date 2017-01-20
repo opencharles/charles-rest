@@ -1,0 +1,3 @@
+--exclude src/**/*.properties
+--exclude src/**/*.json
+--exclude src/**/*.txt
