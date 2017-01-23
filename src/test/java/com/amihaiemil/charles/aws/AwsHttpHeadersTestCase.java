@@ -56,23 +56,33 @@ public class AwsHttpHeadersTestCase {
     
     /**
      * AwsHttpHeaders can perform the original {@link AwsHttpRequest}
+     */
+    @Test
+    public void performsRequest() {
+    	AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
+            new AwsHttpRequest.FakeAwsHttpRequest(),
+            new HashMap<String, String>()
+        );        
+    	assertTrue(awsh.perform().equals("performed fake request"));
+        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.POST));
+    }
+    
+    /**
+     * AwsHttpHeaders can add headers to the original {@link AwsHttpRequest}
      * @throws IOException If something goes wrong while reading
      *  the request's content.
      */
     @Test
-    public void performsRequest() throws IOException {
+    public void addsHeaders() throws IOException {
     	Map<String, String> headers = new HashMap<String, String>();
-        headers.put("Content-type", "json");
-        headers.put("HeaderName", "HeaderValue");
-        AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
-            new AwsHttpRequest.FakeAwsHttpRequest(), headers
-        );
-        assertTrue(awsh.perform().equals("performed fake request"));
-        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.POST));
-        Map<String, String> retreived = awsh.request().getHeaders();
-        assertTrue(retreived.size() == 2);
+    	headers.put("Content-type", "json");
+    	headers.put("HeaderName", "HeaderValue");
+    	AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
+    	    new AwsHttpRequest.FakeAwsHttpRequest(), headers
+    	);
+    	Map<String, String> retreived = awsh.request().getHeaders();
+    	assertTrue(retreived.size() == 2);
         assertTrue(retreived.get("Content-type").equals("json"));
         assertTrue(retreived.get("HeaderName").equals("HeaderValue"));
-
     }
 }
