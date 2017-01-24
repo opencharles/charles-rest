@@ -77,12 +77,13 @@ public class AwsHttpHeadersTestCase {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-type", "json");
         headers.put("HeaderName", "HeaderValue");
-        AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
-            new AwsHttpRequest.FakeAwsHttpRequest(), headers
-        );
+        AwsHttpRequest<String> fake = new AwsHttpRequest.FakeAwsHttpRequest();
+        fake.request().addHeader("Request-type", "fake");
+        AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(fake, headers);
         Map<String, String> retreived = awsh.request().getHeaders();
-        assertTrue(retreived.size() == 2);
+        assertTrue(retreived.size() == 3);
         assertTrue(retreived.get("Content-type").equals("json"));
         assertTrue(retreived.get("HeaderName").equals("HeaderValue"));
+        assertTrue(retreived.get("Request-type").equals("fake"));
     }
 }
