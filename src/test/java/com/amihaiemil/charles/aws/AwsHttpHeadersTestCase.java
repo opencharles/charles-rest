@@ -24,10 +24,12 @@
  */
 package com.amihaiemil.charles.aws;
 
-import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
@@ -46,12 +48,16 @@ public class AwsHttpHeadersTestCase {
      */
     @Test
     public void fetchesOriginalRequest() {
-    	AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
+    	final AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
             new AwsHttpRequest.FakeAwsHttpRequest(),
             new HashMap<String, String>()
         );
-        assertTrue(awsh.request() != null);
-        assertTrue(awsh.request().getServiceName().equals("fake"));
+        MatcherAssert.assertThat(awsh.request(),
+        	Matchers.not(Matchers.equalTo(null))
+        );
+        MatcherAssert.assertThat(awsh.request().getServiceName(),
+        	Matchers.equalTo("fake")
+        );
     }
     
     /**
@@ -59,12 +65,16 @@ public class AwsHttpHeadersTestCase {
      */
     @Test
     public void performsRequest() {
-        AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
+        final AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(
             new AwsHttpRequest.FakeAwsHttpRequest(),
             new HashMap<String, String>()
         );        
-        assertTrue(awsh.perform().equals("performed fake request"));
-        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.POST));
+        MatcherAssert.assertThat(awsh.perform(),
+            Matchers.equalTo("performed fake request")
+        );
+        MatcherAssert.assertThat(awsh.request().getHttpMethod(),
+            Matchers.equalTo(HttpMethodName.POST)
+        );
     }
     
     /**
@@ -74,16 +84,28 @@ public class AwsHttpHeadersTestCase {
      */
     @Test
     public void addsHeaders() throws IOException {
-        Map<String, String> headers = new HashMap<String, String>();
+        final Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-type", "json");
         headers.put("HeaderName", "HeaderValue");
-        AwsHttpRequest<String> fake = new AwsHttpRequest.FakeAwsHttpRequest();
+        
+        final AwsHttpRequest<String> fake = 
+            new AwsHttpRequest.FakeAwsHttpRequest();
         fake.request().addHeader("Request-type", "fake");
-        AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(fake, headers);
-        Map<String, String> retreived = awsh.request().getHeaders();
-        assertTrue(retreived.size() == 3);
-        assertTrue(retreived.get("Content-type").equals("json"));
-        assertTrue(retreived.get("HeaderName").equals("HeaderValue"));
-        assertTrue(retreived.get("Request-type").equals("fake"));
+        
+        final AwsHttpHeaders<String> awsh = new AwsHttpHeaders<>(fake, headers);
+        final Map<String, String> retreived = awsh.request().getHeaders();
+        
+        MatcherAssert.assertThat(
+            retreived.size() == 3, Matchers.is(true)
+        );
+        MatcherAssert.assertThat(
+            retreived.get("Content-type"), Matchers.equalTo("json")
+        );
+        MatcherAssert.assertThat(
+            retreived.get("HeaderName"), Matchers.equalTo("HeaderValue")
+        );
+        MatcherAssert.assertThat(
+            retreived.get("Request-type"), Matchers.equalTo("fake")
+        );
     }
 }
