@@ -3,13 +3,45 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.amihaiemil.web</groupId>
 	<artifactId>charles-rest</artifactId>
-	<version>0.0.1-SNAPSHOT</version><!--rrv-sed-flag-->
+	<version>0.0.1-SNAPSHOT</version><!--rrv-sed-flag -->
 	<packaging>war</packaging>
 	<name>charles-rest</name>
 	<description>Github chatbot codebase</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<url>http://charles.amihaiemil.com</url>
+	<licenses>
+		<license>
+			<name>The BSD 3-Clause Licence</name>
+			<url>https://opensource.org/licenses/BSD-3-Clause</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Mihai Emil Andronache</name>
+			<email>amihaiemil@gmail.com</email>
+			<url>https://www.github.com/amihaiemil</url>
+			<id>amihaiemil</id>
+		</developer>
+		<developer>
+			<name>Salavat Yalalov</name>
+			<email>s.yalalov@gmail.com</email>
+			<url>https://github.com/salikjan</url>
+			<id>salikjan</id>
+		</developer>
+		<developer>
+			<name>Sherif Waly</name>
+			<email>sherifwaly95@gmail.com</email>
+			<url>https://github.com/SherifWaly</url>
+			<id>SherifWaly</id>
+		</developer>
+	</developers>
+	<scm>
+		<url>https://github.com/opencharles/charles-rest</url>
+		<connection>scm:git:git://github.com/opencharles/charles-rest.git</connection>
+		<developerConnection>scm:git:git@github.com:opencharles/charles-rest.git</developerConnection>
+	</scm>
 	<build>
 		<plugins>
 			<plugin>
@@ -65,114 +97,114 @@
 			</plugin>
 		</plugins>
 	</build>
-    <profiles>
-        <profile>
-	        <id>checkstyle</id>
-	        <build>
-	          <plugins>
-	              <plugin>
-			      <groupId>org.apache.maven.plugins</groupId>
-			      <artifactId>maven-checkstyle-plugin</artifactId>
-			      <version>2.17</version>
-			      <dependencies>
-       			      <dependency>
-                         <groupId>com.puppycrawl.tools</groupId>
-                         <artifactId>checkstyle</artifactId>
-                         <version>6.15</version>
-                      </dependency>
-			      </dependencies>
-			      <executions>
-			         <execution>
-			           <id>validate</id>
-			           <phase>validate</phase>
-			           <configuration>
-			             <configLocation>checkstyle.xml</configLocation>
-			             <encoding>UTF-8</encoding>
-			             <consoleOutput>true</consoleOutput>
-			             <failsOnError>true</failsOnError>
-			             <linkXRef>false</linkXRef>
-			           </configuration>
-			           <goals>
-			             <goal>check</goal>
-			           </goals>
-			         </execution>
-			       </executions>
-                  </plugin>
-	          </plugins>
-	        </build>
-	    </profile>
-            <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.10.3</version>
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>oss.sonatype.org</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <description>${project.version}</description>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>deploy-to-sonatype</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>deploy</goal>
-                                        <goal>release</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                            <id>sign-artifacts</id>
-                            <phase>verify</phase>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<profiles>
+		<profile>
+			<id>checkstyle</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-checkstyle-plugin</artifactId>
+						<version>2.17</version>
+						<dependencies>
+							<dependency>
+								<groupId>com.puppycrawl.tools</groupId>
+								<artifactId>checkstyle</artifactId>
+								<version>6.15</version>
+							</dependency>
+						</dependencies>
+						<executions>
+							<execution>
+								<id>validate</id>
+								<phase>validate</phase>
+								<configuration>
+									<configLocation>checkstyle.xml</configLocation>
+									<encoding>UTF-8</encoding>
+									<consoleOutput>true</consoleOutput>
+									<failsOnError>true</failsOnError>
+									<linkXRef>false</linkXRef>
+								</configuration>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-sources</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.3</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.6.7</version>
+						<extensions>true</extensions>
+						<configuration>
+							<serverId>oss.sonatype.org</serverId>
+							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+							<description>${project.version}</description>
+						</configuration>
+						<executions>
+							<execution>
+								<id>deploy-to-sonatype</id>
+								<phase>deploy</phase>
+								<goals>
+									<goal>deploy</goal>
+									<goal>release</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<dependencies>
-	    <dependency>
-		    <groupId>com.amazonaws</groupId>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-core</artifactId>
 			<version>1.11.73</version>
 		</dependency>
@@ -195,7 +227,7 @@
 		<dependency>
 			<groupId>com.amihaiemil.web</groupId>
 			<artifactId>charles</artifactId>
-			<version>1.1.0</version>
+			<version>1.1.1</version>
 		</dependency>
 		<dependency><!-- Client for the Github API -->
 			<groupId>com.jcabi</groupId>
@@ -207,11 +239,11 @@
 			<artifactId>jcabi-email</artifactId>
 			<version>1.8</version>
 		</dependency>
-                <dependency>
+		<dependency>
 			<groupId>com.github.detro</groupId>
 			<artifactId>phantomjsdriver</artifactId>
 			<version>1.2.0</version>
-                </dependency>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -243,14 +275,14 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-    <distributionManagement>
-        <repository>
-            <id>oss.sonatype.org</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>oss.sonatype.org</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>oss.sonatype.org</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+		<snapshotRepository>
+			<id>oss.sonatype.org</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>

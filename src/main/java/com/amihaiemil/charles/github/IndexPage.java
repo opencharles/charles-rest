@@ -73,8 +73,9 @@ public class IndexPage extends IndexStep {
 	    logger.info("Indexing page " + link + " ...");
     	try {
     	    logger.info("Crawling the page...");
+    	    this.phantomJsDriver().get(link);
             WebPage snapshot = new SnapshotWebPage(
-                new LiveWebPage(this.phantomJsDriver(), link)
+                new LiveWebPage(this.phantomJsDriver())
             );
     	    logger.info("Page crawled. Sending to aws...");
             new AmazonEsRepository(this.com.indexName()).export(Arrays.asList(snapshot));

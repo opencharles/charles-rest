@@ -84,7 +84,7 @@ public final class SearchResponseHandler implements HttpResponseHandler<SearchRe
                     hitSource.getString("title"),
                     hitSource.getString("url"),
                     highlight.getJsonArray("textContent").getString(0),
-                    hitSource.getString("category")
+                    hitSource.getString("category", "page")
                 );
                 searchResults.add(res);
             }

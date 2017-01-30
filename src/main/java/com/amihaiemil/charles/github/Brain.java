@@ -196,7 +196,7 @@ public class Brain {
                     this.finalCommentStep(
                         com, lang, "index.finished.comment",
                         com.authorLogin(),
-                        com.repo().name(),
+                        com.repo().ownerLogin() + "/" + com.repo().name(),
                         this.logsLoc.address()
                     )
                 )
@@ -228,7 +228,7 @@ public class Brain {
                     this.finalCommentStep(
                         com, lang, "index.finished.comment",
                         com.authorLogin(),
-                        com.repo().name(),
+                        com.repo().ownerLogin() + "/" + com.repo().name(),
                         this.logsLoc.address()
                     )
                 )
