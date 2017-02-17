@@ -22,44 +22,48 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
 
 import org.junit.Test;
+
 import static org.junit.Assert.assertTrue;
+
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
+import com.amihaiemil.charles.aws.requests.AwsHead;
+import com.amihaiemil.charles.aws.requests.AwsHttpRequest;
 
 /**
- * Unit tests for {@link AwsDelete}
+ * Unit tests for {@link AwsHead}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AwsDeleteTestCase {
+public class AwsHeadTestCase {
     
 	/**
-	 * AwsDelete can fetch the original {@link Request}
+	 * AwsHead can fetch the original {@link Request}
 	 */
 	@Test
 	public void fetchesOriginalRequest() {
-        AwsDelete<String> awsd = new AwsDelete<>(
+		AwsHead<String> awsh = new AwsHead<>(
             new AwsHttpRequest.FakeAwsHttpRequest()
         );
-        assertTrue(awsd.request() != null);
-        assertTrue(awsd.request().getServiceName().equals("fake"));
+        assertTrue(awsh.request() != null);
+        assertTrue(awsh.request().getServiceName().equals("fake"));
     }
 	
 	/**
-	 * AwsDelete can perform the original {@link AwsHttpRequest}
+	 * AwsHead can perform the original {@link AwsHttpRequest}
 	 */
 	@Test
 	public void performsRequest() {
-        AwsDelete<String> awsd = new AwsDelete<>(
+		AwsHead<String> awsh = new AwsHead<>(
             new AwsHttpRequest.FakeAwsHttpRequest()
         );
-        assertTrue(awsd.perform().equals("performed fake request"));
-        assertTrue(awsd.request().getHttpMethod().equals(HttpMethodName.DELETE));
+        assertTrue(awsh.perform().equals("performed fake request"));
+        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.HEAD));
     }
 }

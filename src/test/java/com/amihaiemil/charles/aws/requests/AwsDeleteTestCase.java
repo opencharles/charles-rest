@@ -22,58 +22,48 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import org.apache.commons.io.IOUtils;
+
 import org.junit.Test;
+
 import static org.junit.Assert.assertTrue;
+
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
+import com.amihaiemil.charles.aws.requests.AwsDelete;
+import com.amihaiemil.charles.aws.requests.AwsHttpRequest;
 
 /**
- * Unit tests for {@link AwsPost}
+ * Unit tests for {@link AwsDelete}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AwsPostTestCase {
+public class AwsDeleteTestCase {
     
-    /**
-     * AwsPost can fetch the original {@link Request}
-     */
-    @Test
-    public void fetchesOriginalRequest() {
-        AwsPost<String> awsp = new AwsPost<>(
-            new AwsHttpRequest.FakeAwsHttpRequest(),
-            new ByteArrayInputStream("fake content".getBytes())
+	/**
+	 * AwsDelete can fetch the original {@link Request}
+	 */
+	@Test
+	public void fetchesOriginalRequest() {
+        AwsDelete<String> awsd = new AwsDelete<>(
+            new AwsHttpRequest.FakeAwsHttpRequest()
         );
-        assertTrue(awsp.request() != null);
-        assertTrue(awsp.request().getServiceName().equals("fake"));
+        assertTrue(awsd.request() != null);
+        assertTrue(awsd.request().getServiceName().equals("fake"));
     }
-    
-    /**
-     * AwsPost can perform the original {@link AwsHttpRequest}
-     * @throws IOException If something goes wrong while reading
-     *  the request's content.
-     */
-    @Test
-    public void performsRequest() throws IOException {
-        String jsonContent = "{\"testContent\":\"fake\"}";
-        AwsPost<String> awsp = new AwsPost<>(
-            new AwsHttpRequest.FakeAwsHttpRequest(),
-            new ByteArrayInputStream(jsonContent.getBytes())
+	
+	/**
+	 * AwsDelete can perform the original {@link AwsHttpRequest}
+	 */
+	@Test
+	public void performsRequest() {
+        AwsDelete<String> awsd = new AwsDelete<>(
+            new AwsHttpRequest.FakeAwsHttpRequest()
         );
-        assertTrue(awsp.perform().equals("performed fake request"));
-        assertTrue(awsp.request().getHttpMethod().equals(HttpMethodName.POST));
-
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(awsp.request().getContent(), writer, "UTF-8");
-        String content = writer.toString();
-
-        assertTrue(content.equals(jsonContent));
+        assertTrue(awsd.perform().equals("performed fake request"));
+        assertTrue(awsd.request().getHttpMethod().equals(HttpMethodName.DELETE));
     }
 }

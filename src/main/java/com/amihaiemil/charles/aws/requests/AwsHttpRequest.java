@@ -23,42 +23,50 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
+import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
-import com.amazonaws.http.HttpMethodName;
 
 /**
- * Http HEAD request sent to AWS.
+ * Http request sent to AWS.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public final class AwsHead<T> implements AwsHttpRequest<T> {
+public abstract class AwsHttpRequest<T> {
 
     /**
-     * Base request.
+     * Perform this request.
      */
-    private AwsHttpRequest<T> base;
+    public abstract T perform();
 
     /**
-     * Ctor.
-     * @param req Base AwsHttpRequest.
-     * @param content InputStream containing this request's content.
+     * Get the aws base request.
+     * @return Request.
      */
-    public AwsHead(AwsHttpRequest<T> req) {
-    	this.base = req;
-        this.base.request().setHttpMethod(HttpMethodName.HEAD);
-	}
+    abstract Request<Void> request();
 
-    @Override
-    public T perform() {
-        return this.base.perform();
-    }
+    /**
+     * Fake AwsHttpRequest for unit testing.
+     * @author Mihai Andronache (amihaiemil@gmail.com)
+     * @version $Id$
+     * @since 1.0.0
+     */
+    static class FakeAwsHttpRequest extends AwsHttpRequest<String>{
 
-    @Override
-    public Request<Void> request() {
-    	return this.base.request();
+        private Request<Void> fakeRq = new DefaultRequest<>("fake");
+
+        @Override
+        public String perform() {
+            return "performed fake request";
+        }
+
+        @Override
+        public Request<Void> request() {
+            return this.fakeRq;
+        }
+
     }
 }

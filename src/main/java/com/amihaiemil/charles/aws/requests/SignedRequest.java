@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
 import com.amazonaws.Request;
 import com.amazonaws.auth.AWS4Signer;
@@ -39,7 +39,7 @@ import com.amazonaws.auth.AWSCredentials;
  * @see <a href="https://blogs.aws.amazon.com/security/post/Tx3VP208IBVASUQ/How-to-Control-Access-to-Your-Amazon-Elasticsearch-Service-Domain">Aws blog post</a>
  *
  */
-public class SignedRequest<T> implements AwsHttpRequest<T> {
+public class SignedRequest<T> extends AwsHttpRequest<T> {
 
     /**
      * Base request.
@@ -54,6 +54,7 @@ public class SignedRequest<T> implements AwsHttpRequest<T> {
         this.base = req;
     }
 
+    @Override
     public T perform() {
         AWS4Signer signer = new AWS4Signer();
         String region = System.getProperty("aws.es.region");
@@ -67,7 +68,7 @@ public class SignedRequest<T> implements AwsHttpRequest<T> {
     }
 
     @Override
-    public Request<Void> request() {
+    Request<Void> request() {
         return this.base.request();
     }
     

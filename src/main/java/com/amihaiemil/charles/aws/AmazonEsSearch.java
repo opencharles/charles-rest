@@ -29,6 +29,11 @@ import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amihaiemil.charles.aws.requests.AwsHttpHeaders;
+import com.amihaiemil.charles.aws.requests.AwsHttpRequest;
+import com.amihaiemil.charles.aws.requests.AwsPost;
+import com.amihaiemil.charles.aws.requests.EsHttpRequest;
+import com.amihaiemil.charles.aws.requests.SignedRequest;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**

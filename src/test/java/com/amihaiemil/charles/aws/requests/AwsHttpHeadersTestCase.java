@@ -22,7 +22,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -31,8 +31,11 @@ import java.util.Map;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
+import com.amihaiemil.charles.aws.requests.AwsHttpHeaders;
+import com.amihaiemil.charles.aws.requests.AwsHttpRequest;
 
 /**
  * Unit tests for {@link AwsHttpHeaders}

@@ -23,7 +23,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.ClientConfiguration;
@@ -42,7 +42,7 @@ import java.net.URI;
  * @since 1.0.0
  *
  */
-public final class EsHttpRequest<T> implements AwsHttpRequest<T> {
+public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
 
     /**
      * Base request.
@@ -90,6 +90,7 @@ public final class EsHttpRequest<T> implements AwsHttpRequest<T> {
     /**
      * Perform this request.
      */
+    @Override
     public T perform() {
         final Response<T> rsp = new AmazonHttpClient(new ClientConfiguration())
             .requestExecutionBuilder()
@@ -104,7 +105,8 @@ public final class EsHttpRequest<T> implements AwsHttpRequest<T> {
      * Fetch the base request.
      * @return
      */
-    public Request<Void> request() {
+    @Override
+    Request<Void> request() {
         return this.request;
     }
     

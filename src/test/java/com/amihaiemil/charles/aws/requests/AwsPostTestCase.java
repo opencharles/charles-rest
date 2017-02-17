@@ -22,44 +22,63 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.aws;
+package com.amihaiemil.charles.aws.requests;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+
 import static org.junit.Assert.assertTrue;
+
 import com.amazonaws.Request;
 import com.amazonaws.http.HttpMethodName;
+import com.amihaiemil.charles.aws.requests.AwsHttpRequest;
+import com.amihaiemil.charles.aws.requests.AwsPost;
 
 /**
- * Unit tests for {@link AwsHead}
+ * Unit tests for {@link AwsPost}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class AwsHeadTestCase {
+public class AwsPostTestCase {
     
-	/**
-	 * AwsHead can fetch the original {@link Request}
-	 */
-	@Test
-	public void fetchesOriginalRequest() {
-		AwsHead<String> awsh = new AwsHead<>(
-            new AwsHttpRequest.FakeAwsHttpRequest()
+    /**
+     * AwsPost can fetch the original {@link Request}
+     */
+    @Test
+    public void fetchesOriginalRequest() {
+        AwsPost<String> awsp = new AwsPost<>(
+            new AwsHttpRequest.FakeAwsHttpRequest(),
+            new ByteArrayInputStream("fake content".getBytes())
         );
-        assertTrue(awsh.request() != null);
-        assertTrue(awsh.request().getServiceName().equals("fake"));
+        assertTrue(awsp.request() != null);
+        assertTrue(awsp.request().getServiceName().equals("fake"));
     }
-	
-	/**
-	 * AwsHead can perform the original {@link AwsHttpRequest}
-	 */
-	@Test
-	public void performsRequest() {
-		AwsHead<String> awsh = new AwsHead<>(
-            new AwsHttpRequest.FakeAwsHttpRequest()
+    
+    /**
+     * AwsPost can perform the original {@link AwsHttpRequest}
+     * @throws IOException If something goes wrong while reading
+     *  the request's content.
+     */
+    @Test
+    public void performsRequest() throws IOException {
+        String jsonContent = "{\"testContent\":\"fake\"}";
+        AwsPost<String> awsp = new AwsPost<>(
+            new AwsHttpRequest.FakeAwsHttpRequest(),
+            new ByteArrayInputStream(jsonContent.getBytes())
         );
-        assertTrue(awsh.perform().equals("performed fake request"));
-        assertTrue(awsh.request().getHttpMethod().equals(HttpMethodName.HEAD));
+        assertTrue(awsp.perform().equals("performed fake request"));
+        assertTrue(awsp.request().getHttpMethod().equals(HttpMethodName.POST));
+
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(awsp.request().getContent(), writer, "UTF-8");
+        String content = writer.toString();
+
+        assertTrue(content.equals(jsonContent));
     }
 }
