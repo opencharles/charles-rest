@@ -47,7 +47,7 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
     /**
      * Base request.
      */
-    private static final Request<Void> REQUEST = new DefaultRequest<Void>("es");
+    private final Request<Void> request;
 
     /**
      * Response handler.
@@ -70,7 +70,19 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
         HttpResponseHandler<T> respHandler,
         HttpResponseHandler<AmazonServiceException> errHandler
     ){
-    	EsHttpRequest.addUriToRequest(uri);
+    	this.request = new DefaultRequest<Void>("es");
+        String esEndpoint = System.getProperty("aws.es.endpoint");
+        if(esEndpoint == null || esEndpoint.isEmpty()) {
+            throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
+        }
+        if(esEndpoint.endsWith("/")) {
+            esEndpoint += uri;
+        } else {
+            esEndpoint += "/" + uri;
+        }
+        this.request.setEndpoint(URI.create(esEndpoint));
+        
+        
         this.respHandler = respHandler;
         this.errHandler = errHandler;
     }
@@ -83,7 +95,7 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
         final Response<T> rsp = new AmazonHttpClient(new ClientConfiguration())
             .requestExecutionBuilder()
             .executionContext(new ExecutionContext(true))
-            .request(EsHttpRequest.REQUEST)
+            .request(this.request)
             .errorResponseHandler(this.errHandler)
             .execute(this.respHandler);
         return rsp.getAwsResponse();
@@ -95,19 +107,7 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
      */
     @Override
     Request<Void> request() {
-        return EsHttpRequest.REQUEST;
+        return this.request;
     }
     
-    private static void addUriToRequest(String uri) {
-    	String esEndpoint = System.getProperty("aws.es.endpoint");
-        if(esEndpoint == null || esEndpoint.isEmpty()) {
-            throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
-        }
-        if(esEndpoint.endsWith("/")) {
-            esEndpoint += uri;
-        } else {
-            esEndpoint += "/" + uri;
-        }
-        EsHttpRequest.REQUEST.setEndpoint(URI.create(esEndpoint));
-    }
 }

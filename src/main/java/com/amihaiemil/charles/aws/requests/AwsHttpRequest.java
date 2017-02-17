@@ -25,6 +25,8 @@
  */
 package com.amihaiemil.charles.aws.requests;
 
+import java.net.URI;
+
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.Request;
 
@@ -56,8 +58,14 @@ public abstract class AwsHttpRequest<T> {
      */
     static class FakeAwsHttpRequest extends AwsHttpRequest<String>{
 
-        private Request<Void> fakeRq = new DefaultRequest<>("fake");
+        private Request<Void> fakeRq;
 
+        public FakeAwsHttpRequest() {
+        	this.fakeRq = new DefaultRequest<>("fake");
+        	this.fakeRq.setEndpoint(
+        	    URI.create("http://localhost:8080/test")
+        	);
+        }
         @Override
         public String perform() {
             return "performed fake request";
