@@ -26,7 +26,8 @@
 /**
  * This package should hold AwsHttpRequest decorators only!
  *
- * You’ll notice the decorators perform the decoration within the constructors.
+ * IMPORTANT:
+ * The decorators perform the decoration within the constructors.
  * It should take place inside perform(), right before this.base.perform() but
  * I was forced to do it like that, because of the signing decorator.
  *  
