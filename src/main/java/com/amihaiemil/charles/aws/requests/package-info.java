@@ -25,6 +25,15 @@
  */
 /**
  * This package should hold AwsHttpRequest decorators only!
+ *
+ * You’ll notice the decorators perform the decoration within the constructors.
+ * It should take place inside perform(), right before this.base.perform() but
+ * I was forced to do it like that, because of the signing decorator.
+ *  
+ * The way it’s done now, the decorators can be added on top of the base implementation 
+ * in any order. If the decoration is not done in the ctor, then the signing decorator 
+ * has to be the last one in the chain, otherwise the final signature is not correct.
+ *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  */
 package com.amihaiemil.charles.aws.requests;
