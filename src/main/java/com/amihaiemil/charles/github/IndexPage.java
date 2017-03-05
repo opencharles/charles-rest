@@ -28,6 +28,7 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.DataExportException;
@@ -69,20 +70,25 @@ public class IndexPage extends IndexStep {
 
     @Override
     public void perform() {
-	    String link = this.getLink();
-	    logger.info("Indexing page " + link + " ...");
-    	try {
-    	    logger.info("Crawling the page...");
-    	    this.phantomJsDriver().get(link);
-            WebPage snapshot = new SnapshotWebPage(
-                new LiveWebPage(this.phantomJsDriver())
+         String link = this.getLink();
+         logger.info("Indexing page " + link + " ...");
+         try {
+             logger.info("Crawling the page...");
+             WebDriver driver = this.phantomJsDriver();
+             driver.get(link);
+            WebPage snapshot = new SnapshotWebPage(new LiveWebPage(driver));
+             logger.info("Page crawled. Sending to aws...");
+            new AmazonEsRepository(this.com.indexName()).export(
+                Arrays.asList(snapshot)
             );
-    	    logger.info("Page crawled. Sending to aws...");
-            new AmazonEsRepository(this.com.indexName()).export(Arrays.asList(snapshot));
-    	    logger.info("Page successfully sent to aws!");
-        } catch (DataExportException | IOException | RuntimeException e) {
+             logger.info("Page successfully sent to aws!");
+        } catch (
+            final DataExportException | IOException | RuntimeException e
+        ) {
             logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException("Exception while indexing the page" + link, e);
+            throw new IllegalStateException(
+                "Exception while indexing the page" + link, e
+            );
         }
         this.next().perform();
     }
@@ -93,8 +99,8 @@ public class IndexPage extends IndexStep {
      * @return String link.
      */
     private String getLink() {
-    	String body = this.com.json().getString("body");
-        return body.substring(body.indexOf('('),  body.indexOf(')'));
+         String body = this.com.json().getString("body");
+        return body.substring(body.indexOf('(') + 1,  body.indexOf(')'));
     }
 
 }
