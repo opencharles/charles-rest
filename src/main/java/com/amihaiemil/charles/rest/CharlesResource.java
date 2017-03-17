@@ -57,9 +57,16 @@ public class CharlesResource {
     /**
      * Http request.
      */
-    @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * Ctor.
+     * @param servletRequest Injected HttpServletRequest
+     */
+    public CharlesResource (@Context HttpServletRequest servletRequest) {
+    	this.servletRequest = servletRequest;
+    }
+    
     /**
      * Endpoint for checking if the service is online.
      * @return ok response.
@@ -117,12 +124,13 @@ public class CharlesResource {
         
         int start = 0;
         List<String> pagesLinks = new ArrayList<String>();
-        while(start < nr) {
+        while(start < results.getTotalHits()) {
             pagesLinks.add(
                 requestUrl + String.format(queryStringFormat, keywords, category, start, nr)
             );
             start += nr;
         }
+        results.setPages(pagesLinks);
         
         return Response.ok().entity(new ObjectMapper().writeValueAsString(results)).build();
     }
