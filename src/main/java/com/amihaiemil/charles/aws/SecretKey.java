@@ -26,7 +26,7 @@
 package com.amihaiemil.charles.aws;
 
 /**
- * Secret Key system property. 
+ * AWS Secret Key system property. 
  * @author Sherif Waly (sherifwaly95@gmail.com)
  * @version $Id$
  * @since 1.0.0

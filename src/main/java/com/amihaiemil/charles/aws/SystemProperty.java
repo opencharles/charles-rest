@@ -31,7 +31,8 @@ package com.amihaiemil.charles.aws;
  * @version $Id$
  * @since 1.0.0
  * @todo #199:30m/DEV Implement and Unit test 4 system properties 
- * SecretKey, Region, EsEndPoint and AccessKeyId. 
+ *  SecretKey, Region, EsEndPoint and AccessKeyId. Also add fake
+ *  implementation for the interfaces to use them in testing.
  */
 public interface SystemProperty {
 
