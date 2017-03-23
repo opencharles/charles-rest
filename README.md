@@ -4,10 +4,9 @@
 
 [![Build Status](https://travis-ci.org/opencharles/charles-rest.svg?branch=master)](https://travis-ci.org/opencharles/charles-rest)
 [![PDD status](http://www.0pdd.com/svg?name=opencharles/charles-rest)](http://www.0pdd.com/p?name=opencharles/charles-rest)
-![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
 <a href='https://coveralls.io/github/opencharles/charles-rest?branch=master'><img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' /></a>
 
-##What it is: 
+## What it is: 
 
 A webapp ``.war`` - codebase behind [Charles Michaels](https://www.github.com/charlesmike) chatbot. It receives notifications read by this [ejb checker](https://github.com/opencharles/mention-notifications-ejb) and takes
 actions according to each of them. Any Github account can be used with this project; it's all dictated by the Github auth token used.
