@@ -73,40 +73,40 @@
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <p>You interact with the Service via Github issue comments, called commands.</p>
 					<p>A command will always be addressed to <a target="_blank" href="https://www.github.com/charlesmike">@charlesmike</a></p>
-					<p>More types of commands are understood (the engine behind is made of regular expressions) Bellow you can find a detailed table:</p>
+					<p>More types of commands are understood. Bellow you can find a detailed table with the keywords for each command:</p>
                     <br/>
 				</div>
 				<div class="col-lg-8 col-lg-offset-2">
 				    <table class="table" id="commandsTable">
-					    <tr><th>Type</th><th>RegEx</th><th>Example</th><th>Effect</th></tr>
+					    <tr><th>Type</th><th>Keywords</th><th>Example</th><th>Effect</th></tr>
 						<tr>
 						    <td>Hello</td>
-							<td>^@charlesmike[ ,]+(hi|hello|how are you|how do you do|who are you|what are you|hi there|hello there)[ \\?,\\.;!]*$</td>
-							<td>@charlesmike hi there!!</td>
+							<td>hello</td>
+							<td>@charlesmike hello there!!</td>
 							<td>The bot will answer explaining what it can do for you.</td>
 					    </tr>
                         <tr>
 						    <td>Index site</td>
-							<td>^@charlesmike[ ,]+(please index|pls index|index please|index pls|index)[ \\?,\\.;!]*$</td>
-							<td>@charlesmike pls index</td>
+							<td>index, site</td>
+							<td>@charlesmike index this site</td>
 							<td>The bot will crawl and <b>index the whole website</b></td>
 					    </tr>
                         <tr>
 						    <td>Index page</td>
-							<td>^@charlesmike[ ,]+(index \\[this\\] *\\(.+\\) page|please index \\[this\\] *\\(.+\\) page|pls index \\[this\\] *\\(.+\\) page)[ \\?,\\.;!]*$</td>
+							<td>index, page</td>
 							<td>@charlesmike pls index [this](link/to/page) page</td>
 							<td>Notice the Markdown styling - it's mandatory. The bot will crawl and <b>index the specified page</b></td>
 					    </tr>
               <tr>
                 <td>Delete index</td>
-                <td>^%s[ ,]+(delete \S+ index (pls|please)*)$</td>
+                <td>delete</td>
                 <td>@charlesmike delete `repo` index</td>
                 <td><b>The index will be deleted</b>. Note that you have to specify the repo's exact name (case sensitive) between back-apostrophes. After running this command,
                 <b>you should remove the script from your website since the search won't work anymore</b>
                 </td>
               </tr>
 					</table>
-					<p>More commands to come. Also more languages will be supported!</p><br/>
+					<p>More commands to come. Note that, in order for a command to be recognized properly, all the keywords must be present.</p><br/>
           <h3>Important</h3>
 
 					<p>In order to give any command, besides hello, you need to be the repository's owner. This means that:</p>
@@ -174,7 +174,7 @@ have to add a JS script to your page to render the search box.</p>
                 </div>
 				<div class="row">
                     <div class="col-lg-12">
-                        Copyright &copy; charles.amihaiemil.com 2016
+                        Copyright &copy; charles.amihaiemil.com 2016-2017
                     </div>
                 </div>
 				<div class="row">

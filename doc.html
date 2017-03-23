@@ -84,7 +84,7 @@ it can be found <a target="_blank" href="https://github.com/amihaiemil/charles-g
 there is a job that uses the Github API to interact with the <a target="_blank" href="https://github.com/charlesmike" title="Charles Michael's Github account">@charlesmike</a> account. Every minute, the notifications are checked and actions are taken according to each notification.</p>
                 </div>
                 <div class="col-lg-4">
-                    <p>The crawling, fetching and storing of web-content logic is in <a target="_blank" title="Charles library" href="https://github.com/amihaiemil/charles">this</a> library. You can think of the library as the "engine" of everything, while the chatbot and the code behind it are only the "front end", the part which interacts with the user. Of course, it is reusable and you can use it in your own project if you want to. The crawling and fetching of content can be used directly, while you might want to define your own <code>Repository</code></p>
+                    <p>The crawling, fetching and storing of web-content logic is in <a target="_blank" title="Charles library" href="https://github.com/amihaiemil/charles">this</a> library. You can think of the library as the "engine" of everything, while the chatbot and the code behind it are only the "front end", the part which interacts with the user.</p>
                 </div>
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <p></p>
@@ -104,18 +104,17 @@ there is a job that uses the Github API to interact with the <a target="_blank" 
                 </div>
             </div>
             <div class="col-lg-4 col-lg-offset-2">
-                <p>More types of commands are "understood", like: <b>hello, index site, and index page</b>. We say types
-because <a target="_blank" href="https://en.wikipedia.org/wiki/Regular_expression" title="What is RegEx?">regex rules</a> are used and so, for instance, "hi" and "hello" or "hi there!" will be understood as salutations.</p>
+                <p>More types of commands are "understood", like: <b>hello, index site, and index page</b>.</p>
 
             <ul>
                 <li><b>hello</b> will trigger a salutation from the bot, and it will reply explaining what it can offer and on what conditions. Give it a try: say <b>@charlesmike hello there!</b> in an issue comment</li>
-                <li><b>index site</b> will trigger the crawling and indexing of the whole website and can be triggered by saying <b>@charlesmike pls index</b> or simply <b>@charlesmike index</b></li>
-                <li><b>index page</b> will trigger the crawling and indexing of a single page of the website and can be triggered by saying something like <b>@charlesmike pls index [this](http://link-to-page.com)</b> - here <a target="_blank" href="https://guides.github.com/features/mastering-markdown/" title="Github Mastering Markdown">Markdown</a> styling is used, to pretty format the Github comment and also make the text easely parasable.</li>
+                <li><b>index site</b> will trigger the crawling and indexing of the whole website and can be triggered by saying <b>@charlesmike pls index this site</b> or simply <b>@charlesmike index site</b></li>
+                <li><b>index page</b> will trigger the crawling and indexing of a single page of the website and can be triggered by saying something like <b>@charlesmike pls index [this](http://link-to-page.com) page</b> - here <a target="_blank" href="https://guides.github.com/features/mastering-markdown/" title="Github Mastering Markdown">Markdown</a> styling is used, to pretty format the Github comment and also make the text easely parasable.</li>
                 <li><b>...and others</b>, see "More on commands" for details</li>
             </ul>
             </div>
             <div class="col-lg-4">
-                  <p>Any Github user, in any Issue, can say <b>hi</b> to the bot and it will answer, but <b>only the repository owner can
+                  <p>Any Github user, in any Issue, can say <b>hello</b> to the bot and it will answer, but <b>only the repository owner can
                    trigger index commands</b>. Owner means that the repo is under his/her name and it is not a fork. If the repo is under
                    an <b>organization</b>, then the user must be <b>admin</b> of that organization.</p>
                    <p>If the repository ownership condition is not met, the
@@ -159,12 +158,12 @@ bot will answer explaining that this condition is not met and will not take any 
 					    <li>You have to edit your site a little, just the first time (ideally, only add a script we provide).</li>
 						<li>Once an index command is finished, your search will see it almost in real time.</li>
 						<li><b>Relies on Javascript. It won't work if the javascript is disabled in the browser!</b></li>
-						<li>Should work fine on all modern browsers and mobile. <b>We don't care about Internet Explorer</b>; you should catch up with the world if you do.</li>
+						<li>Should work fine on all modern browsers./li>
 					</ul>
                 </div>
                 <div class="col-lg-8 col-lg-offset-2 text-center">
                     <br/><br/>
-					<a href="#" class="btn btn-default">More on search</a>
+					<a href="https://github.com/opencharles/charles-search-box#reactjs-search-box-component" target="_blank" class="btn btn-default">More on search</a>
 		        </div>
             </div>
         </div>
@@ -217,7 +216,7 @@ have to add a JS script to your page to render the search box.</p>
                 </div>
 				<div class="row">
                     <div class="col-lg-12">
-                        Copyright &copy; charles.amihaiemil.com 2016
+                        Copyright &copy; charles.amihaiemil.com 2016-2017
                     </div>
                 </div>
 				<div class="row">
