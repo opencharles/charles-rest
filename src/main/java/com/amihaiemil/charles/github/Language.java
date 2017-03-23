@@ -26,14 +26,11 @@
 
 package com.amihaiemil.charles.github;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Language that the agent speaks.
@@ -48,7 +45,7 @@ abstract class Language {
     /**
      * Commands that the agent can understand, in a given language.
      */
-    private Properties commandsPatterns = new Properties();
+    private Properties commands = new Properties();
     
     /**
      * Responses that the agent can give, in a given language
@@ -57,7 +54,7 @@ abstract class Language {
     
     Language(String commandsFileName, String responsesFileName) {
         try {
-            commandsPatterns.load(
+        	commands.load(
                 this.getClass().getClassLoader().getResourceAsStream(commandsFileName)
             );
             responses.load(
@@ -70,18 +67,18 @@ abstract class Language {
     }
     
     CommandCategory categorize(Command command) throws IOException {
-        Set<Object> keys = this.commandsPatterns.keySet();
+        Set<Object> keys = this.commands.keySet();
         for(Object key : keys) {
             String keyString = (String) key;
-            String regex = this.commandsPatterns.getProperty(keyString, "");
-            if(!regex.isEmpty()) {
-                String formattedRegex = String.format(regex, "@" + command.agentLogin());
-                Pattern p = Pattern.compile(formattedRegex);
-                String text = command.json().getString("body");
-                Matcher m = p.matcher(text);
-                if(m.matches()) {
-                    return new CommandCategory(keyString.split("\\.")[0], this);
+            String[] words = this.commands.getProperty(keyString, "").split("\\^");
+            boolean match = true;
+            for(String word : words) {
+                if(!command.json().getString("body").contains(word.trim())) {
+                	match = false;
                 }
+            }
+            if(match) {
+            	return new CommandCategory(keyString.split("\\.")[0], this);
             }
         }
         return new CommandCategory("unknown", this);
