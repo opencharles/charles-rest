@@ -47,9 +47,9 @@ public class EnglishTestCase {
     public void recognizesHelloCommands() throws Exception {
         Command hello1 = this.mockCommand("@charlesmike, hello there!");
         Command hello2 = this.mockCommand("@charlesmike, hello?!");
-        Command hello3 = this.mockCommand("@charlesmike hi");
-        Command hello4 = this.mockCommand("@charlesmike, how do you do??");
-        Command hello5 = this.mockCommand("@charlesmike who are you?");
+        Command hello3 = this.mockCommand("@charlesmike hello");
+        Command hello4 = this.mockCommand("@charlesmike hello, how do you do??");
+        Command hello5 = this.mockCommand("@charlesmike hello, who are you?");
         
         Language english = new English();
         assertTrue(english.categorize(hello1).type().equals("hello"));
@@ -64,11 +64,11 @@ public class EnglishTestCase {
      */
     @Test
     public void recognizezIndexSiteCommands() throws Exception{
-        Command index1 = this.mockCommand("@charlesmike, please index!");
-        Command index2 = this.mockCommand("@charlesmike, index pls");
-        Command index3 = this.mockCommand("@charlesmike index...");
-        Command index4 = this.mockCommand("@charlesmike index please!!!");
-        Command index5 = this.mockCommand("@charlesmike, pls index?");
+        Command index1 = this.mockCommand("@charlesmike, please index this site!");
+        Command index2 = this.mockCommand("@charlesmike, index site pls");
+        Command index3 = this.mockCommand("@charlesmike index this repo's site...");
+        Command index4 = this.mockCommand("@charlesmike index site please!!!");
+        Command index5 = this.mockCommand("@charlesmike, pls index site?");
         
         Language english = new English();
         assertTrue(english.categorize(index1).type().equals("indexsite"));
@@ -102,18 +102,18 @@ public class EnglishTestCase {
      */
     @Test
     public void recognizesDeleteIndexCommands() throws Exception{
-        Command indexPage1 = this.mockCommand("@charlesmike, delete `eva` index pls");
-        Command indexPage2 = this.mockCommand("@charlesmike delete `amihaiemil.github.io` index");
-        Command indexPage3 = this.mockCommand("@charlesmike, delete this index");
-        Command indexPage4 = this.mockCommand("@charlesmike delete `charles` index please");
-        Command indexPage5 = this.mockCommand("@charlesmike delete `charles-github-ejb` index");
+        Command deletePage1 = this.mockCommand("@charlesmike, delete `eva` index pls");
+        Command deletePage2 = this.mockCommand("@charlesmike delete `amihaiemil.github.io` index");
+        Command deletePage3 = this.mockCommand("@charlesmike, delete this index");
+        Command deletePage4 = this.mockCommand("@charlesmike delete `charles` index please");
+        Command deletePage5 = this.mockCommand("@charlesmike delete `charles-github-ejb` index");
 
         Language english = new English();
-        assertTrue(english.categorize(indexPage1).type().equals("deleteindex"));
-        assertTrue(english.categorize(indexPage2).type().equals("deleteindex"));
-        assertTrue(english.categorize(indexPage3).type().equals("deleteindex"));
-        assertTrue(english.categorize(indexPage4).type().equals("deleteindex"));
-        assertTrue(english.categorize(indexPage5).type().equals("deleteindex"));
+        assertTrue(english.categorize(deletePage1).type().equals("deleteindex"));
+        assertTrue(english.categorize(deletePage2).type().equals("deleteindex"));
+        assertTrue(english.categorize(deletePage3).type().equals("deleteindex"));
+        assertTrue(english.categorize(deletePage4).type().equals("deleteindex"));
+        assertTrue(english.categorize(deletePage5).type().equals("deleteindex"));
     }
     
     /**

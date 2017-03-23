@@ -65,7 +65,7 @@ public class ActionTestCase {
         Language english = (Language)new English();
         Issue issue1 = this.githubIssue("amihaiemil", "@charlesmike hello there");
         Issue issue2 = this.githubIssue("jeff", "@charlesmike hello");
-        Issue issue3 = this.githubIssue("vlad", "@charlesmike hi");
+        Issue issue3 = this.githubIssue("vlad", "@charlesmike, hello");
         Issue issue4 = this.githubIssue("marius", "@charlesmike hello");
         final Action ac1 = new Action(issue1);
         final Action ac2 = new Action(issue2);
@@ -116,7 +116,7 @@ public class ActionTestCase {
         assertTrue(commentsWithReply2.get(1).json().getString("body")
                 .equals(expectedReply2)); //there should be only 2 comments - the command and the reply.
         
-        String expectedReply3 = "> @charlesmike hi\n\n" + String.format(english.response("hello.comment"),"vlad");
+        String expectedReply3 = "> @charlesmike, hello\n\n" + String.format(english.response("hello.comment"),"vlad");
         assertTrue(commentsWithReply3.get(1).json().getString("body")
                 .equals(expectedReply3)); //there should be only 2 comments - the command and the reply.
         
