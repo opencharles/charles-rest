@@ -1,7 +1,11 @@
 <img alt="logo" src="http://www.amihaiemil.com/images/logo_mic.PNG" width="60" height="60"/>
-# charles-rest
+
+## charles-rest
+
 [![Build Status](https://travis-ci.org/opencharles/charles-rest.svg?branch=master)](https://travis-ci.org/opencharles/charles-rest)
+
 [![PDD status](http://www.0pdd.com/svg?name=opencharles/charles-rest)](http://www.0pdd.com/p?name=opencharles/charles-rest)
+
 ![Service status](http://charles.amihaiemil.com/img/service status-offline-yellow.svg)
 <a href='https://coveralls.io/github/opencharles/charles-rest?branch=master'><img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' /></a>
 
