@@ -2,6 +2,7 @@
 
 ## charles-rest
 
+[![DevOps By Rultor.com](http://www.rultor.com/b/opencharles/charles-rest)](http://www.rultor.com/p/opencharles/charles-rest)
 [![Build Status](https://travis-ci.org/opencharles/charles-rest.svg?branch=master)](https://travis-ci.org/opencharles/charles-rest)
 [![PDD status](http://www.0pdd.com/svg?name=opencharles/charles-rest)](http://www.0pdd.com/p?name=opencharles/charles-rest)
 <a href='https://coveralls.io/github/opencharles/charles-rest?branch=master'><img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' /></a>
