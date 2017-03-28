@@ -26,16 +26,19 @@
 package com.amihaiemil.charles.aws;
 
 /**
- * System property read in AWS. 
+ * Implementation for {@link AccessKeyId} interface.
  * @author Sherif Waly (sherifwaly95@gmail.com)
  * @version $Id$
  * @since 1.0.0
  */
-public interface SystemProperty {
-
+public final class StAccessKeyId extends AbstractSystemProperty implements SecretKey {
+    
     /**
-     * Reads the system property value.
-     * @return String
+     * Ctor. 
+     * @param String name
      */
-    public String read();
+    public StAccessKeyId(final String name) {
+        super(name);
+    }
+
 }

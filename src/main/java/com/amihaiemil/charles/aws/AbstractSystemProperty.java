@@ -1,4 +1,4 @@
-/**
+/**@g
  * Copyright (c) 2016-2017, Mihai Emil Andronache
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
@@ -26,16 +26,31 @@
 package com.amihaiemil.charles.aws;
 
 /**
- * System property read in AWS. 
- * @author Sherif Waly (sherifwaly95@gmail.com)
+ * AbstractSystemProperty implementing methods that should be the same
+ * accross all final implementations of {@link SystemProperty}.
+ * @author Sherif Waly (sherifwaly@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.0.0 
+ * @todo #201:15m/DEV Add fake implementation for the 4 SystemProperty
+ * interfaces to use them in testing.
  */
-public interface SystemProperty {
+abstract class AbstractSystemProperty implements SystemProperty {
 
     /**
-     * Reads the system property value.
-     * @return String
+     * Name of the system Property.
      */
-    public String read();
+    private String name;
+    
+    /**
+     * Ctor
+     * @param String name.
+     */
+    public AbstractSystemProperty(String name) {
+        this.name = name;
+    }
+
+	@Override
+    public String read() {
+        return System.getProperty(this.name);
+    }
 }

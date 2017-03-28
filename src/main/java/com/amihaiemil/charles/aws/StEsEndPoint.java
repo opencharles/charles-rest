@@ -26,16 +26,19 @@
 package com.amihaiemil.charles.aws;
 
 /**
- * System property read in AWS. 
+ * Implementation for {@link EsEndPoint} interface.
  * @author Sherif Waly (sherifwaly95@gmail.com)
  * @version $Id$
  * @since 1.0.0
  */
-public interface SystemProperty {
-
+public final class StEsEndPoint extends AbstractSystemProperty implements EsEndPoint {
+    
     /**
-     * Reads the system property value.
-     * @return String
+     * Ctor. 
+     * @param String name
      */
-    public String read();
+    public StEsEndPoint(final String name) {
+        super(name);
+    }
+
 }
