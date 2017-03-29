@@ -32,7 +32,7 @@ package com.amihaiemil.charles.aws;
  * @version $Id$
  * @since 1.0.0 
  * @todo #201:15m/DEV Add fake implementation for the 4 SystemProperty
- * interfaces to use them in testing.
+ *  interfaces to use them in testing.
  */
 abstract class AbstractSystemProperty implements SystemProperty {
 
@@ -49,7 +49,7 @@ abstract class AbstractSystemProperty implements SystemProperty {
         this.name = name;
     }
 
-	@Override
+    @Override
     public String read() {
         return System.getProperty(this.name);
     }

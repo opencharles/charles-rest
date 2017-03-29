@@ -31,7 +31,7 @@ package com.amihaiemil.charles.aws;
  * @version $Id$
  * @since 1.0.0
  */
-public final class StRegion extends AbstractSystemProperty implements SecretKey {
+public final class StRegion extends AbstractSystemProperty implements Region {
     
     /**
      * Ctor. 
