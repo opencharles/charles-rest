@@ -44,8 +44,8 @@ public final class StEsEndPoint extends AbstractSystemProperty implements EsEndP
     @Override
     public String read() {
         String endPoint = super.read();
-        if(!endPoint.endsWith("\\")) {
-            endPoint += "\\";
+        if(!endPoint.endsWith("/")) {
+            endPoint += "/";
         }
         return endPoint;
     }
