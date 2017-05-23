@@ -6,10 +6,10 @@ $(document).ready(function() {
 		if(logFile.indexOf('/') == 0) {
 			logFile = logFile.substring(1, logFile.length);
 		}
-		getLogs("http://ec2-54-68-83-8.us-west-2.compute.amazonaws.com:8080/charles-rest/api/logs/" + logFile)
+		getLogs("http://ec2-34-209-37-87.us-west-2.compute.amazonaws.com:8080/charles-rest/api/logs/" + logFile)
 		setInterval(
 		    function(){
-				    getLogs("http://ec2-54-68-83-8.us-west-2.compute.amazonaws.com:8080/charles-rest/api/logs/" + logFile)
+				    getLogs("http://ec2-34-209-37-87.us-west-2.compute.amazonaws.com:8080/charles-rest/api/logs/" + logFile)
 				},
 				10000
 	  );
