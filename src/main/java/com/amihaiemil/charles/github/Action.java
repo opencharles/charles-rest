@@ -133,7 +133,7 @@ public class Action {
         if(logRoot == null) {
             logRoot = ".";
         }
-        String logFilePath = logRoot + "/Charles-Github-Ejb/ActionsLogs/" + this.id + ".log";
+        String logFilePath = logRoot + "/charles-rest/ActionsLogs/" + this.id + ".log";
         
         File logFile = new File(logFilePath);
         logFile.getParentFile().mkdirs();
