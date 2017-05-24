@@ -57,13 +57,18 @@ public class CharlesResource {
     /**
      * Http request.
      */
+    @Context
     private HttpServletRequest servletRequest;
+
+    public CharlesResource() {
+        //for hax-rs
+    }
 
     /**
      * Ctor.
      * @param servletRequest Injected HttpServletRequest
      */
-    public CharlesResource (@Context HttpServletRequest servletRequest) {
+    public CharlesResource (HttpServletRequest servletRequest) {
     	this.servletRequest = servletRequest;
     }
     
