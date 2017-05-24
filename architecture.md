@@ -1,6 +1,6 @@
 ## Architecture documentation
 
-This document's intention is to give a full overview of code base's structure, flow and main types.
+This document's intention is to give a full overview of the code base's structure, flow and main types.
 In the text bellow, main types will be written with capital letter and will be linked to their interface or class.
 
  * [Entry point](#entry-point)
