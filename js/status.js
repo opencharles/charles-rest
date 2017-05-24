@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    getServiceStatus("http://ec2-54-68-83-8.us-west-2.compute.amazonaws.com:8080/charles-rest/api/ping");
+    getServiceStatus("http://ec2-34-209-37-87.us-west-2.compute.amazonaws.com:8080/charles-rest/api/ping");
 });
 function getServiceStatus(statusUrl) {
     $.support.cors = true;
