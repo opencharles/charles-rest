@@ -111,6 +111,20 @@ public class Brain {
                      this.finalCommentStep(com, category.language(), "denied.badlink.comment", com.authorLogin())
                  );
                  break;
+             case "indexsitemap":
+            	 steps = new PageHostedOnGithubCheck(
+                     com, this.logger,
+                     this.withCommonChecks(
+                         com, category.language(),
+                         this.indexSitemapStep(com, category.language())
+                     ),
+                     this.finalCommentStep(
+                         com, category.language(),
+                         "denied.badlink.comment",
+                         com.authorLogin()
+                     )
+                 );
+            	 break;
              case "deleteindex":
                  steps = new DeleteIndexCommandCheck(
                      com, this.logger,
@@ -202,6 +216,37 @@ public class Brain {
             )
         );
     }
+    
+    /**
+     * Steps for indexsitemap step.
+     * @param com Command
+     * @param lang Language
+     * @return Step
+     * @throws IOException 
+     */
+    public Step indexSitemapStep(Command com, Language lang) throws IOException {
+    	return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    lang.response("index.start.comment"),
+                    com.authorLogin(),
+                    this.logsLoc.address()
+                )
+            ), this.logger,
+            new IndexSitemap(
+                com, this.logger,
+                new StarRepo(
+                    com.issue().repo(), this.logger,
+                    this.finalCommentStep(
+                        com, lang, "index.finished.comment",
+                        com.authorLogin(),
+                        this.logsLoc.address()
+                    )
+                )
+            )
+        );
+    }
 
     /**
      * Steps for indexsite action
@@ -221,7 +266,7 @@ public class Brain {
                 )
             ), this.logger,
             new IndexSite(
-                com, logger,
+                com, this.logger,
                 new StarRepo(
                     com.issue().repo(), this.logger,
                     this.finalCommentStep(

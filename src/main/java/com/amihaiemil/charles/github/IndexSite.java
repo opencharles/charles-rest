@@ -104,7 +104,7 @@ public class IndexSite extends IndexStep {
             siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
             new AmazonEsRepository(this.com.indexName()), 20
         );
-        return new RetriableCrawl(siteCrawl);
+        return new RetriableCrawl(siteCrawl, 5);
     }
 
 }

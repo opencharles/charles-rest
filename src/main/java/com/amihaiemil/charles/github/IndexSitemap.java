@@ -26,25 +26,27 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Arrays;
-
-import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
-
 import com.amihaiemil.charles.DataExportException;
-import com.amihaiemil.charles.LiveWebPage;
-import com.amihaiemil.charles.SnapshotWebPage;
-import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.RetriableCrawl;
+import com.amihaiemil.charles.SitemapXmlCrawl;
+import com.amihaiemil.charles.WebCrawl;
 import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.sitemap.SitemapXmlOnline;
 
 /**
- * Step to index a single page.
+ * Step to index a website represented by a sitemap.xml file.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
-public class IndexPage extends IndexStep {
+public class IndexSitemap extends IndexStep {
+
+	/**
+     * Command.
+     */
+    private Command com;
 
     /**
      * Action's logger.
@@ -52,55 +54,52 @@ public class IndexPage extends IndexStep {
     private Logger logger;
 
     /**
-     * Command.
+     * Constructor.
+     * @param com Command
+     * @param logger The action's logger
+     * @param next The next step to take
      */
-    private Command com;
-
-    /**
-     * Ctor.
-     * @param com Given command.
-     * @param logger Logger.
-     * @param next Next step to take.
-     */
-    public IndexPage(Command com, Logger logger, Step next) {
+    public IndexSitemap(Command com, Logger logger, Step next) {
         super(next);
         this.com = com;
         this.logger = logger;
     }
 
-    @Override
-    public void perform() {
-         String link = this.getLink();
-         logger.info("Indexing page " + link + " ...");
-         try {
-             logger.info("Crawling the page...");
-             WebDriver driver = this.phantomJsDriver();
-             driver.get(link);
-             WebPage snapshot = new SnapshotWebPage(new LiveWebPage(driver));
-             logger.info("Page crawled. Sending to aws...");
-             new AmazonEsRepository(this.com.indexName()).export(
-                 Arrays.asList(snapshot)
-             );
-             logger.info("Page successfully sent to aws!");
-        } catch (
-            final DataExportException | IOException | RuntimeException e
-        ) {
-            logger.error("Exception while indexing the page " + link, e);
-            throw new IllegalStateException(
-                "Exception while indexing the page" + link, e
+	@Override
+	public void perform() {
+		String link = this.getLink();
+        try {
+        	logger.info("Indexing sitemap " + link + " ...");
+            WebCrawl sitemap = new RetriableCrawl(
+                new SitemapXmlCrawl(
+                    this.phantomJsDriver(),
+                    new SitemapXmlOnline(link),
+                    new AmazonEsRepository(this.com.indexName()),
+                    20
+                ),
+                5
             );
-        }
-        this.next().perform();
-    }
+            sitemap.crawl();
+            logger.info("Sitemap indexed successfully!");
+       } catch (
+           final DataExportException | IOException | RuntimeException e
+       ) {
+           logger.error("Exception while indexing the page " + link, e);
+           throw new IllegalStateException(
+               "Exception while indexing the page" + link, e
+           );
+       }
+       this.next().perform();
+	}
 
-    /**
-     * Get the page's link from the command's text which should be in markdown format, with a
-     * link like [this](http://link.com/here/the/ling) .
+	/**
+     * Get the sitemap's link from the command's text which should
+     * be in markdown format, with a link like
+     * [this](http://link.com/here/the/ling) .
      * @return String link.
      */
     private String getLink() {
         String body = this.com.json().getString("body");
         return body.substring(body.indexOf('(') + 1,  body.indexOf(')'));
     }
-
 }

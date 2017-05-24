@@ -49,7 +49,7 @@ public class LogsResource {
     public Response getActionLogs(@PathParam("name") String name) {
         String logroot = System.getProperty("LOG_ROOT");
         if(logroot != null) {
-            File log = new File(logroot + "/Charles-Github-Ejb/ActionsLogs/" + name);
+            File log = new File(logroot + "/charles-rest/ActionsLogs/" + name);
             if(log.exists()) {
                 return Response.ok()
                     .entity(log)
