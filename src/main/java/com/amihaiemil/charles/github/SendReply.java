@@ -45,26 +45,19 @@ public class SendReply extends IntermediaryStep {
     private Reply rep;
 
     /**
-     * Logger of the action.
-     */
-    private Logger logger;
-
-    /**
      * Constructor
      * @param rep The reply to be sent.
-     * @param logger Action's logger.
      * @param next The next step to perform.
      */
     public SendReply(
-        Reply rep, Logger logger, Step next
+        Reply rep, Step next
     ) { 
         super(next);
         this.rep = rep;
-        this.logger = logger;
     }
     
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         try {
             logger.info("Sending comment...");
             rep.send();
@@ -73,7 +66,7 @@ public class SendReply extends IntermediaryStep {
             logger.error("IOException when sending the reply!", e);
             throw new IllegalStateException("IOException when sending the reply!" , e);
         }
-        this.next().perform();
+        this.next().perform(command, logger);
     }
 
 }

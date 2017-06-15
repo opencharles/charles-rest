@@ -40,47 +40,29 @@ import org.slf4j.Logger;
  *
  */
 public class OrganizationAdminCheck extends PreconditionCheckStep {
-
-    /**
-     * The command.
-     */
-    private Command com;
-    
-    /**
-     * Logger of the action.
-     */
-    private Logger logger;
-
     /**
      * Constructor.
-     * @param com Command.
-     * @param logger Action logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public OrganizationAdminCheck(
-        Command com, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
+    public OrganizationAdminCheck(Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
-        this.com = com;
-        this.logger = logger;
     }
     
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         try {
             logger.info("Checking if the author is an active admin of the organization ...");
-            JsonObject membership = com.authorOrgMembership();
+            JsonObject membership = command.authorOrgMembership();
             String state = membership.getString("state", "statenotfound");
             String role = membership.getString("role", "adminnotfound");
             boolean passed = state.equals("active") && role.equals("admin");
             if(!passed) {
                 logger.warn("The author is NOT an active admin: [state: " + state + ", role: " + role +"]");
-                this.onFalse().perform();
+                this.onFalse().perform(command, logger);
             } else {
                 logger.info("The author is an active admin, ok");
-                this.onTrue().perform();
+                this.onTrue().perform(command, logger);
             }
         } catch (IOException e) {
             logger.error("IOException when getting the organization membership!", e);

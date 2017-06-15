@@ -37,7 +37,13 @@ import org.slf4j.Logger;
  * 
  */
 public interface Step {
-    void perform();
+	
+	/**
+	 * Perform this step.
+	 * @param command Command that triggered the action.
+	 * @param logger The Action's logger.
+	 */
+    void perform(Command command, Logger logger);
     
     /**
      * Final step of the action. Just logs a line
@@ -46,21 +52,15 @@ public interface Step {
     public final static class FinalStep implements Step {
 
         /**
-         * Action's logger.
-         */
-        private Logger logger;
-
-        /**
          * Message to log
          */
         private String message;
         
         /**
          * Ctor without message for successful ending.
-         * @param logger Logger
          */
-        public FinalStep(Logger logger) {
-            this(logger, "Finished action successfully!");
+        public FinalStep() {
+            this("Finished action successfully!");
         }
         
         /**
@@ -68,13 +68,12 @@ public interface Step {
          * @param logger Logger.
          * @param message Message to log at the end of the action.
          */
-        public FinalStep(Logger logger, String message) {
-            this.logger = logger;
+        public FinalStep(String message) {
             this.message = message;
         }
 
-        public void perform() {
-            this.logger.info(message);
+        public void perform(Command command, Logger logger) {
+            logger.info(message);
         }
     }
 
@@ -97,7 +96,7 @@ public interface Step {
         }
 
         @Override
-        public void perform() {
+        public void perform(Command command, Logger logger) {
             if(!pass) {
                 throw new IllegalStateException("Step should not have been executed!");
             }

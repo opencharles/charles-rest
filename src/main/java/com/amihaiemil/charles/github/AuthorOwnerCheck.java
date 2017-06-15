@@ -40,16 +40,6 @@ import org.slf4j.Logger;
 public class AuthorOwnerCheck extends PreconditionCheckStep {
 
     /**
-     * Given command;
-     */
-    private Command com;
-
-    /**
-     * Logger of the action.
-     */
-    private Logger logger;
-
-    /**
      * Constructor.
      * @param com Command.
      * @param logger Action logger.
@@ -57,12 +47,9 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
      * @param onFalse Step that should be performed next if the check is false.
      */
     public AuthorOwnerCheck(
-        Command com, Logger logger,
         Step onTrue, Step onFalse
     ) {
         super(onTrue, onFalse);
-        this.com = com;
-        this.logger = logger;
     }
 
     /**
@@ -70,17 +57,17 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
      * @return true if the check is successful, false otherwise
      */
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         logger.info("Checking ownership of the repo");
         try {
-            String repoOwner = this.com.repo().json().getJsonObject("owner").getString("login");
-            String author = this.com.authorLogin();
+            String repoOwner = command.repo().json().getJsonObject("owner").getString("login");
+            String author = command.authorLogin();
             if(repoOwner.equals(author)) {
                 logger.info("Commander is repo owner - OK");
-                this.onTrue().perform();
+                this.onTrue().perform(command, logger);
             } else {
                 logger.warn("Commander is NOT repo owner");
-                this.onFalse().perform();
+                this.onFalse().perform(command, logger);
             }
         } catch (IOException ex) {
             logger.error("IOException when fetching repo owner from Github API", ex);

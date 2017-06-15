@@ -48,8 +48,6 @@ public abstract class IntermediaryStep implements Step {
         this.nextStep = next;
     }
 
-    public abstract void perform();
-
     /**
      * Get the next step to perform.
      * @return Step.

@@ -92,10 +92,8 @@ public class Brain {
              case "hello":
                  String hello = String.format(category.language().response("hello.comment"), authorLogin);
                  steps = new SendReply(
-                             new TextReply(com, hello),
-                             this.logger,
-                             new Step.FinalStep(this.logger)
-                         );
+                     new TextReply(com, hello), new Step.FinalStep()
+                 );
                  break;
              case "indexsite":
                  steps = this.withCommonChecks(
@@ -104,7 +102,6 @@ public class Brain {
                  break;
              case "indexpage":
                  steps = new PageHostedOnGithubCheck(
-                     com, this.logger,
                      this.withCommonChecks(
                          com, category.language(), this.indexPageStep(com, category.language())
                      ),
@@ -113,7 +110,6 @@ public class Brain {
                  break;
              case "indexsitemap":
             	 steps = new PageHostedOnGithubCheck(
-                     com, this.logger,
                      this.withCommonChecks(
                          com, category.language(),
                          this.indexSitemapStep(com, category.language())
@@ -127,14 +123,11 @@ public class Brain {
             	 break;
              case "deleteindex":
                  steps = new DeleteIndexCommandCheck(
-                     com, this.logger,
                      new IndexExistsCheck(
-                         com.indexName(), this.logger,
+                         com.indexName(),
                          new AuthorOwnerCheck(
-                             com, this.logger,
                              this.deleteIndexStep(com, category.language()),
                              new OrganizationAdminCheck(
-                                 com, this.logger,
                                  this.deleteIndexStep(com, category.language()),
                                  this.finalCommentStep(
                                      com, category.language(),
@@ -161,14 +154,12 @@ public class Brain {
                      authorLogin);
                  steps = new SendReply(
                             new TextReply(com, unknown),
-                            this.logger,
-                            new Step.FinalStep(this.logger)
+                            new Step.FinalStep()
                         );
                  break;
          }
          return new Steps(
              steps,
-             this.logger,
              new SendReply(
                  new TextReply(
                      com,
@@ -177,11 +168,7 @@ public class Brain {
                          com.authorLogin(), this.logsLoc.address()
                      )
                  ),
-                 this.logger,
-                 new Step.FinalStep(
-                     this.logger,
-                     "[ERROR] Some step didn't execute properly."
-                 )
+                 new Step.FinalStep("[ERROR] Some step didn't execute properly.")
              )
          );
     }
@@ -202,11 +189,9 @@ public class Brain {
                     com.authorLogin(),
                     this.logsLoc.address()
                 )
-            ), this.logger,
+            ),
             new IndexPage(
-                com, this.logger,
                 new StarRepo(
-                    com.issue().repo(), this.logger,
                     this.finalCommentStep(
                         com, lang, "index.finished.comment",
                         com.authorLogin(),
@@ -233,11 +218,9 @@ public class Brain {
                     com.authorLogin(),
                     this.logsLoc.address()
                 )
-            ), this.logger,
+            ),
             new IndexSitemap(
-                com, this.logger,
                 new StarRepo(
-                    com.issue().repo(), this.logger,
                     this.finalCommentStep(
                         com, lang, "index.finished.comment",
                         com.authorLogin(),
@@ -264,11 +247,9 @@ public class Brain {
                     com.authorLogin(),
                     this.logsLoc.address()
                 )
-            ), this.logger,
+            ),
             new IndexSite(
-                com, this.logger,
                 new StarRepo(
-                    com.issue().repo(), this.logger,
                     this.finalCommentStep(
                         com, lang, "index.finished.comment",
                         com.authorLogin(),
@@ -288,7 +269,6 @@ public class Brain {
      */
     public Step deleteIndexStep(Command com, Language lang) throws IOException {
         return  new DeleteIndex(
-                com, logger,
                 this.finalCommentStep(
                     com, lang, "deleteindex.finished.comment",
                     com.authorLogin(),
@@ -331,22 +311,20 @@ public class Brain {
      */
     private Step withCommonChecks(Command com, Language lang, Step action) throws IOException {
         PreconditionCheckStep repoForkCheck = new RepoForkCheck(
-            com.repo().json(), this.logger, action,
+            com.repo().json(), action,
             this.finalCommentStep(com, lang, "denied.fork.comment", com.authorLogin())
         );
         PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
-            com, this.logger,
             repoForkCheck,
             new OrganizationAdminCheck(
-                com, this.logger,
                 repoForkCheck,
                 this.finalCommentStep(com, lang, "denied.commander.comment", com.authorLogin())
             )
         );
         PreconditionCheckStep repoNameCheck = new RepoNameCheck(
-            com.repo().json(), this.logger, authorOwnerCheck,
+            com.repo().json(), authorOwnerCheck,
             new GhPagesBranchCheck(
-                com, this.logger, authorOwnerCheck,
+                authorOwnerCheck,
                 this.finalCommentStep(com, lang, "denied.name.comment", com.authorLogin())
             )
         );        
@@ -370,8 +348,8 @@ public class Brain {
         		    lang.response(messagekey),
         		    (Object[]) formatParts
         		)
-            ), this.logger,
-            new Step.FinalStep(this.logger)
+            ),
+            new Step.FinalStep()
         );
     }
 

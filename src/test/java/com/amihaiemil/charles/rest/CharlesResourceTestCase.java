@@ -24,28 +24,19 @@
  */
 package com.amihaiemil.charles.rest;
 
-import static org.junit.Assert.assertTrue;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
-
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.amihaiemil.charles.aws.AmazonEsSearch;
-import com.amihaiemil.charles.aws.SearchQuery;
-import com.amihaiemil.charles.github.Notification;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,6 +51,7 @@ import com.jcabi.http.mock.MkGrizzlyContainer;
  * @since 1.0.0
  *
  */
+@SuppressWarnings("resource")
 public final class CharlesResourceTestCase {
 
     /**
@@ -69,7 +61,7 @@ public final class CharlesResourceTestCase {
     @Test
     public void pagesAreDisplayed() throws IOException {
         int port = this.port();
-        MkContainer awsEs = new MkGrizzlyContainer().next(
+		MkContainer awsEs = new MkGrizzlyContainer().next(
             new MkAnswer.Simple(this.readResource("esSearchResponse.json"))
         ).start(port);
         System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/elasticsearch");

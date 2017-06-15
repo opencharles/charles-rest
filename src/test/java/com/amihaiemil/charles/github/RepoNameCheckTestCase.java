@@ -52,13 +52,14 @@ public class RepoNameCheckTestCase {
      */
     @Test
     public void repoNameMatches() throws Exception {
-
         RepoNameCheck rnc = new RepoNameCheck(
-            this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
-            Mockito.mock(Logger.class),
-            new Step.Fake(true), new Step.Fake(false)
+        	this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
+        	new Step.Fake(true), new Step.Fake(false)
         );
-        rnc.perform();
+        rnc.perform(
+            Mockito.mock(Command.class),
+            Mockito.mock(Logger.class)
+        );
     }
 
     /**
@@ -69,10 +70,9 @@ public class RepoNameCheckTestCase {
     public void repoNameDoesntMatch() throws Exception {
         RepoNameCheck rnc = new RepoNameCheck(
             this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
-            Mockito.mock(Logger.class),
             new Step.Fake(false), new Step.Fake(true)
         );
-        rnc.perform();
+        rnc.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
     }
     
     /**

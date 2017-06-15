@@ -47,30 +47,16 @@ import com.amihaiemil.charles.aws.AmazonEsRepository;
 public class IndexPage extends IndexStep {
 
     /**
-     * Action's logger.
-     */
-    private Logger logger;
-
-    /**
-     * Command.
-     */
-    private Command com;
-
-    /**
      * Ctor.
-     * @param com Given command.
-     * @param logger Logger.
      * @param next Next step to take.
      */
-    public IndexPage(Command com, Logger logger, Step next) {
+    public IndexPage(Step next) {
         super(next);
-        this.com = com;
-        this.logger = logger;
     }
 
     @Override
-    public void perform() {
-         String link = this.getLink();
+    public void perform(Command command, Logger logger) {
+         String link = this.getLink(command);
          logger.info("Indexing page " + link + " ...");
          try {
              logger.info("Crawling the page...");
@@ -78,7 +64,7 @@ public class IndexPage extends IndexStep {
              driver.get(link);
              WebPage snapshot = new SnapshotWebPage(new LiveWebPage(driver));
              logger.info("Page crawled. Sending to aws...");
-             new AmazonEsRepository(this.com.indexName()).export(
+             new AmazonEsRepository(command.indexName()).export(
                  Arrays.asList(snapshot)
              );
              logger.info("Page successfully sent to aws!");
@@ -90,7 +76,7 @@ public class IndexPage extends IndexStep {
                 "Exception while indexing the page" + link, e
             );
         }
-        this.next().perform();
+        this.next().perform(command, logger);
     }
 
     /**
@@ -98,8 +84,8 @@ public class IndexPage extends IndexStep {
      * link like [this](http://link.com/here/the/ling) .
      * @return String link.
      */
-    private String getLink() {
-        String body = this.com.json().getString("body");
+    private String getLink(Command command) {
+        String body = command.json().getString("body");
         return body.substring(body.indexOf('(') + 1,  body.indexOf(')'));
     }
 

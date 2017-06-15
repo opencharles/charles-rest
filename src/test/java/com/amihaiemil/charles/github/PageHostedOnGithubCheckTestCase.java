@@ -51,16 +51,20 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsValidLinkGhPages() throws IOException {
 
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true, "http://amihaiemil.github.io/myrepo/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+            new Step.Fake(true), new Step.Fake(false)
         );
-        phgc.perform();
+        phgc.perform(
+            this.mockCommand("amihaiemil", "myrepo", true, "http://amihaiemil.github.io/myrepo/stuff/page.html"),
+            Mockito.mock(Logger.class)
+        );
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true, "https://amihaiemil.github.io/myrepo/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+            new Step.Fake(true), new Step.Fake(false)
         );
-        phgc2.perform();
+        phgc2.perform(
+        	this.mockCommand("amihaiemil", "myrepo", true, "https://amihaiemil.github.io/myrepo/stuff/page.html"),
+        	Mockito.mock(Logger.class)
+        );
     }
     
     /**
@@ -72,16 +76,20 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsInvalidLinkGhPages() throws IOException {
 
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true, "http://domain.io/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
+            new Step.Fake(false), new Step.Fake(true)
         );
-        phgc.perform();
+        phgc.perform(
+            this.mockCommand("amihaiemil", "myrepo", true, "http://domain.io/stuff/page.html"),
+            Mockito.mock(Logger.class)
+        );
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", true, "ftp://amihaiemil.github.io/folder/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
+            new Step.Fake(false), new Step.Fake(true)
         );
-        phgc2.perform();
+        phgc2.perform(
+            this.mockCommand("amihaiemil", "myrepo", true, "ftp://amihaiemil.github.io/folder/stuff/page.html"),
+            Mockito.mock(Logger.class)
+        );
     }
 
     /**
@@ -91,18 +99,20 @@ public class PageHostedOnGithubCheckTestCase {
      */
     @Test
     public void tellsValidLink() throws IOException {
-
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
+            new Step.Fake(true), new Step.Fake(false)
+        );
+        phgc.perform(
             this.mockCommand("amihaiemil", "myrepo", false, "http://amihaiemil.github.io/myrepo/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+        	Mockito.mock(Logger.class)
         );
-        phgc.perform();
-
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false, "https://amihaiemil.github.io/myrepo/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+            new Step.Fake(true), new Step.Fake(false)
         );
-        phgc2.perform();
+        phgc2.perform(
+        	this.mockCommand("amihaiemil", "myrepo", false, "https://amihaiemil.github.io/myrepo/stuff/page.html"),
+        	Mockito.mock(Logger.class)
+        );
     }
     
     /**
@@ -114,17 +124,21 @@ public class PageHostedOnGithubCheckTestCase {
     public void tellsInvalidLink() throws IOException {
 
         PageHostedOnGithubCheck phgc = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false, "http://amihaiemil.github.io/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+            new Step.Fake(true), new Step.Fake(false)
         );
-        phgc.perform();
+        phgc.perform(
+        	this.mockCommand("amihaiemil", "myrepo", false, "http://amihaiemil.github.io/stuff/page.html"),
+        	Mockito.mock(Logger.class)
+        );
 
 
         PageHostedOnGithubCheck phgc2 = new PageHostedOnGithubCheck(
-            this.mockCommand("amihaiemil", "myrepo", false, "ftp://amihaiemil.github.io/myrepo/stuff/page.html"),
-            Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
+            new Step.Fake(false), new Step.Fake(true)
         );
-        phgc2.perform();
+        phgc2.perform(
+            this.mockCommand("amihaiemil", "myrepo", false, "ftp://amihaiemil.github.io/myrepo/stuff/page.html"),
+            Mockito.mock(Logger.class)
+        );
     }
 
     /**

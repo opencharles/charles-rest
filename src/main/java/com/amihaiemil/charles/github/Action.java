@@ -98,7 +98,7 @@ public class Action {
             String commandBody = command.json().getString("body");
             logger.info("Received command: " + commandBody);
             Steps steps = br.understand(command);
-            steps.perform();
+            steps.perform(command, logger);
         } catch (IllegalArgumentException e) {
             logger.warn("No command found in the issue or the agent has already replied to the last command!");
         } catch (IOException | IllegalStateException e) {

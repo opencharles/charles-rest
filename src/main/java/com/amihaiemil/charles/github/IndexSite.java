@@ -47,32 +47,20 @@ import com.amihaiemil.charles.aws.AmazonEsRepository;
 public class IndexSite extends IndexStep {
 
     /**
-     * Command.
-     */
-    private Command com;
-
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
-
-    /**
      * Constructor.
      * @param com Command
      * @param logger The action's logger
      * @param next The next step to take
      */
-    public IndexSite(Command com, Logger logger, Step next) {
+    public IndexSite(Step next) {
         super(next);
-        this.com = com;
-        this.logger = logger;
     }
 
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         try {
         	logger.info("Starting to index the whole site...");
-            this.graphCrawl().crawl();
+            this.graphCrawl(command, logger).crawl();
         	logger.info("Indexing finished successfully!");
         } catch (
             DataExportException |
@@ -82,7 +70,7 @@ public class IndexSite extends IndexStep {
             logger.error("Exception while indexing the website!", e);
             throw new IllegalStateException("Exception while indexing the website", e);
         }
-        this.next().perform();
+        this.next().perform(command, logger);
     }
 
     /**
@@ -90,11 +78,11 @@ public class IndexSite extends IndexStep {
      * @return RetriableWebCrawl
      * @throws IOException
      */
-    public WebCrawl graphCrawl() throws IOException {
-        String repoName = this.com.repo().name();
+    public WebCrawl graphCrawl(Command command, Logger logger) throws IOException {
+        String repoName = command.repo().name();
         String siteIndexUrl;
-        if(this.com.repo().hasGhPagesBranch()) {
-            siteIndexUrl = "http://" + this.com.repo().ownerLogin() + ".github.io/" + repoName;
+        if(command.repo().hasGhPagesBranch()) {
+            siteIndexUrl = "http://" + command.repo().ownerLogin() + ".github.io/" + repoName;
         } else {
             siteIndexUrl = "http://" + repoName;
         }
@@ -102,7 +90,7 @@ public class IndexSite extends IndexStep {
         + " .The website will be crawled as a graph, going in-depth from the index page.");
         WebCrawl siteCrawl = new GraphCrawl(
             siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
-            new AmazonEsRepository(this.com.indexName()), 20
+            new AmazonEsRepository(command.indexName()), 20
         );
         return new RetriableCrawl(siteCrawl, 5);
     }

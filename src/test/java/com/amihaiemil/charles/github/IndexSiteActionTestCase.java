@@ -66,6 +66,7 @@ public class IndexSiteActionTestCase {
             "amihaiemil", "amihaiemil", "amihaiemil.github.io",
             false, false
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -76,13 +77,12 @@ public class IndexSiteActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "Index-site checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexSiteStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -119,13 +119,12 @@ public class IndexSiteActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "Index-site checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexSiteStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -164,8 +163,7 @@ public class IndexSiteActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "Index-site checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexSiteStep(com, eng);
         
@@ -178,7 +176,7 @@ public class IndexSiteActionTestCase {
         
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -217,8 +215,7 @@ public class IndexSiteActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "Index-site checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexSiteStep(com, eng);
         
@@ -231,7 +228,7 @@ public class IndexSiteActionTestCase {
         
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -258,6 +255,7 @@ public class IndexSiteActionTestCase {
             "notowner", "amihaiemil", "amihaiemil.github.io",
             false, false
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -266,7 +264,7 @@ public class IndexSiteActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexStep index = Mockito.mock(IndexStep.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
 
         Mockito.when(com.authorOrgMembership()).thenReturn(
@@ -274,7 +272,7 @@ public class IndexSiteActionTestCase {
         );
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -301,6 +299,7 @@ public class IndexSiteActionTestCase {
             "amihaiemil", "amihaiemil", "forkedrepo",
             true, true
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -309,11 +308,11 @@ public class IndexSiteActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexStep index = Mockito.mock(IndexStep.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -341,6 +340,7 @@ public class IndexSiteActionTestCase {
             "amihaiemil", "amihaiemil", "someRepoWithNoWebsite",
             false, false
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -349,11 +349,11 @@ public class IndexSiteActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexStep index = Mockito.mock(IndexStep.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexSiteStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -395,10 +395,9 @@ public class IndexSiteActionTestCase {
         Issue agentIssue = new MkGithub(storage, "charlesmike")
             .repos().get(repoCoord).issues().get(issue.number());
   
-  
         Command com = Mockito.mock(Command.class);
-         Mockito.when(com.json()).thenReturn(c.json());
-         Mockito.when(com.issue()).thenReturn(agentIssue);
+        Mockito.when(com.json()).thenReturn(c.json());
+        Mockito.when(com.issue()).thenReturn(agentIssue);
         Mockito.when(com.authorLogin()).thenReturn(commander);
 
          //we build our own json repo since the one returned by MkGithub doesn't map 1:1 with the expected and so the tests fail.
@@ -409,12 +408,12 @@ public class IndexSiteActionTestCase {
              .build();
              
          
-         CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
         Mockito.when(crepo.json()).thenReturn(repo);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(ghpages);
 
-         Mockito.when(com.repo()).thenReturn(crepo);
-         return com;
+        Mockito.when(com.repo()).thenReturn(crepo);
+        return com;
     }
     
     /**

@@ -50,9 +50,9 @@ public class GhPagesBranchCheckTestCase {
         Mockito.when(com.repo()).thenReturn(crepo);
 
         GhPagesBranchCheck gpc = new GhPagesBranchCheck(
-            com, Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+            new Step.Fake(true), new Step.Fake(false)
         );
-        gpc.perform();
+        gpc.perform(com, Mockito.mock(Logger.class));
     }
 
     /**
@@ -67,9 +67,9 @@ public class GhPagesBranchCheckTestCase {
         Mockito.when(com.repo()).thenReturn(crepo);
 
         GhPagesBranchCheck gpc = new GhPagesBranchCheck(
-            com, Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
+            new Step.Fake(false), new Step.Fake(true)
         );
-        gpc.perform();
+        gpc.perform(com, Mockito.mock(Logger.class));
     }
 
 }

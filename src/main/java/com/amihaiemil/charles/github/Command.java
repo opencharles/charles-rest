@@ -171,7 +171,7 @@ public abstract class Command {
      */
     public CommandedRepo repo() throws IOException {
         if(this.repo == null) {
-            this.repo = new CommandedRepo(this.issue.repo());;
+            this.repo = new CommandedRepo(this.issue.repo());
         }
         return this.repo;
     }

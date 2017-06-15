@@ -27,7 +27,6 @@ package com.amihaiemil.charles.github;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.json.Json;
@@ -77,13 +76,12 @@ public class IndexPageaActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "index-page checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexPageStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -119,21 +117,20 @@ public class IndexPageaActionTestCase {
         Brain spiedBrain = Mockito.spy(br);
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
-                 new TextReply(com, "index-page checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
-             )
+                new TextReply(com, "index-page checks passed!"),
+                new Step.FinalStep()
+            )
         ).when(spiedBrain).indexPageStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
-                comments.get(0).json().getString("body").startsWith(
-                    "@charlesmike index [this]("
-                )
+            comments.get(0).json().getString("body").startsWith(
+                "@charlesmike index [this]("
+            )
         );
         assertTrue(
             comments.get(1).json().getString("body").endsWith(
@@ -165,8 +162,7 @@ public class IndexPageaActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "index-page checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexPageStep(com, eng);
         
@@ -177,18 +173,16 @@ public class IndexPageaActionTestCase {
                 .build()
         );
         
-        
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
-                comments.get(0).json().getString("body").startsWith(
-                    "@charlesmike index [this]("
-                )
+            comments.get(0).json().getString("body").startsWith(
+                "@charlesmike index [this]("
+            )
         );
-        System.out.println( comments.get(1).json().getString("body"));
         assertTrue(
             comments.get(1).json().getString("body").endsWith(
                 "\n\nindex-page checks passed!"
@@ -219,8 +213,7 @@ public class IndexPageaActionTestCase {
         Mockito.doReturn(//replace the index step with a simple comment; we're just interested in the checks here, not the index step itself
             new SendReply(
                  new TextReply(com, "index-page checks passed!"),
-                 Mockito.mock(Logger.class),
-                 new Step.FinalStep(Mockito.mock(Logger.class))
+                 new Step.FinalStep()
              )
         ).when(spiedBrain).indexPageStep(com, eng);
         
@@ -233,14 +226,14 @@ public class IndexPageaActionTestCase {
         
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, Mockito.mock(Logger.class));
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
         assertTrue(
-                comments.get(0).json().getString("body").startsWith(
-                    "@charlesmike index [this]("
-                )
+            comments.get(0).json().getString("body").startsWith(
+                "@charlesmike index [this]("
+            )
         );
         assertTrue(
             comments.get(1).json().getString("body").endsWith(
@@ -260,6 +253,7 @@ public class IndexPageaActionTestCase {
             "notowner", "amihaiemil", "amihaiemil.github.io",
             false, false, "http://amihaiemil.github.io/page/to/index"
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -268,7 +262,7 @@ public class IndexPageaActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexPage index = Mockito.mock(IndexPage.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
 
         Mockito.when(com.authorOrgMembership()).thenReturn(
@@ -276,7 +270,7 @@ public class IndexPageaActionTestCase {
         );
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -303,6 +297,7 @@ public class IndexPageaActionTestCase {
             "amihaiemil", "amihaiemil", "forkedrepo",
             true, true, "http://amihaiemil.github.io/forkedrepo/page/to/index"
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -311,11 +306,11 @@ public class IndexPageaActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexPage index = Mockito.mock(IndexPage.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -344,6 +339,7 @@ public class IndexPageaActionTestCase {
             "amihaiemil", "amihaiemil", "someRepoWithNoWebsite",
             false, false, "http://amihaiemil.github.io/page/to/index"
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -352,11 +348,11 @@ public class IndexPageaActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexPage index = Mockito.mock(IndexPage.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);
@@ -385,6 +381,7 @@ public class IndexPageaActionTestCase {
             "amihaiemil", "amihaiemil", "charles",
             false, true, "http://www.othersite.test/page/to/index"
         );
+        Logger logger = Mockito.mock(Logger.class);
         Language eng = this.mockEnglish(com);
         Brain br = new Brain(
             Mockito.mock(Logger.class),
@@ -393,11 +390,11 @@ public class IndexPageaActionTestCase {
         );
         Brain spiedBrain = Mockito.spy(br);
         IndexPage index = Mockito.mock(IndexPage.class);
-        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform();
+        Mockito.doThrow(new IllegalStateException("Should not have reached here!")).when(index).perform(com, logger);
         Mockito.doReturn(index).when(spiedBrain).indexPageStep(com, eng);
         
         Step steps = spiedBrain.understand(com);
-        steps.perform();
+        steps.perform(com, logger);
         
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 2);

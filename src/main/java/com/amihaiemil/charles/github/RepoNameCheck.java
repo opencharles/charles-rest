@@ -45,22 +45,14 @@ public class RepoNameCheck extends PreconditionCheckStep {
     private JsonObject repo;
 
     /**
-     * Action logger.
-     */
-    private Logger logger;
-
-
-    /**
      * Constructor.
      * @param repo Json repo.
-     * @param message For the commander in case this check fails.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public RepoNameCheck(JsonObject repo, Logger logger, Step onTrue, Step onFalse) {
+    public RepoNameCheck(JsonObject repo, Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
         this.repo = repo;
-        this.logger = logger;
     }
 
     /**
@@ -68,7 +60,7 @@ public class RepoNameCheck extends PreconditionCheckStep {
      * @return true if the check is successful, false otherwise
      */
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         logger.info("Checking repository name... ");
         String  owner = this.repo.getJsonObject("owner").getString("login");
         String expectedName = owner + ".github.io";
@@ -76,11 +68,11 @@ public class RepoNameCheck extends PreconditionCheckStep {
         String name = this.repo.getString("name");
         logger.info("Actual name: " + name);
         if(expectedName.equals(name)) {
-            logger.info("Repository name matchers - Ok");
-            this.onTrue().perform();
+            logger.info("Repository name matches - Ok");
+            this.onTrue().perform(command, logger);
         } else {
             logger.warn("Repository name does not match the expected name");
-            this.onFalse().perform();
+            this.onFalse().perform(command, logger);
         }
     }
 }

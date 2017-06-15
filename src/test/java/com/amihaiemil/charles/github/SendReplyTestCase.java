@@ -60,11 +60,10 @@ public class SendReplyTestCase {
         Command com = this.mockCommand();
         Reply rep = new TextReply(com, "Hello there!");
         SendReply sr = new SendReply(
-            rep, Mockito.mock(Logger.class),
-            Mockito.mock(Step.class)
+            rep, Mockito.mock(Step.class)
         );
 
-        sr.perform();
+        sr.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
 
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 1);
@@ -86,9 +85,8 @@ public class SendReplyTestCase {
         Mockito.doThrow(new IOException("This is expected, it's ok!")).when(rep).send();
         try {
             new SendReply(
-                rep, Mockito.mock(Logger.class),
-                Mockito.mock(Step.class)
-            ).perform();
+                rep, Mockito.mock(Step.class)
+            ).perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
             fail("Expected ISE here, but was not thrown");
         } catch (IllegalStateException ex) {
             assertTrue(ex.getMessage().equals("IOException when sending the reply!"));
