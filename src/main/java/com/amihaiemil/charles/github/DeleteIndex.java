@@ -40,15 +40,6 @@ import com.amihaiemil.charles.aws.AmazonEsRepository;
  */
 public class DeleteIndex  extends IntermediaryStep {
 
-    /**
-     * Command.
-     */
-    private Command com;
-
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
 
     /**
      * Constructor.
@@ -56,23 +47,21 @@ public class DeleteIndex  extends IntermediaryStep {
      * @param logger The action's logger
      * @param next The next step to take
      */
-    public DeleteIndex(Command com, Logger logger, Step next) {
+    public DeleteIndex(Step next) {
         super(next);
-        this.com = com;
-        this.logger = logger;
     }
     
     @Override
-    public void perform() {
-        this.logger.info("Starting index deletion...");
+    public void perform(Command command, Logger logger) {
+        logger.info("Starting index deletion...");
         try {
-            new AmazonEsRepository(com.indexName()).delete();
+            new AmazonEsRepository(command.indexName()).delete();
         } catch (IOException e) {
             logger.error("Exception while deleting the index!", e);
             throw new IllegalStateException("Exception while deleting the index!" , e);
         }
-        this.logger.info("Index successfully deleted!");
-        this.next().perform();
+        logger.info("Index successfully deleted!");
+        this.next().perform(command, logger);
     }
 
 }

@@ -40,45 +40,30 @@ import org.slf4j.Logger;
 public class GhPagesBranchCheck extends PreconditionCheckStep {
 
     /**
-     * Given command.
-     */
-    private Command com;
-    
-    /**
-     * Logger.
-     */
-    private Logger logger;
-
-    /**
      * Constructor.
      * @param com Given command.
      * @param logger Action logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public GhPagesBranchCheck(
-        Command com, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
+    public GhPagesBranchCheck(Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
-        this.com = com;
-        this.logger = logger;
     }
 
     /**
      * Perform this step.
      */
     @Override
-    public void perform() { 
+    public void perform(Command command, Logger logger) { 
         logger.info("Checking whether the repository has a gh-pages branch...");
         try {
             
-            if (com.repo().hasGhPagesBranch()) {
+            if (command.repo().hasGhPagesBranch()) {
                 logger.info("The repo has a gh-pages branch - OK!");
-                this.onTrue().perform();
+                this.onTrue().perform(command, logger);
             } else {
                 logger.info("The repo does NOT have a gh-pages branch");
-                this.onFalse().perform();
+                this.onFalse().perform(command, logger);
             }
         } catch (IOException e) {
             logger.error("Exception when checking if gh-pages branch exists", e);

@@ -40,45 +40,32 @@ import com.jcabi.github.Repo;
  *
  */
 public class StarRepo extends IntermediaryStep {
-
-    /**
-     * Repository to be starred.
-     */
-    private Repo repo;
-
-    /**
-     * Action logger.
-     */
-    private Logger logger;
     
     /**
      * Constructor.
-     * @param repo Given repo.
-     * @param logger Action's logger.
      * @param next Next step to perform.
      */
-    public StarRepo(Repo repo, Logger logger, Step next) {
+    public StarRepo(Step next) {
         super(next);
-        this.repo = repo;
-        this.logger = logger;
     }
     
     /**
      * Star the repository.
      * @return Always returns true, since it's not a critical step.
      */
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         try {
-            this.logger.info("Starring repository...");
-            if(!this.repo.stars().starred()) {
-                this.repo.stars().star();
+            logger.info("Starring repository...");
+            Repo repo = command.issue().repo();
+            if(!repo.stars().starred()) {
+                repo.stars().star();
             }
-            this.logger.info("Repository starred!");
+            logger.info("Repository starred!");
         } catch (IOException e) {
-            this.logger.error("Error when starring repository: " + e.getMessage(), e);
+            logger.error("Error when starring repository: " + e.getMessage(), e);
             //We do not throw IllegalStateException here since starring the repo is not
             //a critical matter
         }
-        this.next().perform();
+        this.next().perform(command, logger);
     }
 }

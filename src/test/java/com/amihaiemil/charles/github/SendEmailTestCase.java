@@ -35,6 +35,8 @@ import javax.mail.internet.MimeMessage;
 
 import org.junit.After;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.slf4j.Logger;
 
 import com.amihaiemil.charles.github.SendEmail;
 import com.icegreen.greenmail.util.GreenMail;
@@ -84,7 +86,7 @@ public class SendEmailTestCase {
         );
 
         try {
-            se.perform();
+            se.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
             final MimeMessage[] messages = server.getReceivedMessages();
             assertTrue(messages.length == 1);
             for (final Message msg : messages) {
@@ -115,7 +117,7 @@ public class SendEmailTestCase {
         SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
 
         try {
-            se.perform();
+            se.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
             final MimeMessage[] messages = server.getReceivedMessages();
             assertTrue(messages.length == 1);
             for (final Message msg : messages) {
@@ -134,7 +136,7 @@ public class SendEmailTestCase {
     @Test(expected = IllegalStateException.class)
     public void uninitializedPostman() {
         SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
-        se.perform();
+        se.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
     }
 
     /**

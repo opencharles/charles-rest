@@ -44,23 +44,16 @@ public class RepoForkCheck extends PreconditionCheckStep {
     private JsonObject repo;
 
     /**
-     * Logger.
-     */
-    private Logger logger;
-
-    /**
      * Constructor.
      * @param repo Given repository json.
-     * @param logger Action logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
     public RepoForkCheck(
-        JsonObject repo, Logger logger, Step onTrue, Step onFalse
+        JsonObject repo, Step onTrue, Step onFalse
     ) {
         super(onTrue, onFalse);
         this.repo = repo;
-        this.logger = logger;
     }
 
     /**
@@ -68,15 +61,15 @@ public class RepoForkCheck extends PreconditionCheckStep {
      * @returns true if the repo is NOT a fork, false otherwise.
      */
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         logger.info("Checking whether the repository is a fork...");
-        boolean fork = repo.getBoolean("fork");
+        boolean fork = this.repo.getBoolean("fork");
         if(fork) {
             logger.warn("Repository should NOT be a fork!");
-            this.onFalse().perform();
+            this.onFalse().perform(command, logger);
         } else {
             logger.info("Repository is not a fork - Ok!");
-            this.onTrue().perform();
+            this.onTrue().perform(command, logger);
         }
     }
 }

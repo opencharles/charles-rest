@@ -54,8 +54,6 @@ public abstract class PreconditionCheckStep implements Step {
         this.onTrue = onTrue;
         this.onFalse = onFalse;
     }
-
-    public abstract void perform();
     
     /**
      * Step to perform on successful check

@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import org.slf4j.Logger;
 
 import com.jcabi.github.Github;
+import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.github.Stars;
@@ -58,12 +59,20 @@ public class StarRepoTestCase {
         Logger logger = Mockito.mock(Logger.class);
         Mockito.doNothing().when(logger).info(Mockito.anyString());
         Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
-
-        Repo repo = this.mockGithubRepo();
-        Step sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
-        assertFalse(repo.stars().starred());
-        sr.perform();
-        assertTrue(repo.stars().starred());
+        
+        Github gh = new MkGithub("amihaiemil");
+        Repo repo =  gh.repos().create(
+            new RepoCreate("amihaiemil.github.io", false)
+        );
+        Command com = Mockito.mock(Command.class);
+        Issue issue = Mockito.mock(Issue.class);
+        Mockito.when(issue.repo()).thenReturn(repo);
+        Mockito.when(com.issue()).thenReturn(issue);
+        
+        Step sr = new StarRepo(Mockito.mock(Step.class));
+        assertFalse(com.issue().repo().stars().starred());
+        sr.perform(com, logger);
+        assertTrue(com.issue().repo().stars().starred());
     }
     
     /**
@@ -76,12 +85,20 @@ public class StarRepoTestCase {
         Mockito.doNothing().when(logger).info(Mockito.anyString());
         Mockito.doThrow(new IllegalStateException("Unexpected error; test failed")).when(logger).error(Mockito.anyString());
 
-        Repo repo = this.mockGithubRepo();
-        Step sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
-        assertFalse(repo.stars().starred());
-        sr.perform();
-        sr.perform();
-        assertTrue(repo.stars().starred());
+        Github gh = new MkGithub("amihaiemil");
+        Repo repo =  gh.repos().create(
+            new RepoCreate("amihaiemil.github.io", false)
+        );
+        Command com = Mockito.mock(Command.class);
+        Issue issue = Mockito.mock(Issue.class);
+        Mockito.when(issue.repo()).thenReturn(repo);
+        Mockito.when(com.issue()).thenReturn(issue);
+
+        Step sr = new StarRepo(Mockito.mock(Step.class));
+        assertFalse(com.issue().repo().stars().starred());
+        sr.perform(com, logger);
+        sr.perform(com, logger);
+        assertTrue(com.issue().repo().stars().starred());
     }
 
     /**
@@ -106,19 +123,12 @@ public class StarRepoTestCase {
         Mockito.when(stars.starred()).thenReturn(false);
         Mockito.doThrow(new IOException()).when(stars).star();
         Mockito.when(repo.stars()).thenReturn(stars);
+        Command com = Mockito.mock(Command.class);
+        Issue issue = Mockito.mock(Issue.class);
+        Mockito.when(issue.repo()).thenReturn(repo);
+        Mockito.when(com.issue()).thenReturn(issue);
         
-        StarRepo sr = new StarRepo(repo, logger, Mockito.mock(Step.class));
-        sr.perform();
-    }
-    /**
-     * Return a Github Repo mock for test.
-     * @return Repo.
-     * @throws Exception
-     */
-    public Repo mockGithubRepo() throws Exception {
-        Github gh = new MkGithub("amihaiemil");
-        return gh.repos().create(
-            new RepoCreate("amihaiemil.github.io", false)
-        );
+        StarRepo sr = new StarRepo(Mockito.mock(Step.class));
+        sr.perform(com, logger);
     }
 }

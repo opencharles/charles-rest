@@ -20,10 +20,9 @@ public final class IndexExistsCheckTestCase {
     public void indexExists() {
         IndexExistsCheck iec = new IndexExistsCheck(
             new AwsEsRepository.Fake(true),
-            Mockito.mock(Logger.class),
             new Step.Fake(true), new Step.Fake(false)
         );
-        iec.perform();
+        iec.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
     }
 
     /**
@@ -33,9 +32,8 @@ public final class IndexExistsCheckTestCase {
     public void indexDoesntExist() {
         IndexExistsCheck iec = new IndexExistsCheck(
             new AwsEsRepository.Fake(false),
-            Mockito.mock(Logger.class),
             new Step.Fake(false), new Step.Fake(true)
         );
-        iec.perform();
+        iec.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
     }
 }

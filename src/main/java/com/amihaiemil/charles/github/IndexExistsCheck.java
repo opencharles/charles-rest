@@ -44,50 +44,35 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
     private AwsEsRepository repo;
 
     /**
-     * Action's logger.
-     */
-    private Logger logger;
-
-    /**
      * Constructor.
-     * @param index Index name
-     * @param logger The action's logger
      * @param onTrue The step to perform on successful check.
      * @param onFalse the step to perform in unsuccessful check.
      */
-    public IndexExistsCheck(
-        String index, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
-        this(new AmazonEsRepository(index), logger, onTrue, onFalse);
+    public IndexExistsCheck(String index, Step onTrue, Step onFalse) {
+        this(new AmazonEsRepository(index), onTrue, onFalse);
     }
 
     /**
      * Constructor.
      * @param repo AWS repository to look into.
-     * @param logger The action's logger
      * @param onTrue The step to perform on successful check.
      * @param onFalse The step to perform in unsuccessful check.
      */
-    public IndexExistsCheck(
-        AwsEsRepository repo, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
+    public IndexExistsCheck(AwsEsRepository repo, Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
         this.repo = repo;
-        this.logger = logger;
     }
 
     @Override
-    public void perform() {
-        this.logger.info("Checking if required index exists...");
+    public void perform(Command command, Logger logger) {
+        logger.info("Checking if required index exists...");
         boolean exists = this.repo.exists();
         if(exists) {
-            this.logger.info("Index exists - Ok!");
-            this.onTrue().perform();
+            logger.info("Index exists - Ok!");
+            this.onTrue().perform(command, logger);
         } else {
-            this.logger.warn("The required index does not exist! It may have been deleted already.");
-            this.onFalse().perform();
+            logger.warn("The required index does not exist! It may have been deleted already.");
+            this.onFalse().perform(command, logger);
         }
     }
 

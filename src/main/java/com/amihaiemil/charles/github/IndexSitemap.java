@@ -43,38 +43,24 @@ import com.amihaiemil.charles.sitemap.SitemapXmlOnline;
  */
 public class IndexSitemap extends IndexStep {
 
-	/**
-     * Command.
-     */
-    private Command com;
-
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
-
     /**
      * Constructor.
-     * @param com Command
-     * @param logger The action's logger
      * @param next The next step to take
      */
-    public IndexSitemap(Command com, Logger logger, Step next) {
+    public IndexSitemap(Step next) {
         super(next);
-        this.com = com;
-        this.logger = logger;
     }
 
 	@Override
-	public void perform() {
-		String link = this.getLink();
+	public void perform(Command command, Logger logger) {
+		String link = this.getLink(command);
         try {
         	logger.info("Indexing sitemap " + link + " ...");
             WebCrawl sitemap = new RetriableCrawl(
                 new SitemapXmlCrawl(
                     this.phantomJsDriver(),
                     new SitemapXmlOnline(link),
-                    new AmazonEsRepository(this.com.indexName()),
+                    new AmazonEsRepository(command.indexName()),
                     20
                 ),
                 5
@@ -89,7 +75,7 @@ public class IndexSitemap extends IndexStep {
                "Exception while indexing the page" + link, e
            );
        }
-       this.next().perform();
+       this.next().perform(command, logger);
 	}
 
 	/**
@@ -98,8 +84,8 @@ public class IndexSitemap extends IndexStep {
      * [this](http://link.com/here/the/ling) .
      * @return String link.
      */
-    private String getLink() {
-        String body = this.com.json().getString("body");
+    private String getLink(Command command) {
+        String body = command.json().getString("body");
         return body.substring(body.indexOf('(') + 1,  body.indexOf(')'));
     }
 }

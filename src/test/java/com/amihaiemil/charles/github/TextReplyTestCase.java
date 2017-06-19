@@ -87,9 +87,9 @@ public class TextReplyTestCase {
         
         Command com = Mockito.mock(Command.class);
     
-         Mockito.when(com.json()).thenReturn(c.json());
-         Mockito.when(com.issue()).thenReturn(issue);
+        Mockito.when(com.json()).thenReturn(c.json());
+        Mockito.when(com.issue()).thenReturn(issue);
          
-         return com;
+        return com;
     }
 }

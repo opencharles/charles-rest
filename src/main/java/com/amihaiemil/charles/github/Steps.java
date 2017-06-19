@@ -46,21 +46,14 @@ public class Steps implements Step {
      * Message to send in case some step fails.
      */
     private SendReply failureMessage;
-    
-    /**
-     * Action's logger.
-     */
-    private Logger logger;
 
     /**
      * Constructor.
      * @param steps Given steps.
-     * @param log Given logger.
      * @param fm failure message in case any step fails.
      */
-    public Steps(Step steps, Logger log, SendReply fm) {
+    public Steps(Step steps, SendReply fm) {
         this.steps = steps;
-        this.logger = log;
         this.failureMessage = fm;
     }
 
@@ -76,12 +69,12 @@ public class Steps implements Step {
      * Perform all the given steps.
      */
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         try {
-            this.steps.perform();
+            this.steps.perform(command, logger);
         } catch (RuntimeException ex) {
             logger.error("A runtime exception occured", ex);
-            this.failureMessage.perform();
+            this.failureMessage.perform(command, logger);
         }
     }
 

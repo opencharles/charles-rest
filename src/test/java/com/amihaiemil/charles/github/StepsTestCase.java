@@ -59,10 +59,9 @@ public class StepsTestCase {
     public void stepsPerformOk() {
         Steps steps = new Steps(
             Mockito.mock(Step.class),
-            Mockito.mock(Logger.class),
             Mockito.mock(SendReply.class)
         );
-        steps.perform();
+        steps.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
     }
     
     /**
@@ -72,18 +71,18 @@ public class StepsTestCase {
     @Test
     public void stepsFail() throws Exception {
         Command com = this.mockCommand();
+        Logger logger = Mockito.mock(Logger.class);
         Reply rep = new TextReply(com, "Error whene executig steps!");
         SendReply sr = new SendReply(
-            rep, Mockito.mock(Logger.class),
-            Mockito.mock(Step.class)
+            rep, Mockito.mock(Step.class)
         );
 
         Step s = Mockito.mock(Step.class);
         Mockito.doThrow(new IllegalStateException("for test"))
-            .when(s).perform();
+            .when(s).perform(com, logger);
 
-        Steps steps = new Steps(s, Mockito.mock(Logger.class), sr);
-        steps.perform();
+        Steps steps = new Steps(s, sr);
+        steps.perform(com, logger);
 
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 1);

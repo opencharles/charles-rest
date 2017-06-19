@@ -47,15 +47,18 @@ public class RepoForkCheckTestCase {
     @Test
     public void recognizesFork() {
         JsonObject repo = Json.createObjectBuilder().add("fork", true).build();
+        Command com = Mockito.mock(Command.class);
+        Logger logger = Mockito.mock(Logger.class);
+        
         Step onTrue = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform(com, logger);
         Step onFalse = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onFalse).perform();
+        Mockito.doNothing().when(onFalse).perform(com, logger);
         
         RepoForkCheck rfc = new RepoForkCheck(
-            repo, Mockito.mock(Logger.class), onTrue, onFalse
+            repo, onTrue, onFalse
         );
-        rfc.perform();
+        rfc.perform(com, logger);
     }
     
     /**
@@ -64,14 +67,17 @@ public class RepoForkCheckTestCase {
     @Test
     public void recognizesNotFork() {
         JsonObject repo = Json.createObjectBuilder().add("fork", false).build();
+        Command com = Mockito.mock(Command.class);
+        Logger logger = Mockito.mock(Logger.class);
+        
         Step onTrue = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onTrue).perform();
+        Mockito.doNothing().when(onTrue).perform(com, logger);
         Step onFalse = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform();
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onFalse).perform(com, logger);
 
         RepoForkCheck rfc = new RepoForkCheck(
-            repo, Mockito.mock(Logger.class), onTrue, onFalse
+            repo, onTrue, onFalse
         );
-        rfc.perform();
+        rfc.perform(com, logger);
     }
 }

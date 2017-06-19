@@ -39,48 +39,25 @@ import org.slf4j.Logger;
 public class PageHostedOnGithubCheck extends PreconditionCheckStep {
 
     /**
-     * Command.
-     */
-    private Command com;
-
-    /**
-     * Link to the page.
-     */
-    private String link;
-    
-    /**
-     * Action's logger;
-     */
-    private Logger logger;
-    
-    /**
      * Ctor
-     * @param com Command.
-     * @param link Page link.
-     * @param logger Logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public PageHostedOnGithubCheck(
-        Command com, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
+    public PageHostedOnGithubCheck(Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
-        this.com = com;
-        String comment = com.json().getString("body");
-        this.link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
-        this.logger = logger;
     }
 
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         try {
-            CommandedRepo repo = com.repo();
+        	String comment = command.json().getString("body");
+            String link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
+            CommandedRepo repo = command.repo();
             String owner = repo.ownerLogin();
             String expDomain;
             logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.name());
-            logger.info("Page link: " + this.link);
-            boolean ghPagesBranch = com.repo().hasGhPagesBranch();
+            logger.info("Page link: " + link);
+            boolean ghPagesBranch = command.repo().hasGhPagesBranch();
             if (ghPagesBranch) {
                 expDomain = owner + ".github.io/" + repo.name();
                 logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
@@ -88,13 +65,13 @@ public class PageHostedOnGithubCheck extends PreconditionCheckStep {
                 expDomain = owner + ".github.io";
                 logger.info("The repo is a website repo so the page link has to start with " + expDomain);
             }
-            boolean passed = this.link.startsWith("http://" + expDomain) || this.link.startsWith("https://" + expDomain);
+            boolean passed = link.startsWith("http://" + expDomain) || link.startsWith("https://" + expDomain);
             if(!passed) {
                 logger.warn("The given webpage is NOT part of this repository!");
-                this.onFalse().perform();
+                this.onFalse().perform(command, logger);
             } else {
                 logger.info("The given webpage is part of this repository - Ok!");
-                this.onTrue().perform();
+                this.onTrue().perform(command, logger);
             }
         } catch (IOException ex) {
             logger.error("IOException when calling the Github API", ex);

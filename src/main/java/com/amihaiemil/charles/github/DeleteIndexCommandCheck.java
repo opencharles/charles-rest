@@ -39,33 +39,18 @@ import org.slf4j.Logger;
  */
 public class DeleteIndexCommandCheck extends PreconditionCheckStep {
 
-    /**
-     * Given command.
-     */
-    private Command com;
-
-    /**
-     * Logger.
-     */
-    private Logger logger;
-
-    public DeleteIndexCommandCheck(
-        Command com, Logger logger,
-        Step onTrue, Step onFalse
-    ) {
+    public DeleteIndexCommandCheck(Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
-        this.com = com;
-        this.logger = logger;
     }
 
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         boolean passed = false;
-        String text = com.json().getString("body");
+        String text = command.json().getString("body");
         if(text.contains("`")) {
             String repoToBeDeleted = text.substring(text.indexOf('`') + 1, text.lastIndexOf('`'));
             try {
-                String repoName = com.repo().name();
+                String repoName = command.repo().name();
                 passed = repoName.equals(repoToBeDeleted);
             } catch (IOException e) {
                 logger.error("Exception when getting repo's name", e);
@@ -73,9 +58,9 @@ public class DeleteIndexCommandCheck extends PreconditionCheckStep {
             }
         }
         if(passed) {
-        	this.onTrue().perform();
+        	this.onTrue().perform(command, logger);
         } else {
-        	this.onFalse().perform();
+        	this.onFalse().perform(command, logger);
         }
     }
 

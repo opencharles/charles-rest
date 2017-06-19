@@ -54,9 +54,9 @@ public class OrganizationAdminCheckTestCase {
         Mockito.when(com.authorOrgMembership()).thenReturn(membership);
 
         OrganizationAdminCheck oac = new OrganizationAdminCheck(
-            com, Mockito.mock(Logger.class), new Step.Fake(true), new Step.Fake(false)
+            new Step.Fake(true), new Step.Fake(false)
         );
-        oac.perform();
+        oac.perform(com, Mockito.mock(Logger.class));
     }
     
     /**
@@ -69,9 +69,9 @@ public class OrganizationAdminCheckTestCase {
         Mockito.when(com.authorOrgMembership()).thenThrow(new IOException());
 
         OrganizationAdminCheck oac = new OrganizationAdminCheck(
-            com, Mockito.mock(Logger.class), Mockito.mock(Step.class), Mockito.mock(Step.class)
+            Mockito.mock(Step.class), Mockito.mock(Step.class)
         );
-        oac.perform();
+        oac.perform(com, Mockito.mock(Logger.class));
     }
 
     /**
@@ -83,16 +83,17 @@ public class OrganizationAdminCheckTestCase {
     public void authorNotOrganizationAdmin() throws Exception {
         JsonObject membership = Json.createObjectBuilder().add("state", "active").add("role", "member").build();
         Command com  = this.mockCommand("someone", "orgName");
+        Logger logger = Mockito.mock(Logger.class);
         Mockito.when(com.authorOrgMembership()).thenReturn(membership);
         Step onTrue = Mockito.mock(Step.class);
-        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform();
+        Mockito.doThrow(new IllegalStateException("This step should not have been executed!")).when(onTrue).perform(com, logger);
         Step onFalse = Mockito.mock(Step.class);
-        Mockito.doNothing().when(onFalse).perform();
+        Mockito.doNothing().when(onFalse).perform(com, logger);
 
         OrganizationAdminCheck oac = new OrganizationAdminCheck(
-            com, Mockito.mock(Logger.class), new Step.Fake(false), new Step.Fake(true)
+            new Step.Fake(false), new Step.Fake(true)
         );
-        oac.perform();
+        oac.perform(com, logger);
     }
     /**
      * Mock a command for the unit tests.

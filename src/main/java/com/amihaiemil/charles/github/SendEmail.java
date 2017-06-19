@@ -61,11 +61,6 @@ public class SendEmail extends IntermediaryStep {
     private Envelope env;
     
     /**
-     * Logger.
-     */
-    private Logger logger;
-    
-    /**
      * Constructor.
      * @param to Recipient of this mail.
      * @param subject Mail subject.
@@ -79,7 +74,7 @@ public class SendEmail extends IntermediaryStep {
             new Step() {
                 
                 @Override
-                public void perform() {
+                public void perform(Command command, Logger logger) {
                    //does nothing
                 }
             }
@@ -126,7 +121,6 @@ public class SendEmail extends IntermediaryStep {
                 .with(new StSubject(subject))
                 .with(new EnPlain(message));
         }
-        this.logger = logger;
     }
     
     /**
@@ -140,7 +134,7 @@ public class SendEmail extends IntermediaryStep {
             postman, env, LoggerFactory.getLogger(SendEmail.class),
             new Step() {
                 @Override
-                public void perform() {
+                public void perform(Command command, Logger logger) {
                     //does nothing next
                 }
             }
@@ -161,14 +155,13 @@ public class SendEmail extends IntermediaryStep {
         super(next);
         this.postman = postman;
         this.env = env;
-        this.logger = logger;
     }
     
     /**
      * Send the email.
      */
     @Override
-    public void perform() {
+    public void perform(Command command, Logger logger) {
         logger.info("Sending e-mail...");
         if(this.postman == null) {
             logger.warn("Uninitialized postman (username and/or password missing). Cannot send email!");
@@ -177,7 +170,7 @@ public class SendEmail extends IntermediaryStep {
             try {
                 this.postman.send(env);
                 logger.info("E-mail sent successfully!");
-                this.next().perform();
+                this.next().perform(command, logger);
             } catch (IOException e) {
                 logger.error("Error when sending the email " + e.getMessage(), e);
                 throw new IllegalStateException(e);
