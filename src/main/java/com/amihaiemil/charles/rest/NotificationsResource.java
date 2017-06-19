@@ -27,15 +27,19 @@ package com.amihaiemil.charles.rest;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
+import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
@@ -122,6 +126,32 @@ public class NotificationsResource {
         return Response.serverError().build();
     }
 
+    /**
+     * Webhook for Github issue_comment event.
+     * @param issueComment Event Json payload.
+     * @see https://developer.github.com/v3/activity/events/types/#webhook-event-name-13
+     * @return Http response.
+     */
+    @POST
+    @Path("/github/issuecomment")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response webhook(JsonObject issueComment) {
+    	Notification notification = new Notification();
+    	notification.setIssueNumber(
+    	    issueComment.getJsonObject("issue").getInt("number")
+    	);
+    	notification.setRepoFullName(
+        	issueComment.getJsonObject("repository").getString("full_name")
+        );
+    	List<Notification> notifications = new ArrayList<>();
+    	notifications.add(notification);
+        boolean startedHandling = this.handleNotifications(notifications);
+        if(startedHandling) {
+            return Response.ok().build();
+        }
+        return Response.serverError().build();
+    }
+    
     /**
      * Handles notifications, starts one action thread for each of them.
      * @param notifications List of notifications.
