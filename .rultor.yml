@@ -5,6 +5,10 @@ env:
 merge:
   script: |-
     mvn clean install
+release:
+  script: |-
+    chmod +x ./rrv.sh
+    ./rrv.sh
 deploy:
   script:
    - echo "Deployment to AWS EC2 tbd in the future..."
