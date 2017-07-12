@@ -12,229 +12,59 @@
 
     <title>Charles Michael - Website</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yegor256/tacit/gh-pages/tacit-0.8.1.min.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
 
-    <!-- Theme CSS -->
-    <link href="css/freelancer.css" rel="stylesheet">
-
-    <!-- Custom Fonts -->
-    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
     <script data-bg="#0C1961" data-fg="#99D9FF" type="text/javascript" id="cookiebanner"
         src="http://cookiebanner.eu/js/cookiebanner.min.js"></script>
 </head>
 
 <body id="page-top" class="index">
-
-    <!-- Navigation -->
-    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header page-scroll">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span><i class="fa fa-bars"></i>
-                </button>
-                <a class="navbar-brand" target="_blank" href="https://github.com/charlesmike">@charlesmike</a>
-            </div>
-
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="hidden">
-                        <a href="#page-top"></a>
-                    </li>
-					<li class="page-scroll">
-                        <a href="#about">About</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#portfolio">Portfolio</a>
-                    </li>
-                    <li class="page-scroll">
-                        <a href="#githubContributors">Contributors</a>
-                    </li>
-					<li>
-						<div id="charles-search"></div>
-					</li>
-                </ul>
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container-fluid -->
-    </nav>
-<script
-   type="text/javascript"
-   id="charlesscript"
-   repo="opencharles/charles-rest"
-   src="http://www.amihaiemil.com/js/charles/charles.min.js">
-</script>
     <!-- Header -->
     <header>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <img class="img-responsive bubbleProfile" src="https://avatars.githubusercontent.com/u/19765212?v=3" alt="charlesmike avatar">
-                    <div class="intro-text">
-                        <span class="name">Charles Michael</span>
-                        <span class="skills">Index Assistant - Github Chatbot - Beta v. (to be released)</span>
-						<br/><br/>
-						<span>
-						    <a target="_blank" id="travislink" title="Travis build status" href="https://travis-ci.org/opencharles/charles-rest">
-					            <img alt="Travis build status" src="https://travis-ci.org/opencharles/charles-rest.svg?branch=master"/>
-				            </a>
-				        </span>
-						<span id="statusBadge">
-				        </span>
-				        <span>
-				            <a taget="_blank" title="Unit test coverage" href='https://coveralls.io/github/opencharles/charles-rest?branch=master'>
-				                <img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' />
-				            </a>
-                                        </span>
-                    </div>
-                </div>
-            </div>
+        <div class="centered">
+          <img class="avatar" src="https://avatars.githubusercontent.com/u/19765212?v=3" alt="charlesmike avatar">
+          <span class="skills">Github chatbot - Index and Search Assistant</span>
+            <ul class="horizontal-list">
+              <li>
+  					     <a target="_blank" id="travislink" title="Travis build status" href="https://travis-ci.org/opencharles/charles-rest">
+  				         <img alt="Travis build status" src="https://travis-ci.org/opencharles/charles-rest.svg?branch=master"/>
+  			         </a>
+  			      </li>
+  					  <li id="statusBadge"></li>
+  			      <li>
+  			          <a taget="_blank" title="Unit test coverage" href='https://coveralls.io/github/opencharles/charles-rest?branch=master'>
+  			            <img src='https://coveralls.io/repos/github/opencharles/charles-rest/badge.svg?branch=master' alt='Coverage Status' />
+  			          </a>
+              </li>
+            </ul>
         </div>
     </header>
 
-    <!-- About Section -->
-    <section id="about">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2>About</h2>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-lg-4 col-lg-offset-2">
-                    <p>Charles Michael is an easy-to-use web-content indexer. You interface with it <b>via Github issue comments</b>. Say <b>"@charlesmike hello there!"</b> in a comment and check out the answer!</p>
-                </div>
-                <div class="col-lg-4">
-                    <p>Charles is hosted in the AWS cloud and indexes your data into ElasticSearch instances! When an index command is finished you will receive a JS <b>script</b>, to put on your website, that will render the search widget.</p>
-                </div>
-                <div class="col-lg-8 col-lg-offset-2 text-center">
-                    <p>This service is available for <a target="_blank" title="Github Pages" href="https://pages.github.com/"><b>Github-hosted</b></a> websites/blogs and is completely <b>free</b>. In the future it might be available for other websites as well.</p>
-                    <br/>
-					<a href="doc.html" class="btn btn-default">Documentation</a>
-				</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Portfolio Grid Section -->
-    <section class="success" id="portfolio">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2>Portfolio</h2>
-					<br/>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2 text-center">
-                    <p>After successfully indexing a repository, Charles will <b>star</b> it. This way, the indexed repos are tracked and shown here, as part of the portfolio.</p>
-                    <p>So far, <a href="https://www.github.com/charlesmike" target="_blank">@charlesmike</a> has successfully indexed the following websites:</p>
-
-
-					    <ul id="starred" class="list-unstyled">
-						</ul>
-
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contributors Section -->
-    <section id="githubContributors">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2>Contributors</h2>
-                </div>
-            </div>
-            <br/>
-            <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <ul id="contributors" class="list-inline"></ul>
-                </div>
-            </div>
-        </div>
+    <section class="content">
+      <p>
+        <a href="https://github.com/charlesmike" target="_blank">@charlesmike</a> is a Github chatbot which indexes and provides search out of the box
+        for websites hosted on Github. Once the website is indexed, you simply have to add a script on the page, in order to render the search box.
+      </p>
+      <p>
+        The service is absolutely free of charge and the code behind it is open-source.
+        Just say "<b>@charlesmike hello</b>" in any Github issue and see what happens.
+      </p>
+      <p>
+        More details in <a href="http://www.amihaiemil.com/2017/05/23/meet-charles-michael.html" target="_blank">this</a> blog post.
+        Full documentation is <a href="doc.html">here</a>.
+      </p>
     </section>
 
     <!-- Footer -->
-    <footer class="text-center">
-        <div class="footer-above">
-            <div class="container">
-                <div class="row">
-                    <div class="footer-col col-md-4">
-                        <h3>Works with</h3>
-                        <ul class="list-inline">
-                            <li>
-                                <a href="https://www.elastic.co/products/elasticsearch"><img class="img-responsive" title="ElasticSearch" alt="Elastic logo" style="height: 60px; width: 140px;" src="img/elastic.png"></a>
-                            </li>
-                            <li>
-                                <a href="https://www.github.com"><img class="img-responsive" title="Github" alt="Github logo" src="img/Octocat.png"></a>
-                            </li>
-                            <li>
-                                <a href="http://aws.amazon.com/what-is-cloud-computing"><img class="img-responsive" src="http://awsmedia.s3.amazonaws.com/AWS_Logo_PoweredBy_127px.png" title="Amazon Web Services" alt="Powered by AWS Cloud Computing"></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="footer-col col-md-4">
-                        <h3>Open source at Github</h3>
-                        <ul class="list-unstyled">
-                            <li>
-                                <a style="color:white;" title="Backbone of Charles Michael" href="https://github.com/opencharles/charles-rest">opencharles/charles-rest</a>
-                            </li>
-                            <li>
-                                <a style="color:white;" title="Charles web-crawler project" href="https://github.com/opencharles/charles">opencharles/charles</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="footer-col col-md-4">
-                        <h3>About @charlesmike</h3>
-                        <p>Charles Michael is a Github chatbot which crawls and indexes your website's content making it searchable. You simply
-have to add a JS script to your page to render the search box.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="footer-below">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        Last updated: <span id="lastupdated"></span>
-                    </div>
-                </div>
-				<div class="row">
-                    <div class="col-lg-12">
-                        Copyright &copy; charles.amihaiemil.com 2016-2017
-                    </div>
-                </div>
-				<div class="row">
-                    <div class="col-lg-12">
-                        <a style="color:white;" href="terms.html">Terms and conditions</a> |
-						<a style="color:white;" href="data.html">Data policy</a>
-                    </div>
-                </div>
-            </div>
+    <footer class="content">
+        <div class="centered">
+              <span>Last updated: <span id="lastupdated"></span></span>
+              <span>Copyright &copy; charles.amihaiemil.com 2016-2017</span>
+              <span><a href="terms.html">Terms and conditions</a> |
+              <a href="data.html">Data policy</a></span>
         </div>
     </footer>
-
-    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
-    <div class="scroll-top page-scroll hidden-sm hidden-xs hidden-lg hidden-md">
-        <a class="btn btn-primary" href="#page-top">
-            <i class="fa fa-chevron-up"></i>
-        </a>
-    </div>
 
     <script src="js/index/scriptsidx.min.js"></script>
 
