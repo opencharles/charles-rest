@@ -1,0 +1,33 @@
+.centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.avatar {
+    border-radius: 50%;
+    width: 80px;
+}
+ul.horizontal-list {
+    list-style: none;
+}
+ul.horizontal-list li {
+    padding-right: 5px;
+    float: left;
+}
+.centered ul {
+    margin-left: 0px;
+}
+.content {
+    max-width: -webkit-calc(800px - (30px * 2));
+    max-width: calc(800px - (30px * 2));
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+footer {
+  margin-bottom:10px;
+  font-size: 12px;
+}
