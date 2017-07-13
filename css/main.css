@@ -27,6 +27,15 @@ ul.horizontal-list li {
     padding-left: 30px;
 }
 
+/*#charles-search {
+  margin-left: 30%;
+  margin-bottom: 5%;
+}*/
+
+#resultsPanel {
+  position: absolute !important;
+}
+
 footer {
   margin-bottom:10px;
   font-size: 12px;
