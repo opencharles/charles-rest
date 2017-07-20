@@ -40,8 +40,6 @@ import com.jcabi.http.response.JsonResponse;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * @todo #220:30min Add CachedCommand class, which would handle caching of
- *  values that are currently handled here.
  */
 public abstract class Command {
 
