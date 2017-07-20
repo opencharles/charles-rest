@@ -44,7 +44,7 @@ import com.jcabi.http.response.RestResponse;
  * @version $Id$
  * @since 1.0.0
  */
-public class CommandedRepo {
+public class CachedRepo {
 
     /**
      * Original repo.
@@ -63,15 +63,10 @@ public class CommandedRepo {
     private Boolean ghPagesBranch;
 
     /**
-     * Cached flag to tell if this repo is owned by an org or not.
-     */
-    private Boolean ownedByOrg;
-
-    /**
      * Ctor.
      * @param repo Github repository.
      */
-    public CommandedRepo(Repo repo) {
+    public CachedRepo(Repo repo) {
         this.repo = repo;
     }
 
@@ -143,13 +138,9 @@ public class CommandedRepo {
      *  Github API.
      */
     public boolean isOwnedByOrganization() throws IOException {
-        if (this.ownedByOrg == null) {
-            this.ownedByOrg = "organization"
-                .equalsIgnoreCase(
-                    this.json().getJsonObject("owner").getString("type")
-                );
-        }
-        return this.ownedByOrg;
+        return "organization".equalsIgnoreCase(
+            this.json().getJsonObject("owner").getString("type")
+        );
     }
 
 }

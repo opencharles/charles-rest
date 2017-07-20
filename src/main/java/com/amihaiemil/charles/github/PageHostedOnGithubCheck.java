@@ -52,7 +52,7 @@ public class PageHostedOnGithubCheck extends PreconditionCheckStep {
         try {
         	String comment = command.json().getString("body");
             String link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
-            CommandedRepo repo = command.repo();
+            CachedRepo repo = command.repo();
             String owner = repo.ownerLogin();
             String expDomain;
             logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.name());
