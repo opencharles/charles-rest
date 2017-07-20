@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.amihaiemil.web</groupId>
 	<artifactId>charles-rest</artifactId>
-	<version>0.0.1-SNAPSHOT</version><!--rrv-sed-flag-->
+	<version>0.0.1-SNAPSHOT</version><!--rrv-sed-flag -->
 	<packaging>war</packaging>
 	<name>charles-rest</name>
 	<description>Github chatbot codebase</description>
@@ -243,6 +243,11 @@
 			<groupId>com.github.detro</groupId>
 			<artifactId>phantomjsdriver</artifactId>
 			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.amihaiemil.web</groupId>
+			<artifactId>camel</artifactId>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
