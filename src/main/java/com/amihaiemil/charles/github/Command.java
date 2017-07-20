@@ -26,7 +26,6 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -41,25 +40,8 @@ import com.jcabi.http.response.JsonResponse;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- * @todo #220:30min Add CachedCommand class, which would handle caching of
- *  values that are currently handled here.
  */
 public abstract class Command {
-
-    /**
-     * Github repo.
-     */
-    private CommandedRepo repo;
-
-    /**
-     * Cached agentLogin.
-     */
-    private String agentLogin;
-
-    /**
-     * Cached author email address.
-     */
-    private String authorEmail;
 
     /**
      * Comment json.
@@ -134,11 +116,11 @@ public abstract class Command {
      * @throws IOException 
      */
     public String agentLogin() throws IOException {
-        if(this.agentLogin == null) {
-            this.agentLogin = this.issue.repo()
-                .github().users().self().login();
-        }
-        return this.agentLogin;
+        return this.issue.repo()
+                   .github()
+                   .users()
+                   .self()
+                   .login();
     }
 
     /**
@@ -156,16 +138,16 @@ public abstract class Command {
      * to get the author's email address.
      */
     public String authorEmail() throws IOException {
-        if(this.authorEmail == null){
-            User author = this.issue.repo().github().users().get(this.authorLogin());
-            Iterator<String> addresses = author.emails().iterate().iterator();
-            if(addresses.hasNext()) {
-                this.authorEmail = addresses.next();
-            } else {
-                this.authorEmail = "";
-            }
+        String email = "";
+        User author = this.issue
+        		          .repo()
+        		          .github()
+        		          .users()
+        		          .get(this.authorLogin());
+        for(final String address : author.emails().iterate()) {
+        	email = address;
         }
-        return this.authorEmail;
+        return email;
     }
 
     /**
@@ -179,7 +161,7 @@ public abstract class Command {
         if(this.repo().isOwnedByOrganization()) {
             Request req = this.issue.repo().github().entry()
                 .uri().path("/orgs/")
-                .path(this.repo.ownerLogin())
+                .path(this.repo().ownerLogin())
                 .path("/memberships/")
                 .path(this.authorLogin()).back();
             return req.fetch().as(JsonResponse.class).json().readObject();
@@ -191,14 +173,10 @@ public abstract class Command {
 
     /**
      * Returns the commanded repository.
-     * The result is <b>cached</b> and so the http call to Github API is performed only at the first call.
-     * @return
+     * @return CommandedRepo.
      */
-    public CommandedRepo repo() throws IOException {
-        if(this.repo == null) {
-            this.repo = new CommandedRepo(this.issue.repo());
-        }
-        return this.repo;
+    public CachedRepo repo() {
+        return new CachedRepo(this.issue.repo());
     }
 
     /**

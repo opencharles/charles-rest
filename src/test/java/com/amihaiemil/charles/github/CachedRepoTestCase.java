@@ -46,14 +46,14 @@ import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
 
 /**
- * Unit tests for {@link CommandedRepo}
+ * Unit tests for {@link CachedRepo}
  * @author MIhai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
 @SuppressWarnings("resource")
-public class CommandedRepoTestCase {
+public class CachedRepoTestCase {
     
     /**
      * CommandedRepo can tell when the repo has a gh-pages branch.
@@ -66,8 +66,8 @@ public class CommandedRepoTestCase {
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_OK))
             .start(port);
         try {
-            CommandedRepo crepo = Mockito.spy(
-                new CommandedRepo(Mockito.mock(Repo.class))
+            CachedRepo crepo = Mockito.spy(
+                new CachedRepo(Mockito.mock(Repo.class))
             );
             Mockito.when(crepo.json()).thenReturn(Json
                 .createObjectBuilder()
@@ -97,8 +97,8 @@ public class CommandedRepoTestCase {
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_NOT_FOUND))
             .start(port);
         try {
-            CommandedRepo crepo = Mockito.spy(
-                new CommandedRepo(Mockito.mock(Repo.class))
+            CachedRepo crepo = Mockito.spy(
+                new CachedRepo(Mockito.mock(Repo.class))
             );
             Mockito.when(crepo.json()).thenReturn(Json
                 .createObjectBuilder()
@@ -128,8 +128,8 @@ public class CommandedRepoTestCase {
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_BAD_REQUEST))
             .start(port);
         try {
-            CommandedRepo crepo = Mockito.spy(
-                new CommandedRepo(Mockito.mock(Repo.class))
+            CachedRepo crepo = Mockito.spy(
+                new CachedRepo(Mockito.mock(Repo.class))
             );
             Mockito.when(crepo.json()).thenReturn(Json
                 .createObjectBuilder()
@@ -158,7 +158,7 @@ public class CommandedRepoTestCase {
     public void getsJson() throws Exception {
         MkGithub gh = new MkGithub("amihaiemil");
         Repo rep = gh.repos().create(new RepoCreate("charlesrepo", false));
-        CommandedRepo crepo = new CommandedRepo(rep);
+        CachedRepo crepo = new CachedRepo(rep);
         JsonObject repoJson = crepo.json();
         assertTrue(crepo.name().equals("charlesrepo"));
         assertTrue(repoJson.getString("private").equals("false"));

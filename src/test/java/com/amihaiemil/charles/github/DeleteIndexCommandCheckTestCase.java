@@ -51,7 +51,7 @@ public class DeleteIndexCommandCheckTestCase {
                 .add("body", "@charlesmike delete `eva` index")
                 .build()
         );
-        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CachedRepo crepo = Mockito.mock(CachedRepo.class);
         Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
 
@@ -73,7 +73,7 @@ public class DeleteIndexCommandCheckTestCase {
                 .add("body", "@charlesmike delete `evamisspelled` index")
                 .build()
         );
-        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CachedRepo crepo = Mockito.mock(CachedRepo.class);
         Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
 
@@ -95,7 +95,7 @@ public class DeleteIndexCommandCheckTestCase {
                 .add("body", "@charlesmike delete eva index")
                 .build()
         );
-        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CachedRepo crepo = Mockito.mock(CachedRepo.class);
         Mockito.when(crepo.name()).thenReturn("eva");
         Mockito.when(com.repo()).thenReturn(crepo);
 

@@ -155,7 +155,7 @@ public class PageHostedOnGithubCheckTestCase {
     ) throws IOException {
         
         Command com = Mockito.mock(Command.class);
-        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CachedRepo crepo = Mockito.mock(CachedRepo.class);
         Mockito.when(crepo.ownerLogin()).thenReturn(owner);
         Mockito.when(crepo.name()).thenReturn(name);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(hasGhPages);

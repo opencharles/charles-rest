@@ -45,7 +45,7 @@ public class GhPagesBranchCheckTestCase {
     @Test
     public void ghpagesBranchExists() throws Exception {
         Command com = Mockito.mock(Command.class);
-        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CachedRepo crepo = Mockito.mock(CachedRepo.class);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(true);
         Mockito.when(com.repo()).thenReturn(crepo);
 
@@ -62,7 +62,7 @@ public class GhPagesBranchCheckTestCase {
     @Test
     public void ghpagesBranchDoesntExist() throws Exception {
         Command com = Mockito.mock(Command.class);
-        CommandedRepo crepo = Mockito.mock(CommandedRepo.class);
+        CachedRepo crepo = Mockito.mock(CachedRepo.class);
         Mockito.when(crepo.hasGhPagesBranch()).thenReturn(false);
         Mockito.when(com.repo()).thenReturn(crepo);
 
