@@ -25,7 +25,6 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -36,7 +35,7 @@ import java.util.List;
  *
  */
 public interface CharlesYml {
-	
+    
     /**
      * Usernames of users who are allowed to command the bot.
      * @return String[]

@@ -39,12 +39,12 @@ import org.junit.Test;
  * @since 1.0.1
  */
 public final class CharlesYmlInputTestCase {
-	
-	/**
-	 * CharlesYmlInput can read the commanders list.
-	 * @throws IOException If something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * CharlesYmlInput can read the commanders list.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
     public void readsCommanders() throws IOException {
         final CharlesYml charles = new CharlesYmlInput(
             new ByteArrayInputStream(
@@ -61,12 +61,12 @@ public final class CharlesYmlInputTestCase {
         );
         MatcherAssert.assertThat(charles.tweet(), Matchers.is(false));
     }
-	
-	/**
-	 * CharlesYmlInput can read the tweet option.
-	 * @throws IOException If something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * CharlesYmlInput can read the tweet option.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
     public void readsTweetOption() throws IOException {
         final CharlesYml charles = new CharlesYmlInput(
             new ByteArrayInputStream("tweet: true".getBytes())
@@ -74,17 +74,17 @@ public final class CharlesYmlInputTestCase {
         MatcherAssert.assertThat(charles.tweet(), Matchers.is(true));
         MatcherAssert.assertThat(charles.commanders(), Matchers.hasSize(0));
     }
-	
-	/**
-	 * CharlesYmlInput can read the commanders list.
-	 * @throws IOException If something goes wrong.
-	 */
-	@Test
+    
+    /**
+     * CharlesYmlInput can read the commanders list.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
     public void readsAllOptions() throws IOException {
         final CharlesYml charles = new CharlesYmlInput(
             new ByteArrayInputStream(
                 "commanders:\n  - charlesmike\n  - amihaiemil\ntweet: true"
-            	.getBytes()
+                .getBytes()
             )
         );
         final List<String> commanders = charles.commanders();

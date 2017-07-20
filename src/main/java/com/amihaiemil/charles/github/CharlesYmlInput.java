@@ -42,12 +42,12 @@ import com.amihaiemil.camel.YamlSequence;
  */
 public final class CharlesYmlInput implements CharlesYml {
 
-	/**
-	 * Contents of .charles.yml.
-	 */
-	private YamlMapping yaml;
+    /**
+     * Contents of .charles.yml.
+     */
+    private YamlMapping yaml;
 
-	/**
+    /**
      * Ctor.
      * @param cyml .charles.yml.
      * @throws IOException If the input stream cannot be read.
@@ -64,7 +64,7 @@ public final class CharlesYmlInput implements CharlesYml {
             for(int i=0;i<sequence.size();i++) {
                 commanders.add(sequence.string(i));
             }
-    	}
+        }
         return commanders;
     }
 
