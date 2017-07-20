@@ -58,9 +58,6 @@ public class Brain {
 
     /**
      * Constructor.
-     * @todo #181:30m/DEV After Russian language is done and tested,
-     *  let's start using it. It should be added bellow, right after
-     *  English and everything should work after that.
      */
     public Brain(Logger logger, LogsLocation logsLoc) {
         this(logger, logsLoc, new English());
@@ -87,35 +84,35 @@ public class Brain {
          String authorLogin = com.authorLogin();
          logger.info("Command author's login: " + authorLogin);
          Step steps;
-         CommandCategory category = this.categorizeCommand(com);
-         switch (category.type()) {
+         String category = this.categorizeCommand(com);
+         switch (category) {
              case "hello":
-                 String hello = String.format(category.language().response("hello.comment"), authorLogin);
+                 String hello = String.format(new English().response("hello.comment"), authorLogin);
                  steps = new SendReply(
                      new TextReply(com, hello), new Step.FinalStep()
                  );
                  break;
              case "indexsite":
                  steps = this.withCommonChecks(
-                     com, category.language(), this.indexSiteStep(com, category.language())
+                     com, new English(), this.indexSiteStep(com,new English())
                  );
                  break;
              case "indexpage":
                  steps = new PageHostedOnGithubCheck(
                      this.withCommonChecks(
-                         com, category.language(), this.indexPageStep(com, category.language())
+                         com, new English(), this.indexPageStep(com, new English())
                      ),
-                     this.finalCommentStep(com, category.language(), "denied.badlink.comment", com.authorLogin())
+                     this.finalCommentStep(com, new English(), "denied.badlink.comment", com.authorLogin())
                  );
                  break;
              case "indexsitemap":
             	 steps = new PageHostedOnGithubCheck(
                      this.withCommonChecks(
-                         com, category.language(),
-                         this.indexSitemapStep(com, category.language())
+                         com, new English(),
+                         this.indexSitemapStep(com, new English())
                      ),
                      this.finalCommentStep(
-                         com, category.language(),
+                         com, new English(),
                          "denied.badlink.comment",
                          com.authorLogin()
                      )
@@ -126,23 +123,23 @@ public class Brain {
                      new IndexExistsCheck(
                          com.indexName(),
                          new AuthorOwnerCheck(
-                             this.deleteIndexStep(com, category.language()),
+                             this.deleteIndexStep(com, new English()),
                              new OrganizationAdminCheck(
-                                 this.deleteIndexStep(com, category.language()),
+                                 this.deleteIndexStep(com, new English()),
                                  this.finalCommentStep(
-                                     com, category.language(),
+                                     com, new English(),
                                      "denied.commander.comment", com.authorLogin()
                                  )
                              )
                          ),
                          this.finalCommentStep(
-                             com, category.language(), "index.missing.comment",
+                             com, new English(), "index.missing.comment",
                              com.authorLogin(),
                              this.logsLoc.address()
                          )
                      ),
                      this.finalCommentStep(
-                         com, category.language(), "denied.deleteindex.comment",
+                         com, new English(), "denied.deleteindex.comment",
                          com.authorLogin(), com.agentLogin(), com.repo().name()
                      )
                  );
@@ -150,7 +147,7 @@ public class Brain {
              default:
                  logger.info("Unknwon command!");
                  String unknown = String.format(
-                     category.language().response("unknown.comment"),
+                     new English().response("unknown.comment"),
                      authorLogin);
                  steps = new SendReply(
                             new TextReply(com, unknown),
@@ -164,7 +161,7 @@ public class Brain {
                  new TextReply(
                      com,
                      String.format(
-                         category.language().response("step.failure.comment"),
+                         new English().response("step.failure.comment"),
                          com.authorLogin(), this.logsLoc.address()
                      )
                  ),
@@ -286,13 +283,13 @@ public class Brain {
      *  first language in the agent's languages list (this.languages)
      * @throws IOException 
      */
-    private CommandCategory categorizeCommand(Command com) throws IOException {
-        CommandCategory category = new CommandCategory("unknown", this.languages[0]);
+    private String categorizeCommand(Command com) throws IOException {
+    	String category = "unknown";
         for(Language lang : this.languages) {
             category = lang.categorize(com);
-            if(category.isUnderstood()) {
+            if(!"unknown".equals(category)) {
                 this.logger.info(
-                    "Command type: " + category.type() +
+                    "Command type: " + category +
                     ". Language: " + lang.getClass().getSimpleName()
                 );
                 break;

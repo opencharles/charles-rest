@@ -41,6 +41,8 @@ import com.jcabi.http.response.JsonResponse;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
+ * @todo #220:30min Add CachedCommand class, which would handle caching of
+ *  values that are currently handled here.
  */
 public abstract class Command {
 
@@ -68,15 +70,38 @@ public abstract class Command {
      * Github issue.
      */
     private Issue issue;
+    
+    /**
+     * Command type.
+     */
+    private String type;
 
     /**
+     * Command language.
+     */
+    private Language lang;
+    
+    /**
      * Ctor.
-     * @param issue
-     * @param comment
+     * @param issue Github issue where this command is given.
+     * @param comment Command contents.
      */
     public Command(Issue issue, JsonObject comment) {
+        this(issue, comment, "unknown", new English());
+    }
+    
+    /**
+     * Ctor.
+     * @param issue Github issue where this command is given.
+     * @param comment Command contents.
+     * @param type Command type.
+     * @param lang Language of the command.
+     */
+    public Command(Issue issue, JsonObject comment, String type, Language lang) {
         this.issue = issue;
         this.comment = comment;
+        this.type = type;
+        this.lang = lang;
     }
 
     /**
@@ -186,4 +211,20 @@ public abstract class Command {
         return this.repo().ownerLogin().toLowerCase() + "x" + this.repo().name().toLowerCase();
     }
 
+    /**
+     * Type of this command.
+     * @return String.
+     */
+    public String type() {
+    	return this.type;
+    }
+    
+    /**
+     * Language of this command.
+     * @return Language.
+     */
+    public Language language() {
+    	return this.lang;
+    }
+    
 }

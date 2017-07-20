@@ -23,30 +23,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import org.apache.commons.lang3.StringUtils;
+import java.io.IOException;
 
 /**
- * Valid command for the Github agent.
+ * A knowledge of the bot. Something that the bot "knows" how to do.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.0.1
  */
-public class ValidCommand extends Command {
-
+public interface Knowledge {
+    
     /**
-     * Constructor.
-     * @param Given Comment.
-     * @throws IllegalArgumentException if the comment (command) is not valid..
+     * Handle the command somehow.
+     * @param com Given command.
+     * @return Step to fulfill the command.
+     * @throws IOException If there's an IO problem,
+     *  like comunicating with the Github API.
      */
-    public ValidCommand(Command com) throws IllegalArgumentException {
-        super(com.issue(), com.json());
-        String body = com.json().getString("body");
-        if(StringUtils.isEmpty(body)) {
-            throw new IllegalArgumentException("Invalid command!");
-        }
-    }
-
+    Step handle(final Command com) throws IOException;
 }
