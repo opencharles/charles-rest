@@ -23,30 +23,24 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import org.apache.commons.lang3.StringUtils;
-
 /**
- * Valid command for the Github agent.
+ * A command that has been understood.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.0.1
  */
-public class ValidCommand extends Command {
+public class Understood extends Command {
 
-    /**
-     * Constructor.
-     * @param Given Comment.
-     * @throws IllegalArgumentException if the comment (command) is not valid..
-     */
-    public ValidCommand(Command com) throws IllegalArgumentException {
-        super(com.issue(), com.json());
-        String body = com.json().getString("body");
-        if(StringUtils.isEmpty(body)) {
-            throw new IllegalArgumentException("Invalid command!");
-        }
-    }
+	/**
+	 * Ctor.
+	 * @param com Command understood.
+	 * @param type Type.
+	 * @param lang Language
+	 */
+	public Understood(final Command com, final String type, final Language lang) {
+		super(com.issue(), com.json(), type, lang);
+	}
 
 }

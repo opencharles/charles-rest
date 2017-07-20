@@ -23,30 +23,60 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
 
-import org.apache.commons.lang3.StringUtils;
+import java.io.IOException;
 
 /**
- * Valid command for the Github agent.
+ * The bot can understand a Command and have a conversation based on it.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.0.1
+ * @todo #220:30min Add further Knowledge implementations, to replace the Brain
+ *  class entirely.
  */
-public class ValidCommand extends Command {
+public final class Conversation implements Knowledge {
 
     /**
-     * Constructor.
-     * @param Given Comment.
-     * @throws IllegalArgumentException if the comment (command) is not valid..
+     * Languages that the chatbot speaks.
      */
-    public ValidCommand(Command com) throws IllegalArgumentException {
-        super(com.issue(), com.json());
-        String body = com.json().getString("body");
-        if(StringUtils.isEmpty(body)) {
-            throw new IllegalArgumentException("Invalid command!");
+    private Language[] languages;
+
+    /**
+     * The followup of this conversation; what does it know to do next?
+     */
+    private Knowledge followup;
+
+    /**
+     * Ctor.
+     * @param followup Followup of this conversation; what does it know to do next?
+     */
+    public Conversation(final Knowledge followup) {
+        this(followup, new English());
+    }
+    
+    /**
+     * Ctor.
+     * @param followup Followup of this conversation; what does it know to do next?
+     * @param langs Languages that the bot speaks.
+     */
+    public Conversation(final Knowledge followup, final Language... langs) {
+        this.followup = followup;
+        this.languages = langs;
+    }
+
+    @Override
+    public Step handle(Command com) throws IOException {
+    	String type = "unknown";
+    	Command understood = new Understood(com, type, this.languages[0]);
+        for(Language lang : this.languages) {
+        	type = lang.categorize(com);
+            if(!"unknown".equals(type)) {
+                understood = new Understood(com, type, lang);
+                break;
+            }
         }
+        return this.followup.handle(understood);
     }
 
 }

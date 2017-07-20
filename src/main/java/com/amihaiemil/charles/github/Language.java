@@ -65,8 +65,8 @@ abstract class Language {
             throw new IllegalStateException(e);
         }
     }
-    
-    CommandCategory categorize(Command command) throws IOException {
+
+    String categorize(Command command) throws IOException {
         Set<Object> keys = this.commands.keySet();
         for(Object key : keys) {
             String keyString = (String) key;
@@ -78,10 +78,10 @@ abstract class Language {
                 }
             }
             if(match) {
-            	return new CommandCategory(keyString.split("\\.")[0], this);
+            	return keyString.split("\\.")[0];
             }
         }
-        return new CommandCategory("unknown", this);
+        return "unknown";
     }
     
     String response(String key) {
