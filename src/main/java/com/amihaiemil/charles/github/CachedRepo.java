@@ -25,11 +25,13 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import javax.json.JsonObject;
 
+import com.jcabi.github.Content;
 import org.hamcrest.Matchers;
 
 import com.jcabi.github.Repo;
@@ -61,6 +63,11 @@ public class CachedRepo {
      * or not.
      */
     private Boolean ghPagesBranch;
+
+    /**
+     * Cached .charles.yml file
+     */
+    private CharlesYml yml;
 
     /**
      * Ctor.
@@ -141,6 +148,26 @@ public class CachedRepo {
         return "organization".equalsIgnoreCase(
             this.json().getJsonObject("owner").getString("type")
         );
+    }
+
+    /**
+     * The charles.yml file contained in the repo.
+     * @return {@link CharlesYml}
+     * @throws IOException
+     */
+    public CharlesYml charlesYml() throws IOException {
+        if(this.yml == null) {
+            this.yml = new CharlesYmlInput(
+                new ByteArrayInputStream(
+                    new Content.Smart(
+                        this.repo
+                            .contents()
+                            .get(".charles.yml")
+                    ).decoded()
+                )
+            );
+        }
+        return this.yml;
     }
 
 }
