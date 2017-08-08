@@ -32,6 +32,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 /**
  * Unit tests for {@link RepoForkCheck}
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -45,7 +47,7 @@ public class RepoForkCheckTestCase {
      * RepoNameCheck can tell if the repo is a fork. 
      */
     @Test
-    public void recognizesFork() {
+    public void recognizesFork() throws IOException {
         JsonObject repo = Json.createObjectBuilder().add("fork", true).build();
         Command com = Mockito.mock(Command.class);
         Logger logger = Mockito.mock(Logger.class);
@@ -65,7 +67,7 @@ public class RepoForkCheckTestCase {
      * RepoNameCheck can tell if the repo is NOT a fork. 
      */
     @Test
-    public void recognizesNotFork() {
+    public void recognizesNotFork() throws IOException {
         JsonObject repo = Json.createObjectBuilder().add("fork", false).build();
         Command com = Mockito.mock(Command.class);
         Logger logger = Mockito.mock(Logger.class);

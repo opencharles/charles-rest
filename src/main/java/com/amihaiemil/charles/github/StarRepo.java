@@ -53,7 +53,7 @@ public class StarRepo extends IntermediaryStep {
      * Star the repository.
      * @return Always returns true, since it's not a critical step.
      */
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         try {
             logger.info("Starring repository...");
             Repo repo = command.issue().repo();
@@ -63,7 +63,7 @@ public class StarRepo extends IntermediaryStep {
             logger.info("Repository starred!");
         } catch (IOException e) {
             logger.error("Error when starring repository: " + e.getMessage(), e);
-            //We do not throw IllegalStateException here since starring the repo is not
+            //We do not rethrow it here since starring the repo is not
             //a critical matter
         }
         this.next().perform(command, logger);

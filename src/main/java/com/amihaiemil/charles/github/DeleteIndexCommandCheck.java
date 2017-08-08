@@ -44,7 +44,7 @@ public class DeleteIndexCommandCheck extends PreconditionCheckStep {
     }
 
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         boolean passed = false;
         String text = command.json().getString("body");
         if(text.contains("`")) {

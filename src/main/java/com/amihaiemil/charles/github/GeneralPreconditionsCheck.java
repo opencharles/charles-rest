@@ -25,58 +25,63 @@
  */
 package com.amihaiemil.charles.github;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 /**
- * Checks that a given page is hosted on Github (has the right domain)
+ * The general preconditions for any command other than 'hello' are:
+ *
+ * 1) Repo is under the commander's name or commander is an active admin of the
+ *    organization. This rule does not apply if the commander is specified in .charles.yml;
+ * 2) Repo is not a fork;
+ * 3) Repo is a website (is named commander.github.io) or has a gh-pages branch;
+ *
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
- *
+ * @since 1.0.1
  */
-public class PageHostedOnGithubCheck extends PreconditionCheckStep {
+public final class GeneralPreconditionsCheck extends PreconditionCheckStep {
 
     /**
-     * Ctor
+     * .charles.yml config file.
+     */
+    private CharlesYml charlesYml;
+
+    /**
+     * Ctor.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
+     * @param charlesYml This is the .charles.yml config file.
      */
-    public PageHostedOnGithubCheck(Step onTrue, Step onFalse) {
+    public GeneralPreconditionsCheck(
+        final Step onTrue,
+        final Step onFalse,
+        final CharlesYml charlesYml
+    ) {
         super(onTrue, onFalse);
+        this.charlesYml = charlesYml;
     }
 
     @Override
     public void perform(Command command, Logger logger) throws IOException {
-        try {
-        	String comment = command.json().getString("body");
-            String link = comment.substring(comment.indexOf('(') + 1, comment.indexOf(')'));
-            CachedRepo repo = command.repo();
-            String owner = repo.ownerLogin();
-            String expDomain;
-            logger.info("Checking if the page belongs to the repo " + owner + "/" + repo.name());
-            logger.info("Page link: " + link);
-            boolean ghPagesBranch = command.repo().hasGhPagesBranch();
-            if (ghPagesBranch) {
-                expDomain = owner + ".github.io/" + repo.name();
-                logger.info("The repo has a gh-pages branch so the page link has to start with " + expDomain);
-            } else {
-                expDomain = owner + ".github.io";
-                logger.info("The repo is a website repo so the page link has to start with " + expDomain);
-            }
-            boolean passed = link.startsWith("http://" + expDomain) || link.startsWith("https://" + expDomain);
-            if(!passed) {
-                logger.warn("The given webpage is NOT part of this repository!");
-                this.onFalse().perform(command, logger);
-            } else {
-                logger.info("The given webpage is part of this repository - Ok!");
-                this.onTrue().perform(command, logger);
-            }
-        } catch (IOException ex) {
-            logger.error("IOException when calling the Github API", ex);
-            throw new IllegalStateException("IOException when calling the Github API", ex);
-        }
+//        PreconditionCheckStep repoForkCheck = new RepoForkCheck(
+//            command.repo().json(), action,
+//            this.finalCommentStep(command, lang, "denied.fork.comment", command.authorLogin())
+//        );
+//        PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
+//            repoForkCheck,
+//            new OrganizationAdminCheck(
+//                repoForkCheck,
+//                this.finalCommentStep(command, lang, "denied.commander.comment", command.authorLogin())
+//            )
+//        );
+//        PreconditionCheckStep repoNameCheck = new RepoNameCheck(
+//            command.repo().json(), authorOwnerCheck,
+//            new GhPagesBranchCheck(
+//                authorOwnerCheck,
+//                this.finalCommentStep(command, lang, "denied.name.comment", command.authorLogin())
+//            )
+//        );
     }
-
 }

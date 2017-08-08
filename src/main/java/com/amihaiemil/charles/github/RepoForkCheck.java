@@ -29,6 +29,8 @@ import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 /**
  * Check for repository fork.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -61,7 +63,7 @@ public class RepoForkCheck extends PreconditionCheckStep {
      * @returns true if the repo is NOT a fork, false otherwise.
      */
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking whether the repository is a fork...");
         boolean fork = this.repo.getBoolean("fork");
         if(fork) {

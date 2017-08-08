@@ -48,8 +48,6 @@ public class IndexSite extends IndexStep {
 
     /**
      * Constructor.
-     * @param com Command
-     * @param logger The action's logger
      * @param next The next step to take
      */
     public IndexSite(Step next) {
@@ -57,7 +55,7 @@ public class IndexSite extends IndexStep {
     }
 
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         try {
         	logger.info("Starting to index the whole site...");
             this.graphCrawl(command, logger).crawl();

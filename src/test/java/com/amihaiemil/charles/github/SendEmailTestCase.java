@@ -134,7 +134,7 @@ public class SendEmailTestCase {
      * @throws Exception If something goes wrong.
      */
     @Test(expected = IllegalStateException.class)
-    public void uninitializedPostman() {
+    public void uninitializedPostman() throws IOException {
         SendEmail se = new SendEmail("amihaiemil@gmail.com", "hello", "hello, how are you?");
         se.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
     }

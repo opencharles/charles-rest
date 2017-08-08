@@ -52,13 +52,13 @@ public class DeleteIndex  extends IntermediaryStep {
     }
     
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         logger.info("Starting index deletion...");
         try {
             new AmazonEsRepository(command.indexName()).delete();
         } catch (IOException e) {
             logger.error("Exception while deleting the index!", e);
-            throw new IllegalStateException("Exception while deleting the index!" , e);
+            throw new IOException("Exception while deleting the index!" , e);
         }
         logger.info("Index successfully deleted!");
         this.next().perform(command, logger);

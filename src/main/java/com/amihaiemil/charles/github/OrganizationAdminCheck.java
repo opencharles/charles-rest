@@ -50,7 +50,7 @@ public class OrganizationAdminCheck extends PreconditionCheckStep {
     }
     
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException{
         try {
             logger.info("Checking if the author is an active admin of the organization ...");
             JsonObject membership = command.authorOrgMembership();
