@@ -65,7 +65,6 @@ public class SendEmail extends IntermediaryStep {
      * @param to Recipient of this mail.
      * @param subject Mail subject.
      * @param message Contents of the mail.
-     * @param next Next step to take.
      */
     public SendEmail(String to,  String subject, String message) {
         this(
@@ -127,7 +126,6 @@ public class SendEmail extends IntermediaryStep {
      * Constructor.
      * @param postman "postman" that delivers the email.
      * @param env Email data in an envelope.
-     * @param next Next step to take.
      */
     public SendEmail(Postman postman, Envelope env) {
         this(
@@ -161,7 +159,7 @@ public class SendEmail extends IntermediaryStep {
      * Send the email.
      */
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         logger.info("Sending e-mail...");
         if(this.postman == null) {
             logger.warn("Uninitialized postman (username and/or password missing). Cannot send email!");
@@ -173,7 +171,7 @@ public class SendEmail extends IntermediaryStep {
                 this.next().perform(command, logger);
             } catch (IOException e) {
                 logger.error("Error when sending the email " + e.getMessage(), e);
-                throw new IllegalStateException(e);
+                throw new IOException("Error when sending the email " + e.getMessage(), e);
             }
         }
     }

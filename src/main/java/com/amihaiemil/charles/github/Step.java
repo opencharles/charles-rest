@@ -28,6 +28,8 @@ package com.amihaiemil.charles.github;
 
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 /**
  * One step that has to be performed to
  * fulfill a command/request.
@@ -42,8 +44,10 @@ public interface Step {
 	 * Perform this step.
 	 * @param command Command that triggered the action.
 	 * @param logger The Action's logger.
+     * @throws IOException If there is anything wrong in the communication
+     *  with Github.
 	 */
-    void perform(Command command, Logger logger);
+    void perform(Command command, Logger logger) throws IOException;
     
     /**
      * Final step of the action. Just logs a line

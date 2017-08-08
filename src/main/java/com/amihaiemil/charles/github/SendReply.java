@@ -57,14 +57,14 @@ public class SendReply extends IntermediaryStep {
     }
     
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         try {
             logger.info("Sending comment...");
             rep.send();
             logger.info("Comment sent successfully!");
         } catch (IOException e) {
             logger.error("IOException when sending the reply!", e);
-            throw new IllegalStateException("IOException when sending the reply!" , e);
+            throw new IOException("IOException when sending the reply!" , e);
         }
         this.next().perform(command, logger);
     }

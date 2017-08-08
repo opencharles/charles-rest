@@ -56,7 +56,7 @@ public class StepsTestCase {
      * Steps can perform without throwing exceptions.
      */
     @Test
-    public void stepsPerformOk() {
+    public void stepsPerformOk() throws IOException {
         Steps steps = new Steps(
             Mockito.mock(Step.class),
             Mockito.mock(SendReply.class)

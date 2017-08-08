@@ -52,7 +52,7 @@ public class IndexSitemap extends IndexStep {
     }
 
 	@Override
-	public void perform(Command command, Logger logger) {
+	public void perform(Command command, Logger logger) throws IOException {
 		String link = this.getLink(command);
         try {
         	logger.info("Indexing sitemap " + link + " ...");
@@ -68,7 +68,7 @@ public class IndexSitemap extends IndexStep {
             sitemap.crawl();
             logger.info("Sitemap indexed successfully!");
        } catch (
-           final DataExportException | IOException | RuntimeException e
+           final DataExportException | RuntimeException e
        ) {
            logger.error("Exception while indexing the page " + link, e);
            throw new IllegalStateException(

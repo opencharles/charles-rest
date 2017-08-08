@@ -28,6 +28,8 @@ package com.amihaiemil.charles.github;
 
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 
 /**
  * Steps taken to fulfill a command.
@@ -69,11 +71,11 @@ public class Steps implements Step {
      * Perform all the given steps.
      */
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         try {
             this.steps.perform(command, logger);
-        } catch (RuntimeException ex) {
-            logger.error("A runtime exception occured", ex);
+        } catch (Exception ex) {
+            logger.error("An exception occured, sending failure comment...", ex);
             this.failureMessage.perform(command, logger);
         }
     }

@@ -88,7 +88,7 @@ public class SendReplyTestCase {
                 rep, Mockito.mock(Step.class)
             ).perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
             fail("Expected ISE here, but was not thrown");
-        } catch (IllegalStateException ex) {
+        } catch (IOException ex) {
             assertTrue(ex.getMessage().equals("IOException when sending the reply!"));
         }
     }

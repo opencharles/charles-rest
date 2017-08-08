@@ -41,8 +41,6 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
 
     /**
      * Constructor.
-     * @param com Command.
-     * @param logger Action logger.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
@@ -57,7 +55,7 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
      * @return true if the check is successful, false otherwise
      */
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking ownership of the repo");
         try {
             String repoOwner = command.repo().json().getJsonObject("owner").getString("login");

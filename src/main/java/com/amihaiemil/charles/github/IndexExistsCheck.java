@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 
 import com.amihaiemil.charles.aws.AmazonEsRepository;
 
+import java.io.IOException;
+
 /**
  * Step that checks if an index exists in elasticsearch
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -64,7 +66,7 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
     }
 
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking if required index exists...");
         boolean exists = this.repo.exists();
         if(exists) {

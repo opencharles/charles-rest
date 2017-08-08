@@ -55,7 +55,7 @@ public class IndexPage extends IndexStep {
     }
 
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
          String link = this.getLink(command);
          logger.info("Indexing page " + link + " ...");
          try {
@@ -69,7 +69,7 @@ public class IndexPage extends IndexStep {
              );
              logger.info("Page successfully sent to aws!");
         } catch (
-            final DataExportException | IOException | RuntimeException e
+            final DataExportException | RuntimeException e
         ) {
             logger.error("Exception while indexing the page " + link, e);
             throw new IllegalStateException(

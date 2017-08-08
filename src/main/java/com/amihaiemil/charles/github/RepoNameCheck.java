@@ -30,6 +30,8 @@ import javax.json.JsonObject;
 
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 /**
  * Step where the repo's name is checked.
  * @author Mihai Andronache (amihaiemil@gmail.com)
@@ -60,7 +62,7 @@ public class RepoNameCheck extends PreconditionCheckStep {
      * @return true if the check is successful, false otherwise
      */
     @Override
-    public void perform(Command command, Logger logger) {
+    public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking repository name... ");
         String  owner = this.repo.getJsonObject("owner").getString("login");
         String expectedName = owner + ".github.io";
