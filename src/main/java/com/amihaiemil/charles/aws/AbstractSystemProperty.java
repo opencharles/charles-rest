@@ -31,8 +31,6 @@ package com.amihaiemil.charles.aws;
  * @author Sherif Waly (sherifwaly@gmail.com)
  * @version $Id$
  * @since 1.0.0 
- * @todo #201:15m/DEV Add fake implementation for the 4 SystemProperty
- *  interfaces to use them in testing.
  */
 abstract class AbstractSystemProperty implements SystemProperty {
 
