@@ -26,12 +26,36 @@
 package com.amihaiemil.charles.aws;
 
 /**
- * AWS Region system property.
+ * AWS ElasticSearch Region system property.
  * @author Sherif Waly (sherifwaly95@gmail.com)
  * @version $Id$
  * @since 1.0.0
  *
  */
 public interface Region extends SystemProperty {
+	/**
+     * Actual name of the aws ES region sys prop.
+     */
+    String NAME = "aws.es.region";
+    
+    /**
+     * Fake for unit testing.
+     */
+    public static final class Fake implements Region {
 
+        private String value;
+        
+        public Fake() {
+            this("testAwsEsRegion");
+        }
+        
+        public Fake(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String read() {
+            return this.value;
+        }
+    }
 }

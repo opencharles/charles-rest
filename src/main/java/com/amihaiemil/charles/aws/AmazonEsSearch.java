@@ -56,13 +56,45 @@ public final class AmazonEsSearch {
     private String indexName;
 
     /**
-     * Ctor.
-     * @param qry
-     * @param idxName
+     * ElasticSearch URL.
      */
-    public AmazonEsSearch(SearchQuery qry, String idxName) {
+    private EsEndPoint esEdp;
+
+    /**
+     * AWS access key.
+     */
+    private AccessKeyId accesskey;
+    
+    /**
+     * Aws secret key;
+     */
+    private SecretKey secretKey;
+    
+    /**
+     * Aws ES region.
+     */
+    private Region reg;
+    
+    /**
+     * Ctor.
+     * @param es ElasticSearch URL.
+     * @param qry Search query.
+     * @param idxName Index Name.
+     */
+    public AmazonEsSearch(
+        final EsEndPoint es,
+        final AccessKeyId accesskey,
+        final SecretKey secretKey,
+        final Region reg,
+        final SearchQuery qry,
+        final String idxName
+    ) {
+    	this.esEdp = es;
         this.query = qry;
         this.indexName = idxName;
+        this.accesskey = accesskey;
+        this.secretKey = secretKey;
+        this.reg = reg;
     }
 
     /**
@@ -77,12 +109,17 @@ public final class AmazonEsSearch {
     	        new AwsHttpHeaders<>(
     	            new AwsPost<>(
     	                new EsHttpRequest<>(
+    	                	this.esEdp,
     	            	    this.indexName + "/_search",
-    	                    new SearchResponseHandler(), new SimpleAwsErrorHandler(false)
+    	                    new SearchResponseHandler(),
+    	                    new SimpleAwsErrorHandler(false)
     	                ),
     	                new ByteArrayInputStream(this.query.toJson().toString().getBytes())
     	            ), headers
-    	        )
+    	        ),
+    	        this.accesskey,
+                this.secretKey,
+                this.reg
     	    );
         return search.perform();
     }

@@ -32,5 +32,29 @@ package com.amihaiemil.charles.aws;
  * @since 1.0.0
  */
 public interface SecretKey extends SystemProperty {
+	/**
+     * Actual name of the aws secret key sys prop.
+     */
+    String NAME = "aws.secretKey";
     
+    /**
+     * Fake for unit testing.
+     */
+    public static final class Fake implements SecretKey {
+
+        private String value;
+        
+        public Fake() {
+            this("testAwsSecretKey");
+        }
+        
+        public Fake(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String read() {
+            return this.value;
+        }
+    }
 }

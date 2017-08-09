@@ -28,6 +28,9 @@ package com.amihaiemil.charles.aws.requests;
 import com.amazonaws.Request;
 import com.amazonaws.auth.AWS4Signer;
 import com.amazonaws.auth.AWSCredentials;
+import com.amihaiemil.charles.aws.AccessKeyId;
+import com.amihaiemil.charles.aws.Region;
+import com.amihaiemil.charles.aws.SecretKey;
 
 /**
  * A signed request made to AWS.
@@ -47,23 +50,46 @@ public class SignedRequest<T> extends AwsHttpRequest<T> {
     private AwsHttpRequest<T> base;
 
     /**
+     * AWS access key.
+     */
+    private AccessKeyId accesskey;
+    
+    /**
+     * Aws secret key;
+     */
+    private SecretKey secretKey;
+    
+    /**
+     * Aws ES region.
+     */
+    private Region reg;
+
+    /**
      * Ctor.
      * @param req Request to sign.
      */
-    public SignedRequest(AwsHttpRequest<T> req) {
+    public SignedRequest(
+        final AwsHttpRequest<T> req,
+        final AccessKeyId accesskey,
+        final SecretKey secretKey,
+        final Region reg
+    ) {
         this.base = req;
+        this.accesskey = accesskey;
+        this.secretKey = secretKey;
+        this.reg = reg;
     }
-
+    
     @Override
     public T perform() {
         AWS4Signer signer = new AWS4Signer();
-        String region = System.getProperty("aws.es.region");
+        String region = this.reg.read();
         if(region == null || region.isEmpty()) {
             throw new IllegalStateException("Mandatory sys property aws.es.region not specified!");
         }
-        signer.setRegionName(region.trim());
+        signer.setRegionName(this.reg.read());
         signer.setServiceName(this.base.request().getServiceName());
-        signer.sign(this.base.request(), new AwsCredentialsFromSystem());
+        signer.sign(this.base.request(), new AwsCredentialsFromSystem(this.accesskey, this.secretKey));
         return this.base.perform();
     }
 
@@ -77,22 +103,37 @@ public class SignedRequest<T> extends AwsHttpRequest<T> {
      */
     private static class AwsCredentialsFromSystem implements AWSCredentials {
 
+    	/**
+         * AWS access key.
+         */
+        private AccessKeyId accesskey;
+        
+        /**
+         * Aws secret key;
+         */
+        private SecretKey secretKey;
+    	
+        private AwsCredentialsFromSystem(final AccessKeyId accesskey, final SecretKey secret) {
+        	this.accesskey = accesskey;
+        	this.secretKey = secret;
+        }
+        
         @Override
         public String getAWSAccessKeyId() {
-            String accessKeyId = System.getProperty("aws.accessKeyId");
-            if(accessKeyId == null || accessKeyId.isEmpty()) {
+        	String accessKeyId = this.accesskey.read();
+        	if(accessKeyId == null || accessKeyId.isEmpty()) {
                 throw new IllegalStateException("Mandatory sys property aws.accessKeyId not specified!");
             }
-            return accessKeyId.trim();
+            return accessKeyId;
         }
 
         @Override
         public String getAWSSecretKey() {
-            String secretKey = System.getProperty("aws.secretKey");
+        	String secretKey = this.secretKey.read();
             if(secretKey == null || secretKey.isEmpty()) {
                 throw new IllegalStateException("Mandatory sys property aws.secretKey not specified!");
             }
-            return secretKey.trim();
+            return secretKey;
         }
         
     }

@@ -32,13 +32,12 @@ package com.amihaiemil.charles.aws;
  * @since 1.0.0
  */
 public final class StSecretKey extends AbstractSystemProperty implements SecretKey {
-    
+
     /**
      * Ctor. 
-     * @param String name
      */
-    public StSecretKey(final String name) {
-        super(name);
+    public StSecretKey() {
+        super(SecretKey.NAME);
     }
-
+    
 }

@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
-import org.junit.After;
 import org.junit.Test;
 
 import com.amazonaws.AmazonServiceException;
@@ -66,11 +65,13 @@ public class AmazonEsRepositoryTestCase {
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
-        System.setProperty("aws.accessKeyId", "access_key");
-        System.setProperty("aws.es.region", "ro");
-        System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
-
-        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        AmazonEsRepository repo = new AmazonEsRepository(
+            "testIndex",
+            new AccessKeyId.Fake("access_key"),
+            new SecretKey.Fake(null),
+            new Region.Fake("ro"),
+            new EsEndPoint.Fake("http://localhost:8080/es")
+        );
         try {
             repo.export(pages);
             fail();
@@ -89,10 +90,13 @@ public class AmazonEsRepositoryTestCase {
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
-        System.setProperty("aws.es.region", "ro");
-        System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
-
-        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        AmazonEsRepository repo = new AmazonEsRepository(
+            "testIndex",
+            new AccessKeyId.Fake(null),
+            new SecretKey.Fake("secret"),
+            new Region.Fake("ro"),
+            new EsEndPoint.Fake("http://localhost:8080/es")
+        );
         try {
             repo.export(pages);
             fail();
@@ -110,10 +114,13 @@ public class AmazonEsRepositoryTestCase {
         List<WebPage> pages = new ArrayList<WebPage>();
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
-
-        System.setProperty("aws.es.endpoint", "http://localhost:8080/es");
-
-        AmazonEsRepository repo = new AmazonEsRepository("testIndex");
+        AmazonEsRepository repo = new AmazonEsRepository(
+            "testIndex",
+            new AccessKeyId.Fake("access"),
+            new SecretKey.Fake("secret"),
+            new Region.Fake(null),
+            new EsEndPoint.Fake("http://localhost:8080/es")
+        );
         try {
             repo.export(pages);
             fail();
@@ -131,20 +138,19 @@ public class AmazonEsRepositoryTestCase {
         List<WebPage> pages = new ArrayList<WebPage>();
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
-
-        System.setProperty("aws.accessKeyId", "access_key");
-        System.setProperty("aws.secretKey", "secret_key");
-        System.setProperty("aws.es.region", "ro");
         
         int port = this.port();
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
-    
-        
         MkContainer server = new MkGrizzlyContainer()
            .next(new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}"))
            .start(port);
         try {
-        	new AmazonEsRepository("testIndex").export(pages);
+        	new AmazonEsRepository(
+                "testIndex",
+                new AccessKeyId.Fake("access_key"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("ro"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/_bulk")
+            ).export(pages);
             MkQuery request = server.take();
             assertTrue("/es/_bulk/".equals(request.uri().toString()));
             assertTrue("POST".equals(request.method()));
@@ -163,18 +169,19 @@ public class AmazonEsRepositoryTestCase {
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
-        System.setProperty("aws.accessKeyId", "access_key");
-        System.setProperty("aws.secretKey", "secret_key");
-        System.setProperty("aws.es.region", "ro");
         int port = this.port();
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es/");
-    
         
         MkContainer server = new MkGrizzlyContainer()
            .next(new MkAnswer.Simple(412))
            .start(port);
         try {
-        	new AmazonEsRepository("testIndex").export(pages);
+        	new AmazonEsRepository(
+                "testIndex",
+                new AccessKeyId.Fake("access_key"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("ro"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/_bulk/")
+            ).export(pages);
         } catch (AmazonServiceException ase) {
             assertTrue(ase.getErrorMessage().contains("Precondition Failed"));
             MkQuery request = server.take();
@@ -191,18 +198,18 @@ public class AmazonEsRepositoryTestCase {
      */
     @Test
     public void sendsDeleteRequestToAwsEs() throws Exception {
-        System.setProperty("aws.accessKeyId", "access_key");
-        System.setProperty("aws.secretKey", "secret_key");
-        System.setProperty("aws.es.region", "ro");
-        
         int port = this.port();
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
-
         MkContainer server = new MkGrizzlyContainer()
            .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
            .start(port);
         try {
-        	new AmazonEsRepository("index.to.be.deleted").delete();
+        	new AmazonEsRepository(
+                "index.to.be.deleted",
+                new AccessKeyId.Fake("access_key"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("ro"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/index.to.be.deleted/")
+            ).delete();
             MkQuery request = server.take();
             assertTrue("/es/index.to.be.deleted/".equals(request.uri().toString()));
             assertTrue("DELETE".equals(request.method()));
@@ -217,18 +224,18 @@ public class AmazonEsRepositoryTestCase {
      */
     @Test
     public void tellsIfIndexExists() throws Exception {
-        System.setProperty("aws.accessKeyId", "access_key");
-        System.setProperty("aws.secretKey", "secret_key");
-        System.setProperty("aws.es.region", "ro");
-        
         int port = this.port();
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
-
         MkContainer server = new MkGrizzlyContainer()
            .next(new MkAnswer.Simple(HttpStatus.SC_OK))
            .start(port);
         try {
-        	boolean exists = new AmazonEsRepository("present.index").exists();
+        	boolean exists = new AmazonEsRepository(
+                "present.index",
+                new AccessKeyId.Fake("access_key"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("ro"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/present.index/")
+            ).exists();
         	assertTrue(exists);
             MkQuery request = server.take();
             assertTrue("/es/present.index/".equals(request.uri().toString()));
@@ -244,18 +251,18 @@ public class AmazonEsRepositoryTestCase {
      */
     @Test
     public void tellsIfIndexDoesNotExist() throws Exception {
-        System.setProperty("aws.accessKeyId", "access_key");
-        System.setProperty("aws.secretKey", "secret_key");
-        System.setProperty("aws.es.region", "ro");
-        
         int port = this.port();
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/es");
-
         MkContainer server = new MkGrizzlyContainer()
            .next(new MkAnswer.Simple(HttpStatus.SC_NOT_FOUND))
            .start(port);
         try {
-        	boolean exists = new AmazonEsRepository("missing.index").exists();
+        	boolean exists = new AmazonEsRepository(
+                "missing.index",
+                new AccessKeyId.Fake("access_key"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("ro"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/missing.index/")
+            ).exists();
         	assertFalse(exists);
             MkQuery request = server.take();
             assertTrue("/es/missing.index/".equals(request.uri().toString()));
@@ -263,18 +270,6 @@ public class AmazonEsRepositoryTestCase {
         } finally {
             server.stop();
         }
-    }
-    
-    /**
-     * Clear system properties after each test.
-     */
-    @After
-    public void clear() {
-        System.clearProperty("aws.es.bulk.endpoint");
-        System.clearProperty("aws.es.region");
-        System.clearProperty("aws.accessKeyId");
-        System.clearProperty("aws.secretKey");
-        System.clearProperty("aws.es.endpoint");
     }
     
     /**

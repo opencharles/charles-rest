@@ -26,12 +26,18 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+
 import org.slf4j.Logger;
+
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.RetriableCrawl;
 import com.amihaiemil.charles.SitemapXmlCrawl;
 import com.amihaiemil.charles.WebCrawl;
 import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.aws.StAccessKeyId;
+import com.amihaiemil.charles.aws.StEsEndPoint;
+import com.amihaiemil.charles.aws.StRegion;
+import com.amihaiemil.charles.aws.StSecretKey;
 import com.amihaiemil.charles.sitemap.SitemapXmlOnline;
 
 /**
@@ -51,16 +57,22 @@ public class IndexSitemap extends IndexStep {
         super(next);
     }
 
-	@Override
-	public void perform(Command command, Logger logger) throws IOException {
-		String link = this.getLink(command);
+    @Override
+    public void perform(Command command, Logger logger) throws IOException {
+        String link = this.getLink(command);
         try {
-        	logger.info("Indexing sitemap " + link + " ...");
+            logger.info("Indexing sitemap " + link + " ...");
             WebCrawl sitemap = new RetriableCrawl(
                 new SitemapXmlCrawl(
                     this.phantomJsDriver(),
                     new SitemapXmlOnline(link),
-                    new AmazonEsRepository(command.indexName()),
+                    new AmazonEsRepository(
+                        command.indexName(),
+                        new StAccessKeyId(),
+                        new StSecretKey(),
+                        new StRegion(),
+                        new StEsEndPoint()
+                    ),
                     20
                 ),
                 5
@@ -76,9 +88,9 @@ public class IndexSitemap extends IndexStep {
            );
        }
        this.next().perform(command, logger);
-	}
+    }
 
-	/**
+    /**
      * Get the sitemap's link from the command's text which should
      * be in markdown format, with a link like
      * [this](http://link.com/here/the/ling) .

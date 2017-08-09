@@ -33,6 +33,8 @@ import com.amazonaws.Response;
 import com.amazonaws.http.AmazonHttpClient;
 import com.amazonaws.http.ExecutionContext;
 import com.amazonaws.http.HttpResponseHandler;
+import com.amihaiemil.charles.aws.EsEndPoint;
+
 import java.net.URI;
 
 /**
@@ -61,24 +63,24 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
 
     /**
      * Ctor.
-     * @param uri REST path
+     * @param esEdp ElasticSearch URL.
+     * @param uri REST path to the desired ElasticSearch endpoint.
      * @param respHandler Response handler.
      * @param errHandle Error handler.
      */
     public EsHttpRequest(
+    	EsEndPoint esEdp,
         String uri,
         HttpResponseHandler<T> respHandler,
         HttpResponseHandler<AmazonServiceException> errHandler
     ){
     	this.request = new DefaultRequest<Void>("es");
-        String esEndpoint = System.getProperty("aws.es.endpoint");
+        String esEndpoint = esEdp.read();
         if(esEndpoint == null || esEndpoint.isEmpty()) {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
-        }
-        if(esEndpoint.endsWith("/")) {
-            esEndpoint += uri;
-        } else {
-            esEndpoint += "/" + uri;
+        }        
+        if(!esEndpoint.endsWith("/")) {
+        	esEndpoint += "/";
         }
         this.request.setEndpoint(URI.create(esEndpoint));
         
