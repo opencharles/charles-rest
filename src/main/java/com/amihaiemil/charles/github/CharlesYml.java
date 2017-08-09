@@ -25,6 +25,7 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,12 +41,27 @@ public interface CharlesYml {
      * Usernames of users who are allowed to command the bot.
      * @return String[]
      */
-    abstract List<String> commanders();
+    List<String> commanders();
 
     /**
      * Should the bot tweet its activity?
      * @return Boolean.
      */
-    abstract boolean tweet();
+    boolean tweet();
+
+    /**
+     * Default .charles.yml file.
+     */
+    public static final class Default implements CharlesYml {
+        @Override
+        public List<String> commanders() {
+            return new ArrayList<>();
+        }
+
+        @Override
+        public boolean tweet() {
+            return false;
+        }
+    }
     
 }

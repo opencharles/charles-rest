@@ -157,15 +157,19 @@ public class CachedRepo {
      */
     public CharlesYml charlesYml() throws IOException {
         if(this.yml == null) {
-            this.yml = new CharlesYmlInput(
-                new ByteArrayInputStream(
-                    new Content.Smart(
-                        this.repo
-                            .contents()
-                            .get(".charles.yml")
-                    ).decoded()
-                )
-            );
+            if(this.repo.contents().exists(".charles.yml", "master")) {
+                this.yml = new CharlesYmlInput(
+                    new ByteArrayInputStream(
+                        new Content.Smart(
+                            this.repo
+                                .contents()
+                                .get(".charles.yml")
+                        ).decoded()
+                    )
+                );
+            } else {
+                this.yml = new CharlesYml.Default();
+            }
         }
         return this.yml;
     }

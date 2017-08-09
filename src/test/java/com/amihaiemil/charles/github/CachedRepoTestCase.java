@@ -35,9 +35,13 @@ import java.net.ServerSocket;
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.apache.commons.codec.binary.Base64;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.amihaiemil.camel.Yaml;
 import com.jcabi.github.Repo;
 import com.jcabi.github.Repos.RepoCreate;
 import com.jcabi.github.mock.MkGithub;
@@ -62,7 +66,7 @@ public class CachedRepoTestCase {
     @Test
     public void repoHasGhPagesBranch() throws Exception {
         int port = this.port();
-		MkContainer server = new MkGrizzlyContainer()
+        MkContainer server = new MkGrizzlyContainer()
             .next(new MkAnswer.Simple(HttpURLConnection.HTTP_OK))
             .start(port);
         try {
@@ -165,6 +169,56 @@ public class CachedRepoTestCase {
 
         JsonObject repoFromCache = crepo.json();
         assertTrue(repoJson == repoFromCache);
+    }
+    
+    /**
+     * CachedRepo can return the .charles.yml which is in the repo.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void getsExistingCharlesYml() throws Exception {
+        final MkGithub gh = new MkGithub("amihaiemil");
+        final Repo repo = gh.repos().create(new RepoCreate("charlesrepo", false));
+        repo.contents()
+            .create(
+                Json.createObjectBuilder()
+                    .add("path", ".charles.yml")
+                    .add("message", "just a test")
+                    .add(
+                        "content",
+                        Base64.encodeBase64String(
+                            Yaml.createYamlMappingBuilder()
+                                .add("tweet", "true")
+                                .add(
+                                    "commanders",
+                                    Yaml.createYamlSequenceBuilder()
+                                        .add("johndoe")
+                                        .add("amihaiemil")
+                                        .add("queeney")
+                                        .build()
+                                ).build().toString().getBytes()
+                        )
+                    ).build()
+            );
+        final CharlesYml yml = new CachedRepo(repo).charlesYml();
+        MatcherAssert.assertThat(yml.commanders(), Matchers.hasSize(3));
+        MatcherAssert.assertThat(yml.commanders().get(0), Matchers.equalTo("amihaiemil"));//YAML orders them alphabetically
+        MatcherAssert.assertThat(yml.commanders().get(1), Matchers.equalTo("johndoe"));
+        MatcherAssert.assertThat(yml.commanders().get(2), Matchers.equalTo("queeney"));
+        MatcherAssert.assertThat(yml.tweet(), Matchers.is(true));
+    }
+    
+    /**
+     * CachedRepo can return a default ChalesYml if the repo does not have it.
+     * @throws Exception If something goes worng.
+     */
+    @Test
+    public void getsDefaultCharlesYml() throws Exception {
+        MkGithub gh = new MkGithub("amihaiemil");
+        Repo rep = gh.repos().create(new RepoCreate("charlesrepo", false));
+        CharlesYml yml = new CachedRepo(rep).charlesYml();
+        MatcherAssert.assertThat(yml.commanders(), Matchers.emptyIterable());
+        MatcherAssert.assertThat(yml.tweet(), Matchers.is(false));
     }
     
     /**
