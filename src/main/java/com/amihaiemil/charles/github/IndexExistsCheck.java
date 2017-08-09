@@ -28,6 +28,10 @@ package com.amihaiemil.charles.github;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.aws.AmazonEsRepository;
+import com.amihaiemil.charles.aws.StAccessKeyId;
+import com.amihaiemil.charles.aws.StEsEndPoint;
+import com.amihaiemil.charles.aws.StRegion;
+import com.amihaiemil.charles.aws.StSecretKey;
 
 import java.io.IOException;
 
@@ -51,7 +55,17 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
      * @param onFalse the step to perform in unsuccessful check.
      */
     public IndexExistsCheck(String index, Step onTrue, Step onFalse) {
-        this(new AmazonEsRepository(index), onTrue, onFalse);
+    	
+        this(
+            new AmazonEsRepository(
+        		index,
+                new StAccessKeyId(),
+                new StSecretKey(),
+                new StRegion(),
+                new StEsEndPoint()
+            ),
+            onTrue, onFalse
+        );
     }
 
     /**

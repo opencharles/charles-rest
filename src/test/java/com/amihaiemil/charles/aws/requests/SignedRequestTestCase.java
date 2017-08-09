@@ -29,6 +29,9 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import com.amazonaws.Request;
+import com.amihaiemil.charles.aws.AccessKeyId;
+import com.amihaiemil.charles.aws.Region;
+import com.amihaiemil.charles.aws.SecretKey;
 
 /**
  * Unit tests for {@link SignedRequest}
@@ -44,7 +47,10 @@ public class SignedRequestTestCase {
     @Test
     public void fetchesOriginalRequest() {
         AwsHttpRequest<String> signed = new SignedRequest<>(
-            new AwsHttpRequest.FakeAwsHttpRequest()
+            new AwsHttpRequest.FakeAwsHttpRequest(),
+            new AccessKeyId.Fake("access_key"),
+            new SecretKey.Fake("secret"),
+            new Region.Fake("ro")
         );
         MatcherAssert.assertThat(
             signed.request(), Matchers.notNullValue()
@@ -60,12 +66,11 @@ public class SignedRequestTestCase {
      */
     @Test
     public void performsRequest() {
-        System.setProperty("aws.es.region", "test");
-        System.setProperty("aws.accessKeyId", "test");
-        System.setProperty("aws.secretKey", "test");
-
         AwsHttpRequest<String> signed = new SignedRequest<>(
-            new AwsHttpRequest.FakeAwsHttpRequest()
+            new AwsHttpRequest.FakeAwsHttpRequest(),
+            new AccessKeyId.Fake("access_key"),
+            new SecretKey.Fake("secret"),
+            new Region.Fake("ro")
         );
         MatcherAssert.assertThat(
             signed.perform(),

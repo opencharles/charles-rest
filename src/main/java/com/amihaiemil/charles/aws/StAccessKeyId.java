@@ -32,13 +32,12 @@ package com.amihaiemil.charles.aws;
  * @since 1.0.0
  */
 public final class StAccessKeyId extends AbstractSystemProperty implements AccessKeyId {
-    
-    /**
-     * Ctor. 
-     * @param String name
-     */
-    public StAccessKeyId(final String name) {
-        super(name);
+	
+	/**
+	 * Ctor.
+	 */
+    public StAccessKeyId() {
+        super(AccessKeyId.NAME);
     }
 
 }

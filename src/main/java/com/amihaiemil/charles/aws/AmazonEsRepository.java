@@ -64,11 +64,45 @@ public final class AmazonEsRepository implements AwsEsRepository {
     private String indexName;
 
     /**
+     * AWS access key.
+     */
+    private AccessKeyId accesskey;
+    
+    /**
+     * Aws secret key;
+     */
+    private SecretKey secretKey;
+    
+    /**
+     * Aws ES region.
+     */
+    private Region reg;
+    
+    /**
+     * ElasticSearch URL.
+     */
+    private EsEndPoint esEdp;
+    
+    /**
      * ctor.
      * @param indexName Name of the Es index where the pages will be exported.
+     * @param accessKey Aws access key.
+     * @param secretKey Aws secret key.
+     * @param reg AWS ElasticSearch region.
+     * @param es ElasticSearch URL.
      */
-    public AmazonEsRepository(String indexName) {
+    public AmazonEsRepository(
+		final String indexName,
+		final AccessKeyId accesskey,
+        final SecretKey secretKey,
+        final Region reg,
+        final EsEndPoint es
+    ) {
         this.indexName = indexName;
+        this.accesskey = accesskey;
+        this.secretKey = secretKey;
+        this.reg = reg;
+        this.esEdp = es;
     }
 
     @Override
@@ -82,13 +116,17 @@ public final class AmazonEsRepository implements AwsEsRepository {
                     new AwsHttpHeaders<>(
                         new AwsPost<>(
                             new EsHttpRequest<>(
+                            	this.esEdp,
                                 "_bulk",
                                 new SimpleAwsResponseHandler(false),
                                 new SimpleAwsErrorHandler(false)
                             ),
                             new ByteArrayInputStream(data.getBytes())
                         ), headers
-                     )
+                     ),
+                     this.accesskey,
+                     this.secretKey,
+                     this.reg
                 );
                 index.perform();
         } catch (IOException e) {
@@ -108,11 +146,15 @@ public final class AmazonEsRepository implements AwsEsRepository {
             new SignedRequest<>(
                 new AwsHead<>(
                     new EsHttpRequest<>(
+                        this.esEdp,
                         this.indexName,
                         new BooleanAwsResponseHandler(),
                         new SimpleAwsErrorHandler(false)
                     )
-                )
+                ),
+                this.accesskey,
+                this.secretKey,
+                this.reg
             );
         boolean exists = false;
         try {
@@ -134,11 +176,15 @@ public final class AmazonEsRepository implements AwsEsRepository {
             new SignedRequest<>(
                 new AwsDelete<>(
                     new EsHttpRequest<>(
+                    	this.esEdp,
                         this.indexName,
                         new SimpleAwsResponseHandler(false),
                         new SimpleAwsErrorHandler(false)
                     )
-                )
+                ),
+                this.accesskey,
+                this.secretKey,
+                this.reg
            );
        deleteIndex.perform();
     }

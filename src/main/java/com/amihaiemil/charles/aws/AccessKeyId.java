@@ -32,5 +32,30 @@ package com.amihaiemil.charles.aws;
  * @since 1.0.0
  */
 public interface AccessKeyId extends SystemProperty {
+    
+    /**
+     * Actual name of the aws access key id sys prop.
+     */
+    String NAME = "aws.accessKeyId";
+    
+    /**
+     * Fake for unit testing.
+     */
+    public static final class Fake implements AccessKeyId {
 
+        private String value;
+        
+        public Fake() {
+            this("testAccessKeyId");
+        }
+        
+        public Fake(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String read() {
+            return this.value;
+        }
+    }
 }

@@ -29,14 +29,20 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
+
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.amihaiemil.charles.aws.AccessKeyId;
+import com.amihaiemil.charles.aws.EsEndPoint;
+import com.amihaiemil.charles.aws.Region;
+import com.amihaiemil.charles.aws.SecretKey;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,18 +67,20 @@ public final class CharlesResourceTestCase {
     @Test
     public void pagesAreDisplayed() throws IOException {
         int port = this.port();
-		MkContainer awsEs = new MkGrizzlyContainer().next(
+        MkContainer awsEs = new MkGrizzlyContainer().next(
             new MkAnswer.Simple(this.readResource("esSearchResponse.json"))
         ).start(port);
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/elasticsearch");
-        System.setProperty("aws.es.region", "us-west");
-        System.setProperty("aws.accessKeyId", "aws_key_id");
-        System.setProperty("aws.secretKey", "secret_key");
         HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
         Mockito.when(request.getRequestURL()).thenReturn(
             new StringBuffer("http://example.com")
         );
-        CharlesResource resource = new CharlesResource(request);
+        CharlesResource resource = new CharlesResource(
+            request,
+            new AccessKeyId.Fake("aws_key_id"),
+            new SecretKey.Fake("secret_key"),
+            new Region.Fake("us-west"),
+            new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch")
+        );
         try {
             Response resp = resource.search("amihaiemil", "testrepo", "test", "page", "0", "3");
             ObjectMapper json = new ObjectMapper();
@@ -130,14 +138,4 @@ public final class CharlesResourceTestCase {
         }
     }
 
-    /**
-     * Clear sys properties after each test.
-     */
-    @After
-    public void cleanupSysProps() {
-        System.clearProperty("aws.es.endpoint");
-        System.clearProperty("aws.es.region");
-        System.clearProperty("aws.accessKeyId");
-        System.clearProperty("aws.secretKey");
-    }
 }

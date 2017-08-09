@@ -24,7 +24,8 @@
  */
 package com.amihaiemil.charles.aws;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,7 +34,6 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.After;
 import org.junit.Test;
 
 import com.amihaiemil.charles.rest.model.SearchResult;
@@ -61,13 +61,13 @@ public final class AmazonEsSearchTestCase {
         MkContainer awsEs = new MkGrizzlyContainer().next(
             new MkAnswer.Simple(this.readResource("esSearchResponse.json"))
         ).start(port);
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/elasticsearch");
-        System.setProperty("aws.es.region", "us-west");
-        System.setProperty("aws.accessKeyId", "aws_key_id");
-        System.setProperty("aws.secretKey", "secret_key");
 
         try {
             AmazonEsSearch es = new AmazonEsSearch(
+                new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch"),
+                new AccessKeyId.Fake("aws_key_id"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("us-west"),
                 new SearchQuery("test", "page", 0, 10),
                 "amihaiemilxtestrepo"
             );
@@ -96,13 +96,12 @@ public final class AmazonEsSearchTestCase {
         MkContainer awsEs = new MkGrizzlyContainer().next(
             new MkAnswer.Simple(this.readResource("esSearchResponseNoResults.json"))
         ).start(port);
-        System.setProperty("aws.es.endpoint", "http://localhost:" + port + "/elasticsearch");
-        System.setProperty("aws.es.region", "us-west");
-        System.setProperty("aws.accessKeyId", "aws_key_id");
-        System.setProperty("aws.secretKey", "secret_key");
-
         try {
             AmazonEsSearch es = new AmazonEsSearch(
+        		new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch"),
+                new AccessKeyId.Fake("aws_key_id"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("us-west"),
                 new SearchQuery("test", "page", 0, 10),
                 "amihaiemilxtestrepo"
             );
@@ -125,7 +124,14 @@ public final class AmazonEsSearchTestCase {
      */
     @Test
     public void missingEsEndpoint() {
-        AmazonEsSearch es = new AmazonEsSearch(new SearchQuery(), "user/idx");
+        AmazonEsSearch es = new AmazonEsSearch(
+    		new EsEndPoint.Fake(null),
+            new AccessKeyId.Fake("aws_key_id"),
+            new SecretKey.Fake("secret_key"),
+            new Region.Fake("us-west"),
+    		new SearchQuery(),
+    		"user/idx"
+        );
         try {
             es.search();
             fail("ISE was expected!");
@@ -133,7 +139,6 @@ public final class AmazonEsSearchTestCase {
             assertTrue(ex.getMessage().equals("ElasticSearch endpoint needs to be specified!"));
         }
         try {
-            System.setProperty("aws.es.endpoint", "");
             es.search();
             fail("ISE was expected!");
         } catch (IllegalStateException ex) {
@@ -165,14 +170,4 @@ public final class AmazonEsSearchTestCase {
         }
     }
 
-    /**
-     * Clear sys properties after each test.
-     */
-    @After
-    public void cleanupSysProps() {
-        System.clearProperty("aws.es.endpoint");
-        System.clearProperty("aws.es.region");
-        System.clearProperty("aws.accessKeyId");
-        System.clearProperty("aws.secretKey");
-    }
 }

@@ -33,4 +33,29 @@ package com.amihaiemil.charles.aws;
  */
 public interface EsEndPoint extends SystemProperty {
 
+    /**
+     * Actual name of the aws es endpoint sys prop.
+     */
+    String NAME = "aws.es.endpoint";
+    
+    /**
+     * Fake for unit testing.
+     */
+    public static final class Fake implements EsEndPoint {
+
+        private String value;
+        
+        public Fake() {
+            this("testAccessEsEndpoint");
+        }
+        
+        public Fake(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String read() {
+            return this.value;
+        }
+    }
 }

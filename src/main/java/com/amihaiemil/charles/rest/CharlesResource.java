@@ -39,8 +39,16 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.amihaiemil.charles.aws.AccessKeyId;
 import com.amihaiemil.charles.aws.AmazonEsSearch;
+import com.amihaiemil.charles.aws.EsEndPoint;
+import com.amihaiemil.charles.aws.Region;
 import com.amihaiemil.charles.aws.SearchQuery;
+import com.amihaiemil.charles.aws.SecretKey;
+import com.amihaiemil.charles.aws.StAccessKeyId;
+import com.amihaiemil.charles.aws.StEsEndPoint;
+import com.amihaiemil.charles.aws.StRegion;
+import com.amihaiemil.charles.aws.StSecretKey;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,16 +68,47 @@ public class CharlesResource {
     @Context
     private HttpServletRequest servletRequest;
 
+    /**
+     * ElasticSearch URL.
+     */
+    private EsEndPoint esEdp = new StEsEndPoint();
+
+    /**
+     * AWS access key.
+     */
+    private AccessKeyId accesskey = new StAccessKeyId();
+    
+    /**
+     * Aws secret key;
+     */
+    private SecretKey secretKey = new StSecretKey();
+    
+    /**
+     * Aws ES region.
+     */
+    private Region reg = new StRegion();
+    
+    
     public CharlesResource() {
-        //for hax-rs
+        //for jax-rs
     }
 
     /**
      * Ctor.
      * @param servletRequest Injected HttpServletRequest
      */
-    public CharlesResource (HttpServletRequest servletRequest) {
-    	this.servletRequest = servletRequest;
+    public CharlesResource (
+        final HttpServletRequest servletRequest,
+        final AccessKeyId accessKey,
+        final SecretKey secret,
+        final Region reg,
+        final EsEndPoint es
+    ) {
+        this.servletRequest = servletRequest;
+        this.accesskey = accessKey;
+        this.reg = reg;
+        this.secretKey = secret;
+        this.esEdp = es;
     }
     
     /**
@@ -104,11 +143,16 @@ public class CharlesResource {
         @QueryParam("index") @DefaultValue("0") String index,
         @QueryParam("size") @DefaultValue("10") String size
     ) throws JsonProcessingException {
+
         int idx = Integer.valueOf(index);
         int nr = Integer.valueOf(size);
         SearchQuery query = new SearchQuery(keywords, category, Integer.valueOf(index), Integer.valueOf(size));
         String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
-        AmazonEsSearch aws = new AmazonEsSearch(query, indexName);
+
+        AmazonEsSearch aws = new AmazonEsSearch(
+            this.esEdp, this.accesskey, this.secretKey, this.reg,
+            query, indexName
+        );
         SearchResultsPage results = aws.search();
         
         String queryStringFormat = "?kw=%s&ctg=%s&index=%s&size=%s";

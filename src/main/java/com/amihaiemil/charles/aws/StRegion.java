@@ -32,13 +32,12 @@ package com.amihaiemil.charles.aws;
  * @since 1.0.0
  */
 public final class StRegion extends AbstractSystemProperty implements Region {
-    
+
     /**
      * Ctor. 
-     * @param String name
      */
-    public StRegion(final String name) {
-        super(name);
+    public StRegion() {
+        super(Region.NAME);
     }
 
 }

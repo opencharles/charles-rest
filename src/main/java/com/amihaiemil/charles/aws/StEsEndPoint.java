@@ -35,18 +35,9 @@ public final class StEsEndPoint extends AbstractSystemProperty implements EsEndP
     
     /**
      * Ctor. 
-     * @param String name
      */
-    public StEsEndPoint(final String name) {
-        super(name);
+    public StEsEndPoint() {
+        super(EsEndPoint.NAME);
     }
  
-    @Override
-    public String read() {
-        String endPoint = super.read();
-        if(!endPoint.endsWith("/")) {
-            endPoint += "/";
-        }
-        return endPoint;
-    }
 }
