@@ -28,55 +28,38 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 
 /**
- * The bot can understand a Command and have a conversation based on it.
+ * The bot knows how to respond to a "hello" command.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
- * @todo #222:30min Hello was added, to handle hello commands. Continue
- *  with further Knowledges for the other commands (index site, index page etc).
  */
-public final class Conversation implements Knowledge {
+public final class Hello implements Knowledge {
 
     /**
-     * Languages that the chatbot speaks.
+     * What do we do if it's not a 'hello' command?
      */
-    private Language[] languages;
-
-    /**
-     * The followup of this conversation; what does it know to do next?
-     */
-    private Knowledge followup;
+    private Knowledge notHello;
 
     /**
      * Ctor.
-     * @param followup Followup of this conversation; what does it know to do next?
+     * @param notHello Followup of this conversation; what does it know to do next?
      */
-    public Conversation(final Knowledge followup) {
-        this(followup, new English());
-    }
-    
-    /**
-     * Ctor.
-     * @param followup Followup of this conversation; what does it know to do next?
-     * @param langs Languages that the bot speaks.
-     */
-    public Conversation(final Knowledge followup, final Language... langs) {
-        this.followup = followup;
-        this.languages = langs;
+    public Hello(final Knowledge notHello) {
+        this.notHello = notHello;
     }
 
     @Override
     public Step handle(final Command com) throws IOException {
-    	String type = "unknown";
-    	Command understood = new Understood(com, type, this.languages[0]);
-        for(Language lang : this.languages) {
-        	type = lang.categorize(com);
-            if(!"unknown".equals(type)) {
-                understood = new Understood(com, type, lang);
-                break;
-            }
+        if("hello".equalsIgnoreCase(com.type())) {
+            String hello = String.format(
+                com.language().response("hello.comment"),
+                com.authorLogin()
+            );
+            return new SendReply(
+                new TextReply(com, hello),
+                new Step.FinalStep()
+            );
         }
-        return this.followup.handle(understood);
+        return this.notHello.handle(com);
     }
-
 }
