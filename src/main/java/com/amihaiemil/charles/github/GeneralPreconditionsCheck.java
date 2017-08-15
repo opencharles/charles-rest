@@ -26,7 +26,6 @@
 package com.amihaiemil.charles.github;
 
 import org.slf4j.Logger;
-
 import java.io.IOException;
 
 /**
@@ -40,48 +39,91 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
+ * @todo #219:1h Write some integration tests for this step, check that
+ *  the tree of steps executes correctly/in the right order. For this, you
+ *  need to mock a Github server (use MkGithub) in appropriate ways, to check
+ *  each flow.
  */
-public final class GeneralPreconditionsCheck extends PreconditionCheckStep {
-
-    /**
-     * .charles.yml config file.
-     */
-    private CharlesYml charlesYml;
+public final class GeneralPreconditionsCheck extends IntermediaryStep {
 
     /**
      * Ctor.
-     * @param onTrue Step that should be performed next if the check is true.
-     * @param onFalse Step that should be performed next if the check is false.
-     * @param charlesYml This is the .charles.yml config file.
+     * @param next Next step, after all precondition have passed.
      */
-    public GeneralPreconditionsCheck(
-        final Step onTrue,
-        final Step onFalse,
-        final CharlesYml charlesYml
-    ) {
-        super(onTrue, onFalse);
-        this.charlesYml = charlesYml;
+    public GeneralPreconditionsCheck(final Step next) {
+        super(next);
     }
 
     @Override
     public void perform(Command command, Logger logger) throws IOException {
-//        PreconditionCheckStep repoForkCheck = new RepoForkCheck(
-//            command.repo().json(), action,
-//            this.finalCommentStep(command, lang, "denied.fork.comment", command.authorLogin())
-//        );
-//        PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
-//            repoForkCheck,
-//            new OrganizationAdminCheck(
-//                repoForkCheck,
-//                this.finalCommentStep(command, lang, "denied.commander.comment", command.authorLogin())
-//            )
-//        );
-//        PreconditionCheckStep repoNameCheck = new RepoNameCheck(
-//            command.repo().json(), authorOwnerCheck,
-//            new GhPagesBranchCheck(
-//                authorOwnerCheck,
-//                this.finalCommentStep(command, lang, "denied.name.comment", command.authorLogin())
-//            )
-//        );
+        final PreconditionCheckStep all;
+
+        final PreconditionCheckStep repoForkCheck = new RepoForkCheck(
+            command.repo().json(), this.next(),
+            this.finalCommentStep(command, "denied.fork.comment", command.authorLogin())
+        );
+
+        if(!this.isCommanderAllowed(command)) {
+            final PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
+                    repoForkCheck,
+                    new OrganizationAdminCheck(
+                        repoForkCheck,
+                        this.finalCommentStep(command, "denied.commander.comment", command.authorLogin())
+                    )
+            );
+            all = new RepoNameCheck(
+                command.repo().json(), authorOwnerCheck,
+                new GhPagesBranchCheck(
+                    authorOwnerCheck,
+                    this.finalCommentStep(command, "denied.name.comment", command.authorLogin())
+                )
+            );
+        } else {
+            all = new RepoNameCheck(
+                command.repo().json(), repoForkCheck,
+                new GhPagesBranchCheck(
+                    repoForkCheck,
+                    this.finalCommentStep(command, "denied.name.comment", command.authorLogin())
+                )
+            );
+        }
+        all.perform(command, logger);
+    }
+
+    /**
+     * Builds the final comment to be sent to the issue.
+     * <b>This should be the last in the steps' chain</b>.
+     * @param com Command.
+     * @param formatParts Parts to format the response %s elements with.
+     * @return SendReply step.
+     */
+    private SendReply finalCommentStep(
+        Command com, String messagekey, String ... formatParts
+    ) {
+        return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    com.language().response(messagekey),
+                    (Object[]) formatParts
+                )
+            ),
+            new Step.FinalStep()
+        );
+    }
+
+    /**
+     * Is the command's author specified in .charles.yml as a commander?
+     * @param com Initial command.
+     * @throws IOException if the commanders' list cannot be read from Github.
+     * @return True of False
+     */
+    private boolean isCommanderAllowed(Command com) throws IOException {
+        for(String commander : com.repo().charlesYml().commanders()) {
+            if(commander.equalsIgnoreCase(com.authorLogin())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
