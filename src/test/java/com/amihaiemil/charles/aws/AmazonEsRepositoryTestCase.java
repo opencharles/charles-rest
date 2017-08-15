@@ -24,10 +24,6 @@
  */
 package com.amihaiemil.charles.aws;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -45,6 +41,8 @@ import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
 import com.jcabi.http.mock.MkQuery;
+
+import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link AmazonEsRepository}
@@ -149,10 +147,10 @@ public class AmazonEsRepositoryTestCase {
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
-                new EsEndPoint.Fake("http://localhost:" + port + "/es/_bulk")
+                new EsEndPoint.Fake("http://localhost:" + port + "/es")
             ).export(pages);
             MkQuery request = server.take();
-            assertTrue("/es/_bulk/".equals(request.uri().toString()));
+            assertEquals("/es/_bulk/",request.uri().toString());
             assertTrue("POST".equals(request.method()));
         } finally {
             server.stop();
@@ -180,12 +178,12 @@ public class AmazonEsRepositoryTestCase {
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
-                new EsEndPoint.Fake("http://localhost:" + port + "/es/_bulk/")
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/")
             ).export(pages);
         } catch (AmazonServiceException ase) {
             assertTrue(ase.getErrorMessage().contains("Precondition Failed"));
             MkQuery request = server.take();
-            assertTrue("/es/_bulk/".equals(request.uri().toString()));
+            assertEquals("/es/_bulk/", request.uri().toString());
             assertTrue("POST".equals(request.method()));
         }finally {
             server.stop();
@@ -208,10 +206,10 @@ public class AmazonEsRepositoryTestCase {
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
-                new EsEndPoint.Fake("http://localhost:" + port + "/es/index.to.be.deleted/")
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/")
             ).delete();
             MkQuery request = server.take();
-            assertTrue("/es/index.to.be.deleted/".equals(request.uri().toString()));
+            assertEquals("/es/index.to.be.deleted/", request.uri().toString());
             assertTrue("DELETE".equals(request.method()));
         } finally {
             server.stop();
@@ -234,11 +232,11 @@ public class AmazonEsRepositoryTestCase {
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
-                new EsEndPoint.Fake("http://localhost:" + port + "/es/present.index/")
+                new EsEndPoint.Fake("http://localhost:" + port + "/es")
             ).exists();
         	assertTrue(exists);
             MkQuery request = server.take();
-            assertTrue("/es/present.index/".equals(request.uri().toString()));
+            assertEquals("/es/present.index/", request.uri().toString());
             assertTrue("HEAD".equals(request.method()));
         } finally {
             server.stop();
@@ -261,11 +259,11 @@ public class AmazonEsRepositoryTestCase {
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
-                new EsEndPoint.Fake("http://localhost:" + port + "/es/missing.index/")
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/")
             ).exists();
         	assertFalse(exists);
             MkQuery request = server.take();
-            assertTrue("/es/missing.index/".equals(request.uri().toString()));
+            assertEquals("/es/missing.index/", request.uri().toString());
             assertTrue("HEAD".equals(request.method()));
         } finally {
             server.stop();

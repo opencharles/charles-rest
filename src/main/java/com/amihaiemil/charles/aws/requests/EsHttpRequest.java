@@ -78,9 +78,11 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
         String esEndpoint = esEdp.read();
         if(esEndpoint == null || esEndpoint.isEmpty()) {
             throw new IllegalStateException("ElasticSearch endpoint needs to be specified!");
-        }        
-        if(!esEndpoint.endsWith("/")) {
-        	esEndpoint += "/";
+        }
+        if(esEndpoint.endsWith("/")) {
+            esEndpoint += uri;
+        } else {
+            esEndpoint += "/" + uri;
         }
         this.request.setEndpoint(URI.create(esEndpoint));
         
