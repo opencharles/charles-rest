@@ -39,18 +39,19 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
+ * @todo #219:1h Write some integration tests for this step, check that
+ *  the tree of steps executes correctly/in the right order. For this, you
+ *  need to mock a Github server (use MkGithub) in appropriate ways, to check
+ *  each flow.
  */
-public final class GeneralPreconditionsCheck extends PreconditionCheckStep {
+public final class GeneralPreconditionsCheck extends IntermediaryStep {
 
     /**
      * Ctor.
-     * @param onTrue Step that should be performed next if the check is true.
-     * @param onFalse Step that should be performed next if the check is false.
+     * @param next Next step, after all precondition have passed.
      */
-    public GeneralPreconditionsCheck(
-        final Step onTrue, final Step onFalse
-    ) {
-        super(onTrue, onFalse);
+    public GeneralPreconditionsCheck(final Step next) {
+        super(next);
     }
 
     @Override
@@ -58,7 +59,7 @@ public final class GeneralPreconditionsCheck extends PreconditionCheckStep {
         final PreconditionCheckStep all;
 
         final PreconditionCheckStep repoForkCheck = new RepoForkCheck(
-            command.repo().json(), this.onTrue(),
+            command.repo().json(), this.next(),
             this.finalCommentStep(command, "denied.fork.comment", command.authorLogin())
         );
 
