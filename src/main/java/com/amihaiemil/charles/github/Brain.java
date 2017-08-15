@@ -308,7 +308,7 @@ public class Brain {
      */
     private Step withCommonChecks(Command com, Language lang, Step action) throws IOException {
         PreconditionCheckStep repoForkCheck = new RepoForkCheck(
-            com.repo().json(), action,
+            action,
             this.finalCommentStep(com, lang, "denied.fork.comment", com.authorLogin())
         );
         PreconditionCheckStep authorOwnerCheck = new AuthorOwnerCheck(
@@ -319,7 +319,7 @@ public class Brain {
             )
         );
         PreconditionCheckStep repoNameCheck = new RepoNameCheck(
-            com.repo().json(), authorOwnerCheck,
+            authorOwnerCheck,
             new GhPagesBranchCheck(
                 authorOwnerCheck,
                 this.finalCommentStep(com, lang, "denied.name.comment", com.authorLogin())

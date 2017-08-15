@@ -44,9 +44,7 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public AuthorOwnerCheck(
-        Step onTrue, Step onFalse
-    ) {
+    public AuthorOwnerCheck(final Step onTrue, final Step onFalse) {
         super(onTrue, onFalse);
     }
 

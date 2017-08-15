@@ -43,7 +43,7 @@ public class PageHostedOnGithubCheck extends PreconditionCheckStep {
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public PageHostedOnGithubCheck(Step onTrue, Step onFalse) {
+    public PageHostedOnGithubCheck(final Step onTrue, final Step onFalse) {
         super(onTrue, onFalse);
     }
 

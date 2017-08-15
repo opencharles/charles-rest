@@ -25,10 +25,7 @@
  */
 package com.amihaiemil.charles.github;
 
-import javax.json.JsonObject;
-
 import org.slf4j.Logger;
-
 import java.io.IOException;
 
 /**
@@ -41,21 +38,12 @@ import java.io.IOException;
 public class RepoForkCheck extends PreconditionCheckStep {
 
     /**
-     * Repository json as returned by the Github API.
-     */
-    private JsonObject repo;
-
-    /**
      * Constructor.
-     * @param repo Given repository json.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public RepoForkCheck(
-        JsonObject repo, Step onTrue, Step onFalse
-    ) {
+    public RepoForkCheck(final Step onTrue, final Step onFalse) {
         super(onTrue, onFalse);
-        this.repo = repo;
     }
 
     /**
@@ -65,7 +53,7 @@ public class RepoForkCheck extends PreconditionCheckStep {
     @Override
     public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking whether the repository is a fork...");
-        boolean fork = this.repo.getBoolean("fork");
+        boolean fork = command.repo().json().getBoolean("fork");
         if(fork) {
             logger.warn("Repository should NOT be a fork!");
             this.onFalse().perform(command, logger);

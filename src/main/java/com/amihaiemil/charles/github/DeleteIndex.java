@@ -47,8 +47,6 @@ public class DeleteIndex  extends IntermediaryStep {
 
     /**
      * Constructor.
-     * @param com Command
-     * @param logger The action's logger
      * @param next The next step to take
      */
     public DeleteIndex(Step next) {

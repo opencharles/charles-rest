@@ -45,7 +45,7 @@ public class StarRepo extends IntermediaryStep {
      * Constructor.
      * @param next Next step to perform.
      */
-    public StarRepo(Step next) {
+    public StarRepo(final Step next) {
         super(next);
     }
     

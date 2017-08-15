@@ -26,10 +26,7 @@
 
 package com.amihaiemil.charles.github;
 
-import javax.json.JsonObject;
-
 import org.slf4j.Logger;
-
 import java.io.IOException;
 
 /**
@@ -42,19 +39,12 @@ import java.io.IOException;
 public class RepoNameCheck extends PreconditionCheckStep {
 
     /**
-     * Json repository as returned by the Github API.
-     */
-    private JsonObject repo;
-
-    /**
      * Constructor.
-     * @param repo Json repo.
      * @param onTrue Step that should be performed next if the check is true.
      * @param onFalse Step that should be performed next if the check is false.
      */
-    public RepoNameCheck(JsonObject repo, Step onTrue, Step onFalse) {
+    public RepoNameCheck(final Step onTrue, final Step onFalse) {
         super(onTrue, onFalse);
-        this.repo = repo;
     }
 
     /**
@@ -64,10 +54,10 @@ public class RepoNameCheck extends PreconditionCheckStep {
     @Override
     public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking repository name... ");
-        String  owner = this.repo.getJsonObject("owner").getString("login");
+        String  owner = command.repo().json().getJsonObject("owner").getString("login");
         String expectedName = owner + ".github.io";
         logger.info("Expected name: " + expectedName);
-        String name = this.repo.getString("name");
+        String name = command.repo().json().getString("name");
         logger.info("Actual name: " + name);
         if(expectedName.equals(name)) {
             logger.info("Repository name matches - Ok");

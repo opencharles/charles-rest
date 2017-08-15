@@ -59,7 +59,7 @@ public final class GeneralPreconditionsCheck extends IntermediaryStep {
         final PreconditionCheckStep all;
 
         final PreconditionCheckStep repoForkCheck = new RepoForkCheck(
-            command.repo().json(), this.next(),
+            this.next(),
             this.finalCommentStep(command, "denied.fork.comment", command.authorLogin())
         );
 
@@ -72,7 +72,7 @@ public final class GeneralPreconditionsCheck extends IntermediaryStep {
                     )
             );
             all = new RepoNameCheck(
-                command.repo().json(), authorOwnerCheck,
+                authorOwnerCheck,
                 new GhPagesBranchCheck(
                     authorOwnerCheck,
                     this.finalCommentStep(command, "denied.name.comment", command.authorLogin())
@@ -80,7 +80,7 @@ public final class GeneralPreconditionsCheck extends IntermediaryStep {
             );
         } else {
             all = new RepoNameCheck(
-                command.repo().json(), repoForkCheck,
+                repoForkCheck,
                 new GhPagesBranchCheck(
                     repoForkCheck,
                     this.finalCommentStep(command, "denied.name.comment", command.authorLogin())

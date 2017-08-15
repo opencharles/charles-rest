@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 
 import com.jcabi.github.Issue;
 import com.jcabi.github.Repo;
+import sun.misc.Cache;
 
 /**
  * Unit tests for {@link RepoNameCheck}
@@ -53,11 +54,10 @@ public class RepoNameCheckTestCase {
     @Test
     public void repoNameMatches() throws Exception {
         RepoNameCheck rnc = new RepoNameCheck(
-        	this.mockCommand("amihaiemil", "amihaiemil.github.io").issue().repo().json(),
         	new Step.Fake(true), new Step.Fake(false)
         );
         rnc.perform(
-            Mockito.mock(Command.class),
+            this.mockCommand("amihaiemil", "amihaiemil.github.io"),
             Mockito.mock(Logger.class)
         );
     }
@@ -69,10 +69,9 @@ public class RepoNameCheckTestCase {
     @Test
     public void repoNameDoesntMatch() throws Exception {
         RepoNameCheck rnc = new RepoNameCheck(
-            this.mockCommand("amihaiemil", "reponame").issue().repo().json(),
             new Step.Fake(false), new Step.Fake(true)
         );
-        rnc.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
+        rnc.perform(this.mockCommand("amihaiemil", "reponame"), Mockito.mock(Logger.class));
     }
     
     /**
@@ -89,12 +88,10 @@ public class RepoNameCheckTestCase {
                 "owner",
                 Json.createObjectBuilder().add("login", owner).build()
             ).build();
-        Repo repo = Mockito.mock(Repo.class);
+        CachedRepo repo = Mockito.mock(CachedRepo.class);
         Mockito.when(repo.json()).thenReturn(repoJson);
-        Issue issue = Mockito.mock(Issue.class);
-        Mockito.when(issue.repo()).thenReturn(repo);
         Command command = Mockito.mock(Command.class);
-        Mockito.when(command.issue()).thenReturn(issue);
+        Mockito.when(command.repo()).thenReturn(repo);
         return command;
     }
 
