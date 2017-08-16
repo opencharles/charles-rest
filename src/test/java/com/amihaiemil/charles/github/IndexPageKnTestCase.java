@@ -33,63 +33,68 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Unit tests for {@link Hello}
+ * Unit tests for {@link IndexPageKn}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
  */
-public final class HelloTestCase {
+public final class IndexPageKnTestCase {
 
     /**
-     * Hello can handle a 'hello' command.
+     * IndexPageKn can handle an 'indexpage' command.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void handlesHelloCommand() throws Exception {
+    public void handlesIndexPageCommand() throws Exception {
         final Command com = Mockito.mock(Command.class);
-        Mockito.when(com.type()).thenReturn("hello");
+        Mockito.when(com.type()).thenReturn("indexpage");
         Mockito.when(com.authorLogin()).thenReturn("amihaiemil");
         Mockito.when(com.language()).thenReturn(new English());
 
-        final Knowledge hello = new Hello(
+        final LogsLocation logs = Mockito.mock(LogsLocation.class);
+        Mockito.when(logs.address()).thenReturn("/path/to/logs");
+        
+        final Knowledge indexpage = new IndexPageKn(
+            logs,
             new Knowledge() {
                 @Override
                 public Step handle(final Command com) throws IOException {
                     throw new IllegalStateException(
-                        "'hello' command was misunderstood!"
+                        "'indexpage' command was misunderstood!"
                     );
                 }
             }
         );
 
-        Step steps = hello.handle(com);
+        Step steps = indexpage.handle(com);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
-            steps instanceof SendReply, Matchers.is(true)
+            steps instanceof PageHostedOnGithubCheck, Matchers.is(true)
         );
-
     }
-
+    
     /**
-     * Hello can handle a command which is not 'hello'.
+     * IndexPageKn can handle a command which is not 'indexsite'.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void handlesNotHelloCommand() throws Exception {
+    public void handlesNotIndexPageCommand() throws Exception {
         final Command com = Mockito.mock(Command.class);
-        Mockito.when(com.type()).thenReturn("indexsite");
-        final Knowledge hello = new Hello(
+        Mockito.when(com.type()).thenReturn("sitemap");
+        
+        final Knowledge indexpage = new IndexPageKn(
+            Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
                 public Step handle(final Command com) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
-                        Matchers.equalTo("indexsite")
+                        Matchers.equalTo("sitemap")
                     );
                     return null;
                 }
             }
         );
-        hello.handle(com);
+        indexpage.handle(com);
     }
 }

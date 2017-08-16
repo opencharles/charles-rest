@@ -63,11 +63,6 @@ public class Action {
     private Issue issue;
 
     /**
-     * Brain of the github agent.
-     */
-    private Brain br;    
-
-    /**
      * Location of the logs.
      */
     private LogsLocation logs;
@@ -85,24 +80,54 @@ public class Action {
         this.logs = new LogsOnServer(
             System.getProperty("charles.rest.logs.endpoint"), this.id + ".log"
         );
-        this.br = new Brain(this.logger, this.logs);
     }
     
     
     public void perform() {
         ValidCommand command;
         try {
-            logger.info("Started action " + this.id);
-            LastComment lc = new LastComment(issue);
+            this.logger.info("Started action " + this.id);
+            final LastComment lc = new LastComment(issue);
             command = new ValidCommand(lc);
             String commandBody = command.json().getString("body");
-            logger.info("Received command: " + commandBody);
-            Steps steps = br.understand(command);
+            this.logger.info("Received command: " + commandBody);
+            
+            final Knowledge knowledge = new Conversation(
+                new Hello(
+                    new IndexSiteKn(
+                        this.logs,
+                        new IndexSitemapKn(
+                            this.logs,
+                            new IndexPageKn(
+                                this.logs,
+                                new DeleteIndexKn(
+                                    this.logs,
+                                    new Confused()
+                                )
+                            )
+                        )
+                    )
+                )
+            );
+
+            final Steps steps = new Steps(
+            	knowledge.handle(command),
+                new SendReply(
+                    new TextReply(
+                        command,
+                        String.format(
+                        	command.language().response("step.failure.comment"),
+                            command.authorLogin(), this.logs.address()
+                        )
+                    ),
+                    new Step.FinalStep("[ERROR] Some step didn't execute properly.")
+                )
+            );
             steps.perform(command, logger);
-        } catch (IllegalArgumentException e) {
-            logger.warn("No command found in the issue or the agent has already replied to the last command!");
-        } catch (IOException e) {
-            logger.error("Action failed entirely with exception: ",  e);
+        } catch (final IllegalArgumentException e) {
+            this.logger.warn("No command found in the issue or the agent has already replied to the last command!");
+        } catch (final IOException e) {
+        	this.logger.error("Action failed entirely with exception: ",  e);
             this.sendReply(
                 new ErrorReply(logs.address(), this.issue)
             );
@@ -117,7 +142,7 @@ public class Action {
         try {
             reply.send();
         } catch (IOException e) {
-            logger.error("FAILED TO REPLY!", e);
+        	this.logger.error("FAILED TO REPLY!", e);
         }
     }
 

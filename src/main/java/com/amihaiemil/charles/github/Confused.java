@@ -28,38 +28,26 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 
 /**
- * The bot knows how to respond to a "hello" command.
+ * The bot didn't understand the command, so he has to leave a comment informing the commander
+ * of its confusion.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
  */
-public final class Hello implements Knowledge {
-
-    /**
-     * What do we do if it's not a 'hello' command?
-     */
-    private Knowledge notHello;
-
-    /**
-     * Ctor.
-     * @param notHello What do we do if it's not a 'hello' command?
-     */
-    public Hello(final Knowledge notHello) {
-        this.notHello = notHello;
-    }
+public class Confused implements Knowledge {
 
     @Override
-    public Step handle(final Command com) throws IOException {
-        if("hello".equalsIgnoreCase(com.type())) {
-            String hello = String.format(
-                com.language().response("hello.comment"),
-                com.authorLogin()
-            );
-            return new SendReply(
-                new TextReply(com, hello),
-                new Step.FinalStep()
-            );
-        }
-        return this.notHello.handle(com);
+    public Step handle(Command com) throws IOException {
+        return new SendReply(
+            new TextReply(
+                com,
+                String.format(
+                    com.language().response("unknown.comment"),
+                    com.authorLogin()
+                )
+            ),
+            new Step.FinalStep()
+        );
     }
+
 }

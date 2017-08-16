@@ -32,8 +32,6 @@ import java.io.IOException;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
- * @todo #222:30min Hello was added, to handle hello commands. Continue
- *  with further Knowledges for the other commands (index site, index page etc).
  */
 public final class Conversation implements Knowledge {
 

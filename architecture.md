@@ -38,13 +38,31 @@ went fine)
 A notification contains only the repo and the issue where the bot has been mentioned. To find the command, the bot searches for the **last** (most recent) comment in the issue
 where it's been mentioned. Only the last mentioning comment will be treated as a command, in order to avoid spamming.
 
-The bot has a [Brain](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/Brain.java) and at the beginning of each Action, it tries to **understand** the command.
-Understanding a command means building up the [Step](https://github.com/opencharles/charles-rest/blob/master/src/main/java/com/amihaiemil/charles/github/Step.java)s to be executed in order to fulfill the command.
+The bot has a set of knowledges (implementations of Knowledge), which it uses in order to try and "understand" a command.
+Understanding a command means building the tree of steps which are to be executed in order to fulfil the command.
 
-If you look inside class Brain you will see that Steps are instantiated one on top of the other, like an umbrella. Basically, for each command a tree-like structure of steps is built.
+First, the bot puts together all its knowledges, then it uses them to find the proper steps. The last Knowledge in the chain is Confused, which means
+the bot didn't manage to categorize the command and it will leave a Github reply informing the commander about the sitiuation:
 
-Please note that currently class **Brain** has grown quite big and needs to be refactored and broken down in smaller pieces.
-There is an issue for that [here](https://github.com/opencharles/charles-rest/issues/155).
+```java
+    final Knowledge knowledge = new Conversation(//it can have a convesation
+        new Hello(//it can say hello
+            new IndexSiteKn(//it can index a site
+                this.logs,
+                new IndexSitemapKn(//it can index a site via a sitemap.xml
+                    this.logs,
+                    new IndexPageKn(//it can index a single page
+                        this.logs,
+                        new DeleteIndexKn(//it can delete the idnex
+                            this.logs,
+                            new Confused()//it can be confused (not understand the command)
+                        )
+                    )
+                )
+            )
+        )
+    )
+```
 
 
 ## Steps

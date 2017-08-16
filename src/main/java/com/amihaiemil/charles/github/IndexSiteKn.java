@@ -28,38 +28,64 @@ package com.amihaiemil.charles.github;
 import java.io.IOException;
 
 /**
- * The bot knows how to respond to a "hello" command.
+ * The bot knows how to index an entire website.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
  */
-public final class Hello implements Knowledge {
+public final class IndexSiteKn implements Knowledge {
 
     /**
-     * What do we do if it's not a 'hello' command?
+     * Location of the log file.
      */
-    private Knowledge notHello;
+    private LogsLocation logsLoc;
+
+    /**
+     * What do we do if it's not an 'indexsite' command?
+     */
+    private Knowledge notIdxSite;
 
     /**
      * Ctor.
-     * @param notHello What do we do if it's not a 'hello' command?
+     * @param logsLoc Location of the log file for the bot's action.
+     * @param notIdxSite What do we do if it's not an 'indexsite' command?
      */
-    public Hello(final Knowledge notHello) {
-        this.notHello = notHello;
+    public IndexSiteKn(final LogsLocation logsLoc, final Knowledge notIdxSite) {
+        this.logsLoc = logsLoc;
+        this.notIdxSite = notIdxSite;
     }
 
     @Override
     public Step handle(final Command com) throws IOException {
-        if("hello".equalsIgnoreCase(com.type())) {
-            String hello = String.format(
-                com.language().response("hello.comment"),
-                com.authorLogin()
-            );
-            return new SendReply(
-                new TextReply(com, hello),
-                new Step.FinalStep()
+        if("indexsite".equalsIgnoreCase(com.type())) {
+            return new GeneralPreconditionsCheck(
+                new SendReply(
+                    new TextReply(
+                        com,
+                        String.format(
+                            com.language().response("index.start.comment"),
+                            com.authorLogin(),
+                            this.logsLoc.address()
+                        )
+                    ),
+                    new IndexSite(
+                        new StarRepo(
+                            new SendReply(
+                                new TextReply(
+                                    com,
+                                    String.format(
+                                        com.language().response("index.finished.comment"),
+                                        com.authorLogin(), this.logsLoc.address()
+                                    )
+                                ),
+                                new Step.FinalStep()
+                            )
+                        )
+                    )
+                )
             );
         }
-        return this.notHello.handle(com);
+        return this.notIdxSite.handle(com);
     }
+
 }
