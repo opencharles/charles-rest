@@ -78,7 +78,7 @@ public final class IndexSiteKn implements Knowledge {
                                         com.authorLogin(), this.logsLoc.address()
                                     )
                                 ),
-                                new Step.FinalStep()
+                                new Tweet(new Step.FinalStep())
                             )
                         )
                     )

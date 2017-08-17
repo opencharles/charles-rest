@@ -79,7 +79,7 @@ public final class IndexPageKn implements Knowledge {
                                             com.authorLogin(), this.logsLoc.address()
                                         )
                                     ),
-                                    new Step.FinalStep()
+                                    new Tweet(new Step.FinalStep())
                                 )
                             )
                         )
