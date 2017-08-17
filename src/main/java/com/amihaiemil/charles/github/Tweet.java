@@ -36,6 +36,8 @@ import twitter4j.auth.AccessToken;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
+ * @todo #241:30min Pull out the system proerties, same as was done
+ *  in the aws layer, to simplify the unit tests.
  */
 public final class Tweet extends IntermediaryStep {
 
