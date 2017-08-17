@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--test-->
+    <link rel="icon" href="http://www.amihaiemil.com/images/logo_mic.PNG">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>.config.yml</title>
+
+    <link rel="stylesheet" href="https://cdn.rawgit.com/yegor256/tacit/gh-pages/tacit-0.8.1.min.css"/>
+    <link rel="stylesheet" href="css/main.css"/>
+
+    <script data-bg="#0C1961" data-fg="#99D9FF" type="text/javascript" id="cookiebanner"
+        src="http://cookiebanner.eu/js/cookiebanner.min.js"></script>
+</head>
+
+<body id="page-top" class="index">
+  <a href="https://github.com/opencharles/charles-rest" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+  <!-- Header -->
+  <header>
+      <div class="centered">
+        <img class="avatar" src="https://avatars.githubusercontent.com/u/19765212?v=3" alt="charlesmike avatar">
+        <span class="skills">Github Chatbot For Content Search</span>
+        <a href="index.html">Homepage</a>
+      </div>
+  </header>
+  <section class="content">
+      <h3>.config.yml</h3>
+      <p>
+        This is an optional file which you can add in the <b>root dir</b> of your repo, in order to configure the behaviour of the bot.
+        So far, the following configs are read:
+      </p>
+      <ul>
+        <li>
+          commanders
+          <ul>
+            <li>Normally, only the repo owner can command the bot. With this, you can specify other users too.</li>
+          </ul>
+        </li>
+        <li>
+          tweet
+          <ul>
+            <li>The bot will tweet after executing certain commands (https://www.twitter.com/charlesmikes). This is a boolean that can turn tweeting on and off.
+            By default, tweeting is off.</li>
+          </ul>
+        </li>
+      </ul>
+      <h3>Excample .config.yml</h3>
+      <p>Bellow you have an example of .charles.yml:</p>
+      <pre>commanders:
+  - amihaiemil
+  - g4s8
+tweet: true</pre>
+      <p>You can see an example of usage <a href="https://github.com/amihaiemil/amihaiemil.github.io" target="_blank">here</a>.</p>
+</section>
+  <footer class="content">
+      <div class="centered">
+            <span>Website last updated at: <span id="lastupdated"></span></span>
+            <span>Copyright &copy; charles.amihaiemil.com 2016-2017</span>
+            <span><a href="terms.html">Terms and conditions</a> |
+            <a href="data.html">Data policy</a></span>
+      </div>
+  </footer>
+  <script src="js/common/scriptslu.min.js"></script>
+</body>
+
+</html>
