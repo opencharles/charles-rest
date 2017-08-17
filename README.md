@@ -12,8 +12,7 @@
 
 ## What it is: 
 
-A webapp ``.war`` - codebase behind [Charles Michaels](https://www.github.com/charlesmike) chatbot. It receives notifications read by this [ejb checker](https://github.com/opencharles/mention-notifications-ejb) and takes
-actions according to each of them. Any Github account can be used with this project; it's all dictated by the Github auth token used.
+A webapp ``.war`` - codebase behind [Charles Michaels](https://www.github.com/charlesmike) chatbot. More details [here](http://charles.amihaiemil.com/).
 
 Say ``@charlesmike hello`` in a Github issue comment and see what happens.
 [This](http://www.amihaiemil.com/2017/05/23/meet-charles-michael.html) blog post and the [website](http://charles.amihaiemil.com) provide more details on how to use this service.
