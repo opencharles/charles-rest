@@ -84,7 +84,7 @@ public class StepsTestCase {
         Mockito.doThrow(new IllegalStateException("for test"))
             .when(s).perform(com, logger);
 
-        Steps steps = new StepsTree(s, com, Mockito.mock(LogsLocation.class), sr);
+        Steps steps = new StepsTree(s, com, sr);
         steps.perform(logger);
 
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());

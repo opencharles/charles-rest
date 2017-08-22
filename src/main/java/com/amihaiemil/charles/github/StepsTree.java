@@ -48,12 +48,7 @@ public final class StepsTree implements Steps {
      * Initial command.
      */
     private Command com;
-    
-    /**
-     * Action logger.
-     */
-    private Logger logger;
-    
+
     /**
      * Message to send in case some step fails.
      */
@@ -67,7 +62,7 @@ public final class StepsTree implements Steps {
      */
     public StepsTree(Step steps, Command command, LogsLocation logs) {
         this(
-            steps, command, logs,
+            steps, command,
             new SendReply(
 		        new TextReply(
 		            command,
@@ -88,18 +83,10 @@ public final class StepsTree implements Steps {
      * @param logs Logs' location.
      * @param fm Failure message.
      */
-    public StepsTree(Step steps, Command command, LogsLocation logs, SendReply fm) {
+    public StepsTree(Step steps, Command command, SendReply fm) {
         this.steps = steps;
         this.com = command;
         this.failureMessage = fm;
-    }
-    
-    /**
-     * Return the steps to perform.
-     * @return
-     */
-    public Step getStepsToPerform() {
-        return this.steps;
     }
     
     /**
@@ -110,11 +97,11 @@ public final class StepsTree implements Steps {
     public void perform(Logger logger) throws IOException {
         try {
         	String commandBody = this.com.json().getString("body");
-            this.logger.info("Received command: " + commandBody);
+            logger.info("Received command: " + commandBody);
             this.steps.perform(this.com, logger);
         } catch (Exception ex) {
             logger.error("An exception occured, sending failure comment...", ex);
-            this.failureMessage.perform(this.com, this.logger);
+            this.failureMessage.perform(this.com, logger);
         }
     }
 
