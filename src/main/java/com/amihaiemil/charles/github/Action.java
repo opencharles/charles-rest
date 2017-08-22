@@ -84,14 +84,8 @@ public class Action {
     
     
     public void perform() {
-        ValidCommand command;
         try {
             this.logger.info("Started action " + this.id);
-            final LastComment lc = new LastComment(issue);
-            command = new ValidCommand(lc);
-            String commandBody = command.json().getString("body");
-            this.logger.info("Received command: " + commandBody);
-            
             final Knowledge knowledge = new Conversation(
                 new Hello(
                     new IndexSiteKn(
@@ -102,28 +96,19 @@ public class Action {
                                 this.logs,
                                 new DeleteIndexKn(
                                     this.logs,
-                                    new Confused()
+                                    new Confused(this.logs)
                                 )
                             )
                         )
-                    )
+                    ), this.logs
                 )
             );
-
-            final Steps steps = new Steps(
-            	knowledge.handle(command),
-                new SendReply(
-                    new TextReply(
-                        command,
-                        String.format(
-                        	command.language().response("step.failure.comment"),
-                            command.authorLogin(), this.logs.address()
-                        )
-                    ),
-                    new Step.FinalStep("[ERROR] Some step didn't execute properly.")
+            final Steps steps = knowledge.handle(
+                new ValidCommand(
+                    new LastComment(this.issue)
                 )
             );
-            steps.perform(command, logger);
+            steps.perform(this.logger);
         } catch (final IllegalArgumentException e) {
             this.logger.warn("No command found in the issue or the agent has already replied to the last command!");
         } catch (final IOException e) {

@@ -23,61 +23,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-
 package com.amihaiemil.charles.github;
-
-import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
 
 /**
- * Steps taken to fulfill a command.
+ * All the steps which the bot performs in order to fulfil an action.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.0.1
+ *
  */
-public class Steps implements Step {
+public interface Steps {
 
-    /**
-     * Steps to be performed.
-     */
-    private Step steps;
-    
-    /**
-     * Message to send in case some step fails.
-     */
-    private SendReply failureMessage;
-
-    /**
-     * Constructor.
-     * @param steps Given steps.
-     * @param fm failure message in case any step fails.
-     */
-    public Steps(Step steps, SendReply fm) {
-        this.steps = steps;
-        this.failureMessage = fm;
-    }
-
-    /**
-     * Return the steps to perform.
-     * @return
-     */
-    public Step getStepsToPerform() {
-        return this.steps;
-    }
-    
-    /**
-     * Perform all the given steps.
-     */
-    @Override
-    public void perform(Command command, Logger logger) throws IOException {
-        try {
-            this.steps.perform(command, logger);
-        } catch (Exception ex) {
-            logger.error("An exception occured, sending failure comment...", ex);
-            this.failureMessage.perform(command, logger);
-        }
-    }
-
+	/**
+	 * Perform this step.
+	 * @param Action logger.
+     * @throws IOException If there is anything wrong in the communication
+     *  with Github.
+	 */
+    void perform(Logger logger) throws IOException;
 }

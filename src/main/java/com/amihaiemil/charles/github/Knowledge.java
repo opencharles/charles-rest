@@ -38,9 +38,9 @@ public interface Knowledge {
     /**
      * Handle the command somehow.
      * @param com Given command.
-     * @return Step to fulfill the command.
+     * @return Steps to fulfill the command.
      * @throws IOException If there's an IO problem,
      *  like comunicating with the Github API.
      */
-    Step handle(final Command com) throws IOException;
+    Steps handle(final Command com) throws IOException;
 }

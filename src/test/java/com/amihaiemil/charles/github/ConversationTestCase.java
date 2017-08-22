@@ -57,7 +57,7 @@ public final class ConversationTestCase {
         final Knowledge conversation = new Conversation(
             new Knowledge() {
                 @Override
-                public Step handle(final Command com) throws IOException {
+                public Steps handle(final Command com) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("yes")
@@ -87,7 +87,7 @@ public final class ConversationTestCase {
         final Knowledge conversation = new Conversation(
                 new Knowledge() {
                     @Override
-                    public Step handle(final Command com) throws IOException {
+                    public Steps handle(final Command com) throws IOException {
                         MatcherAssert.assertThat(
                                 com.type(),
                                 Matchers.equalTo("oui")
@@ -115,7 +115,7 @@ public final class ConversationTestCase {
         final Knowledge conversation = new Conversation(
                 new Knowledge() {
                     @Override
-                    public Step handle(final Command com) throws IOException {
+                    public Steps handle(final Command com) throws IOException {
                         MatcherAssert.assertThat(
                                 com.type(),
                                 Matchers.equalTo("unknown")

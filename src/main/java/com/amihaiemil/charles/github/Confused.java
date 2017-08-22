@@ -36,18 +36,29 @@ import java.io.IOException;
  */
 public class Confused implements Knowledge {
 
+	/**
+     * Location of the log file.
+     */
+    private LogsLocation logsLoc;
+    
+    public Confused(LogsLocation logsLoc) {
+    	this.logsLoc = logsLoc;
+    }
+	
     @Override
-    public Step handle(Command com) throws IOException {
-        return new SendReply(
-            new TextReply(
-                com,
-                String.format(
-                    com.language().response("unknown.comment"),
-                    com.authorLogin()
-                )
-            ),
-            new Step.FinalStep()
+    public Steps handle(Command com) throws IOException {
+        return new StepsTree(
+            new SendReply(
+		        new TextReply(
+		            com,
+		            String.format(
+		                com.language().response("unknown.comment"),
+		                com.authorLogin()
+		            )
+		        ), new Step.FinalStep()
+		    ), com, this.logsLoc//TODO #246:30min LogsLocation should be passed down as method param of Knowledge.handle()
         );
+        		
     }
 
 }

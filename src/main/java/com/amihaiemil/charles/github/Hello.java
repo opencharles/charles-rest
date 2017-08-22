@@ -40,24 +40,31 @@ public final class Hello implements Knowledge {
      */
     private Knowledge notHello;
 
+    private LogsLocation logsLoc;
+    
     /**
      * Ctor.
      * @param notHello What do we do if it's not a 'hello' command?
      */
-    public Hello(final Knowledge notHello) {
+    public Hello(final Knowledge notHello, final LogsLocation logs) {
         this.notHello = notHello;
+        this.logsLoc = logs;
     }
 
     @Override
-    public Step handle(final Command com) throws IOException {
+    public Steps handle(final Command com) throws IOException {
         if("hello".equalsIgnoreCase(com.type())) {
             String hello = String.format(
                 com.language().response("hello.comment"),
                 com.authorLogin()
             );
-            return new SendReply(
-                new TextReply(com, hello),
-                new Step.FinalStep()
+            return new StepsTree(
+                new SendReply(
+                    new TextReply(com, hello),
+                    new Step.FinalStep()
+                ),
+                com,
+                this.logsLoc
             );
         }
         return this.notHello.handle(com);

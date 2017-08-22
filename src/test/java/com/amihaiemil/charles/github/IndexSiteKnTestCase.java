@@ -58,7 +58,7 @@ public final class IndexSiteKnTestCase {
             logs,
             new Knowledge() {
                 @Override
-                public Step handle(final Command com) throws IOException {
+                public Steps handle(final Command com) throws IOException {
                     throw new IllegalStateException(
                         "'indexsite' command was misunderstood!"
                     );
@@ -66,11 +66,8 @@ public final class IndexSiteKnTestCase {
             }
         );
 
-        Step steps = indexsite.handle(com);
+        Steps steps = indexsite.handle(com);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
-        MatcherAssert.assertThat(
-            steps instanceof GeneralPreconditionsCheck, Matchers.is(true)
-        );
     }
     
     /**
@@ -86,7 +83,7 @@ public final class IndexSiteKnTestCase {
             Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
-                public Step handle(final Command com) throws IOException {
+                public Steps handle(final Command com) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("hello")

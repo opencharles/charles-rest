@@ -54,18 +54,18 @@ public final class HelloTestCase {
         final Knowledge hello = new Hello(
             new Knowledge() {
                 @Override
-                public Step handle(final Command com) throws IOException {
+                public Steps handle(final Command com) throws IOException {
                     throw new IllegalStateException(
                         "'hello' command was misunderstood!"
                     );
                 }
-            }
+            }, Mockito.mock(LogsLocation.class)
         );
 
-        Step steps = hello.handle(com);
+        Steps steps = hello.handle(com);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
-            steps instanceof SendReply, Matchers.is(true)
+            steps instanceof StepsTree, Matchers.is(true)
         );
 
     }
@@ -81,14 +81,14 @@ public final class HelloTestCase {
         final Knowledge hello = new Hello(
             new Knowledge() {
                 @Override
-                public Step handle(final Command com) throws IOException {
+                public Steps handle(final Command com) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("indexsite")
                     );
                     return null;
                 }
-            }
+            }, Mockito.mock(LogsLocation.class)
         );
         hello.handle(com);
     }

@@ -56,47 +56,51 @@ public final class DeleteIndexKn implements Knowledge {
     }
 
     @Override
-    public Step handle(final Command com) throws IOException {
+    public Steps handle(final Command com) throws IOException {
         if("deleteindex".equalsIgnoreCase(com.type())) {
-            return new DeleteIndexCommandCheck(
-                new IndexExistsCheck(
-                    com.indexName(),
-                    new GeneralPreconditionsCheck(
-                        new DeleteIndex(
-                            new SendReply(
-                                new TextReply(
-                                    com,
-                                    String.format(
-                                        com.language().response("deleteindex.finished.comment"),
-                                        com.authorLogin(), com.repo().name(), this.logsLoc.address()
-                                    )
-                                ),
-                                new Tweet(new Step.FinalStep())
-                            )
-                        )
-                    ),
-                    new SendReply(
-                        new TextReply(
-                            com,
-                            String.format(
-                                com.language().response("index.missing.comment"),
-                                com.authorLogin(), this.logsLoc.address()
-                            )
-                        ),
-                        new Step.FinalStep()
-                    )
-                ),
-                new SendReply(
-                    new TextReply(
-                        com,
-                        String.format(
-                            com.language().response("denied.deleteindex.comment"),
-                            com.authorLogin(), com.agentLogin(), com.repo().name()
-                        )
-                    ),
-                    new Step.FinalStep()
-                )
-            );
+            return new StepsTree(
+	            new DeleteIndexCommandCheck(
+	                new IndexExistsCheck(
+	                    com.indexName(),
+	                    new GeneralPreconditionsCheck(
+	                        new DeleteIndex(
+	                            new SendReply(
+	                                new TextReply(
+	                                    com,
+	                                    String.format(
+	                                        com.language().response("deleteindex.finished.comment"),
+	                                        com.authorLogin(), com.repo().name(), this.logsLoc.address()
+	                                    )
+	                                ),
+	                                new Tweet(new Step.FinalStep())
+	                            )
+	                        )
+	                    ),
+	                    new SendReply(
+	                        new TextReply(
+	                            com,
+	                            String.format(
+	                                com.language().response("index.missing.comment"),
+	                                com.authorLogin(), this.logsLoc.address()
+	                            )
+	                        ),
+	                        new Step.FinalStep()
+	                    )
+	                ),
+	                new SendReply(
+	                    new TextReply(
+	                        com,
+	                        String.format(
+	                            com.language().response("denied.deleteindex.comment"),
+	                            com.authorLogin(), com.agentLogin(), com.repo().name()
+	                        )
+	                    ),
+	                    new Step.FinalStep()
+	                )
+	            ),
+	            com,
+	            this.logsLoc
+	        );
         }
         return this.notDelete.handle(com);
     }

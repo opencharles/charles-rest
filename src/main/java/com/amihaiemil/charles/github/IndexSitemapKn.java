@@ -56,44 +56,48 @@ public final class IndexSitemapKn implements Knowledge {
     }
 
     @Override
-    public Step handle(final Command com) throws IOException {
+    public Steps handle(final Command com) throws IOException {
         if("indexsitemap".equalsIgnoreCase(com.type())) {
-            return new PageHostedOnGithubCheck(
-                new GeneralPreconditionsCheck(
-                    new SendReply(
-                        new TextReply(
-                            com,
-                            String.format(
-                                com.language().response("index.start.comment"),
-                                com.authorLogin(), this.logsLoc.address()
-                            )
-                        ),
-                        new IndexSitemap(
-                            new StarRepo(
-                                new SendReply(
-                                    new TextReply(
-                                        com,
-                                        String.format(
-                                            com.language().response("index.finished.comment"),
-                                            com.authorLogin(), this.logsLoc.address()
-                                        )
-                                    ),
-                                    new Tweet(new Step.FinalStep())
-                                )
-                            )
-                        )
-                    )
+            return new StepsTree(
+            	new PageHostedOnGithubCheck(
+	                new GeneralPreconditionsCheck(
+	                    new SendReply(
+	                        new TextReply(
+	                            com,
+	                            String.format(
+	                                com.language().response("index.start.comment"),
+	                                com.authorLogin(), this.logsLoc.address()
+	                            )
+	                        ),
+	                        new IndexSitemap(
+	                            new StarRepo(
+	                                new SendReply(
+	                                    new TextReply(
+	                                        com,
+	                                        String.format(
+	                                            com.language().response("index.finished.comment"),
+	                                            com.authorLogin(), this.logsLoc.address()
+	                                        )
+	                                    ),
+	                                    new Tweet(new Step.FinalStep())
+	                                )
+	                            )
+	                        )
+	                    )
+	                ),
+	                new SendReply(
+	                    new TextReply(
+	                        com,
+	                        String.format(
+	                            com.language().response("denied.badlink.comment"),
+	                            com.authorLogin()
+	                        )
+	                    ),
+	                    new Step.FinalStep()
+	                )
                 ),
-                new SendReply(
-                    new TextReply(
-                        com,
-                        String.format(
-                            com.language().response("denied.badlink.comment"),
-                            com.authorLogin()
-                        )
-                    ),
-                    new Step.FinalStep()
-                )
+                com,
+                this.logsLoc
             );
         }
         return this.notIdxSitemap.handle(com);

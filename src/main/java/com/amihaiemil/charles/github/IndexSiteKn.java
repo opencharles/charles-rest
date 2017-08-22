@@ -56,33 +56,37 @@ public final class IndexSiteKn implements Knowledge {
     }
 
     @Override
-    public Step handle(final Command com) throws IOException {
+    public Steps handle(final Command com) throws IOException {
         if("indexsite".equalsIgnoreCase(com.type())) {
-            return new GeneralPreconditionsCheck(
-                new SendReply(
-                    new TextReply(
-                        com,
-                        String.format(
-                            com.language().response("index.start.comment"),
-                            com.authorLogin(),
-                            this.logsLoc.address()
-                        )
-                    ),
-                    new IndexSite(
-                        new StarRepo(
-                            new SendReply(
-                                new TextReply(
-                                    com,
-                                    String.format(
-                                        com.language().response("index.finished.comment"),
-                                        com.authorLogin(), this.logsLoc.address()
-                                    )
-                                ),
-                                new Tweet(new Step.FinalStep())
-                            )
-                        )
-                    )
-                )
+            return new StepsTree(
+                new GeneralPreconditionsCheck(
+		            new SendReply(
+		                new TextReply(
+		                    com,
+		                    String.format(
+		                        com.language().response("index.start.comment"),
+		                        com.authorLogin(),
+		                        this.logsLoc.address()
+		                    )
+		                ),
+		                new IndexSite(
+		                    new StarRepo(
+		                        new SendReply(
+		                            new TextReply(
+		                                com,
+		                                String.format(
+		                                    com.language().response("index.finished.comment"),
+		                                    com.authorLogin(), this.logsLoc.address()
+		                                )
+		                            ),
+		                            new Tweet(new Step.FinalStep())
+		                        )
+		                    )
+		                )
+		            )
+                ),
+                com,
+                this.logsLoc
             );
         }
         return this.notIdxSite.handle(com);
