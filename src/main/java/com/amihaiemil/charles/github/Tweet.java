@@ -41,35 +41,35 @@ import twitter4j.auth.AccessToken;
  */
 public final class Tweet extends IntermediaryStep {
 
-	/**
-	 * Ctor.
-	 * @param next Next step to execute.
-	 */
+    /**
+     * Ctor.
+     * @param next Next step to execute.
+     */
     public Tweet(final Step next) {
         super(next);
     }
     
     @Override
     public void perform(Command command, Logger logger) throws IOException {
-    	if(command.repo().charlesYml().tweet()) {
-		    try {
-		    	final Twitter twitter = twitter();
-		    	if(twitter != null) {
-		    		String message = message(command);
-		    		if(!message.isEmpty()) {
-			    	    twitter.updateStatus(message);
-		    		} else {
-		    			logger.warn("Could not built message for twitter. Not twitting anything.");
-		    		}
-		    	} else {
-		    		logger.warn("One of the 4 tweeter system properties is missing! Cannot tweet!");
-		    	}
-		    } catch (final Exception ex) {//don't rethrow it, tweeting is only a cosmetic thing, not critical..
-		        logger.error("Failed to tweet... ", ex);
-		    }
-    	} else {
-    		logger.info("Tweeting is disabled, won't tweet. You can enable tweeting via .charles.yml file.");
-    	}
+        if(command.repo().charlesYml().tweet()) {
+            try {
+                final Twitter twitter = twitter();
+                if(twitter != null) {
+                    String message = message(command);
+                    if(!message.isEmpty()) {
+                        twitter.updateStatus(message);
+                    } else {
+                        logger.warn("Could not built message for twitter. Not twitting anything.");
+                    }
+                } else {
+                    logger.warn("One of the 4 tweeter system properties is missing! Cannot tweet!");
+                }
+            } catch (final Exception ex) {//don't rethrow it, tweeting is only a cosmetic thing, not critical..
+                logger.error("Failed to tweet... ", ex);
+            }
+        } else {
+            logger.info("Tweeting is disabled, won't tweet. You can enable tweeting via .charles.yml file.");
+        }
         this.next().perform(command, logger);
     }
 
@@ -80,32 +80,32 @@ public final class Tweet extends IntermediaryStep {
      * @throws IOException if the message cannot be built.
      */
     private static String message(final Command com) throws IOException {
-    	final String unformatted = com.language().response("tweet." + com.type());
-    	final String issueUrl = com.issue().json().getString("url", "");
-    	if(unformatted == null || unformatted.isEmpty() || issueUrl.isEmpty()) {
-    		return "";
-    	}
-    	return String.format(unformatted, issueUrl);
+        final String unformatted = com.language().response("tweet." + com.type());
+        final String issueUrl = com.issue().json().getString("url", "");
+        if(unformatted == null || unformatted.isEmpty() || issueUrl.isEmpty()) {
+            return "";
+        }
+        return String.format(unformatted, issueUrl);
     }
     
     /**
      * Get a {@link Twitter} instance.
      */
     private static Twitter twitter() {
-    	final String key = System.getProperty("twitter.key", "");
-    	final String secret = System.getProperty("twitter.secret", "");
-    	final String token  = System.getProperty("twitter.token", "");
-    	final String tsecret = System.getProperty("twitter.token.secret", "");
-    	
-    	if(key.isEmpty() || secret.isEmpty() || token.isEmpty() || tsecret.isEmpty()) {
-    		return null;
-    	} else {
-    		final TwitterFactory factory = new TwitterFactory();
-        	final Twitter twitter = factory.getInstance();
+        final String key = System.getProperty("twitter.key", "");
+        final String secret = System.getProperty("twitter.secret", "");
+        final String token  = System.getProperty("twitter.token", "");
+        final String tsecret = System.getProperty("twitter.token.secret", "");
+        
+        if(key.isEmpty() || secret.isEmpty() || token.isEmpty() || tsecret.isEmpty()) {
+            return null;
+        } else {
+            final TwitterFactory factory = new TwitterFactory();
+            final Twitter twitter = factory.getInstance();
             twitter.setOAuthConsumer(key, secret);
             twitter.setOAuthAccessToken(new AccessToken(token, tsecret));
             return twitter;
-    	}
+        }
 
     }
 }

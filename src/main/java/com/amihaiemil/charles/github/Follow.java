@@ -26,47 +26,46 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import org.slf4j.Logger;
+import com.jcabi.github.Github;
+import com.jcabi.http.Request;
 
 /**
- * The bot knows how to respond to a "hello" command.
+ * The bot can follow the commander.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.1
  */
-public final class Hello implements Knowledge {
+public final class Follow extends IntermediaryStep {
 
-    /**
-     * What do we do if it's not a 'hello' command?
-     */
-    private Knowledge notHello;
-
-    private LogsLocation logsLoc;
-    
     /**
      * Ctor.
-     * @param notHello What do we do if it's not a 'hello' command?
+     * @param next Next step to execute.
      */
-    public Hello(final Knowledge notHello, final LogsLocation logs) {
-        this.notHello = notHello;
-        this.logsLoc = logs;
+    public Follow(Step next) {
+        super(next);
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
-        if("hello".equalsIgnoreCase(com.type())) {
-            String hello = String.format(
-                com.language().response("hello.comment"),
-                com.authorLogin()
-            );
-            return new StepsTree(
-                new SendReply(
-                    new TextReply(com, hello),
-                    new Follow(new Step.FinalStep())
-                ),
-                com,
-                this.logsLoc
-            );
+    public void perform(Command command, Logger logger) throws IOException {
+        final String author = command.authorLogin();
+        final Github github = command.issue().repo().github();
+        final Request follow = github.entry()
+            .uri().path("/user/following/").path(author).back()
+            .method("PUT");
+        logger.info("Following Github user " + author + " ...");
+        try {
+            final int status = follow.fetch().status();
+            if(status != HttpURLConnection.HTTP_NO_CONTENT) {
+                logger.error("User follow status response is " + status + " . Should have been 204 (NO CONTENT)");
+            } else {
+                logger.info("Followed user " + author + " .");
+            }
+        } catch (final IOException ex) {//don't rethrow, this is just a cosmetic step, not critical.
+            logger.error("IOException while trying to follow the user.");
         }
-        return this.notHello.handle(com);
+        this.next().perform(command, logger);
     }
+
 }
