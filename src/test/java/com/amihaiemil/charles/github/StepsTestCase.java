@@ -32,7 +32,6 @@ import java.util.List;
 
 import javax.json.Json;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
@@ -71,11 +70,10 @@ public class StepsTestCase {
      * @throws Exception if something goes wrong.
      */
     @Test
-    @Ignore
     public void stepsFail() throws Exception {
         Command com = this.mockCommand();
         Logger logger = Mockito.mock(Logger.class);
-        Reply rep = new TextReply(com, "Error whene executig steps!");
+        Reply rep = new TextReply(com, "Error when executig steps!");
         SendReply sr = new SendReply(
             rep, Mockito.mock(Step.class)
         );
@@ -89,7 +87,7 @@ public class StepsTestCase {
 
         List<Comment> comments = Lists.newArrayList(com.issue().comments().iterate());
         assertTrue(comments.size() == 1);
-        assertTrue(comments.get(0).json().getString("body").startsWith("> @charlesmike mock command\n\n@amihaiemil Some steps failed when processing your command. See [logs]"));
+        assertTrue(comments.get(0).json().getString("body").startsWith("> @charlesmike mock command\n\nError when executig steps!"));
     }
     
     /**
