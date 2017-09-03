@@ -81,7 +81,7 @@ public final class Tweet extends IntermediaryStep {
      */
     private static String message(final Command com) throws IOException {
         final String unformatted = com.language().response("tweet." + com.type());
-        final String issueUrl = com.issue().json().getString("url", "");
+        final String issueUrl = com.issue().json().getString("html_url", "");
         if(unformatted == null || unformatted.isEmpty() || issueUrl.isEmpty()) {
             return "";
         }
