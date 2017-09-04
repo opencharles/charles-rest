@@ -41,7 +41,7 @@ passes before making a PR.
 
 ## If you wish to install it on your own infrastructure:
 
-The ``.war`` should work fine on any Java EE web server. It is not bound by any server-specific property file or other things like that.
+The <a href="https://oss.sonatype.org/service/local/repositories/releases/content/com/amihaiemil/web/charles-rest/1.0.1/charles-rest-1.0.1.war" title="Latest charles-rest release">.war</a> should work fine on any Java EE web server. It is not bound by any server-specific property file or other things like that.
 Once deployed, it exposes the endpoint ``POST /api/notifications`` which accepts a ``JsonArray`` of format:
 
 ```

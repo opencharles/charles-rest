@@ -37,8 +37,7 @@ echo $NEXT_VERSION
 sed -i "s/<version>${CURRENT_VERSION}<\/version><\!--rrv-sed-flag-->/<version>${tag}<\/version><\!--rrv-sed-flag-->/" pom.xml
 mvn clean deploy -Prelease --settings /home/r/settings.xml
 sed -i "s/<version>${tag}<\/version><\!--rrv-sed-flag-->/<version>${NEXT_VERSION}<\/version><\!--rrv-sed-flag-->/" pom.xml
-#sed -i "s/<version>.*<\/version>/<version>${tag}<\/version>/" README.md
-#sed -i "s/<a.*>war<\/a>/<a href=\"https:\/\/oss\.sonatype\.org\/service\/local\/repositories\/releases\/content\/com\/amihaiemil\/web\/charles-rest\/${tag}\/charles-rest-${tag}\.war\">war<\/a>/" README.md
+sed -i "s/<a.*>\.war<\/a>/<a href=\"https:\/\/oss\.sonatype\.org\/service\/local\/repositories\/releases\/content\/com\/amihaiemil\/web\/charles-rest\/${tag}\/charles-rest-${tag}\.war\">\.war<\/a>/" README.md
 
 git commit -am "${NEXT_VERSION}"
 git checkout master
