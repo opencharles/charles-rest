@@ -58,9 +58,8 @@ public class TextReply implements Reply {
      */
     @Override
     public void send() throws IOException {
-        String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
-        
-        command.issue().comments().post(
+        final String cmdPreview =  "> " + this.command.json().getString("body") + "\n\n";
+        this.command.issue().comments().post(
             cmdPreview + this.response
         );    
     }

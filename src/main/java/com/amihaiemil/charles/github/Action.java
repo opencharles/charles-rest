@@ -113,23 +113,14 @@ public class Action {
             this.logger.warn("No command found in the issue or the agent has already replied to the last command!");
         } catch (final IOException e) {
         	this.logger.error("Action failed entirely with exception: ",  e);
-            this.sendReply(
-                new ErrorReply(logs.address(), this.issue)
-            );
+        	try {
+        		new ErrorReply(logs.address(), this.issue).send();
+            } catch (IOException errReplyEx) {
+            	this.logger.error("FAILED TO SEND ERROR-REPLY!", errReplyEx);
+            }
         }
     }
 
-    /**
-     * Send the reply to Github issue.
-     * @param reply
-     */
-    private void sendReply(Reply reply) {
-        try {
-            reply.send();
-        } catch (IOException e) {
-        	this.logger.error("FAILED TO REPLY!", e);
-        }
-    }
 
     /**
      * Setup the Log4J logger for this action thread.
