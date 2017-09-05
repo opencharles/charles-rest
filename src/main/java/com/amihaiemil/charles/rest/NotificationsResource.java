@@ -145,7 +145,7 @@ public class NotificationsResource {
             if("ping".equalsIgnoreCase(event)) {
                 return Response.ok().build();
             }
-            if("issue_comment".equals(event)) {
+            if("issue_comment".equalsIgnoreCase(event)) {
                 Notification notification = new Notification();
                 notification.setIssueNumber(
                     issueComment.getJsonObject("issue").getInt("number")
