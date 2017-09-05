@@ -136,20 +136,32 @@ public class NotificationsResource {
     @Path("/github/issuecomment")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response webhook(JsonObject issueComment) {
-    	Notification notification = new Notification();
-    	notification.setIssueNumber(
-    	    issueComment.getJsonObject("issue").getInt("number")
-    	);
-    	notification.setRepoFullName(
-        	issueComment.getJsonObject("repository").getString("full_name")
-        );
-    	List<Notification> notifications = new ArrayList<>();
-    	notifications.add(notification);
-        boolean startedHandling = this.handleNotifications(notifications);
-        if(startedHandling) {
-            return Response.ok().build();
-        }
-        return Response.serverError().build();
+    	final String event = this.request.getHeader("X-Github-Event");
+    	String userAgent = this.request.getHeader("User-Agent");
+    	if(userAgent == null) {
+    		userAgent = "";
+    	}
+    	if(userAgent.startsWith("GitHub-Hookshot/")) {
+			if("ping".equalsIgnoreCase(event)) {
+				return Response.ok().build();
+			}
+			if("issue_comment".equals(event)) {
+				Notification notification = new Notification();
+				notification.setIssueNumber(
+				    issueComment.getJsonObject("issue").getInt("number")
+				);
+				notification.setRepoFullName(
+			    	issueComment.getJsonObject("repository").getString("full_name")
+			    );
+				List<Notification> notifications = new ArrayList<>();
+				notifications.add(notification);
+			    boolean startedHandling = this.handleNotifications(notifications);
+			    if(startedHandling) {
+			        return Response.ok().build();
+			    }
+		    }
+    	}
+        return Response.status(HttpURLConnection.HTTP_PRECON_FAILED).build();
     }
     
     /**
