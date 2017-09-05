@@ -36,6 +36,7 @@ import javax.json.JsonObject;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
+import com.amihaiemil.charles.rest.model.ElasticSearchResult;
 import com.amihaiemil.charles.rest.model.SearchResult;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
@@ -78,15 +79,7 @@ public final class SearchResponseHandler implements HttpResponseHandler<SearchRe
             List<SearchResult> searchResults = new ArrayList<SearchResult>();
             JsonArray hits = result.getJsonObject("hits").getJsonArray("hits");
             for(int i=0; i<hits.size(); i++) {
-                JsonObject hitSource = hits.getJsonObject(i).getJsonObject("_source");
-                JsonObject highlight = hits.getJsonObject(i).getJsonObject("highlight");
-                SearchResult res = new SearchResult(
-                    hitSource.getString("title"),
-                    hitSource.getString("url"),
-                    highlight.getJsonArray("textContent").getString(0),
-                    hitSource.getString("category", "page")
-                );
-                searchResults.add(res);
+                searchResults.add(new ElasticSearchResult(hits.getJsonObject(i)));
             }
             page.setResults(searchResults);
             page.setTotalHits(totalHits);

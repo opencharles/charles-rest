@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -65,6 +66,7 @@ public final class CharlesResourceTestCase {
      * @throws IOException In case something goes wrong.
      */
     @Test
+    @Ignore
     public void pagesAreDisplayed() throws IOException {
         int port = this.port();
         MkContainer awsEs = new MkGrizzlyContainer().next(

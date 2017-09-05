@@ -75,12 +75,12 @@ public final class AmazonEsSearchTestCase {
             assertTrue(srp.getTotalHits() == 27);
             assertTrue(srp.getResults().size() == 10);
             SearchResult third = srp.getResults().get(2);
-            assertTrue(third.getLink().equals("http://amihaiemil.com/stuff/link3page/page.html"));
-            assertTrue(third.getCategory().equals("development"));
+            assertTrue(third.link().equals("http://amihaiemil.com/stuff/link3page/page.html"));
+            assertTrue(third.category().equals("development"));
         
             SearchResult last = srp.getResults().get(9);
-            assertTrue(last.getLink().equals("http://amihaiemil.com/some/other/page.html"));
-            assertTrue(last.getCategory().equals("mischelaneous"));
+            assertTrue(last.link().equals("http://amihaiemil.com/some/other/page.html"));
+            assertTrue(last.category().equals("mischelaneous"));
         } finally {
             awsEs.stop();
         }

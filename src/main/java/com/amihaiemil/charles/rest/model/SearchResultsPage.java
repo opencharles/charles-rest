@@ -33,7 +33,9 @@ import java.util.List;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- *
+ * @todo #255:30min Get rid of this POJO and turn it into a smart class,
+ *  same as it was done with SearchResult. Update and unignore tests in
+ *  CharlesResourceTestCase when its done.
  */
 public class SearchResultsPage {
 

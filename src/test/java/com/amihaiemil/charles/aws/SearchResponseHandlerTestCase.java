@@ -65,12 +65,12 @@ public class SearchResponseHandlerTestCase {
         assertTrue(page.getTotalHits() == 27);
         assertTrue(page.getResults().size() == 10);
         SearchResult first = page.getResults().get(0);
-        assertTrue(first.getLink().equals("http://amihaiemil.com/page.html"));
-        assertTrue(first.getCategory().equals("tech"));
+        assertTrue(first.link().equals("http://amihaiemil.com/page.html"));
+        assertTrue(first.category().equals("tech"));
     
         SearchResult last = page.getResults().get(9);
-        assertTrue(last.getLink().equals("http://amihaiemil.com/some/other/page.html"));
-        assertTrue(last.getCategory().equals("mischelaneous"));
+        assertTrue(last.link().equals("http://amihaiemil.com/some/other/page.html"));
+        assertTrue(last.category().equals("mischelaneous"));
     }
     
     /**

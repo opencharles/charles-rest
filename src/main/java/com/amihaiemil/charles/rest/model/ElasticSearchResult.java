@@ -25,44 +25,47 @@
  */
 package com.amihaiemil.charles.rest.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import javax.json.JsonObject;
 
 /**
- * A search result. It is annotated with JsonProperty so Jackson can parse the object
- * into JSON.
+ * Search result comming from ElasticSearch.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
- *
+ * @since 1.0.2
  */
-public interface SearchResult {
+public final class ElasticSearchResult implements SearchResult {
 
     /**
-     * Title of the page.
-     * @return String.
+     * ES result ("hit") as JSON.
      */
-	@JsonProperty("title")
-    String title();
-
-    /**
-     * Link to the page.
-     * @return String.
-     */
-	@JsonProperty("link")
-	String link();
-
-    /**
-     * Highlight (text preview) of the search result.
-     * @return String.
-     */
-	@JsonProperty("highlight")
-    String highlight();
-
-    /**
-     * Category of the result.
-     * @return String.
-     */
-	@JsonProperty("category")
-    String category();
+    private JsonObject hit;
     
+    /**
+     * Ctor.
+     * @param hit Json search result.
+     */
+    public ElasticSearchResult(final JsonObject hit) {
+        this.hit = hit;
+    }
+    
+    @Override
+    public String title() {
+        return this.hit.getJsonObject("_source").getString("title");
+    }
+
+    @Override
+    public String link() {
+        return this.hit.getJsonObject("_source").getString("url");
+    }
+
+    @Override
+    public String highlight() {
+        return this.hit.getJsonObject("highlight").getJsonArray("textContent").getString(0);
+    }
+
+    @Override
+    public String category() {
+        return this.hit.getJsonObject("_source").getString("category", "page");
+    }
+
 }
