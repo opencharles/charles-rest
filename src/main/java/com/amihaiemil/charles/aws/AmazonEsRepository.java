@@ -54,6 +54,10 @@ import com.amihaiemil.charles.github.AwsEsRepository;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
+ * @todo #250:1h Implement the delete page knowledge. We have the repo method and unit
+ *  test for it. Continue with the language, knowledge and steps.
+ * @todo #250:30min Rename this class to Index (since that's what it is), and remove AmazonEsSearch class,
+ *  moving the search method here
  */
 public final class AmazonEsRepository implements AwsEsRepository {
     private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
@@ -92,8 +96,8 @@ public final class AmazonEsRepository implements AwsEsRepository {
      * @param es ElasticSearch URL.
      */
     public AmazonEsRepository(
-		final String indexName,
-		final AccessKeyId accesskey,
+        final String indexName,
+        final AccessKeyId accesskey,
         final SecretKey secretKey,
         final Region reg,
         final EsEndPoint es
@@ -111,12 +115,12 @@ public final class AmazonEsRepository implements AwsEsRepository {
             String data = new EsBulkJson(this.indexName, pages).structure();
             Map<String, String> headers = new HashMap<String, String>();
             headers.put("Content-Type", "application/json");
-            AwsHttpRequest<HttpResponse> index =
+            final AwsHttpRequest<HttpResponse> index =
                 new SignedRequest<>(
                     new AwsHttpHeaders<>(
                         new AwsPost<>(
                             new EsHttpRequest<>(
-                            	this.esEdp,
+                                this.esEdp,
                                 "_bulk",
                                 new SimpleAwsResponseHandler(false),
                                 new SimpleAwsErrorHandler(false)
@@ -142,7 +146,7 @@ public final class AmazonEsRepository implements AwsEsRepository {
      */
     @Override
     public boolean exists() {
-        AwsHttpRequest<Boolean> head =
+        final AwsHttpRequest<Boolean> head =
             new SignedRequest<>(
                 new AwsHead<>(
                     new EsHttpRequest<>(
@@ -172,11 +176,11 @@ public final class AmazonEsRepository implements AwsEsRepository {
      */
     @Override
     public void delete() {
-        AwsHttpRequest<HttpResponse> deleteIndex =
+        final AwsHttpRequest<HttpResponse> deleteIndex =
             new SignedRequest<>(
                 new AwsDelete<>(
                     new EsHttpRequest<>(
-                    	this.esEdp,
+                        this.esEdp,
                         this.indexName,
                         new SimpleAwsResponseHandler(false),
                         new SimpleAwsErrorHandler(false)
@@ -187,6 +191,25 @@ public final class AmazonEsRepository implements AwsEsRepository {
                 this.reg
            );
        deleteIndex.perform();
+    }
+
+    @Override
+    public void delete(final String type, final String id) {
+        final AwsHttpRequest<HttpResponse> deleteDoc =
+            new SignedRequest<>(
+                new AwsDelete<>(
+                    new EsHttpRequest<>(
+                        this.esEdp,
+                        this.indexName + "/" + type + "/" + id,
+                        new SimpleAwsResponseHandler(false),
+                        new SimpleAwsErrorHandler(false)
+                    )
+                ),
+                this.accesskey,
+                this.secretKey,
+                this.reg
+           );
+           deleteDoc.perform();
     }
     
 }

@@ -26,6 +26,7 @@
 package com.amihaiemil.charles.github;
 
 import java.util.List;
+
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.Repository;
 import com.amihaiemil.charles.WebPage;
@@ -37,9 +38,26 @@ import com.amihaiemil.charles.WebPage;
  * @version $Id$
  */
 public interface AwsEsRepository extends Repository {
+	
+	/**
+	 * Does the index exist?
+	 * @return True or false.
+	 */
     boolean exists();
+    
+    /**
+     * Delete this intex.
+     */
     void delete();
 
+    /**
+     * Delete a single document from this index.
+     * @param type Type withing index.
+     * @param id Id of the document.
+     * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.3/docs-delete.html
+     */
+    void delete(final String type, final String id);
+    
     /**
      * Fake for unit tests.
      *
@@ -70,8 +88,12 @@ public interface AwsEsRepository extends Repository {
 
         @Override
         public void delete() {
-            //Fale delete; nothing to do.
+            //Fake delete; nothing to do.
         }
+		@Override
+		public void delete(String type, String id) {
+			 //Fake delete; nothing to do.
+		}
         
     }
 }

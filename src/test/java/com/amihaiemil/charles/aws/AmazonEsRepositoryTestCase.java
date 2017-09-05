@@ -142,7 +142,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}"))
            .start(port);
         try {
-        	new AmazonEsRepository(
+            new AmazonEsRepository(
                 "testIndex",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -173,7 +173,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple(412))
            .start(port);
         try {
-        	new AmazonEsRepository(
+            new AmazonEsRepository(
                 "testIndex",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -201,7 +201,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
            .start(port);
         try {
-        	new AmazonEsRepository(
+            new AmazonEsRepository(
                 "index.to.be.deleted",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -210,6 +210,32 @@ public class AmazonEsRepositoryTestCase {
             ).delete();
             MkQuery request = server.take();
             assertEquals("/es/index.to.be.deleted/", request.uri().toString());
+            assertTrue("DELETE".equals(request.method()));
+        } finally {
+            server.stop();
+        }
+    }
+    
+    /**
+     * A request to DELETE a document, from one index, is made to ES.
+     * @throws Exception If something goes wrong.
+     */
+    @Test
+    public void sendsDeleteDocumentRequestToAwsEs() throws Exception {
+        int port = this.port();
+        MkContainer server = new MkGrizzlyContainer()
+           .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
+           .start(port);
+        try {
+            new AmazonEsRepository(
+                "index",
+                new AccessKeyId.Fake("access_key"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("ro"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/es/")
+            ).delete("page", "document_id");
+            MkQuery request = server.take();
+            assertEquals("/es/index/page/document_id/", request.uri().toString());
             assertTrue("DELETE".equals(request.method()));
         } finally {
             server.stop();
@@ -227,14 +253,14 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple(HttpStatus.SC_OK))
            .start(port);
         try {
-        	boolean exists = new AmazonEsRepository(
+            boolean exists = new AmazonEsRepository(
                 "present.index",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
                 new EsEndPoint.Fake("http://localhost:" + port + "/es")
             ).exists();
-        	assertTrue(exists);
+            assertTrue(exists);
             MkQuery request = server.take();
             assertEquals("/es/present.index/", request.uri().toString());
             assertTrue("HEAD".equals(request.method()));
@@ -254,14 +280,14 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple(HttpStatus.SC_NOT_FOUND))
            .start(port);
         try {
-        	boolean exists = new AmazonEsRepository(
+            boolean exists = new AmazonEsRepository(
                 "missing.index",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
                 new Region.Fake("ro"),
                 new EsEndPoint.Fake("http://localhost:" + port + "/es/")
             ).exists();
-        	assertFalse(exists);
+            assertFalse(exists);
             MkQuery request = server.take();
             assertEquals("/es/missing.index/", request.uri().toString());
             assertTrue("HEAD".equals(request.method()));
