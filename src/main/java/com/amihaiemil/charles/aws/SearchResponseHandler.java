@@ -34,7 +34,7 @@ import com.amihaiemil.charles.rest.model.ElasticSearchResults;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
- * Response handler that parses the search response into a {@link oldSearchResultsPage}
+ * Response handler that parses the search response into a {@link SearchResultsPage}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
