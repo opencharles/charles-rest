@@ -40,7 +40,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.amihaiemil.charles.aws.AccessKeyId;
-import com.amihaiemil.charles.aws.AmazonEsSearch;
+import com.amihaiemil.charles.aws.AmazonElasticSearch;
+import com.amihaiemil.charles.aws.ElasticSearch;
 import com.amihaiemil.charles.aws.EsEndPoint;
 import com.amihaiemil.charles.aws.Region;
 import com.amihaiemil.charles.aws.SearchQuery;
@@ -149,11 +150,10 @@ public class CharlesResource {
         SearchQuery query = new SearchQuery(keywords, category, Integer.valueOf(index), Integer.valueOf(size));
         String indexName = user.toLowerCase() + "x" + repo.toLowerCase();
 
-        AmazonEsSearch aws = new AmazonEsSearch(
-            this.esEdp, this.accesskey, this.secretKey, this.reg,
-            query, indexName
+        ElasticSearch aws = new AmazonElasticSearch(
+            indexName, this.accesskey, this.secretKey, this.reg, this.esEdp
         );
-        SearchResultsPage results = aws.search();
+        SearchResultsPage results = aws.search(query);
         
         String queryStringFormat = "?kw=%s&ctg=%s&index=%s&size=%s";
         String requestUrl = servletRequest.getRequestURL().toString();

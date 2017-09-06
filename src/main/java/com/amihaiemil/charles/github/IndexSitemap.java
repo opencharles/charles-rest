@@ -33,11 +33,7 @@ import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.RetriableCrawl;
 import com.amihaiemil.charles.SitemapXmlCrawl;
 import com.amihaiemil.charles.WebCrawl;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.aws.StAccessKeyId;
-import com.amihaiemil.charles.aws.StEsEndPoint;
-import com.amihaiemil.charles.aws.StRegion;
-import com.amihaiemil.charles.aws.StSecretKey;
+import com.amihaiemil.charles.aws.AmazonElasticSearch;
 import com.amihaiemil.charles.sitemap.SitemapXmlOnline;
 
 /**
@@ -66,13 +62,7 @@ public class IndexSitemap extends IndexStep {
                 new SitemapXmlCrawl(
                     this.phantomJsDriver(),
                     new SitemapXmlOnline(link),
-                    new AmazonEsRepository(
-                        command.indexName(),
-                        new StAccessKeyId(),
-                        new StSecretKey(),
-                        new StRegion(),
-                        new StEsEndPoint()
-                    ),
+                    new AmazonElasticSearch(command.indexName()),
                     20
                 ),
                 5

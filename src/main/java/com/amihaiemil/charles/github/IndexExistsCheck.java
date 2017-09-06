@@ -25,15 +25,12 @@
  */
 package com.amihaiemil.charles.github;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.aws.StAccessKeyId;
-import com.amihaiemil.charles.aws.StEsEndPoint;
-import com.amihaiemil.charles.aws.StRegion;
-import com.amihaiemil.charles.aws.StSecretKey;
-
-import java.io.IOException;
+import com.amihaiemil.charles.aws.AmazonElasticSearch;
+import com.amihaiemil.charles.aws.ElasticSearch;
 
 /**
  * Step that checks if an index exists in elasticsearch
@@ -47,7 +44,7 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
     /**
      * AWS elasticsearch repository.
      */
-    private AwsEsRepository repo;
+    private ElasticSearch repo;
 
     /**
      * Constructor.
@@ -55,17 +52,7 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
      * @param onFalse the step to perform in unsuccessful check.
      */
     public IndexExistsCheck(String index, Step onTrue, Step onFalse) {
-    	
-        this(
-            new AmazonEsRepository(
-        		index,
-                new StAccessKeyId(),
-                new StSecretKey(),
-                new StRegion(),
-                new StEsEndPoint()
-            ),
-            onTrue, onFalse
-        );
+        this(new AmazonElasticSearch(index), onTrue, onFalse);
     }
 
     /**
@@ -74,7 +61,7 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
      * @param onTrue The step to perform on successful check.
      * @param onFalse The step to perform in unsuccessful check.
      */
-    public IndexExistsCheck(AwsEsRepository repo, Step onTrue, Step onFalse) {
+    public IndexExistsCheck(ElasticSearch repo, Step onTrue, Step onFalse) {
         super(onTrue, onFalse);
         this.repo = repo;
     }

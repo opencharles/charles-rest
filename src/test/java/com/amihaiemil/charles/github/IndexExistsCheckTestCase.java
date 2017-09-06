@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 
+import com.amihaiemil.charles.aws.ElasticSearch;
+
 import java.io.IOException;
 
 /**
@@ -21,7 +23,7 @@ public final class IndexExistsCheckTestCase {
     @Test
     public void indexExists() throws IOException {
         IndexExistsCheck iec = new IndexExistsCheck(
-            new AwsEsRepository.Fake(true),
+            new ElasticSearch.Fake(true),
             new Step.Fake(true), new Step.Fake(false)
         );
         iec.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));
@@ -33,7 +35,7 @@ public final class IndexExistsCheckTestCase {
     @Test
     public void indexDoesntExist() throws IOException {
         IndexExistsCheck iec = new IndexExistsCheck(
-            new AwsEsRepository.Fake(false),
+            new ElasticSearch.Fake(false),
             new Step.Fake(false), new Step.Fake(true)
         );
         iec.perform(Mockito.mock(Command.class), Mockito.mock(Logger.class));

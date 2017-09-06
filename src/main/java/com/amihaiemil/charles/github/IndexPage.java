@@ -35,11 +35,7 @@ import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.LiveWebPage;
 import com.amihaiemil.charles.SnapshotWebPage;
 import com.amihaiemil.charles.WebPage;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.aws.StAccessKeyId;
-import com.amihaiemil.charles.aws.StEsEndPoint;
-import com.amihaiemil.charles.aws.StRegion;
-import com.amihaiemil.charles.aws.StSecretKey;
+import com.amihaiemil.charles.aws.AmazonElasticSearch;
 
 /**
  * Step to index a single page.
@@ -68,12 +64,8 @@ public class IndexPage extends IndexStep {
              driver.get(link);
              WebPage snapshot = new SnapshotWebPage(new LiveWebPage(driver));
              logger.info("Page crawled. Sending to aws...");
-             new AmazonEsRepository(
-                 command.indexName(),
-                 new StAccessKeyId(),
-                 new StSecretKey(),
-                 new StRegion(),
-                 new StEsEndPoint()
+             new AmazonElasticSearch(
+                 command.indexName()
              ).export(Arrays.asList(snapshot));
              logger.info("Page successfully sent to aws!");
         } catch (

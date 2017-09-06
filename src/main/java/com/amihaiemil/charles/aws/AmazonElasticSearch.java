@@ -46,7 +46,7 @@ import com.amihaiemil.charles.aws.requests.AwsHttpRequest;
 import com.amihaiemil.charles.aws.requests.AwsPost;
 import com.amihaiemil.charles.aws.requests.EsHttpRequest;
 import com.amihaiemil.charles.aws.requests.SignedRequest;
-import com.amihaiemil.charles.github.AwsEsRepository;
+import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
  * AWS ElasticSearch repository that sends the webpages to the
@@ -59,8 +59,8 @@ import com.amihaiemil.charles.github.AwsEsRepository;
  * @todo #250:30min Rename this class to Index (since that's what it is), and remove AmazonEsSearch class,
  *  moving the search method here
  */
-public final class AmazonEsRepository implements AwsEsRepository {
-    private static final Logger LOG = LoggerFactory.getLogger(AmazonEsRepository.class);    
+public final class AmazonElasticSearch implements ElasticSearch {
+    private static final Logger LOG = LoggerFactory.getLogger(AmazonElasticSearch.class);    
 
     /**
      * Name of the Es index where the pages will be exported.
@@ -88,6 +88,20 @@ public final class AmazonEsRepository implements AwsEsRepository {
     private EsEndPoint esEdp;
     
     /**
+     * Ctor. 
+     * @param indexName Name of the index.
+     */
+    public AmazonElasticSearch(final String indexName) {
+        this(
+            indexName,
+            new StAccessKeyId(),
+            new StSecretKey(),
+            new StRegion(),
+            new StEsEndPoint()
+        );
+    }
+    
+    /**
      * ctor.
      * @param indexName Name of the Es index where the pages will be exported.
      * @param accessKey Aws access key.
@@ -95,7 +109,7 @@ public final class AmazonEsRepository implements AwsEsRepository {
      * @param reg AWS ElasticSearch region.
      * @param es ElasticSearch URL.
      */
-    public AmazonEsRepository(
+    public AmazonElasticSearch(
         final String indexName,
         final AccessKeyId accesskey,
         final SecretKey secretKey,
@@ -109,6 +123,30 @@ public final class AmazonEsRepository implements AwsEsRepository {
         this.esEdp = es;
     }
 
+    @Override
+    public SearchResultsPage search(final SearchQuery query) {
+        final Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/json");
+        AwsHttpRequest<SearchResultsPage> search =
+            new SignedRequest<>(
+                new AwsHttpHeaders<>(
+                    new AwsPost<>(
+                        new EsHttpRequest<>(
+                            this.esEdp,
+                            this.indexName + "/_search",
+                            new SearchResponseHandler(),
+                            new SimpleAwsErrorHandler(false)
+                        ),
+                        new ByteArrayInputStream(query.toJson().toString().getBytes())
+                    ), headers
+                ),
+                this.accesskey,
+                this.secretKey,
+                this.reg
+            );
+        return search.perform();
+    }
+    
     @Override
     public void export(List<WebPage> pages) throws DataExportException {
         try {

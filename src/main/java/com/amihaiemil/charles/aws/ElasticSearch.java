@@ -23,13 +23,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
-package com.amihaiemil.charles.github;
+package com.amihaiemil.charles.aws;
 
 import java.util.List;
 
 import com.amihaiemil.charles.DataExportException;
 import com.amihaiemil.charles.Repository;
 import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
  * Our repository is an ElasticSearch Index in the AWS cloud. Extend the Repository interface
@@ -37,12 +38,19 @@ import com.amihaiemil.charles.WebPage;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  */
-public interface AwsEsRepository extends Repository {
-	
-	/**
-	 * Does the index exist?
-	 * @return True or false.
-	 */
+public interface ElasticSearch extends Repository {
+
+    /**
+     * Perform a search.
+     * @param query Search query.
+     * @return A page of search results.
+     */
+    SearchResultsPage search(final SearchQuery query);
+    
+    /**
+     * Does the index exist?
+     * @return True or false.
+     */
     boolean exists();
     
     /**
@@ -62,7 +70,7 @@ public interface AwsEsRepository extends Repository {
      * Fake for unit tests.
      *
      */
-    final static class Fake implements AwsEsRepository {
+    final static class Fake implements ElasticSearch {
 
         /**
          * Does this index exist?
@@ -90,10 +98,19 @@ public interface AwsEsRepository extends Repository {
         public void delete() {
             //Fake delete; nothing to do.
         }
-		@Override
-		public void delete(String type, String id) {
-			 //Fake delete; nothing to do.
-		}
+        @Override
+        public void delete(String type, String id) {
+             //Fake delete; nothing to do.
+        }
+
+        /**
+         * @todo 261:30min After SearchResultsPage is refactored and broken
+         *  into an interface + smart implmentation, provide a Fake one and return it here.
+         */
+        @Override
+        public SearchResultsPage search(SearchQuery query) {
+            return null;
+        }
         
     }
 }

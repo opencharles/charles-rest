@@ -24,12 +24,16 @@
  */
 package com.amihaiemil.charles.aws;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 
@@ -37,6 +41,8 @@ import com.amazonaws.AmazonServiceException;
 import com.amihaiemil.charles.Link;
 import com.amihaiemil.charles.SnapshotWebPage;
 import com.amihaiemil.charles.WebPage;
+import com.amihaiemil.charles.rest.model.SearchResult;
+import com.amihaiemil.charles.rest.model.SearchResultsPage;
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
@@ -45,13 +51,13 @@ import com.jcabi.http.mock.MkQuery;
 import static org.junit.Assert.*;
 
 /**
- * Unit tests for {@link AmazonEsRepository}
+ * Unit tests for {@link AmazonElasticSearch}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
  */
 @SuppressWarnings("resource")
-public class AmazonEsRepositoryTestCase {
+public class AmazonElasticSearchTestCase {
 
     /**
      * IllegalStateException is thrown on missing secret key property.
@@ -63,7 +69,7 @@ public class AmazonEsRepositoryTestCase {
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
-        AmazonEsRepository repo = new AmazonEsRepository(
+        ElasticSearch repo = new AmazonElasticSearch(
             "testIndex",
             new AccessKeyId.Fake("access_key"),
             new SecretKey.Fake(null),
@@ -88,7 +94,7 @@ public class AmazonEsRepositoryTestCase {
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
 
-        AmazonEsRepository repo = new AmazonEsRepository(
+        ElasticSearch repo = new AmazonElasticSearch(
             "testIndex",
             new AccessKeyId.Fake(null),
             new SecretKey.Fake("secret"),
@@ -112,7 +118,7 @@ public class AmazonEsRepositoryTestCase {
         List<WebPage> pages = new ArrayList<WebPage>();
         pages.add(this.mockWebPage("http://www.test.com/crawledpage.html"));
         pages.add(this.mockWebPage("https://www.test.com/stuff/crawledpage.html"));
-        AmazonEsRepository repo = new AmazonEsRepository(
+        ElasticSearch repo = new AmazonElasticSearch(
             "testIndex",
             new AccessKeyId.Fake("access"),
             new SecretKey.Fake("secret"),
@@ -124,6 +130,27 @@ public class AmazonEsRepositoryTestCase {
             fail();
         } catch (IllegalStateException ex) {
             assertTrue(ex.getMessage().contains("Mandatory sys property aws.es.region"));
+        }
+    }
+    
+    /**
+     * AmazonEsSearch throws IllegalStateException if the elasticsearch endpoint
+     * sys property is missing.
+     */
+    @Test
+    public void illegalStateOnMissingEsEndpoint() {
+        ElasticSearch es = new AmazonElasticSearch(
+            "user/idx",
+            new AccessKeyId.Fake("aws_key_id"),
+            new SecretKey.Fake("secret_key"),
+            new Region.Fake("us-west"),
+            new EsEndPoint.Fake(null)
+        );
+        try {
+            es.search(new SearchQuery());
+            fail("ISE was expected!");
+        } catch (IllegalStateException ex) {
+            assertTrue(ex.getMessage().equals("ElasticSearch endpoint needs to be specified!"));
         }
     }
     
@@ -142,7 +169,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple("{\"status\":\"Unit test successful!\"}"))
            .start(port);
         try {
-            new AmazonEsRepository(
+            new AmazonElasticSearch(
                 "testIndex",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -173,7 +200,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple(412))
            .start(port);
         try {
-            new AmazonEsRepository(
+            new AmazonElasticSearch(
                 "testIndex",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -201,7 +228,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
            .start(port);
         try {
-            new AmazonEsRepository(
+            new AmazonElasticSearch(
                 "index.to.be.deleted",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -227,7 +254,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple("{\"status\":\"index deleted\"}"))
            .start(port);
         try {
-            new AmazonEsRepository(
+            new AmazonElasticSearch(
                 "index",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -253,7 +280,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple(HttpStatus.SC_OK))
            .start(port);
         try {
-            boolean exists = new AmazonEsRepository(
+            boolean exists = new AmazonElasticSearch(
                 "present.index",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -280,7 +307,7 @@ public class AmazonEsRepositoryTestCase {
            .next(new MkAnswer.Simple(HttpStatus.SC_NOT_FOUND))
            .start(port);
         try {
-            boolean exists = new AmazonEsRepository(
+            boolean exists = new AmazonElasticSearch(
                 "missing.index",
                 new AccessKeyId.Fake("access_key"),
                 new SecretKey.Fake("secret_key"),
@@ -294,6 +321,84 @@ public class AmazonEsRepositoryTestCase {
         } finally {
             server.stop();
         }
+    }
+    
+    /**
+     * AmazonEsSearch performs ok when there are search results.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
+    public void searchWithResults() throws IOException {
+        int port = this.port();
+        MkContainer awsEs = new MkGrizzlyContainer().next(
+            new MkAnswer.Simple(this.readResource("esSearchResponse.json"))
+        ).start(port);
+
+        try {
+            ElasticSearch es = new AmazonElasticSearch(
+                "amihaiemilxtestrepo",
+                new AccessKeyId.Fake("aws_key_id"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("us-west"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch")
+            );
+            SearchResultsPage srp = es.search(new SearchQuery("test", "page", 0, 10));
+            assertTrue(srp.getTotalHits() == 27);
+            assertTrue(srp.getResults().size() == 10);
+            SearchResult third = srp.getResults().get(2);
+            assertTrue(third.link().equals("http://amihaiemil.com/stuff/link3page/page.html"));
+            assertTrue(third.category().equals("development"));
+        
+            SearchResult last = srp.getResults().get(9);
+            assertTrue(last.link().equals("http://amihaiemil.com/some/other/page.html"));
+            assertTrue(last.category().equals("mischelaneous"));
+        } finally {
+            awsEs.stop();
+        }
+    }
+
+    /**
+     * AmazonEsSearch performs ok when there are no search results.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
+    public void searchWithNoResults() throws IOException {
+        int port = this.port();
+        MkContainer awsEs = new MkGrizzlyContainer().next(
+            new MkAnswer.Simple(this.readResource("esSearchResponseNoResults.json"))
+        ).start(port);
+        try {
+            ElasticSearch es = new AmazonElasticSearch(
+                "amihaiemilxtestrepo",
+                new AccessKeyId.Fake("aws_key_id"),
+                new SecretKey.Fake("secret_key"),
+                new Region.Fake("us-west"),
+                new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch")
+            );
+            SearchResultsPage srp = es.search( new SearchQuery("test", "page", 0, 10));
+            assertTrue(srp.getTotalHits() == 0);
+            assertTrue(srp.getResults().isEmpty());
+            assertTrue(srp.getPageNr() == 1);
+            assertTrue(srp.getPages().isEmpty());
+            assertTrue(srp.getNextPage().equals("-"));
+            assertTrue(srp.getPreviousPage().equals("-"));
+            
+        } finally {
+            awsEs.stop();
+        }
+    }
+    
+    /**
+     * Read resource for test.
+     * @param resourceName
+     * @return String content of the resource file.
+     * @throws IOException If it goes wrong.
+     */
+    private String readResource(String resourceName) throws IOException {
+        InputStream is = new FileInputStream(
+            new File("src/test/resources/" + resourceName)
+        );
+        return new String(IOUtils.toByteArray(is));
     }
     
     /**

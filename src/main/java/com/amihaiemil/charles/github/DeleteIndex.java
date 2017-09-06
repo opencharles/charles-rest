@@ -29,11 +29,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 
-import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.aws.StAccessKeyId;
-import com.amihaiemil.charles.aws.StEsEndPoint;
-import com.amihaiemil.charles.aws.StRegion;
-import com.amihaiemil.charles.aws.StSecretKey;
+import com.amihaiemil.charles.aws.AmazonElasticSearch;
 
 /**
  * Step that deletes the index from AWS es.
@@ -57,13 +53,7 @@ public class DeleteIndex  extends IntermediaryStep {
     public void perform(Command command, Logger logger) throws IOException {
         logger.info("Starting index deletion...");
         try {
-            new AmazonEsRepository(
-                command.indexName(),
-                new StAccessKeyId(),
-                new StSecretKey(),
-                new StRegion(),
-                new StEsEndPoint()
-            ).delete();
+            new AmazonElasticSearch(command.indexName()).delete();
         } catch (IOException e) {
             logger.error("Exception while deleting the index!", e);
             throw new IOException("Exception while deleting the index!" , e);

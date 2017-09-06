@@ -35,11 +35,7 @@ import com.amihaiemil.charles.GraphCrawl;
 import com.amihaiemil.charles.IgnoredPatterns;
 import com.amihaiemil.charles.RetriableCrawl;
 import com.amihaiemil.charles.WebCrawl;
-import com.amihaiemil.charles.aws.AmazonEsRepository;
-import com.amihaiemil.charles.aws.StAccessKeyId;
-import com.amihaiemil.charles.aws.StEsEndPoint;
-import com.amihaiemil.charles.aws.StRegion;
-import com.amihaiemil.charles.aws.StSecretKey;
+import com.amihaiemil.charles.aws.AmazonElasticSearch;
 
 /**
  * Step to index a website.
@@ -92,13 +88,7 @@ public class IndexSite extends IndexStep {
         + " .The website will be crawled as a graph, going in-depth from the index page.");
         WebCrawl siteCrawl = new GraphCrawl(
             siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
-            new AmazonEsRepository(
-                command.indexName(),
-                new StAccessKeyId(),
-                new StSecretKey(),
-                new StRegion(),
-                new StEsEndPoint()
-            ),
+            new AmazonElasticSearch(command.indexName()),
             20
         );
         return new RetriableCrawl(siteCrawl, 5);
