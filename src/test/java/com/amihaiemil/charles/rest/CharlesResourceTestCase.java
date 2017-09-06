@@ -28,15 +28,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.ServerSocket;
 
+import javax.json.Json;
+import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -44,9 +46,6 @@ import com.amihaiemil.charles.aws.AccessKeyId;
 import com.amihaiemil.charles.aws.EsEndPoint;
 import com.amihaiemil.charles.aws.Region;
 import com.amihaiemil.charles.aws.SecretKey;
-import com.amihaiemil.charles.rest.model.SearchResultsPage;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
@@ -66,7 +65,6 @@ public final class CharlesResourceTestCase {
      * @throws IOException In case something goes wrong.
      */
     @Test
-    @Ignore
     public void pagesAreDisplayed() throws IOException {
         int port = this.port();
         MkContainer awsEs = new MkGrizzlyContainer().next(
@@ -85,28 +83,27 @@ public final class CharlesResourceTestCase {
         );
         try {
             Response resp = resource.search("amihaiemil", "testrepo", "test", "page", "0", "3");
-            ObjectMapper json = new ObjectMapper();
-            SearchResultsPage results = json.readValue(resp.getEntity().toString(), new TypeReference<SearchResultsPage>(){});
+            JsonObject page = Json.createReader(new StringReader(resp.getEntity().toString())).readObject();
             MatcherAssert.assertThat(
-                results.getPreviousPage(), Matchers.equalTo("-")
+                page.getString("previousPage"), Matchers.equalTo("-")
             );
             MatcherAssert.assertThat(
-                results.getNextPage(),
+                page.getString("nextPage"),
                 Matchers.equalTo(
                     "http://example.com?kw=test&ctg=page&index=3&size=3"
                 )
             );
             MatcherAssert.assertThat(
-                results.getPages().size(), Matchers.is(9)
+                page.getJsonArray("pages").size(), Matchers.is(9)
             );
             MatcherAssert.assertThat(
-                results.getPages().get(0),
+                page.getJsonArray("pages").getString(0),
                 Matchers.equalTo(
                     "http://example.com?kw=test&ctg=page&index=0&size=3"
                 )
             );
             MatcherAssert.assertThat(
-                results.getPages().get(8),
+                page.getJsonArray("pages").getString(8),
                 Matchers.equalTo(
                     "http://example.com?kw=test&ctg=page&index=24&size=3"
                 )

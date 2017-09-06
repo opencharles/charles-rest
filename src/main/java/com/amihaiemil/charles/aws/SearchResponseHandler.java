@@ -25,23 +25,16 @@
  */
 package com.amihaiemil.charles.aws;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.http.HttpResponse;
 import com.amazonaws.http.HttpResponseHandler;
-import com.amihaiemil.charles.rest.model.ElasticSearchResult;
-import com.amihaiemil.charles.rest.model.SearchResult;
+import com.amihaiemil.charles.rest.model.ElasticSearchResults;
 import com.amihaiemil.charles.rest.model.SearchResultsPage;
 
 /**
- * Response handler that parses the search response into a {@link SearchResultsPage}
+ * Response handler that parses the search response into a {@link oldSearchResultsPage}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
@@ -50,41 +43,23 @@ import com.amihaiemil.charles.rest.model.SearchResultsPage;
 public final class SearchResponseHandler implements HttpResponseHandler<SearchResultsPage>{
 
     @Override
-    public SearchResultsPage handle(HttpResponse response) {
+    public ElasticSearchResults handle(HttpResponse response) {
         int status = response.getStatusCode();
         if(status < 200 || status >= 300) {
             AmazonServiceException ase = new AmazonServiceException("Unexpected status: " + status);
             ase.setStatusCode(status);
             throw ase;
         }
-        return this.buildResultsPage(response);
+        return new ElasticSearchResults(
+            Json.createReader(
+                response.getContent()
+            ).readObject()
+        );
     }
 
     @Override
     public boolean needsConnectionLeftOpen() {
         return false;
-    }
-
-    /**
-     * Build the search results page
-     * @param response
-     * @return
-     */
-    private SearchResultsPage buildResultsPage(HttpResponse response) {
-        SearchResultsPage page = new SearchResultsPage();
-        InputStream content = response.getContent();
-        JsonObject result = Json.createReader(content).readObject();
-        int totalHits = result.getJsonObject("hits").getInt("total");
-        if(totalHits != 0) {
-            List<SearchResult> searchResults = new ArrayList<SearchResult>();
-            JsonArray hits = result.getJsonObject("hits").getJsonArray("hits");
-            for(int i=0; i<hits.size(); i++) {
-                searchResults.add(new ElasticSearchResult(hits.getJsonObject(i)));
-            }
-            page.setResults(searchResults);
-            page.setTotalHits(totalHits);
-        } 
-        return page;
     }
 
 }

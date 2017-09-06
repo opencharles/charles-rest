@@ -158,28 +158,28 @@ public class CharlesResource {
         String queryStringFormat = "?kw=%s&ctg=%s&index=%s&size=%s";
         String requestUrl = servletRequest.getRequestURL().toString();
         if(idx == 0) {
-            results.setPreviousPage("-");
+        	results = results.withPrevPage("-");
         } else {
             String queryString = String.format(queryStringFormat, keywords, category, idx - nr, nr);
-            results.setPreviousPage(requestUrl + queryString);
+            results = results.withPrevPage(requestUrl + queryString);
         }
-        if(idx + nr >= results.getTotalHits()) {
-            results.setNextPage("-");
+        if(idx + nr >= results.totalHits()) {
+        	results = results.withNextPage("-");
         } else {
             String queryString = String.format(queryStringFormat, keywords, category, idx + nr, nr);
-            results.setNextPage(requestUrl + queryString);
+            results = results.withNextPage(requestUrl + queryString);
         }
-        results.setPageNr(idx/nr + 1);
+        results = results.withPageNr(idx/nr + 1);
         
         int start = 0;
         List<String> pagesLinks = new ArrayList<String>();
-        while(start < results.getTotalHits()) {
+        while(start < results.totalHits()) {
             pagesLinks.add(
                 requestUrl + String.format(queryStringFormat, keywords, category, start, nr)
             );
             start += nr;
         }
-        results.setPages(pagesLinks);
+        results = results.withPages(pagesLinks);
         
         return Response.ok().entity(new ObjectMapper().writeValueAsString(results)).build();
     }

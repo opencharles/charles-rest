@@ -24,6 +24,11 @@
  */
 package com.amihaiemil.charles.aws;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -47,8 +52,6 @@ import com.jcabi.http.mock.MkAnswer;
 import com.jcabi.http.mock.MkContainer;
 import com.jcabi.http.mock.MkGrizzlyContainer;
 import com.jcabi.http.mock.MkQuery;
-
-import static org.junit.Assert.*;
 
 /**
  * Unit tests for {@link AmazonElasticSearch}
@@ -343,13 +346,13 @@ public class AmazonElasticSearchTestCase {
                 new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch")
             );
             SearchResultsPage srp = es.search(new SearchQuery("test", "page", 0, 10));
-            assertTrue(srp.getTotalHits() == 27);
-            assertTrue(srp.getResults().size() == 10);
-            SearchResult third = srp.getResults().get(2);
+            assertTrue(srp.totalHits() == 27);
+            assertTrue(srp.results().size() == 10);
+            SearchResult third = srp.results().get(2);
             assertTrue(third.link().equals("http://amihaiemil.com/stuff/link3page/page.html"));
             assertTrue(third.category().equals("development"));
         
-            SearchResult last = srp.getResults().get(9);
+            SearchResult last = srp.results().get(9);
             assertTrue(last.link().equals("http://amihaiemil.com/some/other/page.html"));
             assertTrue(last.category().equals("mischelaneous"));
         } finally {
@@ -376,12 +379,12 @@ public class AmazonElasticSearchTestCase {
                 new EsEndPoint.Fake("http://localhost:" + port + "/elasticsearch")
             );
             SearchResultsPage srp = es.search( new SearchQuery("test", "page", 0, 10));
-            assertTrue(srp.getTotalHits() == 0);
-            assertTrue(srp.getResults().isEmpty());
-            assertTrue(srp.getPageNr() == 1);
-            assertTrue(srp.getPages().isEmpty());
-            assertTrue(srp.getNextPage().equals("-"));
-            assertTrue(srp.getPreviousPage().equals("-"));
+            assertTrue(srp.totalHits() == 0);
+            assertTrue(srp.results().isEmpty());
+            assertTrue(srp.pageNr() == 0);
+            assertTrue(srp.pages().isEmpty());
+            assertTrue(srp.nextPage().isEmpty());
+            assertTrue(srp.previousPage().isEmpty());
             
         } finally {
             awsEs.stop();

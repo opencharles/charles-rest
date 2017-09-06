@@ -103,13 +103,9 @@ public interface ElasticSearch extends Repository {
              //Fake delete; nothing to do.
         }
 
-        /**
-         * @todo 261:30min After SearchResultsPage is refactored and broken
-         *  into an interface + smart implmentation, provide a Fake one and return it here.
-         */
         @Override
         public SearchResultsPage search(SearchQuery query) {
-            return null;
+            return new SearchResultsPage.Fake();
         }
         
     }

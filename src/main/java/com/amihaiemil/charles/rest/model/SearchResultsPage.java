@@ -28,93 +28,138 @@ package com.amihaiemil.charles.rest.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
- * A page of search results.
+ * A page of search results. It is annotated with JsonProperty so Jackson can parse the object
+ * into JSON.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
- * @todo #255:30min Get rid of this POJO and turn it into a smart class,
- *  same as it was done with SearchResult. Update and unignore tests in
- *  CharlesResourceTestCase when its done.
+ * @since 1.0.2
  */
-public class SearchResultsPage {
-
-    /**
-     * Search results on this page.
-     */
-    private List<SearchResult> results = new ArrayList<SearchResult>();
-
-    /**
-     * Total of results found.
-     */
-    private int totalHits;
-
-    /**
-     * Page number - what page we're on?
-     */
-    private int pageNr = 1;
-
-    /**
-     * Link to the previosus results page.
-     */
-    private String previousPage = "-";
-
-    /**
-     * Link to the next results page.
-     */
-    private String nextPage = "-";
-
-    /**
-     * List of links to all the found pages.
-     */
-    private List<String> pages = new ArrayList<String>();
-
-    public List<SearchResult> getResults() {
-        return results;
-    }
-
-    public void setResults(List<SearchResult> results) {
-        this.results = results;
-    }
-
-    public int getTotalHits() {
-        return totalHits;
-    }
-
-    public void setTotalHits(int totalHits) {
-        this.totalHits = totalHits;
-    }
-
-    public int getPageNr() {
-        return pageNr;
-    }
-
-    public void setPageNr(int pageNr) {
-        this.pageNr = pageNr;
-    }
-
-    public String getPreviousPage() {
-        return previousPage;
-    }
-
-    public void setPreviousPage(String previousPage) {
-        this.previousPage = previousPage;
-    }
-
-    public String getNextPage() {
-        return nextPage;
-    }
-
-    public void setNextPage(String nextPage) {
-        this.nextPage = nextPage;
-    }
-
-    public List<String> getPages() {
-        return pages;
-    }
-
-    public void setPages(List<String> pages) {
-        this.pages = pages;
-    }
+public interface SearchResultsPage {
     
+    /**
+     * The search results from this page.
+     * @return List of SearchResult.
+     */
+    @JsonProperty("results")
+    List<SearchResult> results();
+    
+    /**
+     * The total number of results.
+     * @return Integer.
+     */
+    @JsonProperty("totalHits")
+    int totalHits();
+    
+    /**
+     * The page's number.
+     * @return Integer.
+     */
+    @JsonProperty("pageNr")
+    int pageNr();
+
+    /**
+     * Link to the previous page.
+     * @return String.
+     */
+    @JsonProperty("previousPage")
+    String previousPage();
+    
+    /**
+     * Link to the next page.
+     * @return String.
+     */
+    @JsonProperty("nextPage")
+    String nextPage();
+    
+    /**
+     * Links to all the page results.
+     * @return List of String.
+     */
+    @JsonProperty("pages")
+    List<String> pages();
+    
+    /**
+     * Specify the page number.
+     * @param pageNr Integer.
+     * @return SearchResultsPage.
+     */
+    SearchResultsPage withPageNr(final int pageNr);
+    
+    /**
+     * Specify the next page.
+     * @param nextPage String.
+     * @return SearchResultsPage.
+     */
+    SearchResultsPage withNextPage(final String nextPage);
+    
+    /**
+     * Specify the previous pager.
+     * @param previousPage String.
+     * @return SearchResultsPage.
+     */
+    SearchResultsPage withPrevPage(final String prevPage);
+    
+    /**
+     * Specify all the pages.
+     * @param pages Links to all the pages..
+     * @return SearchResultsPage.
+     */
+    SearchResultsPage withPages(final List<String> pages);
+    
+    public static final class Fake implements SearchResultsPage {
+
+        @Override
+        public List<SearchResult> results() {
+            return new ArrayList<SearchResult>();
+        }
+
+        @Override
+        public int totalHits() {
+            return 0;
+        }
+
+        @Override
+        public int pageNr() {
+            return 0;
+        }
+
+        @Override
+        public String previousPage() {
+            return "";
+        }
+
+        @Override
+        public String nextPage() {
+            return "";
+        }
+
+        @Override
+        public List<String> pages() {
+            return new ArrayList<String>();
+        }
+
+        @Override
+        public SearchResultsPage withPageNr(int pageNr) {
+            return this;
+        }
+
+        @Override
+        public SearchResultsPage withNextPage(String nextPage) {
+            return this;
+        }
+
+        @Override
+        public SearchResultsPage withPrevPage(String prevPage) {
+            return this;
+        }
+
+        @Override
+        public SearchResultsPage withPages(List<String> pages) {
+            return this;
+        }
+        
+    }
 }

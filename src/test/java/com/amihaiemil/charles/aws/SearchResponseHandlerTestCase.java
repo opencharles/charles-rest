@@ -62,13 +62,13 @@ public class SearchResponseHandlerTestCase {
              )
         );
         SearchResultsPage page = new SearchResponseHandler().handle(response);
-        assertTrue(page.getTotalHits() == 27);
-        assertTrue(page.getResults().size() == 10);
-        SearchResult first = page.getResults().get(0);
+        assertTrue(page.totalHits() == 27);
+        assertTrue(page.results().size() == 10);
+        SearchResult first = page.results().get(0);
         assertTrue(first.link().equals("http://amihaiemil.com/page.html"));
         assertTrue(first.category().equals("tech"));
     
-        SearchResult last = page.getResults().get(9);
+        SearchResult last = page.results().get(9);
         assertTrue(last.link().equals("http://amihaiemil.com/some/other/page.html"));
         assertTrue(last.category().equals("mischelaneous"));
     }
