@@ -56,8 +56,6 @@ import com.amihaiemil.charles.rest.model.SearchResultsPage;
  * @since 1.0.0
  * @todo #250:1h Implement the delete page knowledge. We have the repo method and unit
  *  test for it. Continue with the language, knowledge and steps.
- * @todo #250:30min Rename this class to Index (since that's what it is), and remove AmazonEsSearch class,
- *  moving the search method here
  */
 public final class AmazonElasticSearch implements ElasticSearch {
     private static final Logger LOG = LoggerFactory.getLogger(AmazonElasticSearch.class);    
