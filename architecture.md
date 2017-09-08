@@ -49,7 +49,7 @@ the bot didn't manage to categorize the command and it will leave a Github reply
         new Hello(                                     //it can say hello
             new IndexSiteKn(                           //it can index a whole website
                 new IndexSitemapKn(                    //it can index a site following a sitemap
-                    new IndexPageKn(                   //it can indes a single page
+                    new IndexPageKn(                   //it can index a single page
                         new DeleteIndexKn(             //it can delete a whole index
                             new DeletePageKn(          //it can delete a single page from an index
                                 new Confused()         //it may be confused, not understanding your command.
