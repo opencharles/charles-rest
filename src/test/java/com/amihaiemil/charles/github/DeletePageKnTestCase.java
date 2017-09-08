@@ -26,6 +26,7 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -54,10 +55,9 @@ public class DeletePageKnTestCase {
         Mockito.when(logs.address()).thenReturn("/path/to/logs");
         
         final Knowledge deletepage = new DeletePageKn(
-            logs,
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'deletepage' command was misunderstood!"
                     );
@@ -65,7 +65,7 @@ public class DeletePageKnTestCase {
             }
         );
 
-        Steps steps = deletepage.handle(com);
+        Steps steps = deletepage.handle(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
@@ -80,10 +80,9 @@ public class DeletePageKnTestCase {
         Mockito.when(com.type()).thenReturn("indexsite");
         
         final Knowledge deletepage = new DeletePageKn(
-            Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("indexsite")
@@ -92,6 +91,6 @@ public class DeletePageKnTestCase {
                 }
             }
         );
-        deletepage.handle(com);
+        deletepage.handle(com, Mockito.mock(LogsLocation.class));
     }
 }

@@ -64,7 +64,7 @@ public final class Conversation implements Knowledge {
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
     	String type = "unknown";
     	Command understood = new Understood(com, type, this.languages[0]);
         for(Language lang : this.languages) {
@@ -74,7 +74,7 @@ public final class Conversation implements Knowledge {
                 break;
             }
         }
-        return this.followup.handle(understood);
+        return this.followup.handle(understood, logs);
     }
 
 }

@@ -36,27 +36,20 @@ import java.io.IOException;
 public final class DeletePageKn implements Knowledge {
 
     /**
-     * Location of the log file.
-     */
-    private LogsLocation logsLoc;
-
-    /**
      * What do we do if it's not an 'deletepage' command?
      */
     private Knowledge notDeletePage;
     
     /**
      * Ctor.
-     * @param logsLoc Location of the log file for the bot's action.
      * @param notDeletePage What do we do if it's not an 'deletepage' command?
      */
-    public DeletePageKn(final LogsLocation logsLoc, final Knowledge notDeletePage) {
-        this.logsLoc = logsLoc;
+    public DeletePageKn(final Knowledge notDeletePage) {
         this.notDeletePage = notDeletePage;
     }
     
     @Override
-    public Steps handle(Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         if("deletepage".equalsIgnoreCase(com.type())) {
             return new StepsTree(
                 new IndexExistsCheck(
@@ -68,7 +61,7 @@ public final class DeletePageKn implements Knowledge {
                                     com,
                                     String.format(
                                         com.language().response("deletepage.finished.comment"),
-                                        com.authorLogin(), this.logsLoc.address()
+                                        com.authorLogin(), logs.address()
                                     )
                                 ),
                                 new Follow(new Step.FinalStep())
@@ -80,17 +73,17 @@ public final class DeletePageKn implements Knowledge {
                             com,
                             String.format(
                                 com.language().response("index.missing.comment"),
-                                com.authorLogin(), this.logsLoc.address()
+                                com.authorLogin(), logs.address()
                             )
                         ),
                         new Step.FinalStep()
                     )
                 ),
                 com,
-                this.logsLoc
+                logs
             );
         }
-        return this.notDeletePage.handle(com);
+        return this.notDeletePage.handle(com, logs);
     }
 
 }

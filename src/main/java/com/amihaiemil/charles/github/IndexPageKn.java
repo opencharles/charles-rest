@@ -36,27 +36,20 @@ import java.io.IOException;
 public final class IndexPageKn implements Knowledge {
 
     /**
-     * Location of the log file.
-     */
-    private LogsLocation logsLoc;
-
-    /**
      * What do we do if it's not an 'indexpage' command?
      */
     private Knowledge notIdxPage;
 
     /**
      * Ctor.
-     * @param logsLoc Location of the log file for the bot's action.
      * @param notIdxPage What do we do if it's not an 'indexpage' command?
      */
-    public IndexPageKn(final LogsLocation logsLoc, final Knowledge notIdxPage) {
-        this.logsLoc = logsLoc;
+    public IndexPageKn(final Knowledge notIdxPage) {
         this.notIdxPage = notIdxPage;
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         if("indexpage".equalsIgnoreCase(com.type())) {
             return new StepsTree(
             	new PageHostedOnGithubCheck(
@@ -67,7 +60,7 @@ public final class IndexPageKn implements Knowledge {
 	                            String.format(
 	                                com.language().response("index.start.comment"),
 	                                com.authorLogin(),
-	                                this.logsLoc.address()
+	                                logs.address()
 	                            )
 	                        ),
 	                        new IndexPage(
@@ -77,7 +70,7 @@ public final class IndexPageKn implements Knowledge {
 	                                        com,
 	                                        String.format(
 	                                            com.language().response("index.finished.comment"),
-	                                            com.authorLogin(), this.logsLoc.address()
+	                                            com.authorLogin(), logs.address()
 	                                        )
 	                                    ),
 	                                    new Follow(new Tweet(new Step.FinalStep()))
@@ -98,10 +91,10 @@ public final class IndexPageKn implements Knowledge {
 	                )
                 ),
                 com,
-                this.logsLoc
+                logs
             );
         }
-        return this.notIdxPage.handle(com);
+        return this.notIdxPage.handle(com, logs);
     }
 
 }

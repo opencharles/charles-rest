@@ -49,9 +49,9 @@ public class ConfusedTestCase {
         Mockito.when(com.authorLogin()).thenReturn("amihaiemil");
         Mockito.when(com.language()).thenReturn(new English());
 
-        final Knowledge confused = new Confused(Mockito.mock(LogsLocation.class));
+        final Knowledge confused = new Confused();
 
-        Steps steps = confused.handle(com);
+        Steps steps = confused.handle(com, Mockito.mock(LogsLocation.class));
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
             steps instanceof StepsTree, Matchers.is(true)

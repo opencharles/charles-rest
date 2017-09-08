@@ -55,10 +55,9 @@ public final class IndexSiteKnTestCase {
         Mockito.when(logs.address()).thenReturn("/path/to/logs");
         
         final Knowledge indexsite = new IndexSiteKn(
-            logs,
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'indexsite' command was misunderstood!"
                     );
@@ -66,7 +65,7 @@ public final class IndexSiteKnTestCase {
             }
         );
 
-        Steps steps = indexsite.handle(com);
+        Steps steps = indexsite.handle(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
@@ -81,10 +80,9 @@ public final class IndexSiteKnTestCase {
         Mockito.when(com.type()).thenReturn("hello");
         
         final Knowledge indexsite = new IndexSiteKn(
-            Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("hello")
@@ -93,6 +91,6 @@ public final class IndexSiteKnTestCase {
                 }
             }
         );
-        indexsite.handle(com);
+        indexsite.handle(com, Mockito.mock(LogsLocation.class));
     }
 }

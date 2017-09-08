@@ -36,17 +36,8 @@ import java.io.IOException;
  */
 public class Confused implements Knowledge {
 
-	/**
-     * Location of the log file.
-     */
-    private LogsLocation logsLoc;
-    
-    public Confused(LogsLocation logsLoc) {
-    	this.logsLoc = logsLoc;
-    }
-	
     @Override
-    public Steps handle(Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         return new StepsTree(
             new SendReply(
 		        new TextReply(
@@ -56,7 +47,7 @@ public class Confused implements Knowledge {
 		                com.authorLogin()
 		            )
 		        ), new Step.FinalStep()
-		    ), com, this.logsLoc
+		    ), com, logs
         );
         		
     }

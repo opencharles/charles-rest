@@ -36,27 +36,20 @@ import java.io.IOException;
 public final class DeleteIndexKn implements Knowledge {
 
     /**
-     * Location of the log file.
-     */
-    private LogsLocation logsLoc;
-
-    /**
      * What do we do if it's not an 'deleteindex' command?
      */
     private Knowledge notDelete;
 
     /**
      * Ctor.
-     * @param logsLoc Location of the log file for the bot's action.
      * @param notDelete What do we do if it's not an 'deleteindex' command?
      */
-    public DeleteIndexKn(final LogsLocation logsLoc, final Knowledge notDelete) {
-        this.logsLoc = logsLoc;
+    public DeleteIndexKn(final Knowledge notDelete) {
         this.notDelete = notDelete;
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         if("deleteindex".equalsIgnoreCase(com.type())) {
             return new StepsTree(
 	            new DeleteIndexCommandCheck(
@@ -69,7 +62,7 @@ public final class DeleteIndexKn implements Knowledge {
 	                                    com,
 	                                    String.format(
 	                                        com.language().response("deleteindex.finished.comment"),
-	                                        com.authorLogin(), com.repo().name(), this.logsLoc.address()
+	                                        com.authorLogin(), com.repo().name(), logs.address()
 	                                    )
 	                                ),
 	                                new Follow(new Tweet(new Step.FinalStep()))
@@ -81,7 +74,7 @@ public final class DeleteIndexKn implements Knowledge {
 	                            com,
 	                            String.format(
 	                                com.language().response("index.missing.comment"),
-	                                com.authorLogin(), this.logsLoc.address()
+	                                com.authorLogin(), logs.address()
 	                            )
 	                        ),
 	                        new Step.FinalStep()
@@ -99,10 +92,10 @@ public final class DeleteIndexKn implements Knowledge {
 	                )
 	            ),
 	            com,
-	            this.logsLoc
+	            logs
 	        );
         }
-        return this.notDelete.handle(com);
+        return this.notDelete.handle(com, logs);
     }
 
 }

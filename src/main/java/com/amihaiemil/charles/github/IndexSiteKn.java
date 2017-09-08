@@ -36,27 +36,20 @@ import java.io.IOException;
 public final class IndexSiteKn implements Knowledge {
 
     /**
-     * Location of the log file.
-     */
-    private LogsLocation logsLoc;
-
-    /**
      * What do we do if it's not an 'indexsite' command?
      */
     private Knowledge notIdxSite;
 
     /**
      * Ctor.
-     * @param logsLoc Location of the log file for the bot's action.
      * @param notIdxSite What do we do if it's not an 'indexsite' command?
      */
-    public IndexSiteKn(final LogsLocation logsLoc, final Knowledge notIdxSite) {
-        this.logsLoc = logsLoc;
+    public IndexSiteKn(final Knowledge notIdxSite) {
         this.notIdxSite = notIdxSite;
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         if("indexsite".equalsIgnoreCase(com.type())) {
             return new StepsTree(
                 new GeneralPreconditionsCheck(
@@ -66,7 +59,7 @@ public final class IndexSiteKn implements Knowledge {
 		                    String.format(
 		                        com.language().response("index.start.comment"),
 		                        com.authorLogin(),
-		                        this.logsLoc.address()
+		                        logs.address()
 		                    )
 		                ),
 		                new IndexSite(
@@ -76,7 +69,7 @@ public final class IndexSiteKn implements Knowledge {
 		                                com,
 		                                String.format(
 		                                    com.language().response("index.finished.comment"),
-		                                    com.authorLogin(), this.logsLoc.address()
+		                                    com.authorLogin(), logs.address()
 		                                )
 		                            ),
 		                            new Follow(new Tweet(new Step.FinalStep()))
@@ -86,10 +79,10 @@ public final class IndexSiteKn implements Knowledge {
 		            )
                 ),
                 com,
-                this.logsLoc
+                logs
             );
         }
-        return this.notIdxSite.handle(com);
+        return this.notIdxSite.handle(com, logs);
     }
 
 }

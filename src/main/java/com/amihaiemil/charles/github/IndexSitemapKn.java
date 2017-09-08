@@ -34,11 +34,6 @@ import java.io.IOException;
  * @since 1.0.1
  */
 public final class IndexSitemapKn implements Knowledge {
-    
-    /**
-     * Location of the log file.
-     */
-    private LogsLocation logsLoc;
 
     /**
      * What do we do if it's not an 'indexsitemap' command?
@@ -47,16 +42,14 @@ public final class IndexSitemapKn implements Knowledge {
 
     /**
      * Ctor.
-     * @param logsLoc Location of the log file for the bot's action.
      * @param notIdxSitemap What do we do if it's not an 'indexpage' command?
      */
-    public IndexSitemapKn(final LogsLocation logsLoc, final Knowledge notIdxSitemap) {
-        this.logsLoc = logsLoc;
+    public IndexSitemapKn(final Knowledge notIdxSitemap) {
         this.notIdxSitemap = notIdxSitemap;
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         if("indexsitemap".equalsIgnoreCase(com.type())) {
             return new StepsTree(
             	new PageHostedOnGithubCheck(
@@ -66,7 +59,7 @@ public final class IndexSitemapKn implements Knowledge {
 	                            com,
 	                            String.format(
 	                                com.language().response("index.start.comment"),
-	                                com.authorLogin(), this.logsLoc.address()
+	                                com.authorLogin(), logs.address()
 	                            )
 	                        ),
 	                        new IndexSitemap(
@@ -76,7 +69,7 @@ public final class IndexSitemapKn implements Knowledge {
 	                                        com,
 	                                        String.format(
 	                                            com.language().response("index.finished.comment"),
-	                                            com.authorLogin(), this.logsLoc.address()
+	                                            com.authorLogin(), logs.address()
 	                                        )
 	                                    ),
 	                                    new Follow(new Tweet(new Step.FinalStep()))
@@ -97,9 +90,9 @@ public final class IndexSitemapKn implements Knowledge {
 	                )
                 ),
                 com,
-                this.logsLoc
+                logs
             );
         }
-        return this.notIdxSitemap.handle(com);
+        return this.notIdxSitemap.handle(com, logs);
     }
 }

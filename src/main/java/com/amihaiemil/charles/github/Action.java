@@ -89,28 +89,21 @@ public class Action {
             final Knowledge knowledge = new Conversation(
                 new Hello(
                     new IndexSiteKn(
-                        this.logs,
                         new IndexSitemapKn(
-                            this.logs,
                             new IndexPageKn(
-                                this.logs,
                                 new DeleteIndexKn(
-                                    this.logs,
                                     new DeletePageKn(
-                                        this.logs,
-                                        new Confused(this.logs)
+                                        new Confused()
                                     )
                                 )
                             )
                         )
-                    ),
-                    this.logs
+                    )
                 )
             );
             final Steps steps = knowledge.handle(
-                new ValidCommand(
-                    new LastComment(this.issue)
-                )
+                new ValidCommand(new LastComment(this.issue)),
+                this.logs
             );
             steps.perform(this.logger);
         } catch (final IllegalArgumentException e) {

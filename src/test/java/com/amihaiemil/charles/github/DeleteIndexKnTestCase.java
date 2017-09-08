@@ -26,6 +26,7 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
+
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -57,10 +58,9 @@ public final class DeleteIndexKnTestCase {
         Mockito.when(logs.address()).thenReturn("/path/to/logs");
         
         final Knowledge deleteindex = new DeleteIndexKn(
-            logs,
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'deleteindex' command was misunderstood!"
                     );
@@ -68,7 +68,7 @@ public final class DeleteIndexKnTestCase {
             }
         );
 
-        Steps steps = deleteindex.handle(com);
+        Steps steps = deleteindex.handle(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
@@ -83,10 +83,9 @@ public final class DeleteIndexKnTestCase {
         Mockito.when(com.type()).thenReturn("indexsite");
         
         final Knowledge deleteindex = new DeleteIndexKn(
-            Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("indexsite")
@@ -95,6 +94,6 @@ public final class DeleteIndexKnTestCase {
                 }
             }
         );
-        deleteindex.handle(com);
+        deleteindex.handle(com, Mockito.mock(LogsLocation.class));
     }
 }

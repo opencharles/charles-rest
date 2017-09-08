@@ -39,20 +39,17 @@ public final class Hello implements Knowledge {
      * What do we do if it's not a 'hello' command?
      */
     private Knowledge notHello;
-
-    private LogsLocation logsLoc;
     
     /**
      * Ctor.
      * @param notHello What do we do if it's not a 'hello' command?
      */
-    public Hello(final Knowledge notHello, final LogsLocation logs) {
+    public Hello(final Knowledge notHello) {
         this.notHello = notHello;
-        this.logsLoc = logs;
     }
 
     @Override
-    public Steps handle(final Command com) throws IOException {
+    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
         if("hello".equalsIgnoreCase(com.type())) {
             String hello = String.format(
                 com.language().response("hello.comment"),
@@ -64,9 +61,9 @@ public final class Hello implements Knowledge {
                     new Follow(new Step.FinalStep())
                 ),
                 com,
-                this.logsLoc
+                logs
             );
         }
-        return this.notHello.handle(com);
+        return this.notHello.handle(com, logs);
     }
 }

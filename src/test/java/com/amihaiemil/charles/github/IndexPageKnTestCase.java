@@ -55,10 +55,9 @@ public final class IndexPageKnTestCase {
         Mockito.when(logs.address()).thenReturn("/path/to/logs");
         
         final Knowledge indexpage = new IndexPageKn(
-            logs,
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'indexpage' command was misunderstood!"
                     );
@@ -66,7 +65,7 @@ public final class IndexPageKnTestCase {
             }
         );
 
-        Steps steps = indexpage.handle(com);
+        Steps steps = indexpage.handle(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
             steps instanceof StepsTree, Matchers.is(true)
@@ -83,10 +82,9 @@ public final class IndexPageKnTestCase {
         Mockito.when(com.type()).thenReturn("sitemap");
         
         final Knowledge indexpage = new IndexPageKn(
-            Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com) throws IOException {
+                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("sitemap")
@@ -95,6 +93,6 @@ public final class IndexPageKnTestCase {
                 }
             }
         );
-        indexpage.handle(com);
+        indexpage.handle(com, Mockito.mock(LogsLocation.class));
     }
 }
