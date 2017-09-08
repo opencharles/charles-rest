@@ -55,9 +55,7 @@ Once deployed, it exposes the endpoint ``POST /api/notifications`` which accepts
 ]
 ```
 As it is clear, a **pipeline** between [Github Notifications API](https://developer.github.com/v3/activity/notifications/#list-your-notifications) and this endpoint is needed. You can setup one of your own (respecting the
-above mentioned interface) or use
-[this](https://github.com/opencharles/mention-notifications-ejb) ``ejb .jar``.
-
+above mentioned interface) or use [this](https://github.com/opencharles/mention-notifications-ejb) ``ejb .jar``. You can also set a [webhook](http://charles.amihaiemil.com/webhook.html) (do not forget to modify the endpoint so that it points to your domain).
 
 You will need to set the following system properties. **Pay a lot of attention while configuring these, since everything relies on them**.
 
