@@ -26,73 +26,75 @@
 package com.amihaiemil.charles.github;
 
 import java.io.IOException;
-
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Unit tests for {@link IndexSiteKn}
+ * Unit tests for {@link DeleteIndexKn}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.1
+ * @since 1.0.2
  */
-public final class IndexSiteKnTestCase {
+public final class DeleteIndexKnTestCase {
 
     /**
-     * IndexSiteKn can handle an 'indexsite' command.
+     * DeleteIndexKn can handle an 'deleteindex' command.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void handlesIndexSiteCommand() throws Exception {
+    public void handlesDeleteIndexCommand() throws Exception {
         final Command com = Mockito.mock(Command.class);
-        Mockito.when(com.type()).thenReturn("indexsite");
+        Mockito.when(com.type()).thenReturn("deleteindex");
         Mockito.when(com.authorLogin()).thenReturn("amihaiemil");
         Mockito.when(com.language()).thenReturn(new English());
+        final CachedRepo repo = Mockito.mock(CachedRepo.class);
+        Mockito.when(repo.name()).thenReturn("testRepo");
+        Mockito.when(com.repo()).thenReturn(repo);
 
         final LogsLocation logs = Mockito.mock(LogsLocation.class);
         Mockito.when(logs.address()).thenReturn("/path/to/logs");
         
-        final Knowledge indexsite = new IndexSiteKn(
+        final Knowledge deleteindex = new DeleteIndexKn(
             logs,
             new Knowledge() {
                 @Override
                 public Steps handle(final Command com) throws IOException {
                     throw new IllegalStateException(
-                        "'indexsite' command was misunderstood!"
+                        "'deleteindex' command was misunderstood!"
                     );
                 }
             }
         );
 
-        Steps steps = indexsite.handle(com);
+        Steps steps = deleteindex.handle(com);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
     
     /**
-     * IndexSiteKn can handle a command which is not 'indexsite'.
+     * DeleteIndexKn can handle a command which is not 'deleteindex'.
      * @throws Exception If something goes wrong.
      */
     @Test
-    public void handlesNotIndexSiteCommand() throws Exception {
+    public void handlesNotDeleteIndexCommand() throws Exception {
         final Command com = Mockito.mock(Command.class);
-        Mockito.when(com.type()).thenReturn("hello");
+        Mockito.when(com.type()).thenReturn("indexsite");
         
-        final Knowledge indexsite = new IndexSiteKn(
+        final Knowledge deleteindex = new DeleteIndexKn(
             Mockito.mock(LogsLocation.class),
             new Knowledge() {
                 @Override
                 public Steps handle(final Command com) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
-                        Matchers.equalTo("hello")
+                        Matchers.equalTo("indexsite")
                     );
                     return null;
                 }
             }
         );
-        indexsite.handle(com);
+        deleteindex.handle(com);
     }
 }

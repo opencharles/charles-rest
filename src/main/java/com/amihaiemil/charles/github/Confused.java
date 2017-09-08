@@ -56,7 +56,7 @@ public class Confused implements Knowledge {
 		                com.authorLogin()
 		            )
 		        ), new Step.FinalStep()
-		    ), com, this.logsLoc//TODO #246:30min LogsLocation should be passed down as method param of Knowledge.handle()
+		    ), com, this.logsLoc
         );
         		
     }
