@@ -46,10 +46,10 @@ import com.jcabi.github.Issue;
  */
 public class Action {
 
-	/**
-	 * This action's logger. Each action has its own logger
-	 * so any action is logged separately in its own log file.
-	 */
+    /**
+     * This action's logger. Each action has its own logger
+     * so any action is logged separately in its own log file.
+     */
     private Logger logger;
 
     /**
@@ -96,11 +96,15 @@ public class Action {
                                 this.logs,
                                 new DeleteIndexKn(
                                     this.logs,
-                                    new Confused(this.logs)
+                                    new DeletePageKn(
+                                        this.logs,
+                                        new Confused(this.logs)
+                                    )
                                 )
                             )
                         )
-                    ), this.logs
+                    ),
+                    this.logs
                 )
             );
             final Steps steps = knowledge.handle(
@@ -112,11 +116,11 @@ public class Action {
         } catch (final IllegalArgumentException e) {
             this.logger.warn("No command found in the issue or the agent has already replied to the last command!");
         } catch (final IOException e) {
-        	this.logger.error("Action failed entirely with exception: ",  e);
-        	try {
-        		new ErrorReply(logs.address(), this.issue).send();
+            this.logger.error("Action failed entirely with exception: ",  e);
+            try {
+                new ErrorReply(logs.address(), this.issue).send();
             } catch (IOException errReplyEx) {
-            	this.logger.error("FAILED TO SEND ERROR-REPLY!", errReplyEx);
+                this.logger.error("FAILED TO SEND ERROR-REPLY!", errReplyEx);
             }
         }
     }
