@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 public final class IndexSiteKnTestCase {
 
     /**
-     * IndexSiteKn can handle an 'indexsite' command.
+     * IndexSiteKn can start an 'indexsite' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -57,7 +57,7 @@ public final class IndexSiteKnTestCase {
         final Knowledge indexsite = new IndexSiteKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'indexsite' command was misunderstood!"
                     );
@@ -65,13 +65,13 @@ public final class IndexSiteKnTestCase {
             }
         );
 
-        Steps steps = indexsite.handle(com, logs);
+        Steps steps = indexsite.start(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
     
     /**
-     * IndexSiteKn can handle a command which is not 'indexsite'.
+     * IndexSiteKn can start a command which is not 'indexsite'.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -82,7 +82,7 @@ public final class IndexSiteKnTestCase {
         final Knowledge indexsite = new IndexSiteKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("hello")
@@ -91,6 +91,6 @@ public final class IndexSiteKnTestCase {
                 }
             }
         );
-        indexsite.handle(com, Mockito.mock(LogsLocation.class));
+        indexsite.start(com, Mockito.mock(LogsLocation.class));
     }
 }

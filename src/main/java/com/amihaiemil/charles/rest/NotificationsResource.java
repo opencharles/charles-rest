@@ -190,7 +190,7 @@ public class NotificationsResource {
                         )
                     );
                 }
-                LOG.info("Started " + notifications.size() + " actions, to handle each notification!");
+                LOG.info("Started " + notifications.size() + " actions, to start each notification!");
                 return true;
             } catch (IOException ex) {
                 LOG.error("IOException while getting the Issue from Github API");

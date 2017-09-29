@@ -45,7 +45,7 @@ First, the bot puts together all its knowledges, then it uses them to find the p
 the bot didn't manage to categorize the command and it will leave a Github reply informing the commander about the sitiuation:
 
 ```java
-    final Knowledge knowledge = new Conversation(      //it has a conversation based on a command
+    final Conversation talk = new Conversation(      //it has a conversation based on a command
         new Hello(                                     //it can say hello
             new IndexSiteKn(                           //it can index a whole website
                 new IndexSitemapKn(                    //it can index a site following a sitemap
@@ -60,6 +60,7 @@ the bot didn't manage to categorize the command and it will leave a Github reply
             )
         )
     );
+    talk.start(...);
 ```
 
 

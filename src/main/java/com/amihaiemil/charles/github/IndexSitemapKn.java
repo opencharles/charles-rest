@@ -49,7 +49,7 @@ public final class IndexSitemapKn implements Knowledge {
     }
 
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         if("indexsitemap".equalsIgnoreCase(com.type())) {
             return new StepsTree(
             	new PageHostedOnGithubCheck(
@@ -93,6 +93,6 @@ public final class IndexSitemapKn implements Knowledge {
                 logs
             );
         }
-        return this.notIdxSitemap.handle(com, logs);
+        return this.notIdxSitemap.start(com, logs);
     }
 }

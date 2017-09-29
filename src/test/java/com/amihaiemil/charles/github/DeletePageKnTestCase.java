@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 public class DeletePageKnTestCase {
 
     /**
-     * DeletePageKnTestCase can handle an 'deletepage' command.
+     * DeletePageKnTestCase can start an 'deletepage' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -57,7 +57,7 @@ public class DeletePageKnTestCase {
         final Knowledge deletepage = new DeletePageKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'deletepage' command was misunderstood!"
                     );
@@ -65,13 +65,13 @@ public class DeletePageKnTestCase {
             }
         );
 
-        Steps steps = deletepage.handle(com, logs);
+        Steps steps = deletepage.start(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
     
     /**
-     * DeletePageKnTestCase can handle a command which is not 'deletepage'.
+     * DeletePageKnTestCase can start a command which is not 'deletepage'.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -82,7 +82,7 @@ public class DeletePageKnTestCase {
         final Knowledge deletepage = new DeletePageKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("indexsite")
@@ -91,6 +91,6 @@ public class DeletePageKnTestCase {
                 }
             }
         );
-        deletepage.handle(com, Mockito.mock(LogsLocation.class));
+        deletepage.start(com, Mockito.mock(LogsLocation.class));
     }
 }

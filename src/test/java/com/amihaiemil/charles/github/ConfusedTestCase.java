@@ -39,7 +39,7 @@ import org.mockito.Mockito;
 public class ConfusedTestCase {
     
     /**
-     * Confused can handle an 'unknown' command.
+     * Confused can start an 'unknown' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -51,7 +51,7 @@ public class ConfusedTestCase {
 
         final Knowledge confused = new Confused();
 
-        Steps steps = confused.handle(com, Mockito.mock(LogsLocation.class));
+        Steps steps = confused.start(com, Mockito.mock(LogsLocation.class));
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
             steps instanceof StepsTree, Matchers.is(true)

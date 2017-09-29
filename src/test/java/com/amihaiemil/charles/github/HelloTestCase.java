@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 public final class HelloTestCase {
 
     /**
-     * Hello can handle a 'hello' command.
+     * Hello can start a 'hello' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -54,7 +54,7 @@ public final class HelloTestCase {
         final Knowledge hello = new Hello(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'hello' command was misunderstood!"
                     );
@@ -62,7 +62,7 @@ public final class HelloTestCase {
             }
         );
 
-        Steps steps = hello.handle(com, Mockito.mock(LogsLocation.class));
+        Steps steps = hello.start(com, Mockito.mock(LogsLocation.class));
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
             steps instanceof StepsTree, Matchers.is(true)
@@ -71,7 +71,7 @@ public final class HelloTestCase {
     }
 
     /**
-     * Hello can handle a command which is not 'hello'.
+     * Hello can start a command which is not 'hello'.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -81,7 +81,7 @@ public final class HelloTestCase {
         final Knowledge hello = new Hello(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("indexsite")
@@ -90,6 +90,6 @@ public final class HelloTestCase {
                 }
             }
         );
-        hello.handle(com, Mockito.mock(LogsLocation.class));
+        hello.start(com, Mockito.mock(LogsLocation.class));
     }
 }

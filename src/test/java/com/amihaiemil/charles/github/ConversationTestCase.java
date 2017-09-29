@@ -58,7 +58,7 @@ public final class ConversationTestCase {
         final Knowledge conversation = new Conversation(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("yes")
@@ -67,7 +67,7 @@ public final class ConversationTestCase {
                 }
             }, english, french
         );
-        conversation.handle(com, Mockito.mock(LogsLocation.class));
+        conversation.start(com, Mockito.mock(LogsLocation.class));
     }
 
     /**
@@ -88,7 +88,7 @@ public final class ConversationTestCase {
         final Knowledge conversation = new Conversation(
                 new Knowledge() {
                     @Override
-                    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                    public Steps start(final Command com, final LogsLocation logs) throws IOException {
                         MatcherAssert.assertThat(
                                 com.type(),
                                 Matchers.equalTo("oui")
@@ -97,7 +97,7 @@ public final class ConversationTestCase {
                     }
                 }, english, french
         );
-        conversation.handle(com, Mockito.mock(LogsLocation.class));
+        conversation.start(com, Mockito.mock(LogsLocation.class));
     }
 
     /**
@@ -116,7 +116,7 @@ public final class ConversationTestCase {
         final Knowledge conversation = new Conversation(
                 new Knowledge() {
                     @Override
-                    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                    public Steps start(final Command com, final LogsLocation logs) throws IOException {
                         MatcherAssert.assertThat(
                                 com.type(),
                                 Matchers.equalTo("unknown")
@@ -125,6 +125,6 @@ public final class ConversationTestCase {
                     }
                 }, english
         );
-        conversation.handle(com, Mockito.mock(LogsLocation.class));
+        conversation.start(com, Mockito.mock(LogsLocation.class));
     }
 }

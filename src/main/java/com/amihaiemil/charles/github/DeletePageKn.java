@@ -49,7 +49,7 @@ public final class DeletePageKn implements Knowledge {
     }
     
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         if("deletepage".equalsIgnoreCase(com.type())) {
             return new StepsTree(
                 new IndexExistsCheck(
@@ -83,7 +83,7 @@ public final class DeletePageKn implements Knowledge {
                 logs
             );
         }
-        return this.notDeletePage.handle(com, logs);
+        return this.notDeletePage.start(com, logs);
     }
 
 }

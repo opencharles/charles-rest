@@ -49,7 +49,7 @@ public final class IndexPageKn implements Knowledge {
     }
 
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         if("indexpage".equalsIgnoreCase(com.type())) {
             return new StepsTree(
             	new PageHostedOnGithubCheck(
@@ -94,7 +94,7 @@ public final class IndexPageKn implements Knowledge {
                 logs
             );
         }
-        return this.notIdxPage.handle(com, logs);
+        return this.notIdxPage.start(com, logs);
     }
 
 }

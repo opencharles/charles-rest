@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 public final class DeleteIndexKnTestCase {
 
     /**
-     * DeleteIndexKn can handle an 'deleteindex' command.
+     * DeleteIndexKn can start an 'deleteindex' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -60,7 +60,7 @@ public final class DeleteIndexKnTestCase {
         final Knowledge deleteindex = new DeleteIndexKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'deleteindex' command was misunderstood!"
                     );
@@ -68,13 +68,13 @@ public final class DeleteIndexKnTestCase {
             }
         );
 
-        Steps steps = deleteindex.handle(com, logs);
+        Steps steps = deleteindex.start(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(steps instanceof StepsTree, Matchers.is(true));
     }
     
     /**
-     * DeleteIndexKn can handle a command which is not 'deleteindex'.
+     * DeleteIndexKn can start a command which is not 'deleteindex'.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -85,7 +85,7 @@ public final class DeleteIndexKnTestCase {
         final Knowledge deleteindex = new DeleteIndexKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("indexsite")
@@ -94,6 +94,6 @@ public final class DeleteIndexKnTestCase {
                 }
             }
         );
-        deleteindex.handle(com, Mockito.mock(LogsLocation.class));
+        deleteindex.start(com, Mockito.mock(LogsLocation.class));
     }
 }

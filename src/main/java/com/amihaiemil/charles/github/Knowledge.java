@@ -36,12 +36,12 @@ import java.io.IOException;
 public interface Knowledge {
     
     /**
-     * Handle the command somehow.
+     * Start handling the command somehow.
      * @param com Given command.
      * @param logs Location of the log file.
      * @return Steps to fulfill the command.
      * @throws IOException If there's an IO problem,
      *  like comunicating with the Github API.
      */
-    Steps handle(final Command com, final LogsLocation logs) throws IOException;
+    Steps start(final Command com, final LogsLocation logs) throws IOException;
 }

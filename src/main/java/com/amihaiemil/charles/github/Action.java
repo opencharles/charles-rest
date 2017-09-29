@@ -70,7 +70,6 @@ public class Action {
     /**
      * Constructor.
      * @param issue - The Github issue where the agent was mentioned.
-     * @param agentLogin - the Github agent's login (which is the same for all actions), to save http calls.
      * @throws IOException If the file appender cannot be instantiated.
      */
     public Action(Issue issue) throws IOException {
@@ -86,7 +85,7 @@ public class Action {
     public void perform() {
         try {
             this.logger.info("Started action " + this.id);
-            final Knowledge knowledge = new Conversation(
+            final Conversation talk = new Conversation(
                 new Hello(
                     new IndexSiteKn(
                         new IndexSitemapKn(
@@ -101,7 +100,7 @@ public class Action {
                     )
                 )
             );
-            final Steps steps = knowledge.handle(
+            final Steps steps = talk.start(
                 new ValidCommand(new LastComment(this.issue)),
                 this.logs
             );

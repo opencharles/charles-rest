@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 public final class IndexPageKnTestCase {
 
     /**
-     * IndexPageKn can handle an 'indexpage' command.
+     * IndexPageKn can start an 'indexpage' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -57,7 +57,7 @@ public final class IndexPageKnTestCase {
         final Knowledge indexpage = new IndexPageKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'indexpage' command was misunderstood!"
                     );
@@ -65,7 +65,7 @@ public final class IndexPageKnTestCase {
             }
         );
 
-        Steps steps = indexpage.handle(com, logs);
+        Steps steps = indexpage.start(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
             steps instanceof StepsTree, Matchers.is(true)
@@ -73,7 +73,7 @@ public final class IndexPageKnTestCase {
     }
     
     /**
-     * IndexPageKn can handle a command which is not 'indexsite'.
+     * IndexPageKn can start a command which is not 'indexsite'.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -84,7 +84,7 @@ public final class IndexPageKnTestCase {
         final Knowledge indexpage = new IndexPageKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("sitemap")
@@ -93,6 +93,6 @@ public final class IndexPageKnTestCase {
                 }
             }
         );
-        indexpage.handle(com, Mockito.mock(LogsLocation.class));
+        indexpage.start(com, Mockito.mock(LogsLocation.class));
     }
 }

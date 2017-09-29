@@ -49,7 +49,7 @@ public final class Hello implements Knowledge {
     }
 
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         if("hello".equalsIgnoreCase(com.type())) {
             String hello = String.format(
                 com.language().response("hello.comment"),
@@ -64,6 +64,6 @@ public final class Hello implements Knowledge {
                 logs
             );
         }
-        return this.notHello.handle(com, logs);
+        return this.notHello.start(com, logs);
     }
 }

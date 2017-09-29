@@ -41,7 +41,7 @@ import org.mockito.Mockito;
 public final class IndexSitemapKnTestCase {
 
     /**
-     * IndexSitemapKn can handle an 'indexsitemap' command.
+     * IndexSitemapKn can start an 'indexsitemap' command.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -57,7 +57,7 @@ public final class IndexSitemapKnTestCase {
         final Knowledge indexsitemap = new IndexSitemapKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     throw new IllegalStateException(
                         "'indexsitemap' command was misunderstood!"
                     );
@@ -65,7 +65,7 @@ public final class IndexSitemapKnTestCase {
             }
         );
 
-        Steps steps = indexsitemap.handle(com, logs);
+        Steps steps = indexsitemap.start(com, logs);
         MatcherAssert.assertThat(steps, Matchers.notNullValue());
         MatcherAssert.assertThat(
             steps instanceof StepsTree, Matchers.is(true)
@@ -73,7 +73,7 @@ public final class IndexSitemapKnTestCase {
     }
     
     /**
-     * IndexSitemapKn can handle a command which is not 'indexsitemap'.
+     * IndexSitemapKn can start a command which is not 'indexsitemap'.
      * @throws Exception If something goes wrong.
      */
     @Test
@@ -84,7 +84,7 @@ public final class IndexSitemapKnTestCase {
         final Knowledge indexsitemap = new IndexSitemapKn(
             new Knowledge() {
                 @Override
-                public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+                public Steps start(final Command com, final LogsLocation logs) throws IOException {
                     MatcherAssert.assertThat(
                         com.type(),
                         Matchers.equalTo("unknwon")
@@ -93,6 +93,6 @@ public final class IndexSitemapKnTestCase {
                 }
             }
         );
-        indexsitemap.handle(com, Mockito.mock(LogsLocation.class));
+        indexsitemap.start(com, Mockito.mock(LogsLocation.class));
     }
 }

@@ -49,7 +49,7 @@ public final class IndexSiteKn implements Knowledge {
     }
 
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         if("indexsite".equalsIgnoreCase(com.type())) {
             return new StepsTree(
                 new GeneralPreconditionsCheck(
@@ -82,7 +82,7 @@ public final class IndexSiteKn implements Knowledge {
                 logs
             );
         }
-        return this.notIdxSite.handle(com, logs);
+        return this.notIdxSite.start(com, logs);
     }
 
 }

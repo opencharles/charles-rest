@@ -49,7 +49,7 @@ public final class DeleteIndexKn implements Knowledge {
     }
 
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         if("deleteindex".equalsIgnoreCase(com.type())) {
             return new StepsTree(
 	            new DeleteIndexCommandCheck(
@@ -95,7 +95,7 @@ public final class DeleteIndexKn implements Knowledge {
 	            logs
 	        );
         }
-        return this.notDelete.handle(com, logs);
+        return this.notDelete.start(com, logs);
     }
 
 }

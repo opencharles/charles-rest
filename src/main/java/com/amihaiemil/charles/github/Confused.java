@@ -37,7 +37,7 @@ import java.io.IOException;
 public class Confused implements Knowledge {
 
     @Override
-    public Steps handle(final Command com, final LogsLocation logs) throws IOException {
+    public Steps start(final Command com, final LogsLocation logs) throws IOException {
         return new StepsTree(
             new SendReply(
 		        new TextReply(
