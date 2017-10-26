@@ -27,8 +27,6 @@ package com.amihaiemil.charles.rest;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
@@ -46,9 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amihaiemil.charles.github.Action;
-import com.amihaiemil.charles.github.Notification;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.amihaiemil.charles.rest.model.Notification;
+import com.amihaiemil.charles.rest.model.Notifications;
+import com.amihaiemil.charles.rest.model.SimplifiedNotifications;
+import com.amihaiemil.charles.rest.model.WebhookNotifications;
 import com.jcabi.github.Coordinates;
 import com.jcabi.github.Github;
 import com.jcabi.github.RtGithub;
@@ -100,29 +99,23 @@ public class NotificationsResource {
     @POST
     @Path("notifications")
     public Response postNotifications(String notifications) {
-        try {
-            String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-            if(token == null || token.isEmpty()) {
-                return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
-            } else {
-                String key = System.getProperty("github.auth.token");
-                if(token.equals(key)) {
-                    ObjectMapper mapper = new ObjectMapper();
-                    List<Notification> parsedNotifications = mapper.readValue(notifications, new TypeReference<List<Notification>>(){});
-                    boolean startedHandling = this.handleNotifications(parsedNotifications);
-                    if(startedHandling) {
-                        return Response.ok().build();
-                    }
-                } else {
-                    if(key == null || key.isEmpty()) {
-                        LOG.error("Missing token charles.rest.token (system property)! Please specify it!");
-                    }
-                    return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+        final String token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if(token == null || token.isEmpty()) {
+            return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+        } else {
+            final String key = System.getProperty("github.auth.token");
+            if(token.equals(key)) {
+                final boolean startedHandling = this.handleNotifications(new SimplifiedNotifications(notifications));
+                if(startedHandling) {
+                    return Response.ok().build();
                 }
-             }
-        } catch (IOException ex) {
-            LOG.error("Exception when parsing Json notifications!", ex);
-        }
+            } else {
+                if(key == null || key.isEmpty()) {
+                    LOG.error("Missing token charles.rest.token (system property)! Please specify it!");
+                }
+                return Response.status(HttpURLConnection.HTTP_FORBIDDEN).build();
+            }
+         }
         return Response.serverError().build();
     }
 
@@ -135,7 +128,7 @@ public class NotificationsResource {
     @POST
     @Path("/github/issuecomment")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response webhook(JsonObject issueComment) {
+    public Response webhook(final JsonObject issueComment) {
         final String event = this.request.getHeader("X-Github-Event");
         String userAgent = this.request.getHeader("User-Agent");
         if(userAgent == null) {
@@ -146,16 +139,9 @@ public class NotificationsResource {
                 return Response.ok().build();
             }
             if("issue_comment".equalsIgnoreCase(event)) {
-                Notification notification = new Notification();
-                notification.setIssueNumber(
-                    issueComment.getJsonObject("issue").getInt("number")
+                boolean startedHandling = this.handleNotifications(
+                    new WebhookNotifications(issueComment)
                 );
-                notification.setRepoFullName(
-                    issueComment.getJsonObject("repository").getString("full_name")
-                );
-                List<Notification> notifications = new ArrayList<>();
-                notifications.add(notification);
-                boolean startedHandling = this.handleNotifications(notifications);
                 if(startedHandling) {
                     return Response.ok().build();
                 }
@@ -169,7 +155,7 @@ public class NotificationsResource {
      * @param notifications List of notifications.
      * @return true if actions were started successfully; false otherwise.
      */
-    private boolean handleNotifications(List<Notification> notifications) {
+    private boolean handleNotifications(final Notifications notifications) {
         String authToken = System.getProperty("github.auth.token");
         if(authToken == null || authToken.isEmpty()) {
             LOG.error("Missing github.auth.token. Please specify a Github api access token!");
@@ -181,16 +167,15 @@ public class NotificationsResource {
                 ).entry().through(RetryWire.class)
             );
             try {
-                for(Notification notification : notifications) {
+                for(final Notification notification : notifications) {
                     this.take(
                         new Action(
                             gh.repos().get(
-                                new Coordinates.Simple(notification.getRepoFullName())
-                            ).issues().get(notification.getIssueNumber())
+                                new Coordinates.Simple(notification.repoFullName())
+                            ).issues().get(notification.issueNumber())
                         )
                     );
                 }
-                LOG.info("Started " + notifications.size() + " actions, to start each notification!");
                 return true;
             } catch (IOException ex) {
                 LOG.error("IOException while getting the Issue from Github API");

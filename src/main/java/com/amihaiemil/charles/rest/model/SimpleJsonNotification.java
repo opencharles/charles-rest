@@ -23,31 +23,40 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  */
+package com.amihaiemil.charles.rest.model;
 
-package com.amihaiemil.charles.github;
+import javax.json.JsonObject;
 
 /**
- * Model for a JSON simplified notification.
+ * Simplified Github notifications in Json format.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.0.2
  *
  */
-public class Notification {
-    private String repoFullName;
-    private int issueNumber;
-    public String getRepoFullName() {
-        return repoFullName;
-    }
-    public void setRepoFullName(String repoFullName) {
-        this.repoFullName = repoFullName;
-    }
-    public int getIssueNumber() {
-        return issueNumber;
-    }
-    public void setIssueNumber(int issueNumber) {
-        this.issueNumber = issueNumber;
+public final class SimpleJsonNotification implements Notification {
+
+    /**
+     * Notification in json format.
+     */
+    private JsonObject json;
+    
+    /**
+     * Ctor.
+     * @param json Notification as json.
+     */
+    public SimpleJsonNotification(final JsonObject json) {
+        this.json = json;
     }
     
-    
+    @Override
+    public String repoFullName() {
+        return this.json.getString("repoFullName");
+    }
+
+    @Override
+    public int issueNumber() {
+        return this.json.getInt("issueNumber");
+    }
+
 }
