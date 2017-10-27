@@ -39,14 +39,14 @@ import javax.json.JsonValue;
  *
  */
 public final class SimplifiedNotifications extends Notifications {
-	/**
-	 * Ctor.
-	 * @param all All notifications as String.
-	 */
-	public SimplifiedNotifications(final String all) {
-		final JsonArray array = Json.createReader(new StringReader(all)).readArray();
-		for(final JsonValue json : array) {
-			super.notifications.add(new SimpleJsonNotification((JsonObject) json));
-		}
-	}
+    /**
+     * Ctor.
+     * @param all All notifications as String.
+     */
+    public SimplifiedNotifications(final String all) {
+        final JsonArray array = Json.createReader(new StringReader(all)).readArray();
+        for(final JsonValue json : array) {
+            super.notifications.add(new SimpleJsonNotification((JsonObject) json));
+        }
+    }
 }

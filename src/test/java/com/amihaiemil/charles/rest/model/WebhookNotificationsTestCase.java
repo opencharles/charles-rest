@@ -25,28 +25,65 @@
  */
 package com.amihaiemil.charles.rest.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import javax.json.Json;
+import javax.json.JsonObject;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
+import org.junit.Test;
 
 /**
- * Github notifications to act upon.
- * The bot can act upon more notifications at the same time.
+ * Unit tests for {@link WebhookNotifications}
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.2
  *
  */
-public abstract class Notifications implements Iterable<Notification>{
+@SuppressWarnings("unused")
+public final class WebhookNotificationsTestCase {
 
     /**
-     * All of them.
+     * WebhookNotifications can iterate over all of them.
      */
-    protected final List<Notification> notifications = new ArrayList<>();
-    
-    @Override
-    public Iterator<Notification> iterator() {
-        return this.notifications.iterator();
+    @Test
+    public void iteratesOverAll() {
+        final Notifications notifs = new WebhookNotifications(
+            Json.createObjectBuilder().build(),
+            Json.createObjectBuilder().build(),
+            Json.createObjectBuilder().build(),
+            Json.createObjectBuilder().build()
+        );
+        int size = 0;
+        for(final Notification n : notifs) {
+            size++; 
+        }
+        MatcherAssert.assertThat(size, Matchers.is(4));
     }
 
+    /**
+     * WebhookNotifications can iterate over a single notification.
+     */
+    @Test
+    public void iteratesOverOne() {
+        final Notifications notifs = new WebhookNotifications(
+            Json.createObjectBuilder().build()
+        );
+        int size = 0;
+        for(final Notification n : notifs) {
+            size++; 
+        }
+        MatcherAssert.assertThat(size, Matchers.is(1));
+    }
+
+    /**
+     * WebhookNotifications can iterate over no notification (it is empty).
+     */
+    @Test
+    public void iteratesOverNone() {
+        final Notifications notifs = new WebhookNotifications(new JsonObject[]{});
+        int size = 0;
+        for(final Notification n : notifs) {
+            size++; 
+        }
+        MatcherAssert.assertThat(size, Matchers.is(0));
+    }
 }
