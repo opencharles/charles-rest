@@ -32,7 +32,8 @@
   <section class="content">
       <h3>Data Policy</h3>
       <p>
-        This document's purpose is to describe what kind of data we gather and how we handle it.
+        This document's purpose is to describe what kind of data we gather and how we handle it. Please also consult the <a href="terms.html">terms and conditions</a>.</p>
+      <p>
         It is important to mention that we do not try to gather any sensitive information
         or private content of any kind.
       </p>
@@ -44,20 +45,20 @@
           <br/>
               <li>
               The Service's clear scope is to index and make searchable data and content that is already public and accessible on a website. <b>All the data published on the crawled website will be
-            indexed and made searchable</b> via a REST endpoint. If you do not want some content to be searchable, then it should not be published on the crawled website.
+            indexed and made searchable</b> via an HTTP endpoint. If some data should not become searchable, it should not be published on the crawled website.
             </li>
           <br/>
           <li>
-              No index action is ever triggered without the User's command. No action is scheduled or repeated even if it fails.
+              No crawl/index action is ever triggered without the User's command. No action is scheduled or repeated even if it fails.
           </li>
           <br/>
           <li>
               All the crawled content is sent to Elasticsearch in the AWS cloud.
-            We do not store in any other way. <b>The Content is not altered in any way, it is fetched and indexed as-is.</b>
+            We do not store the crawled content in any other way. <b>The content is not altered in any way, it is fetched and indexed as-is.</b>
           </li>
           <br/>
           <li>
-              <b>We do not sell your data to anyone</b>, although it might be accessible to anyone through the search endpoint (again, this data is supposed to be public anyway, on your website!)
+              <b>We do not sell the indexed data to anyone</b>, although it will be accessible to anyone through the search endpoint (again, this data is supposed to be public anyway, on the crawled website).
           </li>
           <br/>
         </ul>
