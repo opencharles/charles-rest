@@ -234,11 +234,6 @@
 			<artifactId>jcabi-github</artifactId>
 			<version>0.28</version>
 		</dependency>
-		<dependency><!-- Client for the Twitter API -->
-			<groupId>org.twitter4j</groupId>
-			<artifactId>twitter4j-core</artifactId>
-			<version>4.0.6</version>
-		</dependency>
 		<dependency><!-- Email client -->
 			<groupId>com.jcabi</groupId>
 			<artifactId>jcabi-email</artifactId>
