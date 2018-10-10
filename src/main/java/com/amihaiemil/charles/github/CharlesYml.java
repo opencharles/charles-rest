@@ -50,9 +50,15 @@ public interface CharlesYml {
     boolean tweet();
 
     /**
+     * Driver to use (phantomjs, chrome etc).
+     * @return String driver.
+     */
+    String driver();
+
+    /**
      * Default .charles.yml file.
      */
-    public static final class Default implements CharlesYml {
+    final class Default implements CharlesYml {
         @Override
         public List<String> commanders() {
             return new ArrayList<>();
@@ -61,6 +67,11 @@ public interface CharlesYml {
         @Override
         public boolean tweet() {
             return false;
+        }
+
+        @Override
+        public String driver() {
+            return "chrome";
         }
     }
     

@@ -59,8 +59,15 @@ public class IndexPage extends IndexStep {
          String link = this.getLink(command);
          logger.info("Indexing page " + link + " ...");
          try {
+             final String specified = command.repo().charlesYml().driver();
+             logger.info("Crawling with the " + specified + " driver.");
+             final WebDriver driver;
+             if("phantomjs".equalsIgnoreCase(specified)) {
+                 driver = this.phantomJsDriver();
+             } else {
+                 driver = this.chromeDriver();
+             }
              logger.info("Crawling the page...");
-             WebDriver driver = this.phantomJsDriver();
              driver.get(link);
              WebPage snapshot = new SnapshotWebPage(new LiveWebPage(driver));
              logger.info("Page crawled. Sending to aws...");

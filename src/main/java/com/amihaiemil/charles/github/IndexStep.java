@@ -26,6 +26,8 @@
 package com.amihaiemil.charles.github;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
@@ -50,7 +52,7 @@ public abstract class IndexStep extends IntermediaryStep{
 
     /**
      * Use phantomjs to fetch the web content.
-     * @return
+     * @return WebDriver.
      */
     protected WebDriver phantomJsDriver() {
         String phantomJsExecPath =  System.getProperty("phantomjsExec");
@@ -65,6 +67,27 @@ public abstract class IndexStep extends IntermediaryStep{
         );
         return new PhantomJSDriver(dc);
     }
+
+    /**
+     * Use Google Chrome headless to fetch the content.
+     * @return WebDriver.
+     */
+    protected WebDriver chromeDriver() {
+        final ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.setBinary("/usr/bin/google-chrome-stable");
+        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--no-sandbox");
+        chromeOptions.addArguments("--ignore-certificate-errors");
+
+        final DesiredCapabilities dc = new DesiredCapabilities();
+        dc.setJavascriptEnabled(true);
+        dc.setCapability(
+            ChromeOptions.CAPABILITY, chromeOptions
+        );
+        WebDriver chrome = new ChromeDriver(dc);
+        return chrome;
+    }
+
 
     /**
      * Use firefox to fetch web content.

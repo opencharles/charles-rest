@@ -97,4 +97,38 @@ public final class CharlesYmlInputTestCase {
         );
         MatcherAssert.assertThat(charles.tweet(), Matchers.is(true));
     }
+
+    /**
+     * CharlesYmlInput can read the specified driver.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
+    public void readsDriver() throws IOException {
+        final CharlesYml charles = new CharlesYmlInput(
+            new ByteArrayInputStream(
+                "commanders:\n  - charlesmike\n  - amihaiemil\ndriver: phantomjs"
+                .getBytes()
+            )
+        );
+        MatcherAssert.assertThat(
+            charles.driver(), Matchers.equalTo("phantomjs")
+        );
+    }
+
+    /**
+     * CharlesYmlInput can read the default driver if it's not specified.
+     * @throws IOException If something goes wrong.
+     */
+    @Test
+    public void readsDefaultDriver() throws IOException {
+        final CharlesYml charles = new CharlesYmlInput(
+            new ByteArrayInputStream(
+                "commanders:\n  - charlesmike\n  - amihaiemil\ntweet: true"
+                .getBytes()
+            )
+        );
+        MatcherAssert.assertThat(
+            charles.driver(), Matchers.equalTo("chrome")
+        );
+    }
 }

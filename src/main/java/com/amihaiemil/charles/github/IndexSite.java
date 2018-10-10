@@ -28,6 +28,7 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.DataExportException;
@@ -84,10 +85,21 @@ public class IndexSite extends IndexStep {
         } else {
             siteIndexUrl = "http://" + repoName;
         }
+
+        final String specified = command.repo().charlesYml().driver();
+        logger.info("Crawling with the " + specified + " driver.");
+        final WebDriver driver;
+        if("phantomjs".equalsIgnoreCase(specified)) {
+            driver = this.phantomJsDriver();
+        } else {
+            driver = this.chromeDriver();
+        }
+
         logger.info("Graph-crawling, starting from " + siteIndexUrl
         + " .The website will be crawled as a graph, going in-depth from the index page.");
+
         WebCrawl siteCrawl = new GraphCrawl(
-            siteIndexUrl, this.phantomJsDriver(), new IgnoredPatterns(),
+            siteIndexUrl, driver, new IgnoredPatterns(),
             new AmazonElasticSearch(command.indexName()),
             20
         );

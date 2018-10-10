@@ -49,7 +49,7 @@ public final class CharlesYmlInput implements CharlesYml {
 
     /**
      * Ctor.
-     * @param cyml .charles.yml.
+     * @param yaml .charles.yml.
      * @throws IOException If the input stream cannot be read.
      */
     public CharlesYmlInput(final InputStream yaml) throws IOException {
@@ -73,4 +73,13 @@ public final class CharlesYmlInput implements CharlesYml {
         return Boolean.valueOf(this.yaml.string("tweet"));
     }
 
+    @Override
+    public String driver() {
+        final String driver = this.yaml.string("driver");
+        if(driver != null) {
+            return driver;
+        } else {
+            return "chrome";
+        }
+    }
 }

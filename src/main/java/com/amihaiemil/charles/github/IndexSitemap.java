@@ -27,6 +27,7 @@ package com.amihaiemil.charles.github;
 
 import java.io.IOException;
 
+import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 
 import com.amihaiemil.charles.DataExportException;
@@ -57,10 +58,19 @@ public class IndexSitemap extends IndexStep {
     public void perform(Command command, Logger logger) throws IOException {
         String link = this.getLink(command);
         try {
+            final String specified = command.repo().charlesYml().driver();
+            logger.info("Crawling with the " + specified + " driver.");
+            final WebDriver driver;
+            if("phantomjs".equalsIgnoreCase(specified)) {
+                driver = this.phantomJsDriver();
+            } else {
+                driver = this.chromeDriver();
+            }
+
             logger.info("Indexing sitemap " + link + " ...");
             WebCrawl sitemap = new RetriableCrawl(
                 new SitemapXmlCrawl(
-                    this.phantomJsDriver(),
+                    driver,
                     new SitemapXmlOnline(link),
                     new AmazonElasticSearch(command.indexName()),
                     20
