@@ -65,7 +65,7 @@ public final class DeleteIndexKn implements Knowledge {
 	                                        com.authorLogin(), com.repo().name(), logs.address()
 	                                    )
 	                                ),
-	                                new Follow(new Tweet(new Step.FinalStep()))
+	                                new Follow(new Step.FinalStep())
 	                            )
 	                        )
 	                    ),

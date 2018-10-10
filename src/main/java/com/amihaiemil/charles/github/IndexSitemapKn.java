@@ -72,7 +72,7 @@ public final class IndexSitemapKn implements Knowledge {
 	                                            com.authorLogin(), logs.address()
 	                                        )
 	                                    ),
-	                                    new Follow(new Tweet(new Step.FinalStep()))
+	                                    new Follow(new Step.FinalStep())
 	                                )
 	                            )
 	                        )
