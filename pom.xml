@@ -155,13 +155,25 @@
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>2.10.3</version>
 						<executions>
-							<execution>
-								<id>attach-javadocs</id>
-								<goals>
-									<goal>jar</goal>
-								</goals>
-							</execution>
+                                                    <execution>
+                                                        <id>attach-javadocs</id>
+                                                        <goals>
+                                                            <goal>jar</goal>
+                                                        </goals>
+                                                    </execution>
 						</executions>
+                                                <configuration>
+                                                    <tags>
+                                                        <tag>
+                                                                <name>todo</name>
+                                                                <placement>X</placement>
+                                                        </tag>
+                                                        <tag>
+                                                                <name>checkstyle</name>
+                                                                <placement>X</placement>
+                                                        </tag>
+                                                    </tags>
+						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
