@@ -38,7 +38,7 @@ public class ValidCommand extends Command {
 
     /**
      * Constructor.
-     * @param Given Comment.
+     * @param com Given Comment.
      * @throws IllegalArgumentException if the comment (command) is not valid..
      */
     public ValidCommand(Command com) throws IllegalArgumentException {

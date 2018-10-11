@@ -97,6 +97,10 @@ public class CharlesResource {
     /**
      * Ctor.
      * @param servletRequest Injected HttpServletRequest
+     * @param accessKey Amazon access key.
+     * @param secret Amazon secret key.
+     * @param reg Amazon region.
+     * @param es Elasticsearch endpoint.
      */
     public CharlesResource (
         final HttpServletRequest servletRequest,
@@ -127,11 +131,11 @@ public class CharlesResource {
      * @return Http response.
      * @param user Github username.
      * @param repo Github reponame.
-     * @param kw Keywords.
-     * @param ctg Category.
+     * @param keywords Keywords.
+     * @param category Category.
      * @param index Start displaying results form index.
      * @param size Max number of results on the page.
-     * @throws JsonProcessingException 
+     * @throws JsonProcessingException If something goes wrong.
      */
     @GET
     @Path("/s/{username}/{reponame}")

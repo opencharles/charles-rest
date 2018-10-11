@@ -62,7 +62,7 @@ public interface ElasticSearch extends Repository {
      * Delete a single document from this index.
      * @param type Type withing index.
      * @param id Id of the document.
-     * @see https://www.elastic.co/guide/en/elasticsearch/reference/2.3/docs-delete.html
+     * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/2.3/docs-delete.html">ElasticSearch API</a>
      */
     void delete(final String type, final String id);
     

@@ -58,7 +58,7 @@ public class EsBulkJson {
      * @param pages Given web pages.
      */
     public EsBulkJson(String index, List<WebPage> pages) {
-        if(pages == null || pages.size() == 0) {
+        if(pages == null || pages.isEmpty()) {
             throw new IllegalArgumentException("There must be at least 1 page!");
         }
         this.pages = pages;
@@ -67,7 +67,6 @@ public class EsBulkJson {
 
     /**
      * Pepare the json structure for bulk indexing.
-     * @param docs The json documents to be indexed.
      * @return The json structure as a String.
      * @throws IOException If something goes wrong while parsing.
      */

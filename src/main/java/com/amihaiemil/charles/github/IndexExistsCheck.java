@@ -48,6 +48,7 @@ public final class IndexExistsCheck  extends PreconditionCheckStep {
 
     /**
      * Constructor.
+     * @param index Index name.
      * @param onTrue The step to perform on successful check.
      * @param onFalse the step to perform in unsuccessful check.
      */

@@ -51,7 +51,7 @@ public final class ElasticSearchResults implements SearchResultsPage {
     
     /**
      * Ctor.
-     * @param hits Results in JSON.
+     * @param results Results in JSON.
      */
     public ElasticSearchResults(final JsonObject results) {
         this(results, 0, "", "", new ArrayList<String>());
@@ -62,7 +62,7 @@ public final class ElasticSearchResults implements SearchResultsPage {
      * @param results Json results from ElasticSearch.
      * @param pageNr Number of this page.
      * @param nextPage Link to the next page.
-     * @param preciousPage Link to the previous page.
+     * @param previousPage Link to the previous page.
      * @param pages Links to all the pages.
      */
     public ElasticSearchResults(

@@ -97,7 +97,7 @@ public interface SearchResultsPage {
     
     /**
      * Specify the previous pager.
-     * @param previousPage String.
+     * @param prevPage String.
      * @return SearchResultsPage.
      */
     SearchResultsPage withPrevPage(final String prevPage);
@@ -113,7 +113,7 @@ public interface SearchResultsPage {
 
         @Override
         public List<SearchResult> results() {
-            return new ArrayList<SearchResult>();
+            return new ArrayList<>();
         }
 
         @Override
@@ -138,7 +138,7 @@ public interface SearchResultsPage {
 
         @Override
         public List<String> pages() {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         }
 
         @Override

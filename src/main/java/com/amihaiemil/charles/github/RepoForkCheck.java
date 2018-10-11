@@ -46,10 +46,7 @@ public class RepoForkCheck extends PreconditionCheckStep {
         super(onTrue, onFalse);
     }
 
-    /**
-     * Check whether the repo is a fork or not.
-     * @returns true if the repo is NOT a fork, false otherwise.
-     */
+    
     @Override
     public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking whether the repository is a fork...");

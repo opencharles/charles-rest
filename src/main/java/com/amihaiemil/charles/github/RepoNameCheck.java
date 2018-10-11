@@ -47,10 +47,6 @@ public class RepoNameCheck extends PreconditionCheckStep {
         super(onTrue, onFalse);
     }
 
-    /**
-     * Check that the repo's name respects the format owner.github.io
-     * @return true if the check is successful, false otherwise
-     */
     @Override
     public void perform(Command command, Logger logger) throws IOException {
         logger.info("Checking repository name... ");

@@ -26,8 +26,7 @@
 package com.amihaiemil.charles.github;
 
 /**
- * LogsLocation which will return the address of an Action's log file. 
- * @see https://github.com/amihaiemil/charles-github-ejb/issues/36
+ * LogsLocation which will return the address of an Action's log file.
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0

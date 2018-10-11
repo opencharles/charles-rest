@@ -45,7 +45,6 @@ public final class AwsHead<T> extends AwsHttpRequest<T> {
     /**
      * Ctor.
      * @param req Base AwsHttpRequest.
-     * @param content InputStream containing this request's content.
      */
     public AwsHead(AwsHttpRequest<T> req) {
     	this.base = req;

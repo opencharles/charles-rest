@@ -40,13 +40,13 @@ import java.io.IOException;
  */
 public interface Step {
 	
-	/**
-	 * Perform this step.
-	 * @param command Command that triggered the action.
-	 * @param logger The Action's logger.
+    /**
+     * Perform this step.
+     * @param command Command that triggered the action.
+     * @param logger The Action's logger.
      * @throws IOException If there is anything wrong in the communication
      *  with Github.
-	 */
+     */
     void perform(Command command, Logger logger) throws IOException;
     
     /**
@@ -69,13 +69,13 @@ public interface Step {
         
         /**
          * Ctor.
-         * @param logger Logger.
          * @param message Message to log at the end of the action.
          */
         public FinalStep(String message) {
             this.message = message;
         }
 
+        @Override
         public void perform(Command command, Logger logger) {
             logger.info(message);
         }
@@ -89,7 +89,7 @@ public interface Step {
         /**
          * Should this step's perform pass or throw an exception?
          */
-        private boolean pass;
+        private final boolean pass;
 
         /**
          * Ctor.

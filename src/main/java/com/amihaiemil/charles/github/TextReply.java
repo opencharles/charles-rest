@@ -40,13 +40,18 @@ public class TextReply implements Reply {
     /**
      * Command to which this reply goes.
      */
-    private Command command;
+    private final Command command;
 
     /**
      * The agent's response.
      */
-    private String response;
+    private final String response;
 
+    /**
+     * Ctor.
+     * @param com Command to reply to.
+     * @param response Text response.
+     */
     public TextReply(Command com, String response) {
         this.command = com;
         this.response = response;
@@ -54,7 +59,7 @@ public class TextReply implements Reply {
 
     /**
      * Send the reply comment to the Github issue.
-     * @throws IOException 
+     * @throws IOException If something goes wrong.
      */
     @Override
     public void send() throws IOException {

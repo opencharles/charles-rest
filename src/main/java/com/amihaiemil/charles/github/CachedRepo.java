@@ -153,7 +153,7 @@ public class CachedRepo {
     /**
      * The charles.yml file contained in the repo.
      * @return {@link CharlesYml}
-     * @throws IOException
+     * @throws IOException If something goes wrong while reading .charles.yml.
      */
     public CharlesYml charlesYml() throws IOException {
         if(this.yml == null) {

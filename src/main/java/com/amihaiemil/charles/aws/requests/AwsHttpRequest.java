@@ -35,12 +35,12 @@ import com.amazonaws.Request;
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
  * @since 1.0.0
- *
  */
 public abstract class AwsHttpRequest<T> {
 
     /**
      * Perform this request.
+     * @return T type of response.
      */
     public abstract T perform();
 
@@ -58,13 +58,13 @@ public abstract class AwsHttpRequest<T> {
      */
     static class FakeAwsHttpRequest extends AwsHttpRequest<String>{
 
-        private Request<Void> fakeRq;
+        private final Request<Void> fakeRq;
 
         public FakeAwsHttpRequest() {
-        	this.fakeRq = new DefaultRequest<>("fake");
-        	this.fakeRq.setEndpoint(
-        	    URI.create("http://localhost:8080/test")
-        	);
+            this.fakeRq = new DefaultRequest<>("fake");
+            this.fakeRq.setEndpoint(
+                URI.create("http://localhost:8080/test")
+            );
         }
         @Override
         public String perform() {

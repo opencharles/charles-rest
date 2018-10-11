@@ -80,7 +80,6 @@ public final class StepsTree implements Steps {
      * Constructor.
      * @param steps Given steps.
      * @param command Command which triggered the action.
-     * @param logs Logs' location.
      * @param fm Failure message.
      */
     public StepsTree(Step steps, Command command, SendReply fm) {
@@ -92,6 +91,7 @@ public final class StepsTree implements Steps {
     /**
      * Perform all the given steps.
      * @param logger Action logger.
+     * @throws IOException If something goes wrong.
      */
     @Override
     public void perform(Logger logger) throws IOException {

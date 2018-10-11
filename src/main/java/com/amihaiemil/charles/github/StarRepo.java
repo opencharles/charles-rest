@@ -48,11 +48,8 @@ public class StarRepo extends IntermediaryStep {
     public StarRepo(final Step next) {
         super(next);
     }
-    
-    /**
-     * Star the repository.
-     * @return Always returns true, since it's not a critical step.
-     */
+
+    @Override
     public void perform(Command command, Logger logger) throws IOException {
         try {
             logger.info("Starring repository...");

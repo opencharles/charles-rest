@@ -74,8 +74,11 @@ public class IndexSite extends IndexStep {
 
     /**
      * Builds a retriable graph crawl.
-     * @return RetriableWebCrawl
-     * @throws IOException
+     * @param command Initial command given by the user.
+     * @param logger The action's Logger.
+     * @return RetriableWebCrawl a WebCrawl which will retry a few times if
+     *  something goes wrong.
+     * @throws IOException If something goes wrong.
      */
     public WebCrawl graphCrawl(Command command, Logger logger) throws IOException {
         String repoName = command.repo().name();

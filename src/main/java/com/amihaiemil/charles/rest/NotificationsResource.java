@@ -122,7 +122,7 @@ public class NotificationsResource {
     /**
      * Webhook for Github issue_comment event.
      * @param issueComment Event Json payload.
-     * @see https://developer.github.com/v3/activity/events/types/#webhook-event-name-13
+     * @see <a href=https://developer.github.com/v3/activity/events/types/#webhook-event-name-13>Github API</a>
      * @return Http response.
      */
     @POST

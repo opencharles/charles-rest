@@ -102,7 +102,7 @@ public final class AmazonElasticSearch implements ElasticSearch {
     /**
      * ctor.
      * @param indexName Name of the Es index where the pages will be exported.
-     * @param accessKey Aws access key.
+     * @param accesskey Aws access key.
      * @param secretKey Aws secret key.
      * @param reg AWS ElasticSearch region.
      * @param es ElasticSearch URL.
@@ -175,11 +175,6 @@ public final class AmazonElasticSearch implements ElasticSearch {
         }
     }
 
-    /**
-     * Make a HEAD request and check if the elasticsearch
-     * index exists.
-     * @return True if the index exists, false otherwise.
-     */
     @Override
     public boolean exists() {
         final AwsHttpRequest<Boolean> head =
@@ -206,10 +201,7 @@ public final class AmazonElasticSearch implements ElasticSearch {
         }
         return exists;
     }
-    /**
-     * Delete the elasticsearch index.
-     * @param name Name of the index.
-     */
+    
     @Override
     public void delete() {
         final AwsHttpRequest<HttpResponse> deleteIndex =

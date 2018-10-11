@@ -91,7 +91,7 @@ public abstract class IndexStep extends IntermediaryStep{
 
     /**
      * Use firefox to fetch web content.
-     * @return
+     * @return Webdriver.
      */
     protected WebDriver firefoxDriver() {
         return new FirefoxDriver();

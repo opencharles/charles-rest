@@ -38,11 +38,11 @@ import org.slf4j.Logger;
  */
 public interface Steps {
 
-	/**
-	 * Perform this step.
-	 * @param Action logger.
+    /**
+     * Perform this step.
+     * @param logger Action logger.
      * @throws IOException If there is anything wrong in the communication
      *  with Github.
-	 */
+     */
     void perform(Logger logger) throws IOException;
 }

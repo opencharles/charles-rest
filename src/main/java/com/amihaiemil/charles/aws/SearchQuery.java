@@ -66,10 +66,10 @@ public final class SearchQuery {
     }
     /**
      * Ctor.
-     * @param content
-     * @param category
-     * @param index
-     * @param nr
+     * @param content Keywords.
+     * @param category Category.
+     * @param index Index to start at.
+     * @param nr Number of results per page.
      */
     public SearchQuery(String content, String category, int index, int nr) {
         this.content = content;

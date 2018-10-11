@@ -67,6 +67,9 @@ public class SignedRequest<T> extends AwsHttpRequest<T> {
     /**
      * Ctor.
      * @param req Request to sign.
+     * @param accesskey Key to sign with.
+     * @param secretKey Secret to sign with.
+     * @param reg Request to sign.
      */
     public SignedRequest(
         final AwsHttpRequest<T> req,
@@ -106,12 +109,12 @@ public class SignedRequest<T> extends AwsHttpRequest<T> {
     	/**
          * AWS access key.
          */
-        private AccessKeyId accesskey;
+        private final AccessKeyId accesskey;
         
         /**
          * Aws secret key;
          */
-        private SecretKey secretKey;
+        private final SecretKey secretKey;
     	
         private AwsCredentialsFromSystem(final AccessKeyId accesskey, final SecretKey secret) {
         	this.accesskey = accesskey;

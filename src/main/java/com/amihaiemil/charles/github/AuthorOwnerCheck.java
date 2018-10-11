@@ -50,7 +50,6 @@ public class AuthorOwnerCheck extends PreconditionCheckStep {
 
     /**
      * Check that the author of a command is owner of the repo.
-     * @return true if the check is successful, false otherwise
      */
     @Override
     public void perform(Command command, Logger logger) throws IOException {

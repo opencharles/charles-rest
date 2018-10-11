@@ -42,6 +42,7 @@ public class LogsResource {
 
     /**
      * Fetch the log file of an Action by name.
+     * @param name Log file name.
      * @return HTTP Response.
      */
     @Path("/{name}")

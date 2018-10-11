@@ -66,7 +66,7 @@ public final class EsHttpRequest<T> extends AwsHttpRequest<T> {
      * @param esEdp ElasticSearch URL.
      * @param uri REST path to the desired ElasticSearch endpoint.
      * @param respHandler Response handler.
-     * @param errHandle Error handler.
+     * @param errHandler Error handler.
      */
     public EsHttpRequest(
     	EsEndPoint esEdp,

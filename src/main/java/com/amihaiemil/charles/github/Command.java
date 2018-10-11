@@ -96,7 +96,7 @@ public abstract class Command {
 
     /**
      * Specify the comment json of this command.
-     * @param com
+     * @param com Json comment.
      */
     protected void comment(JsonObject com) {
         this.comment = com;
@@ -113,7 +113,7 @@ public abstract class Command {
     /**
      * Username of the Github agent.
      * @return Github agent's String username.
-     * @throws IOException 
+     * @throws IOException If something goes wrong.
      */
     public String agentLogin() throws IOException {
         return this.issue.repo()
@@ -140,10 +140,10 @@ public abstract class Command {
     public String authorEmail() throws IOException {
         String email = "";
         User author = this.issue
-        		          .repo()
-        		          .github()
-        		          .users()
-        		          .get(this.authorLogin());
+            .repo()
+            .github()
+            .users()
+            .get(this.authorLogin());
         for(final String address : author.emails().iterate()) {
         	email = address;
         }
@@ -155,7 +155,7 @@ public abstract class Command {
      * @return Json membership as described
      * <a href="https://developer.github.com/v3/orgs/members/#get-organization-membership">here</a>
      * or an empty Json object if the repo owner is not an organization.
-     * @throws IOException
+     * @throws IOException If something goes wrong.
      */
     public JsonObject authorOrgMembership() throws IOException {
         if(this.repo().isOwnedByOrganization()) {
