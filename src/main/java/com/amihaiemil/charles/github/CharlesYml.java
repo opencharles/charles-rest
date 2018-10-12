@@ -56,6 +56,12 @@ public interface CharlesYml {
     String driver();
 
     /**
+     * Patterns that should be ignored when graph-crawling (index-site command).
+     * @return List of patterns.
+     */
+    List<String> ignored();
+
+    /**
      * Default .charles.yml file.
      */
     final class Default implements CharlesYml {
@@ -72,6 +78,11 @@ public interface CharlesYml {
         @Override
         public String driver() {
             return "chrome";
+        }
+
+        @Override
+        public List<String> ignored() {
+            return new ArrayList<>();
         }
     }
     
