@@ -102,7 +102,9 @@ public class IndexSite extends IndexStep {
         + " .The website will be crawled as a graph, going in-depth from the index page.");
 
         WebCrawl siteCrawl = new GraphCrawl(
-            siteIndexUrl, driver, new IgnoredPatterns(),
+            siteIndexUrl,
+            driver,
+            new IgnoredPatterns(command.repo().charlesYml().ignored()),
             new AmazonElasticSearch(command.indexName()),
             20
         );

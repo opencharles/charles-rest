@@ -82,4 +82,16 @@ public final class CharlesYmlInput implements CharlesYml {
             return "chrome";
         }
     }
+
+    @Override
+    public List<String> ignored() {
+        final List<String> ignored = new ArrayList<>();
+        final YamlSequence sequence = this.yaml.yamlSequence("ignored");
+        if(sequence != null) {
+            for(int i=0;i<sequence.size();i++) {
+                ignored.add(sequence.string(i));
+            }
+        }
+        return ignored;
+    }
 }
