@@ -240,6 +240,16 @@
 			<groupId>com.amihaiemil.web</groupId>
 			<artifactId>charles</artifactId>
 			<version>1.1.1</version>
+			<exclusions>
+				<exclusion>  <!-- declare the exclusion here -->
+					<groupId>org.glassfish.jaxb</groupId>
+					<artifactId>jaxb-runtime</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.glassfish</groupId>
+					<artifactId>javax.json</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency><!-- Client for the Github API -->
 			<groupId>com.jcabi</groupId>
