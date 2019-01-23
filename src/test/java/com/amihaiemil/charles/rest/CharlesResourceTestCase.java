@@ -90,7 +90,7 @@ public final class CharlesResourceTestCase {
             MatcherAssert.assertThat(
                 page.getString("nextPage"),
                 Matchers.equalTo(
-                    "http://example.com?kw=test&ctg=page&index=3&size=3"
+                    "https://example.com?kw=test&ctg=page&index=3&size=3"
                 )
             );
             MatcherAssert.assertThat(
@@ -99,13 +99,13 @@ public final class CharlesResourceTestCase {
             MatcherAssert.assertThat(
                 page.getJsonArray("pages").getString(0),
                 Matchers.equalTo(
-                    "http://example.com?kw=test&ctg=page&index=0&size=3"
+                    "https://example.com?kw=test&ctg=page&index=0&size=3"
                 )
             );
             MatcherAssert.assertThat(
                 page.getJsonArray("pages").getString(8),
                 Matchers.equalTo(
-                    "http://example.com?kw=test&ctg=page&index=24&size=3"
+                    "https://example.com?kw=test&ctg=page&index=24&size=3"
                 )
             );
         } finally {
