@@ -28,6 +28,7 @@ package com.amihaiemil.charles.rest;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.json.Json;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -61,7 +62,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @since 1.0.0
  */
 @Path("/")
-public class CharlesResource {
+public class CharlesResource extends JsonResource {
 
     /**
      * Http request.
@@ -91,7 +92,14 @@ public class CharlesResource {
     
     
     public CharlesResource() {
-        //for jax-rs
+        super(
+            Json.createObjectBuilder()
+                .add("ping", "GET /api/ping")
+                .add("search", "GET /api/s/{github_user}/{github_repo}?kw=%s&ctg=page&index=%d&size=%d")
+                .add("logs", "GET /api/logs/")
+                .add("notifications", "GET /api/notifications")
+                .build()
+        );
     }
 
     /**
@@ -109,13 +117,29 @@ public class CharlesResource {
         final Region reg,
         final EsEndPoint es
     ) {
+        super(
+            Json.createObjectBuilder()
+                .add("ping", "GET /api/ping")
+                .add("search", "GET /api/s/{github_user}/{github_repo}?kw=%s&ctg=page&index=%d&size=%d")
+                .build()
+        );
         this.servletRequest = servletRequest;
         this.accesskey = accessKey;
         this.reg = reg;
         this.secretKey = secret;
         this.esEdp = es;
     }
-    
+
+    /**
+     * This JAX-RS resource in Json format.
+     * @return Response.
+     */
+    @GET
+    @Path("/docs")
+    public Response json() {
+        return Response.ok().entity(this.toString()).build();
+    }
+
     /**
      * Endpoint for checking if the service is online.
      * @return ok response.

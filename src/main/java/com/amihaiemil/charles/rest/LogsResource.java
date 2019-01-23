@@ -26,6 +26,7 @@
 package com.amihaiemil.charles.rest;
 
 import java.io.File;
+import javax.json.Json;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -38,7 +39,16 @@ import javax.ws.rs.core.Response;
  * @since 1.0.0
  */
 @Path("/logs")
-public class LogsResource {
+public class LogsResource extends JsonResource {
+
+
+    public LogsResource() {
+        super(
+            Json.createObjectBuilder()
+                .add("getActionLogs", "/api/logs/{log_file_name}")
+                .build()
+        );
+    }
 
     /**
      * Fetch the log file of an Action by name.
@@ -58,5 +68,15 @@ public class LogsResource {
             }
         }
         return Response.noContent().build();
+    }
+
+    /**
+     * This JAX-RS resource in Json format.
+     * @return Response.
+     */
+    @GET
+    @Path("/charles")
+    public Response json() {
+        return Response.ok().entity(this.toString()).build();
     }
 }

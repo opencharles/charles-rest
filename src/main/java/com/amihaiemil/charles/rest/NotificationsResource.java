@@ -30,9 +30,11 @@ import java.net.HttpURLConnection;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.Stateless;
+import javax.json.Json;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -60,9 +62,9 @@ import com.jcabi.http.wire.RetryWire;
  * @since 1.0.0
  *
  */
-@Path("/")
+@Path("/notifications")
 @Stateless
-public class NotificationsResource {
+public class NotificationsResource extends JsonResource {
 
     /**
      * Logger,
@@ -74,6 +76,25 @@ public class NotificationsResource {
      */
     @Context
     private HttpServletRequest request;
+
+    public NotificationsResource() {
+        super(
+            Json.createObjectBuilder()
+                .add(
+                    "postNotifications",
+                    Json.createObjectBuilder()
+                        .add("method", "POST /api/notifications/post")
+                        .add("description", "Post notifications yourself. The body should be a JsonArray with Jsons of format {\"repoFullName\": \"user/repo\", \"issueNumber\":23}.")
+                )
+                .add(
+                    "githubCommentWebhook",
+                    Json.createObjectBuilder()
+                        .add("method", "POST /api/notifications/ghook")
+                        .add("description", "Setup a Github Webhook with application/json Content-Type and only check the \"Issue Comment\" event.")
+                )
+                .build()
+        );
+    }
 
     /**
      * Consumes a JsonArray consisting of Github notifications json objects.
@@ -97,7 +118,7 @@ public class NotificationsResource {
      * @return Http Response.
      */
     @POST
-    @Path("notifications")
+    @Path("/post")
     public Response postNotifications(String notifications) {
         final String token = request.getHeader(HttpHeaders.AUTHORIZATION);
         if(token == null || token.isEmpty()) {
@@ -126,7 +147,7 @@ public class NotificationsResource {
      * @return Http response.
      */
     @POST
-    @Path("/github/issuecomment")
+    @Path("/ghook")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response webhook(final JsonObject issueComment) {
         final String event = this.request.getHeader("X-Github-Event");
@@ -182,6 +203,16 @@ public class NotificationsResource {
                 return false;
             }
         }
+    }
+
+    /**
+     * This JAX-RS resource in Json format.
+     * @return Response.
+     */
+    @GET
+    @Path("/")
+    public Response json() {
+        return Response.ok().entity(this.toString()).build();
     }
 
     /**
