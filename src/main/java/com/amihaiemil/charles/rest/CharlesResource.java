@@ -160,7 +160,7 @@ public class CharlesResource {
         SearchResultsPage results = aws.search(query);
         
         String queryStringFormat = "?kw=%s&ctg=%s&index=%s&size=%s";
-        String requestUrl = servletRequest.getRequestURL().toString();
+        String requestUrl = servletRequest.getRequestURL().toString().replace("http://", "https://");
         if(idx == 0) {
         	results = results.withPrevPage("-");
         } else {
