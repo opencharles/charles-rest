@@ -29,14 +29,12 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 
 import javax.ejb.Asynchronous;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -63,13 +61,15 @@ import com.jcabi.http.wire.RetryWire;
  *
  */
 @Path("/notifications")
-@Stateless
 public class NotificationsResource extends JsonResource {
 
     /**
      * Logger,
      */
     private static final Logger LOG = LoggerFactory.getLogger(NotificationsResource.class.getName());
+
+    @EJB
+    ActionHandler actions;
 
     /**
      * The http request.
@@ -189,7 +189,7 @@ public class NotificationsResource extends JsonResource {
             );
             try {
                 for(final Notification notification : notifications) {
-                    this.take(
+                    this.actions.take(
                         new Action(
                             gh.repos().get(
                                 new Coordinates.Simple(notification.repoFullName())
@@ -211,16 +211,9 @@ public class NotificationsResource extends JsonResource {
      */
     @GET
     @Path("/")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response json() {
         return Response.ok().entity(this.toString()).build();
     }
 
-    /**
-     * Take an action.
-     * @param action Given action.
-     */
-    @Asynchronous
-    private void take(Action action) {
-        action.perform();
-    }
 }
