@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2016-2017, Mihai Emil Andronache
+ * Copyright (c) 2016-2019, Mihai Emil Andronache
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -25,61 +25,26 @@
  */
 package com.amihaiemil.charles.rest;
 
-import java.io.File;
-import javax.json.Json;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import com.amihaiemil.charles.github.Action;
+
+import javax.ejb.Asynchronous;
+import javax.ejb.Stateless;
 
 /**
- * REST resource for fetching the logs of each Action.
+ * Async EJB that takes care of the received notifications (takes actions about them).
  * @author Mihai Andronache (amihaiemil@gmail.com)
  * @version $Id$
- * @since 1.0.0
+ * @since 1.2.2
  */
-@Path("/logs")
-public class LogsResource extends JsonResource {
-
-
-    public LogsResource() {
-        super(
-            Json.createObjectBuilder()
-                .add("getActionLogs", "/api/logs/{log_file_name}")
-                .build()
-        );
-    }
+@Stateless
+public class ActionHandler {
 
     /**
-     * Fetch the log file of an Action by name.
-     * @param name Log file name.
-     * @return HTTP Response.
+     * Take an action.
+     * @param action Given action.
      */
-    @Path("/{name}")
-    @GET
-    public Response getActionLogs(@PathParam("name") String name) {
-        String logroot = System.getProperty("LOG_ROOT");
-        if(logroot != null) {
-            File log = new File(logroot + "/charles-rest/ActionsLogs/" + name);
-            if(log.exists()) {
-                return Response.ok()
-                    .entity(log)
-                    .header("Content-Type", "text/plain; charset=UTF-8").build();
-            }
-        }
-        return Response.noContent().build();
-    }
-
-    /**
-     * This JAX-RS resource in Json format.
-     * @return Response.
-     */
-    @GET
-    @Path("/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response json() {
-        return Response.ok().entity(this.toString()).build();
+    @Asynchronous
+    public void take(Action action) {
+        action.perform();
     }
 }

@@ -136,6 +136,7 @@ public class CharlesResource extends JsonResource {
      */
     @GET
     @Path("/docs")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response json() {
         return Response.ok().entity(this.toString()).build();
     }
