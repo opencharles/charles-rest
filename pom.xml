@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.amihaiemil.web</groupId>
 	<artifactId>charles-rest</artifactId>
-	<version>1.2.1-SNAPSHOT</version><!--rrv-sed-flag-->
+	<version>1.2.2-SNAPSHOT</version><!--rrv-sed-flag-->
 	<packaging>war</packaging>
 	<name>charles-rest</name>
 	<description>Github chatbot codebase</description>
